@@ -1,0 +1,136 @@
+﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using THelperLib.Messaging;
+using THelperLib.Utils;
+
+namespace THelperLib.ViewModel
+{
+    public class SizeTabViewModel : ViewModelBase
+    {
+        public SizeTabViewModel(
+            IMessageService messageService,
+
+            TargetTexturePanelViewModel destination)
+        {
+            _messageService = messageService;
+
+            _destination = destination;
+            _numPagesX = _destination.Presenter.PixelWidth / PAGE_SIZE;
+            _numPagesY = _destination.Presenter.PixelHeight / PAGE_SIZE;
+
+            SubscribeToDestinationChanges();
+        }
+
+
+        private const int PAGE_SIZE = 256;
+        private const int MAX_NUM_PAGES = 128;
+
+        private readonly IMessageService _messageService;
+        private readonly TargetTexturePanelViewModel _destination;
+
+        private bool _sortedResizing = true;
+        private int _numPagesX;
+        private int _numPagesY;
+
+
+        public bool SortedResizing
+        {
+            get => _sortedResizing;
+            set => SetCallerProperty(ref _sortedResizing, value);
+        }
+
+        public int NumPagesX
+        {
+            get => _numPagesX;
+            set
+            {
+                if (value == _numPagesX) return;
+
+                var newValue = CalculateNewPageXValue(value, _numPagesX);
+                SetNewPageNumAndResize(ref _numPagesX, newValue);
+            }
+        }
+
+        public int NumPagesY
+        {
+            get => _numPagesY;
+            set
+            {
+                if (value == _numPagesY) return;
+                if (value > MAX_NUM_PAGES)
+                    value = MAX_NUM_PAGES;
+                SetNewPageNumAndResize(ref _numPagesY, value);
+            }
+        }
+
+        private void SubscribeToDestinationChanges()
+        {
+            _destination.PropertyChanged += OnDestinationPropertyChanged;
+        }
+
+        private void OnDestinationPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TargetTexturePanelViewModel.Presenter))
+            {
+                UpdatePageNum();
+            }
+        }
+
+        public void UpdatePageNum()
+        {
+            if (_destination.Presenter == null) return;
+
+            _numPagesX = _destination.Presenter.PixelWidth / PAGE_SIZE;
+            _numPagesY = _destination.Presenter.PixelHeight / PAGE_SIZE;
+
+            NotifyPagesChanged();
+        }
+
+        private void SetNewPageNumAndResize(ref int field, int value, [CallerMemberName] string? propertyName = null)
+        {
+            if (field == value || string.IsNullOrEmpty(propertyName)) return;
+
+            bool isSortedResizing = _sortedResizing && propertyName == nameof(NumPagesX);
+
+            if (isSortedResizing )
+            {
+                float widthRatio = value / (float)_numPagesX;
+                if ((int)(_numPagesY / widthRatio) > MAX_NUM_PAGES)
+                {
+                    _messageService.SendMessage(
+                        MessageType.SortedRezisingNoPossible);
+                    return;
+                }
+            }
+
+            field = Math.Max(1, value);
+
+            ResizeDestination(isSortedResizing);
+
+            OnPropertyChanged(propertyName);
+        }
+
+        private void ResizeDestination(bool isSortedResizing)
+        {
+            int newWidth = _numPagesX * PAGE_SIZE;
+            int newHeight = _numPagesY * PAGE_SIZE;
+
+            if (isSortedResizing)
+                _destination.ResizePresenterSorted(newWidth);
+            else
+                _destination.ResizePresenter(newWidth, newHeight);
+        }
+
+        private void NotifyPagesChanged()
+        {
+            OnPropertyChanged(nameof(NumPagesX));
+            OnPropertyChanged(nameof(NumPagesY));
+        }
+
+        private int CalculateNewPageXValue(int proposedValue, int currentValue)
+            => proposedValue < currentValue
+                ? (proposedValue > 1 ? 2 : 1)
+                : (proposedValue <= 2 ? 2 : 4);
+    }
+}

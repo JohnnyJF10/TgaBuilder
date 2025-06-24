@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup Label="Baisc Project Information">
+    <TargetFramework>net8.0-windows</TargetFramework>
+	<Nullable>enable</Nullable>
+    <RootNamespace>WPF.ZoomPanel</RootNamespace>
+    <AssemblyName>WPF.ZoomPanel</AssemblyName>
+    <UseWPF>true</UseWPF>
+    <DebugType>portable</DebugType>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	<ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+    
+  <PropertyGroup Label="Assembly Metadata">
+    <Product>WPF ZoomPanel</Product>
+    <Authors>Clifford Nelson, Moravuscz</Authors>
+    <Company>Moravuscz</Company>
+    <Copyright>Clifford Nelson, Moravuscz</Copyright>
+    <Description>An Enhanced WPF Custom Control for Zooming and Panning by Clifford Nelson, modified by Moravuscz</Description>
+    <ApplicationIcon>Resources\ZoomPanel.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup Label="Partial Class Grouping">
+    <Compile Update="ZoomPanel.EventHandlers.cs">
+      <DependentUpon>ZoomPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="ZoomPanel.IScrollInfo.cs">
+      <DependentUpon>ZoomPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="ZoomPanel.Methods.cs">
+      <DependentUpon>ZoomPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="ZoomPanel.UndoRedo.cs">
+      <DependentUpon>ZoomPanel.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup Label="Extra stuff to pack into .nupkg">
+    <None Include="Resources\ZoomPanel.png" Pack="true" PackagePath="" />
+    <None Include="docs\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <!-- GitInfo -->
+  <PropertyGroup Label="GitInfo Settings">
+    <GitVersion>false</GitVersion>
+    <GitThisAssembly>true</GitThisAssembly>
+    <GitInfoReportImportance>high</GitInfoReportImportance>
+    <IncludeSourceRevisionInInformationalVersion Condition="'$(Configuration)' == 'Release'">false</IncludeSourceRevisionInInformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion Condition="'$(Configuration)' == 'Debug'">true</IncludeSourceRevisionInInformationalVersion>
+    <SourceRevisionId Condition="'$(Configuration)' == 'Debug'">debug</SourceRevisionId>
+  </PropertyGroup>
+
+  <!-- GitInfo -->
+</Project>
