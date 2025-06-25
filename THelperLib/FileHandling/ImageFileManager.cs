@@ -1,20 +1,12 @@
 ﻿using Pfim;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
-using System.Windows;
-using System.IO;
-using THelperLib.Tr;
-using System.Runtime.InteropServices;
-using THelperLib.Abstraction;
-using Microsoft.VisualBasic.FileIO;
 using System.Drawing.PSD;
+using System.IO;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using THelperLib.Abstraction;
 using THelperLib.Ten;
-using System.Diagnostics;
+using THelperLib.Tr;
 
 namespace THelperLib.FileHandling
 {

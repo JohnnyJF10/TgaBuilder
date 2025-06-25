@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
-
-using System.Windows.Controls.Primitives;
-using System.Windows.Controls;
-using System.Windows.Input;
+﻿using System.Collections;
 using System.Windows;
-
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using Button = Wpf.Ui.Controls.Button;
 using MenuItem = Wpf.Ui.Controls.MenuItem;
 

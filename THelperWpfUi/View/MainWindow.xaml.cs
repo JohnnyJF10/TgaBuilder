@@ -1,13 +1,11 @@
 ﻿using System.ComponentModel;
-
 using THelperLib.Abstraction;
-
-using Image = System.Windows.Controls.Image;
-using FluentWindow = Wpf.Ui.Controls.FluentWindow;
-using WPFZoomPanel;
-using Cursor = System.Windows.Input.Cursor;
-using Application = System.Windows.Application;
 using THelperWpfUi.Services;
+using WPFZoomPanel;
+using Application = System.Windows.Application;
+using Cursor = System.Windows.Input.Cursor;
+using FluentWindow = Wpf.Ui.Controls.FluentWindow;
+using Image = System.Windows.Controls.Image;
 
 namespace THelperWpfUi.View
 {

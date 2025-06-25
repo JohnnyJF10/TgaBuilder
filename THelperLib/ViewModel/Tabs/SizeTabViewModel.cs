@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using THelperLib.Messaging;
-using THelperLib.Utils;
 
 namespace THelperLib.ViewModel
 {
@@ -45,9 +43,10 @@ namespace THelperLib.ViewModel
             get => _numPagesX;
             set
             {
-                if (value == _numPagesX) return;
-
                 var newValue = CalculateNewPageXValue(value, _numPagesX);
+
+                if (newValue == _numPagesX) return;
+
                 SetNewPageNumAndResize(ref _numPagesX, newValue);
             }
         }
@@ -57,10 +56,11 @@ namespace THelperLib.ViewModel
             get => _numPagesY;
             set
             {
-                if (value == _numPagesY) return;
-                if (value > MAX_NUM_PAGES)
-                    value = MAX_NUM_PAGES;
-                SetNewPageNumAndResize(ref _numPagesY, value);
+                var newValue = Math.Clamp(value, 1, MAX_NUM_PAGES);
+
+                if (newValue == _numPagesY) return;
+
+                SetNewPageNumAndResize(ref _numPagesY, newValue);
             }
         }
 

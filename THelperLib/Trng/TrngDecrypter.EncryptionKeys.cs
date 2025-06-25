@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace THelperLib.Trng
+﻿namespace THelperLib.Trng
 {
     public static partial class TrngDecrypter
     {
         private static readonly byte[] EncryptionKeysData =
-        {
+        { 
+            // Source: https://github.com/MontyTRC89/Tomb-Editor/blob/master/TombLib/TombLib/NG/NgEncryption.cs
+
             //Key 1
             0x38, 0x22, 0xE9, 0x4F, 0x20, 0xF1, 0x37, 0x69, 0x15, 0x13, 0xD3,
             0x90, 0x17, 0x84, 0xC2, 0x09, 0xAD, 0x04, 0xBE, 0xD2, 0x52, 0x18,

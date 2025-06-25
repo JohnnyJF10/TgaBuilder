@@ -1,15 +1,12 @@
-﻿using Pfim;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
 using THelperLib.Abstraction;
+using THelperLib.BitmapOperations;
 using THelperLib.Commands;
 using THelperLib.FileHandling;
-using THelperLib.BitmapOperations;
 using THelperLib.Messaging;
 using THelperLib.Utils;
 
@@ -65,7 +62,6 @@ namespace THelperLib.ViewModel
 
         private string _selectedFolderPath = string.Empty;
         private int _startTexIndex = 0;
-        private int _endTexIndex = 10;
         private int _numTextures = 11;
         private int _textureSize = 128;
 
@@ -95,10 +91,13 @@ namespace THelperLib.ViewModel
             {
                 if (value ==  _startTexIndex) return;
 
-                if (value < 0) value = 0;
+                if (value < 0) 
+                    value = 0;
+
+                if (value >= _allFiles.Count) 
+                    value = _allFiles.Count - 1;
 
                 _startTexIndex = value;
-                _endTexIndex = _startTexIndex + _numTextures - 1;
 
                 _selectedFiles = _allFiles
                     .Skip(_startTexIndex)
@@ -106,29 +105,6 @@ namespace THelperLib.ViewModel
                     .ToList();
 
                 OnCallerPropertyChanged();
-                OnPropertyChanged(nameof(EndTexIndex));
-                _ = UpdatePresenterAsync();
-            }
-        }
-
-        public int EndTexIndex
-        {
-            get => _endTexIndex;
-            set
-            {
-                if (value == _endTexIndex) return;
-                if (value < _numTextures - 1) value = _numTextures - 1;
-
-                _endTexIndex = value;
-                _startTexIndex = _endTexIndex - _numTextures + 1;
-
-                _selectedFiles = _allFiles
-                    .Skip(_startTexIndex)
-                    .Take(_numTextures)
-                    .ToList();
-
-                OnCallerPropertyChanged();
-                OnPropertyChanged(nameof(StartTexIndex));
                 _ = UpdatePresenterAsync();
             }
         }
@@ -144,7 +120,6 @@ namespace THelperLib.ViewModel
                 int oldVal = _numTextures;
 
                 _numTextures = value;
-                _endTexIndex = _startTexIndex + _numTextures - 1;
 
                 _selectedFiles = _allFiles
                     .Skip(_startTexIndex)
@@ -152,7 +127,6 @@ namespace THelperLib.ViewModel
                     .ToList();
 
                 OnCallerPropertyChanged();
-                OnPropertyChanged(nameof(EndTexIndex));
                 _ = UpdatePresenterNumChangedAsync(oldVal, value);
             }
         }
@@ -261,6 +235,8 @@ namespace THelperLib.ViewModel
         {
             int successCount = 0;
             byte[] data;
+            WriteableBitmap loadedBitmap;
+            bool allFilesLoadedSuccessfully = true;
 
             if (TexPanelExceedsMaxDimensions())
                 return;
@@ -298,18 +274,8 @@ namespace THelperLib.ViewModel
                         data = await Task.Run(
                             function: () => _asyncFileLoader.LoadCore(file),
                             cancellationToken: token);
-                    }
-                    catch (OperationCanceledException) when (token.IsCancellationRequested)
-                    {
-                        throw;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex);
-                        continue;
-                    }
 
-                    var loadedBitmap = _bitmapOperations.CreateBitmapAndResize(
+                    loadedBitmap = _bitmapOperations.CreateBitmapAndResize(
                         data:           data,
                         width:          _asyncFileLoader.LoadedWidth,
                         height:         _asyncFileLoader.LoadedHeight,
@@ -318,6 +284,18 @@ namespace THelperLib.ViewModel
                         targetWidth:    _textureSize, 
                         targetHeight:   _textureSize, 
                         scalingMode:    BitmapScalingMode.NearestNeighbor);
+
+                    }
+                    catch (OperationCanceledException) when (token.IsCancellationRequested)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        allFilesLoadedSuccessfully = false;
+                        _logger.LogError(ex);
+                        continue;
+                    }
 
                     int x = (successCount % texPerRow) * _textureSize;
                     int y = (successCount / texPerRow) * _textureSize;
@@ -334,9 +312,15 @@ namespace THelperLib.ViewModel
                 }
             }
             catch (OperationCanceledException) when (_updateTaskCts?.IsCancellationRequested == true) {}
-            catch (Exception) 
+            catch (Exception ex) 
             {
+                _logger.LogError(ex);
                 throw; 
+            }
+
+            if (!allFilesLoadedSuccessfully)
+            {
+                _messageService.SendMessage(MessageType.BatchLoaderPanelLoadIssues);
             }
         }
 
@@ -344,6 +328,7 @@ namespace THelperLib.ViewModel
         {
             int successCount = oldNum;
             byte[] data;
+            WriteableBitmap loadedBitmap;
 
             if (TexPanelExceedsMaxDimensions())
                 return;
@@ -382,6 +367,18 @@ namespace THelperLib.ViewModel
                             data = await Task.Run(
                                 function:          () => _asyncFileLoader.LoadCore(file),
                                 cancellationToken: token);
+
+
+                        loadedBitmap = _bitmapOperations.CreateBitmapAndResize(
+                            data:           data,
+                            width:          _asyncFileLoader.LoadedWidth,
+                            height:         _asyncFileLoader.LoadedHeight,
+                            stride:         _asyncFileLoader.LoadedStride,
+                            pixelFormat:    _asyncFileLoader.LoadedPixelFormat,
+                            targetWidth:    _textureSize,
+                            targetHeight:   _textureSize,
+                            scalingMode:    BitmapScalingMode.NearestNeighbor);
+
                         }
                         catch (OperationCanceledException) when (token.IsCancellationRequested)
                         {
@@ -392,16 +389,6 @@ namespace THelperLib.ViewModel
                             _logger.LogError(ex);
                             continue;
                         }
-
-                        var loadedBitmap = _bitmapOperations.CreateBitmapAndResize(
-                            data:           data,
-                            width:          _asyncFileLoader.LoadedWidth,
-                            height:         _asyncFileLoader.LoadedHeight,
-                            stride:         _asyncFileLoader.LoadedStride,
-                            pixelFormat:    _asyncFileLoader.LoadedPixelFormat,
-                            targetWidth:    _textureSize,
-                            targetHeight:   _textureSize,
-                            scalingMode:    BitmapScalingMode.NearestNeighbor);
 
                         int x = (successCount % texPerRow) * _textureSize;
                         int y = (successCount / texPerRow) * _textureSize;
@@ -432,9 +419,10 @@ namespace THelperLib.ViewModel
                 }
             }
             catch (OperationCanceledException) when (_updateTaskCts?.IsCancellationRequested == true) { }
-            catch (Exception) 
-            { 
-                throw; 
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                throw;
             }
         }
 
@@ -464,25 +452,28 @@ namespace THelperLib.ViewModel
             }
 
             _selectedFolderPath = folderName;
-            _messageService.SendMessage(MessageType.BatchLoaderFolderSetSuccess);
-            _usageData.AddRecentBatchLoaderFolder(folderName);
-            UpdateFileLists();
-        }
 
-        private void UpdateFileLists()
-        {
             string searchPath = Path.Combine(_selectedFolderPath);
-
+        
             _allFiles = Directory.EnumerateFiles(searchPath)
                 .Where(file => _asyncFileLoader.SupportedExtensions.Contains(Path.GetExtension(file)))
                 .OrderBy(Path.GetFileName)
                 .ToList();
+        
+            if (_allFiles.Count == 0)
+            {
+                _messageService.SendMessage(MessageType.BatchLoaderFolderSetNoImageFiles);
+                return;
+            }
+
+            _messageService.SendMessage(MessageType.BatchLoaderFolderSetSuccess);
+            _usageData.AddRecentBatchLoaderFolder(folderName);
 
             _selectedFiles = _allFiles
                 .Skip(_startTexIndex)
                 .Take(_numTextures)
                 .ToList();
-
+        
             _ = UpdatePresenterAsync();
         }
 

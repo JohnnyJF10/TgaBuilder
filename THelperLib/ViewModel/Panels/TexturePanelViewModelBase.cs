@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
+﻿using System.ComponentModel;
 using System.Windows;
-using THelperLib.Commands;
-using THelperLib.BitmapOperations;
-using THelperLib.Utils;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using THelperLib.Abstraction;
-using System.Windows.Media.Media3D;
-using System.ComponentModel;
-using System.Diagnostics;
+using THelperLib.BitmapOperations;
 using THelperLib.FileHandling;
+using THelperLib.Utils;
 
 namespace THelperLib.ViewModel
 {

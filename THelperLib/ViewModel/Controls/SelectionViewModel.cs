@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using THelperLib.Abstraction;
 using THelperLib.Commands;
+using THelperLib.Messaging;
+using THelperLib.Utils;
 using Clipboard = System.Windows.Clipboard;
 
 namespace THelperLib.ViewModel
@@ -19,10 +21,18 @@ namespace THelperLib.ViewModel
     public class SelectionViewModel : ViewModelBase
     {
         public SelectionViewModel(
+            ILogger logger,
+            IMessageService messageService,
             WriteableBitmap presenter)
         {
+            _logger = logger;
+            _messageService = messageService;
+
             _presenter = presenter;
         }
+
+        private readonly ILogger _logger;
+        private readonly IMessageService _messageService;
 
         private WriteableBitmap _presenter;
 
@@ -94,8 +104,14 @@ namespace THelperLib.ViewModel
 
         public void Paste()
         {
-            if (Clipboard.ContainsImage())
+            try
             {
+                if (!Clipboard.ContainsImage())
+                {
+                    _messageService.SendMessage(MessageType.ClipboardNotContainingImageData, "Clipboard does not contain an image.");
+                    return;
+                }
+
                 if (Clipboard.GetDataObject().GetFormats().Contains("FileDrop"))
                 {
                     BitmapSource bitmapSource = Clipboard.GetImage();
@@ -108,17 +124,17 @@ namespace THelperLib.ViewModel
                     bitmapSource.CopyPixels(pixelData, stride, 0);
 
                     WriteableBitmap wb = new WriteableBitmap(
-                        pixelWidth:     width, 
-                        pixelHeight:    height, 
-                        dpiX:           bitmapSource.DpiX, 
-                        dpiY:           bitmapSource.DpiY, 
-                        pixelFormat:    PixelFormats.Bgra32, palette: null);
+                        pixelWidth: width,
+                        pixelHeight: height,
+                        dpiX: bitmapSource.DpiX,
+                        dpiY: bitmapSource.DpiY,
+                        pixelFormat: PixelFormats.Bgra32, palette: null);
 
                     wb.WritePixels(
-                        sourceRect: new Int32Rect(0, 0, width, height), 
-                        pixels:     pixelData, 
-                        stride:     stride, 
-                        offset:     0);
+                        sourceRect: new Int32Rect(0, 0, width, height),
+                        pixels: pixelData,
+                        stride: stride,
+                        offset: 0);
 
                     Presenter = wb;
                     IsPlacing = true;
@@ -136,7 +152,17 @@ namespace THelperLib.ViewModel
                     Presenter = new WriteableBitmap(convertedBitmap);
                     IsPlacing = true;
                 }
+
+
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                _messageService.SendMessage(
+                    MessageType.ClipboardPasteError, 
+                    "Failed to paste image from clipboard. Please find more details in the log.", 
+                    ex);
+            }        
         }
     }
 }

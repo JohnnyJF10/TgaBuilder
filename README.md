@@ -1,12 +1,14 @@
 # THelper
-### **Texture Panel Building for TRLE**
+### **Texture Panel Building Tool for TRLE**
 ![Overview](Screenshots/Overview.png)
 
 ## Description
-THelper is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .net 8, C# WPF by Jonson. 
+THelper is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .net 8, C# WPF by me. 
 
-If you have already worked with TBuilder in the past, you should get familiar with THelper very quickly. It should cover most of the features TBuilder also had and introduces a few things more, most prominently:
+If you have already worked with TBuilder in the past, you should get familiar with THelper very quickly. It should cover most of the features TBuilder also has and introduces a few things more, most prominently:
 - Texture Panel Panning and Zooming
+- Undo / Redo
+- Window Resizable
 - Extended dimensioning with panel hights up to 128 pages, panel widths up to 4 pages
 - Better support for 128x128 or 256x256 pix texture sets
 - Batch Loader to create texture panels from multiple single texture files at once
@@ -19,7 +21,7 @@ Download the latest release from [GitHub Releases](https://github.com/JohnnyJF10
 
 ### Requirements
 - Windows 10/11
-- .NET 6+
+- .net 8 runtime installed
 
 ## Usage
 
@@ -64,15 +66,15 @@ Download the latest release from [GitHub Releases](https://github.com/JohnnyJF10
 
 #### Picking Mode
 
-- **Left click**: copy or apply transformation
-- **Left click + drag**: copy area
+- **Left click**: copy into selection or apply transformation
+- **Left click + drag**: copy area into selection
 - **Right click**: preview UV rotate
 - **Right click + drag**: preview animation range
 
 #### Placing Mode
 
-- **Left click**: place selected tile
-- **Right click**: cancel placing and return to picking
+- **Left click**: place selected tile and return to picking
+- **Right click**: return to picking without placing
 
 #### General Controls
 
@@ -115,9 +117,8 @@ From left to rigth:
 - Import multiple image files from folder  
   _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG**
 - Select or reopen folder
-- Set:
+- Set Range:
   - **First Texture Index**
-  - **Last Texture Index**
   - **Number of Textures**
 - Define square resize size for textures
 
@@ -145,7 +146,7 @@ From left to rigth:
 
 From left to rigth:
 - Restore original image
-- Replace selected transparent color with **magenta**
+- Replace selected color with **magenta**
 - Use eyedropper to set color to replace
 - Auto-apply magenta replacement for new selections
 
@@ -188,7 +189,7 @@ From left to rigth:
 
 ![Mode Tab](Screenshots/TabMode.png)
 - Standard tile placing
-- Rotate single textures
+- Rotate tile
 - Mirror tile **horizontally**
 - Mirror tile **vertically**
 - **Tile Rally mode**: move one tile and shift all tiles inbetween
@@ -212,7 +213,7 @@ From left to rigth:
 
 ## Limitations
 
-- The application is currently limited to use **24 bpp pixel formates** for the destination texture panel. All incoming requests to modify image areas on the setination panel will be converted to 24bpp if they are not already. The colour representing transparency is (r,g,b) = (255,0,255) as usual in TRLE; alpha = 0 areas will be converted to this colour automatically.
+- The application is currently limited to use **24 bpp pixel formates** for the destination texture panel. All incoming requests to modify image areas on the setination panel will be converted to 24bpp if they are not already. The color representing transparency is (r,g,b) = (255,0,255) as usual in TRLE; alpha = 0 areas will be converted to this color automatically.
 - The height of any bitmap/texture panel handled by this tool is currently capped at **32,768 px** or **128 pages** (~256 px length per page). This limitation is required to avoid issues with the .NET WPF Bitmap containers.
 - The height is always a **multiple of 256 px**, the standard TR page width, to ensure divisibility by picker sizes.
 - The width of the texture panel is limited to **256, 512, or 1,024 px** (1, 2, or 4 pages).
@@ -233,7 +234,7 @@ For WPFZoomPanel I did some custom modifications and adapted it to .net 8. This 
 | WPF UI                           | 4.0.3   | NuGet  | MIT                   | [GitHub](https://github.com/lepoco/wpfui)                 |
 | Microsoft Dependency Injection  | 9.0.6   | NuGet  | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)          |
 
-I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their imppressive public contributions immensely helped me understanding the TR level file format. The original source of the TRNG encryption keys and obfuscation maps is TombEditor's [TombLib](https://github.com/MontyTRC89/Tomb-Editor/blob/master/TombLib/TombLib/NG/NgEncryption.cs) library. 
+I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their imppressive public contributions immensely helped me understanding the TR level file format. 
 
 ## Contributing
 Contributions are welcome! If you find a bug or have a feature request, please open an [issue](https://github.com/JohnnyJF10/THelper/issues).  

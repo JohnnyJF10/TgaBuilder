@@ -1,6 +1,5 @@
-﻿using System.Windows.Input;
-using System.Windows;
-
+﻿using System.Windows;
+using System.Windows.Input;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Point = System.Windows.Point;
 

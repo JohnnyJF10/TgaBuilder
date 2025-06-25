@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using THelperLib.Messaging;
+﻿using THelperLib.Messaging;
 using Wpf.Ui.Controls;
 
 namespace THelperWpfUi.Services
@@ -130,12 +125,31 @@ namespace THelperWpfUi.Services
                     TimeSpan.FromSeconds(2))
             },
             {
+                MessageType.BatchLoaderFolderSetNoImageFiles,
+                new WpfUiMessage(
+                    "No Image Files Found",
+                    "The specified folder does not contain any supported image files the Batch File Loader." +
+                    "Supported formats are: PNG, JPG, JPEG, TGA, BMP, DDS.",
+                    ControlAppearance.Caution,
+                    new SymbolIcon(SymbolRegular.Warning24),
+                    TimeSpan.FromSeconds(5))
+            },
+            {
                 MessageType.BatchLoaderFolderSetFail,
                 new WpfUiMessage(
                     "Set Folder Failed",
                     "The specified folder does not exist or is not accessible.",
                     ControlAppearance.Danger,
                     new SymbolIcon(SymbolRegular.ErrorCircle24),
+                    TimeSpan.FromSeconds(10))
+            },
+            {
+                MessageType.BatchLoaderPanelLoadIssues,
+                new WpfUiMessage(
+                    "Batch Loader Panel Load Issues",
+                    "Some file could not been loaded into the Batch Loader panel. Please find more information in the log file.",
+                    ControlAppearance.Caution,
+                    new SymbolIcon(SymbolRegular.Warning24),
                     TimeSpan.FromSeconds(10))
             },
             {
@@ -164,6 +178,24 @@ namespace THelperWpfUi.Services
                     "Please reduce the height at first or do width resizing without the sorting option selected.",
                     ControlAppearance.Caution,
                     new SymbolIcon(SymbolRegular.Warning24),
+                    TimeSpan.FromSeconds(10))
+            },
+            {
+                MessageType.ClipboardNotContainingImageData,
+                new WpfUiMessage(
+                    "Clipboard Not Containing Image Data",
+                    "The clipboard does not contain image data.",
+                    ControlAppearance.Caution,
+                    new SymbolIcon(SymbolRegular.Warning24),
+                    TimeSpan.FromSeconds(5))
+            },
+            {
+                MessageType.ClipboardPasteError,
+                new WpfUiMessage(
+                    "Clipboard Paste Error",
+                    "An error occurred while pasting the image from the clipboard. Please check the log file for more information.",
+                    ControlAppearance.Danger,
+                    new SymbolIcon(SymbolRegular.ErrorCircle24),
                     TimeSpan.FromSeconds(10))
             }
         };

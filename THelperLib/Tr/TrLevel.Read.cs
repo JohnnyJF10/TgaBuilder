@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Media3D;
-using System.Xml.Linq;
+﻿using System.IO;
 using THelperLib.Abstraction;
 using THelperLib.Trng;
 using THelperLib.Utils;

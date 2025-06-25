@@ -1,23 +1,16 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using THelperLib.Commands;
-using System.Windows.Media.Imaging;
-using System.Buffers;
-using System.IO;
-using System.Windows.Media;
-using THelperLib.Utils;
+﻿using System.IO;
 using System.Windows;
-using THelperLib.BitmapOperations;
-using THelperLib.Abstraction;
-using System.Runtime.InteropServices;
 using System.Windows.Input;
-using MouseAction = THelperLib.Abstraction.MouseAction;
-using System.Diagnostics;
-using THelperLib.UndoRedo;
-using System.Windows.Controls;
-using THelperLib.Messaging;
+using System.Windows.Media;
+using THelperLib.Abstraction;
+using THelperLib.BitmapOperations;
+using THelperLib.Commands;
 using THelperLib.FileHandling;
+using THelperLib.Messaging;
+using THelperLib.UndoRedo;
+using THelperLib.Utils;
 using THelperLib.ViewModel.Views;
+using MouseAction = THelperLib.Abstraction.MouseAction;
 
 
 namespace THelperLib.ViewModel

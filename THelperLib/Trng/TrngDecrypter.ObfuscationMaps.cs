@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace THelperLib.Trng
+﻿namespace THelperLib.Trng
 {
     public static partial class TrngDecrypter
     {
         private static readonly byte[] ObfuscationMapsData =
         {
+            // Source: https://github.com/MontyTRC89/Tomb-Editor/blob/master/TombLib/TombLib/NG/NgEncryption.cs
+
             //Map 1
             0x00, 0x11, 0x07, 0x09, 0x06, 0x19, 0x01, 0x18, 0x30, 0x1A,
             0x0B, 0x16, 0x08, 0x13, 0x15, 0x12, 0x1B, 0x2C, 0x17, 0x0A,

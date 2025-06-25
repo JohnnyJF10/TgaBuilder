@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Threading;
-using System.Xml.Linq;
 using THelperLib.Abstraction;
-using THelperLib.Commands;
-using THelperLib.FileHandling;
 using THelperLib.BitmapOperations;
+using THelperLib.FileHandling;
 using THelperLib.UndoRedo;
 using THelperLib.Utils;
 using THelperLib.ViewModel.Elements;
@@ -376,8 +365,6 @@ namespace THelperLib.ViewModel
         {
             int SelectionWidth = Selection.Presenter.PixelWidth;
             int SelectionHeight = Selection.Presenter.PixelHeight;
-            int finalByteSize = SelectionWidth * SelectionHeight * 3;
-
 
             if (Picker.X + SelectionWidth > Presenter.PixelWidth)
                 SelectionWidth = Presenter.PixelWidth - Picker.X;
@@ -385,6 +372,7 @@ namespace THelperLib.ViewModel
             if (Picker.Y + SelectionHeight > Presenter.PixelHeight)
                 SelectionHeight = Presenter.PixelHeight - Picker.Y;
 
+            int finalByteSize = SelectionWidth * SelectionHeight * 3;
 
             if ((placingMode & PlacingMode.PlaceAndSwap) == PlacingMode.PlaceAndSwap)
                 _bitmapOperations.SwapBitmap = new WriteableBitmap(

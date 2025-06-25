@@ -1,15 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using THelperLib.Abstraction;
-using THelperLib.FileHandling;
 using THelperLib.BitmapOperations;
+using THelperLib.FileHandling;
 using THelperLib.Messaging;
 using THelperLib.UndoRedo;
 using THelperLib.Utils;
@@ -140,7 +135,9 @@ namespace THelperWpfUi
             services.AddSingleton<AnimationViewModel>();
 
             services.AddSingleton(sp => new SelectionViewModel(
-                sp.GetServices<WriteableBitmap>()
+                logger:         sp.GetRequiredService<ILogger>(),
+                messageService: sp.GetRequiredService<IMessageService>(),
+                presenter:      sp.GetServices<WriteableBitmap>()
                     .ElementAt((int)PresenterType.Selection)
             ));
         }

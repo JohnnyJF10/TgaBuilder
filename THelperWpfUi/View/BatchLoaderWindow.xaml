@@ -16,8 +16,8 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     Title="MainWindow"
-    Height="520"
-    MinHeight="520"
+    Height="420"
+    MinHeight="420"
     Width="600"
     MinWidth="560"
     d:Background="Black"
@@ -89,15 +89,6 @@
                 Margin="10"
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding StartTexIndex, UpdateSourceTrigger=PropertyChanged}"
-                />
-            <Label
-                Content="Last Texture Index:"
-                Margin="10"
-                HorizontalAlignment="Left"/>
-            <ui:NumberBox 
-                Margin="10"
-                Style="{StaticResource ModifiedUiNumberBoxStyle}"
-                Value="{Binding EndTexIndex, UpdateSourceTrigger=PropertyChanged}"
                 />
             <Label
                 Content="Number of Textures:"

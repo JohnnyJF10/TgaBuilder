@@ -1,19 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows;
 using THelperLib.Abstraction;
-using THelperLib.ViewModel;
-using Wpf.Ui.Controls;
-using Point = System.Windows.Point;
+using THelperWpfUi.AttachedProperties;
+using FluentWindow = Wpf.Ui.Controls.FluentWindow;
 using MouseAction = THelperLib.Abstraction.MouseAction;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
-using FluentWindow = Wpf.Ui.Controls.FluentWindow;
-using System.Windows.Markup;
-using WPFZoomPanel;
-using Image = System.Windows.Controls.Image;
-using THelperWpfUi.AttachedProperties;
-using System.Diagnostics;
 
 namespace THelperWpfUi.View
 {

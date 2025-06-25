@@ -1,9 +1,8 @@
-﻿using System.Windows.Input;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Input;
 using THelperWpfUi.View;
-
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Image = System.Windows.Controls.Image;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace THelperWpfUi.AttachedProperties
 {

@@ -41,21 +41,21 @@ namespace WPFZoomPanel
 
         #region Private Fields
 
-        private RelayCommand _fillCommand;
+        private RelayCommand? _fillCommand;
 
-        private RelayCommand _fitCommand;
+        private RelayCommand? _fitCommand;
 
-        private RelayCommand _redoZoomCommand;
+        private RelayCommand? _redoZoomCommand;
 
-        private RelayCommand _undoZoomCommand;
+        private RelayCommand? _undoZoomCommand;
 
-        private RelayCommand _zoomInCommand;
+        private RelayCommand? _zoomInCommand;
 
-        private RelayCommand _zoomOutCommand;
+        private RelayCommand? _zoomOutCommand;
 
-        private RelayCommand<double> _zoomPercentCommand;
+        private RelayCommand<double>? _zoomPercentCommand;
 
-        private RelayCommand<double> _zoomRatioFromMinimumCommand;
+        private RelayCommand<double>? _zoomRatioFromMinimumCommand;
 
         #endregion Private Fields
 
@@ -71,7 +71,7 @@ namespace WPFZoomPanel
 
         #region Public Events
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         #endregion Public Events
 
@@ -227,7 +227,10 @@ namespace WPFZoomPanel
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            ZoomAndPanContent = Template.FindName("PART_ZoomAndPanControl", this) as ZoomPanel;
+
+            if (Template.FindName("PART_ZoomAndPanControl", this) is not ZoomPanel ZoomAndPanContent)
+                return; 
+
             OnPropertyChanged(new DependencyPropertyChangedEventArgs(ZoomAndPanContentProperty, null, ZoomAndPanContent));
             RefreshProperties();
         }

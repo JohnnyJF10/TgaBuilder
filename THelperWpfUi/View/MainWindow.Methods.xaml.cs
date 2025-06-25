@@ -1,10 +1,6 @@
-﻿using WPFZoomPanel;
-
-using System.Windows.Media;
-using THelperLib.Messaging;
-using THelperWpfUi.Services;
+﻿using System.Windows.Media;
 using Wpf.Ui.Controls;
-using Wpf.Ui.Extensions;
+using WPFZoomPanel;
 using Image = System.Windows.Controls.Image;
 
 

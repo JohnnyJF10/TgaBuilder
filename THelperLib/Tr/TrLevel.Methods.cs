@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace THelperLib.Tr
+﻿namespace THelperLib.Tr
 {
     public partial class TrLevel
     {

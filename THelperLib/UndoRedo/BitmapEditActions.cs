@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+﻿using System.Buffers;
 using System.Windows;
-using THelperLib.BitmapOperations;
-using System.Buffers;
 
 namespace THelperLib.UndoRedo
 {

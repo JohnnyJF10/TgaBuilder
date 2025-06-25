@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Reflection.PortableExecutable;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.TextFormatting;
-using THelperLib.Abstraction;
-using THelperLib.Tr;
 using THelperLib.Utils;
 
 namespace THelperLib.Ten

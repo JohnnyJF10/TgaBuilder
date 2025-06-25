@@ -1,6 +1,4 @@
-﻿using System.Windows.Media.Imaging;
-
-namespace THelperLib.UndoRedo
+﻿namespace THelperLib.UndoRedo
 {
     public interface IUndoableAction
     {

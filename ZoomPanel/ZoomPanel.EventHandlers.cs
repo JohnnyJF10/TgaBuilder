@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Reflection;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -59,7 +56,6 @@ namespace WPFZoomPanel
         private RelayCommand<double>? _zoomPercentCommand;
 
         private RelayCommand<double>? _zoomRatioFromMinimumCommand;
-        private bool mouseMoved;
 
         #endregion Private Fields
 
@@ -221,7 +217,6 @@ namespace WPFZoomPanel
             Point curContentMousePoint = e.GetPosition(_content);
             MousePosition = curContentMousePoint.FilterClamp(_content.ActualWidth - 1, _content.ActualHeight - 1);
             OnPropertyChanged(new DependencyPropertyChangedEventArgs(MousePositionProperty, oldContentMousePoint, curContentMousePoint));
-            mouseMoved = true;
             if (_mouseHandlingMode == MouseHandlingMode.DragPanning)
             {
                 // The user is left-dragging the mouse. Pan the viewport by the

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace THelperLib.ViewModel.Elements
+﻿namespace THelperLib.ViewModel.Elements
 {
     public class SingleSelectionShapeViewModel : ViewModelBase
     {

@@ -2,8 +2,6 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using THelperLib.BitmapOperations;
 
 namespace THelperLib.UndoRedo
 {
@@ -254,7 +252,9 @@ namespace THelperLib.UndoRedo
             while (bytesCount + requiredBytes > _maxMemoryBytes && _undoStack.Count > 0)
             {
                 var oldest = _undoStack.Last();
-                _undoStack = new Stack<IUndoableAction>(_undoStack.Reverse().Skip(1).Reverse());
+
+                RemoveBottomElement(_undoStack);
+
                 bytesCount -= oldest.SizeInBytes;
                 oldest.ReturnData();
                 Debug.WriteLine($"Cleared action. Undo stack size: {_undoStack.Count}");
@@ -284,6 +284,20 @@ namespace THelperLib.UndoRedo
             _undoStack.Clear();
             _redoStack.Clear();
             Debug.WriteLine("Cleared undo and redo stacks as unmonitored action was performed.");
+        }
+
+        private void RemoveBottomElement<T>(Stack<T> stack)
+        {
+            Stack<T> tempStack = new Stack<T>();
+
+            while (stack.Count > 0)
+                tempStack.Push(stack.Pop());
+
+            if (tempStack.Count > 0)
+                tempStack.Pop();
+
+            while (tempStack.Count > 0)
+                stack.Push(tempStack.Pop());
         }
 
         private int NextHigherPowerOfTwo(int n)

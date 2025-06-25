@@ -1,15 +1,10 @@
-﻿using System.Configuration;
-using System.Data;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using THelperLib.Abstraction;
 using THelperLib.ViewModel;
 using THelperWpfUi.View;
-using THelperWpfUi.Services;
 using Wpf.Ui.Appearance;
-using Wpf.Ui.Controls;
 using Application = System.Windows.Application;
-using Appearance = Wpf.Ui.Appearance;
-using Microsoft.Extensions.DependencyInjection;
-using THelperLib.Abstraction;
 
 namespace THelperWpfUi
 {

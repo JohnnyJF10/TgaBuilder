@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace THelperLib.Messaging
+﻿namespace THelperLib.Messaging
 {
     public enum MessageType
     {
@@ -22,14 +16,19 @@ namespace THelperLib.Messaging
         DestinationSaveError,
 
         UnsupportedDimensions,
+        SortedRezisingNoPossible,
 
         BatchLoaderPanelExceedsMaxDimensions,
-
         BatchLoaderFolderSetSuccess,
+        BatchLoaderFolderSetNoImageFiles,
         BatchLoaderFolderSetFail,
+        BatchLoaderPanelLoadIssues,
+
+        UsageDataLoadError,
+
+        ClipboardNotContainingImageData,
+        ClipboardPasteError,
 
         UnknownError,
-        UsageDataLoadError,
-        SortedRezisingNoPossible,
     }
 }

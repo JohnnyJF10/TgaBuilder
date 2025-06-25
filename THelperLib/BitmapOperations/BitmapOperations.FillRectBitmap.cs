@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
-using System.Runtime.InteropServices;
+using System.Windows.Media.Imaging;
 using THelperLib.Abstraction;
-using System.Diagnostics;
-using System.Windows.Media.TextFormatting;
 
 namespace THelperLib.BitmapOperations
 {
@@ -36,6 +28,15 @@ namespace THelperLib.BitmapOperations
             int sWidth = source.PixelWidth;
             int sHeight = source.PixelHeight;
 
+            int tWidth = target.PixelWidth;
+            int tHeight = target.PixelHeight;
+
+            int posX = Math.Max(0, pos.X);
+            int posY = Math.Max(0, pos.Y);
+
+            sWidth = Math.Min(sWidth, tWidth - posX);
+            sHeight = Math.Min(sHeight, tHeight - posY);
+
             if (sWidth <= 0 || sHeight <= 0)
                 throw new ArgumentException("Source bitmap dimensions must be greater than zero.");
 
@@ -48,17 +49,6 @@ namespace THelperLib.BitmapOperations
             if (SwapAndPlace && SwapBitmap is null)
                 throw new ArgumentException("SwapBitmap must be set when OverlayTransparent is used.");
 
-            int tWidth = target.PixelWidth;
-            int tHeight = target.PixelHeight;
-
-            int posX = Math.Max(0, pos.X);
-            int posY = Math.Max(0, pos.Y);
-
-            sWidth = Math.Min(sWidth, tWidth - posX);
-            sHeight = Math.Min(sHeight, tHeight - posY);
-
-            if (sWidth <= 0 || sHeight <= 0) 
-                return;
 
             source.Lock();
             target.Lock();
@@ -152,15 +142,24 @@ namespace THelperLib.BitmapOperations
 
             if (target.Format != PixelFormats.Rgb24)
                 throw new ArgumentException("Target must be PixelFormats.Rgb24.");
-
-            if (undoPixels.Length < source.PixelWidth * source.PixelHeight * 3)
-                throw new ArgumentException("Monitored UndoPixels length must match source bitmap size.");
-
-            if (redoPixels.Length < source.PixelWidth * source.PixelHeight * 3)
-                throw new ArgumentException("Monitored RedoPixels length must match target bitmap size.");
-
+            
             int sWidth = source.PixelWidth;
             int sHeight = source.PixelHeight;
+
+            int posX = Math.Max(0, pos.X);
+            int posY = Math.Max(0, pos.Y);
+
+            int tWidth = target.PixelWidth;
+            int tHeight = target.PixelHeight;
+
+            sWidth = Math.Min(sWidth, tWidth - posX);
+            sHeight = Math.Min(sHeight, tHeight - posY);
+
+            if (undoPixels.Length < sWidth * sHeight * 3)
+                throw new ArgumentException("Monitored UndoPixels length must match source bitmap size.");
+
+            if (redoPixels.Length < sWidth * sHeight * 3)
+                throw new ArgumentException("Monitored RedoPixels length must match target bitmap size.");
 
             if (sWidth <= 0 || sHeight <= 0)
                 throw new ArgumentException("Source bitmap dimensions must be greater than zero.");
@@ -174,14 +173,6 @@ namespace THelperLib.BitmapOperations
             if (SwapAndPlace && SwapBitmap is null)
                 throw new ArgumentException("SwapBitmap must be set when OverlayTransparent is used.");
 
-            int posX = Math.Max(0, pos.X);
-            int posY = Math.Max(0, pos.Y);
-
-            int tWidth = target.PixelWidth;
-            int tHeight = target.PixelHeight;
-
-            sWidth = Math.Min(sWidth, tWidth - posX);
-            sHeight = Math.Min(sHeight, tHeight - posY);
             if (sWidth <= 0 || sHeight <= 0) return;
 
             source.Lock();
