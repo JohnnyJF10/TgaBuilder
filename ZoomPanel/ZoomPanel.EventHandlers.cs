@@ -325,7 +325,7 @@ namespace WPFZoomPanel
         /// </summary>
         private void ApplyDragZoomRect(Point finalContentMousePoint)
         {
-            Rect rect = ViewportHelpers.Clip(finalContentMousePoint, _origContentMouseDownPoint, new Point(0, 0),
+            Rect rect = ViewporTgaBuilders.Clip(finalContentMousePoint, _origContentMouseDownPoint, new Point(0, 0),
                 new Point(_partDragZoomCanvas.ActualWidth, _partDragZoomCanvas.ActualHeight));
             AnimatedZoomTo(rect);
             // new Rect(contentX, contentY, contentWidth, contentHeight));
@@ -375,9 +375,9 @@ namespace WPFZoomPanel
         {
             // Update the coordinates of the rectangle that is being dragged out
             // by the user. The we offset and rescale to convert from content coordinates.
-            Rect rect = ViewportHelpers.Clip(pt1, pt2, new Point(0, 0),
+            Rect rect = ViewporTgaBuilders.Clip(pt1, pt2, new Point(0, 0),
                 new Point(_partDragZoomCanvas.ActualWidth, _partDragZoomCanvas.ActualHeight));
-            ViewportHelpers.PositionBorderOnCanvas(_partDragZoomBorder, rect);
+            ViewporTgaBuilders.PositionBorderOnCanvas(_partDragZoomBorder, rect);
         }
 
         /// <summary>

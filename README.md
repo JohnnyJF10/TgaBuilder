@@ -1,11 +1,11 @@
-# THelper
+# TgaBuilder
 ### **Texture Panel Building Tool for TRLE**
 ![Overview](Screenshots/Overview.png)
 
 ## Description
-THelper is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .net 8, C# WPF by me. 
+TgaBuilder is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .net 8, C# WPF by me. 
 
-If you have already worked with TBuilder in the past, you should get familiar with THelper very quickly. It should cover most of the features TBuilder also has and introduces a few things more, most prominently:
+If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It should cover most of the features TBuilder also has and introduces a few things more, most prominently:
 - Texture Panel Panning and Zooming
 - Undo / Redo
 - Window Resizable
@@ -17,7 +17,7 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 
 
 ## Installation
-Download the latest release from [GitHub Releases](https://github.com/JohnnyJF10/THelper/releases) and extract the files.
+Download the latest release from [GitHub Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) and extract the files.
 
 ### Requirements
 - Windows 10/11
@@ -237,11 +237,11 @@ For WPFZoomPanel I did some custom modifications and adapted it to .net 8. This 
 I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their imppressive public contributions immensely helped me understanding the TR level file format. 
 
 ## Contributing
-Contributions are welcome! If you find a bug or have a feature request, please open an [issue](https://github.com/JohnnyJF10/THelper/issues).  
+Contributions are welcome! If you find a bug or have a feature request, please open an [issue](https://github.com/JohnnyJF10/TgaBuilder/issues).  
 If you want to contribute code, feel free to fork the repository and create a pull request.
 
 ## Support
-If you have any issues, please open a [GitHub Issue](https://github.com/JohnnyJF10/THelper/issues).  
+If you have any issues, please open a [GitHub Issue](https://github.com/JohnnyJF10/TgaBuilder/issues).  
 
 ## To Do List:
 - Support **32 bpp pixel formates** for the destination panel as well

@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace WPFZoomPanel.Helpers
 {
-    internal static class ViewportHelpers
+    internal static class ViewporTgaBuilders
     {
         #region Public Methods
 

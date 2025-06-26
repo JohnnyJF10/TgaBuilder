@@ -263,12 +263,12 @@ namespace WPFZoomPanel
         /// <summary>
         /// The Fill Zoom of the viewport.
         /// </summary>
-        public double FillZoomValue => ViewportHelpers.FillZoom(ActualWidth, ActualHeight, _content?.ActualWidth, _content?.ActualHeight);
+        public double FillZoomValue => ViewporTgaBuilders.FillZoom(ActualWidth, ActualHeight, _content?.ActualWidth, _content?.ActualHeight);
 
         /// <summary>
         /// The Fit Zoom of the viewport.
         /// </summary>
-        public double FitZoomValue => ViewportHelpers.FitZoom(ActualWidth, ActualHeight, _content?.ActualWidth, _content?.ActualHeight);
+        public double FitZoomValue => ViewporTgaBuilders.FitZoom(ActualWidth, ActualHeight, _content?.ActualWidth, _content?.ActualHeight);
 
         /// <summary>
         /// Set to 'true' to enable the mouse wheel to scroll the zoom and pan
@@ -568,12 +568,12 @@ namespace WPFZoomPanel
             switch (_currentZoomTypeEnum)
             {
                 case CurrentZoomTypeEnum.Fit:
-                    InternalViewportZoom = ViewportHelpers.FitZoom(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height,
+                    InternalViewportZoom = ViewporTgaBuilders.FitZoom(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height,
                         _content?.ActualWidth, _content?.ActualHeight);
                     break;
 
                 case CurrentZoomTypeEnum.Fill:
-                    InternalViewportZoom = ViewportHelpers.FillZoom(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height,
+                    InternalViewportZoom = ViewporTgaBuilders.FillZoom(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height,
                         _content?.ActualWidth, _content?.ActualHeight);
                     break;
             }

@@ -159,8 +159,8 @@ namespace WPFZoomPanel
             else if (_mouseHandlingMode == MouseHandlingMode.DragZooming)
             {
                 Point curContentPoint = e.GetPosition(_viewportCanvas);
-                Rect rect = ViewportHelpers.Clip(curContentPoint, _origContentMouseDownPoint, new Point(0, 0), new Point(_viewportCanvas.Width, _viewportCanvas.Height));
-                ViewportHelpers.PositionBorderOnCanvas(_sizingBorder, rect);
+                Rect rect = ViewporTgaBuilders.Clip(curContentPoint, _origContentMouseDownPoint, new Point(0, 0), new Point(_viewportCanvas.Width, _viewportCanvas.Height));
+                ViewporTgaBuilders.PositionBorderOnCanvas(_sizingBorder, rect);
             }
 
             e.Handled = true;
@@ -177,7 +177,7 @@ namespace WPFZoomPanel
             {
                 ZoomPanel zoomAndPanControl = GetZoomAndPanControl();
                 Point curContentPoint = e.GetPosition(_viewportCanvas);
-                Rect rect = ViewportHelpers.Clip(curContentPoint, _origContentMouseDownPoint, new Point(0, 0),
+                Rect rect = ViewporTgaBuilders.Clip(curContentPoint, _origContentMouseDownPoint, new Point(0, 0),
                     new Point(_viewportCanvas.Width, _viewportCanvas.Height));
                 zoomAndPanControl.AnimatedZoomTo(rect);
                 _dragBorder.Visibility = Visibility.Visible;

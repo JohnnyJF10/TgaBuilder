@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <UseWPF>true</UseWPF>
+	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	  <AssemblyVersion>1.0.2.0</AssemblyVersion>
+	  <FileVersion>1.0.200.0000</FileVersion>
+    <AssemblyTitle>TgaBuilderLib</AssemblyTitle>
+    <Description>Library for TgaBuilder</Description>
+    <Copyright>Copyright © 2025 Jonas Nebel</Copyright>
+    <Authors>Jonas Nebel</Authors>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Pfim" Version="0.11.3" />
+    <PackageReference Include="System.Drawing.PSD" Version="0.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Drawing.PSD">
+      <HintPath>System.Drawing.PSD.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

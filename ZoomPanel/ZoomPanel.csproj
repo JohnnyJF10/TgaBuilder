@@ -8,6 +8,7 @@
     <DebugType>portable</DebugType>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 	<ImplicitUsings>enable</ImplicitUsings>
+	<Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
     
   <PropertyGroup Label="Assembly Metadata">
@@ -47,8 +48,8 @@
     <IncludeSourceRevisionInInformationalVersion Condition="'$(Configuration)' == 'Release'">false</IncludeSourceRevisionInInformationalVersion>
     <IncludeSourceRevisionInInformationalVersion Condition="'$(Configuration)' == 'Debug'">true</IncludeSourceRevisionInInformationalVersion>
     <SourceRevisionId Condition="'$(Configuration)' == 'Debug'">debug</SourceRevisionId>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.1.1</AssemblyVersion>
+    <FileVersion>1.0.100.1000</FileVersion>
   </PropertyGroup>
 
   <!-- GitInfo -->
