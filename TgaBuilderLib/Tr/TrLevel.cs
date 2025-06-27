@@ -12,7 +12,7 @@ namespace TgaBuilderLib.Tr
         private const int ORIGINAL_PAGE_PIXEL_COUNT = ORIGINAL_PAGE_SIZE * ORIGINAL_PAGE_SIZE;
         private const int PAGE_SIZE = 512;
         private const int ATLAS_MAX_HEIGHT = 32768;
-
+        private const int IMPORT_BPP = 4;
         private bool IsNg;
 
         private int targetTrTexturePanelWidth;
@@ -38,8 +38,8 @@ namespace TgaBuilderLib.Tr
         private ushort[]? atlas16;
         private byte[]? atlas32;
 
-        private byte[]? atlas24;
-        private byte[]? atlas24Repacked;
+        private byte[]? targetAtlas;
+        private byte[]? targetAtlasRepacked;
 
 
         public WriteableBitmap ResultBitmap { get; private set; }
@@ -56,18 +56,19 @@ namespace TgaBuilderLib.Tr
 
             ReadLevel(fileName);
 
-            RepackedTexturePositions = RepackAtlas(RelevantTextureInfos.Select(x => (x.width, x.height)).ToList());
+            if (Version == TrVersion.TRC)
+                useTrTextureRepacking = false; // not supported currently
 
-            atlas24 = new byte[numPages * ORIGINAL_PAGE_PIXEL_COUNT * 3];
+            RepackedTexturePositions = GetRepackedPositions(RelevantTextureInfos.Select(x => (x.width, x.height)).ToList());
+
+            targetAtlas = Version >= TrVersion.TR4 ? atlas32 : new byte[numPages * ORIGINAL_PAGE_PIXEL_COUNT * IMPORT_BPP];
 
             if (Version == TrVersion.TR1)
-                Atlas8ToAtlas24();
+                Atlas8ToAtlas32();
             else if (Version <= TrVersion.TR3)
-                Atlas16ToAtlas24();
-            else
-                Atlas32ToAtlas24();
+                Atlas16ToAtlas32();
 
-            atlas24Repacked = new byte[numPagesRepacked * targetTrTexturePanelWidth * targetTrTexturePanelWidth * 3];
+            targetAtlasRepacked = new byte[numPagesRepacked * targetTrTexturePanelWidth * targetTrTexturePanelWidth * IMPORT_BPP];
             RepackAtlas();
 
             if (numPagesRepacked == 0 || !useTrTextureRepacking)
@@ -76,70 +77,54 @@ namespace TgaBuilderLib.Tr
                 resHeight = NextHigherMultiple(resHeight, ORIGINAL_PAGE_SIZE);
 
                 if (targetTrTexturePanelWidth != ORIGINAL_PAGE_SIZE)
-                    atlas24 = RearrangeImagePages(
-                        inputData: atlas24,
+                    targetAtlas = RearrangeImagePages(
+                        inputData: targetAtlas!,
                         originalWidth: ORIGINAL_PAGE_SIZE,
                         blocksPerRow: trTexturePanelHorPagesNum);
 
                 ResultBitmap = CreateWriteableBitmapFromByteArray(
-                    byteArray: atlas24,
+                    byteArray: targetAtlas!,
                     width: targetTrTexturePanelWidth,
                     height: resHeight,
-                    pixelFormat: PixelFormats.Rgb24);
+                    pixelFormat: PixelFormats.Bgra32);
             }
             else
                 ResultBitmap = CreateWriteableBitmapFromByteArray(
-                    byteArray: atlas24Repacked,
+                    byteArray: targetAtlasRepacked,
                     width: targetTrTexturePanelWidth,
                     height: targetTrTexturePanelWidth * numPagesRepacked,
-                    pixelFormat: PixelFormats.Rgb24);
+                    pixelFormat: PixelFormats.Bgra32);
         }
 
-        private void Atlas32ToAtlas24()
-        {
-            atlas24 = new byte[atlas32!.Length / 4 * 3];
-            int sourceIndex = 0;
-            int destinationIndex = 0;
-            for (int i = 0; i < atlas32.Length / 4; i++)
-            {
-                atlas24[destinationIndex] = atlas32[sourceIndex + 2];
-                atlas24[destinationIndex + 1] = atlas32[sourceIndex + 1];
-                atlas24[destinationIndex + 2] = atlas32[sourceIndex];
-                sourceIndex += 4;
-                destinationIndex += 3;
-            }
-        }
 
-        private void Atlas8ToAtlas24()
-        {
-            if (atlas8 == null) 
-                throw new InvalidOperationException("The 32-bit atlas must be loaded first.");
-
+        private void Atlas8ToAtlas32()
+            { if (targetAtlas == null || atlas8 == null)
+                throw new InvalidOperationException("The atlases must be loaded first.");
             int pixelCount = numPages * ORIGINAL_PAGE_PIXEL_COUNT;
             int index = 0;
-
             for (int i = 0; i < pixelCount; i++)
             {
                 (byte r, byte g, byte b) = palette24[atlas8[i]];
-                atlas24![index++] = (byte)(r << 2);
-                atlas24![index++] = (byte)(g << 2);
-                atlas24![index++] = (byte)(b << 2);
+                targetAtlas[index++] = (byte)(b << 2);
+                targetAtlas[index++] = (byte)(g << 2);
+                targetAtlas[index++] = (byte)(r << 2);
+                targetAtlas[index++] = 255; // Full opacity
             }
         }
 
-        private void Atlas16ToAtlas24()
+        private void Atlas16ToAtlas32()
         {
-            if (atlas16 == null)
-                throw new InvalidOperationException("The 16-bit atlas must be loaded first.");
+            if (atlas16 == null || targetAtlas == null)
+                throw new InvalidOperationException("The atlases must be loaded first.");
             int pixelCount = numPages * ORIGINAL_PAGE_PIXEL_COUNT;
             int index = 0;
             for (int i = 0; i < pixelCount; i++)
             {
                 ushort color = atlas16[i];
-                //int a = (color >> 15) * 255; // 1 bit alpha
-                atlas24![index++] = (byte)(((color >> 10) & 0x1F) << 3); // 5 bits red
-                atlas24![index++] = (byte)(((color >> 5) & 0x1F) << 3); // 5 bits green
-                atlas24![index++] = (byte)((color & 0x1F) << 3); // 5 bits blue
+                targetAtlas[index++] = (byte)((color & 0x1F) << 3); // 5 bits blue
+                targetAtlas[index++] = (byte)(((color >> 5) & 0x1F) << 3); // 5 bits green
+                targetAtlas[index++] = (byte)(((color >> 10) & 0x1F) << 3); // 5 bits red
+                targetAtlas[index++] = (byte)((color >> 15) * 255); // 1 bit alpha
             }
         }
 
@@ -156,19 +141,19 @@ namespace TgaBuilderLib.Tr
 
         public void PlaceTile(int idx)
         {
-            int sourceIndex = (RelevantTextureInfos[idx].y * ORIGINAL_PAGE_SIZE + RelevantTextureInfos[idx].x) * 3;
-            int destinationIndex = (RepackedTexturePositions[idx].y * targetTrTexturePanelWidth + RepackedTexturePositions[idx].x) * 3;
+            int sourceIndex = (RelevantTextureInfos[idx].y * ORIGINAL_PAGE_SIZE + RelevantTextureInfos[idx].x) * IMPORT_BPP;
+            int destinationIndex = (RepackedTexturePositions[idx].y * targetTrTexturePanelWidth + RepackedTexturePositions[idx].x) * IMPORT_BPP;
             int width = RelevantTextureInfos[idx].width;
             int height = RelevantTextureInfos[idx].height;
 
             for (int i = 0; i < height; i++)
             {
-                if (destinationIndex + height * 3 > atlas24Repacked!.Length 
-                    || sourceIndex + height * 3 > atlas24!.Length)
+                if (destinationIndex + height * IMPORT_BPP > targetAtlasRepacked!.Length 
+                    || sourceIndex + height * IMPORT_BPP > targetAtlas!.Length)
                     continue;
-                Array.Copy(atlas24, sourceIndex, atlas24Repacked, destinationIndex, width * 3);
-                destinationIndex += targetTrTexturePanelWidth * 3;
-                sourceIndex += ORIGINAL_PAGE_SIZE * 3;
+                Array.Copy(targetAtlas, sourceIndex, targetAtlasRepacked, destinationIndex, width * IMPORT_BPP);
+                destinationIndex += targetTrTexturePanelWidth * IMPORT_BPP;
+                sourceIndex += ORIGINAL_PAGE_SIZE * IMPORT_BPP;
             }
         }
 
@@ -209,11 +194,10 @@ namespace TgaBuilderLib.Tr
             if (originalWidth != 256)
                 throw new ArgumentException("Original width must be 256 pixels.");
 
-            const int bytesPerPixel = 3;
             const int blockWidth = 256;
             const int blockHeight = 256;
 
-            int totalPixels = inputData.Length / bytesPerPixel;
+            int totalPixels = inputData.Length / IMPORT_BPP;
             int originalHeight = totalPixels / originalWidth;
 
             if (originalHeight % blockHeight != 0)
@@ -223,12 +207,12 @@ namespace TgaBuilderLib.Tr
 
             // Calculate rows, rounded
             int blockRows = (int)Math.Ceiling((double)actualBlocks / blocksPerRow);
-            int totalBlocks = blockRows * blocksPerRow; // inkl. Padding-Blocks
+            int totalBlocks = blockRows * blocksPerRow; 
 
             int newWidth = blockWidth * blocksPerRow;
             int newHeight = blockHeight * blockRows;
 
-            byte[] outputData = new byte[newWidth * newHeight * bytesPerPixel]; 
+            byte[] outputData = new byte[newWidth * newHeight * IMPORT_BPP]; 
 
             for (int block = 0; block < actualBlocks; block++)
             {
@@ -241,13 +225,13 @@ namespace TgaBuilderLib.Tr
                     {
                         int srcX = x;
                         int srcY = block * blockHeight + y;
-                        int srcIndex = (srcY * originalWidth + srcX) * bytesPerPixel;
+                        int srcIndex = (srcY * originalWidth + srcX) * IMPORT_BPP;
 
                         int dstX = blockCol * blockWidth + x;
                         int dstY = blockRow * blockHeight + y;
-                        int dstIndex = (dstY * newWidth + dstX) * bytesPerPixel;
+                        int dstIndex = (dstY * newWidth + dstX) * IMPORT_BPP;
 
-                        Buffer.BlockCopy(inputData, srcIndex, outputData, dstIndex, bytesPerPixel);
+                        Buffer.BlockCopy(inputData, srcIndex, outputData, dstIndex, IMPORT_BPP);
                     }
                 }
             }

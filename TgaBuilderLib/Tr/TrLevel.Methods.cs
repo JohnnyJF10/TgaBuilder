@@ -36,7 +36,7 @@
             return (minX, minY, maxX - minX, maxY - minY);
         }
 
-        private List<(int x, int y)> RepackAtlas(List<(int width, int height)> textureSizes)
+        private List<(int x, int y)> GetRepackedPositions(List<(int width, int height)> textureSizes)
         {
             List<(int x, int y)> posList = new();
 
