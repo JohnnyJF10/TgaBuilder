@@ -23,6 +23,8 @@ Download the latest release from [GitHub Releases](https://github.com/JohnnyJF10
 - Windows 10/11
 - .net 8 runtime installed
 
+Please note that, as a .net WPF tool, TgaBuilder has significantly higher system resource requirements, particularly for RAM, than TBuilder, which was written in Delphi. If you are still satisfied using TBuilder, please continue using it. TgaBuilder is not intended as a substitute for it.
+
 ## Usage
 
 ### Title Bar
@@ -110,6 +112,11 @@ From left to rigth:
 - Set horizontal page count (1, 2, or 4 pages)
 ![PageSizeImport](Screenshots/PageSizeImport.png)
 - Open Batch Loader (`Ctrl + W`)
+
+Please use Imports carefully and conscientiously when building own custom levels.
+Specifically, clarify with the creator whether you are authorised to use custom assets.
+If in doubt, use assets that are guaranteed to be acceptable for use in your own custom levels instead.
+Please also note that this tool is licensed under the MIT licence.
 
 ### Batch File Loader
 
@@ -244,6 +251,7 @@ If you want to contribute code, feel free to fork the repository and create a pu
 If you have any issues, please open a [GitHub Issue](https://github.com/JohnnyJF10/TgaBuilder/issues).  
 
 ## To Do List:
+- Optimize the memory management during Classic TR level Import
 - Support **32 bpp pixel formates** for the destination panel as well
 - Fix bugs
 - Migrate from WPF to Win UI 3 or Avalonia
