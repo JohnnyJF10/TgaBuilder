@@ -196,7 +196,7 @@ namespace TgaBuilderLib.ViewModel
 
             var texScrollingSource = new WriteableBitmap(
                 pixelWidth: rectSize,
-                pixelHeight: 12 * rectSize,
+                pixelHeight: 2 * rectSize,
                 dpiX: _spriteSheet.DpiX,
                 dpiY: _spriteSheet.DpiY,
                 pixelFormat: _spriteSheet.Format,
@@ -204,12 +204,12 @@ namespace TgaBuilderLib.ViewModel
             
             WriteableBitmap scrollTex = new(new CroppedBitmap(_spriteSheet, rect));
 
-            _bitmapOperations.FillRectBitmap(
+            _bitmapOperations.FillRectBitmapNoConvert(
                 source: scrollTex, 
                 target: texScrollingSource,
                 pos: (0,0));
 
-            _bitmapOperations.FillRectBitmap(
+            _bitmapOperations.FillRectBitmapNoConvert(
                 source: scrollTex, 
                 target: texScrollingSource,
                 pos: (0,rectSize));
