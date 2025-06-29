@@ -12,18 +12,21 @@ namespace TgaBuilderLib.ViewModel
         {
             _bitmapOperations = bitmapOperations;
         }
+        private readonly SemaphoreSlim _animationSemaphore = new SemaphoreSlim(1, 1);
+        private CancellationTokenSource? _cancellationTokenSource;
+
+        private Task? _animationTask;
 
         private Stopwatch? _stopwatch;
         private List<Int32Rect> _frameRects = new();
 
-        private CancellationTokenSource? _cancellationTokenSource;
+
         private IBitmapOperations _bitmapOperations;
 
         private BitmapSource? _presenter;
         private BitmapSource? _spriteSheet;
 
         private bool _isVisible;
-        private bool _isPlaying;
         private bool _isPlayVisible = false;
         private bool _isPauseVisible = true;
 
@@ -46,11 +49,7 @@ namespace TgaBuilderLib.ViewModel
             set => SetProperty(ref _isVisible, value, nameof(IsVisible));
         }
 
-        public bool IsPlaying
-        {
-            get => _isPlaying;
-            set => SetProperty(ref _isPlaying, value, nameof(IsPlaying));
-        }
+        public bool IsPlaying => _animationTask != null && !_cancellationTokenSource?.IsCancellationRequested == true;
 
         public int Speed
         {
@@ -92,7 +91,8 @@ namespace TgaBuilderLib.ViewModel
         {
             if (!IsPlaying)
             {
-                _ = Animate();
+                _animationTask = Animate();
+
                 IsPlayVisible = false;
                 IsPauseVisible = true;
             }
@@ -101,8 +101,9 @@ namespace TgaBuilderLib.ViewModel
         public void Stop()
         {
             _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource = null;
-            IsPlaying = false;
+
+            _animationTask = null;
+
             IsPlayVisible = true;
             IsPauseVisible = false;
         }
@@ -110,35 +111,35 @@ namespace TgaBuilderLib.ViewModel
         public void Close()
         {
             Stop();
+
             Presenter = null;
             IsVisible = false;
         }
 
-        public async Task SetupAnimation(BitmapSource spriteSheet, (int, int) anchor1, (int, int) anchor2, int tileSize)
+        public void SetupAnimation(BitmapSource spriteSheet, (int, int) anchor1, (int, int) anchor2, int tileSize)
         {
-            if (IsPlaying)
-            {
-                Stop();
-                await Task.Delay(100); // Prevent Disruption
+                if (IsPlaying && _animationTask != null)
+                {
+                    Stop();
+                }
+
+                _spriteSheet = spriteSheet;
+                int index1 = GetTexIndex(anchor1, tileSize, spriteSheet.PixelWidth);
+                int index2 = GetTexIndex(anchor2, tileSize, spriteSheet.PixelWidth);
+
+                _frameRects = index1 < index2
+                    ? CalcFrameRects(anchor1, index2 - index1, tileSize, spriteSheet.PixelWidth)
+                    : CalcFrameRects(anchor2, index1 - index2, tileSize, spriteSheet.PixelWidth);
+
+                if (_frameRects.Count == 0) return;
+
+                Presenter = new WriteableBitmap(tileSize, tileSize, 96, 96, spriteSheet.Format, null);
+                IsVisible = true;
+                IsPlayVisible = false;
+                IsPauseVisible = true;
+
+                _animationTask = Animate();
             }
-
-            _spriteSheet = spriteSheet;
-            int index1 = GetTexIndex(anchor1, tileSize, spriteSheet.PixelWidth);
-            int index2 = GetTexIndex(anchor2, tileSize, spriteSheet.PixelWidth);
-
-            _frameRects = index1 < index2
-                ? CalcFrameRects(anchor1, index2 - index1, tileSize, spriteSheet.PixelWidth)
-                : CalcFrameRects(anchor2, index1 - index2, tileSize, spriteSheet.PixelWidth);
-
-            if (_frameRects.Count == 0) return;
-
-            Presenter = new WriteableBitmap(tileSize, tileSize, 96, 96, spriteSheet.Format, null);
-            IsVisible = true;
-            IsPlayVisible = false;
-            IsPauseVisible = true;
-
-            await Animate();
-        }
 
         private async Task Animate()
         {
@@ -151,8 +152,6 @@ namespace TgaBuilderLib.ViewModel
                 ? AnimateAnimRange(token)
                 : AnimateTexScrolling(token);
 
-            IsPlaying = true;
-
             try
             {
                 await animationTask;
@@ -163,7 +162,6 @@ namespace TgaBuilderLib.ViewModel
             }
             finally
             {
-                IsPlaying = false;
                 OffsetTop = 0;
                 _stopwatch?.Stop();
             }

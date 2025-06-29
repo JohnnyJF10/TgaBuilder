@@ -269,14 +269,17 @@ namespace TgaBuilderLib.ViewModel
             }
             else
                 ManageAnimSelectShape(x, y);
+
+            Picker.X = x & ~(Picker.Size - 1);
+            Picker.Y = y & ~(Picker.Size - 1);
         }
 
         public override void RightDragEnd()
         {
-            if (Selection.IsPlacing)
-                EndPlacingStartPicking();
-            else
-                SetupAnimation();
+            if (!Selection.IsPlacing)
+                SetupAnimation(); 
+
+            EndPlacingStartPicking();
         }
 
         public override void DoubleDrag(int x, int y) => Drag(x, y);

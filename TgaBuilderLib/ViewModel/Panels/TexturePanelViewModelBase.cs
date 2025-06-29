@@ -136,7 +136,7 @@ namespace TgaBuilderLib.ViewModel
 
             IsRightDragging = false;
             AnimSelectShape.IsVisible = false;
-            _ = Animation.SetupAnimation(
+            Animation.SetupAnimation(
                 spriteSheet: Presenter,
                 anchor1: (AnimSelectShape.InitialTexX, AnimSelectShape.InitialTexY),
                 anchor2: (AnimSelectShape.CurrentTexX, AnimSelectShape.CurrentTexY),

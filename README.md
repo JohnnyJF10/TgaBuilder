@@ -35,6 +35,7 @@ Please note that, as a .net WPF tool, TgaBuilder has significantly higher system
 
 - Open image files as source texture panel  
   _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG, PSD** (`Ctrl + E`)
+  - ... or simply **drop** a supported image file on source panel.
 - Reopen recently used source image files
 
 #### Undo / Redo
@@ -47,6 +48,7 @@ Please note that, as a .net WPF tool, TgaBuilder has significantly higher system
 - Create a new texture panel: `Ctrl + N`
 - Open image files as destination texture panel  
   _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG, PSD** (`Ctrl + D`)
+  - ... or simply **drop** a supported image file on destination panel.
 - Reopen recently used destination image files
 - Save the destination texture  
   _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG** (`Ctrl + S`)
@@ -124,6 +126,7 @@ Please also note that this tool is licensed under the MIT licence.
 - Import multiple image files from folder  
   _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG**
 - Select or reopen folder
+  - ... or simply **drop** a set of supported image files on preview panel.
 - Set Range:
   - **First Texture Index**
   - **Number of Textures**
