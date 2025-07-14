@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace TgaBuilderLib.Ten
+namespace TgaBuilderLib.Level
 {
     public partial class TenLevel
     {
@@ -14,6 +14,11 @@ namespace TgaBuilderLib.Ten
         private const int ATLAS_MAX_HEIGHT = 32768;
 
         private readonly ArrayPool<byte> _bytePool = ArrayPool<byte>.Shared;
+
+        private int versionMajor;
+        private int versionMinor;
+        private int versionBuild;
+        private int versionRevision;
 
         private int targetTrTexturePanelWidth;
         private int repackedHeight;

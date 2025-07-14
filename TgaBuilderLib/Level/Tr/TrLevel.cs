@@ -4,7 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 
-namespace TgaBuilderLib.Tr
+namespace TgaBuilderLib.Level
 {
     public partial class TrLevel
     {

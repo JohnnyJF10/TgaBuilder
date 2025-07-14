@@ -22,12 +22,6 @@ namespace TgaBuilderLib.FileHandling
             PixelFormat? targetFormat = null, 
             ResizeMode mode = ResizeMode.SourceResize);
 
-        void WriteImageFileFromBytes(
-            string fileName, 
-            byte[] destinationData, 
-            int pixelWidth, 
-            int pixelHeight);
-
         void WriteImageFileFromBitmap(
             string fileName,
             BitmapSource bitmap);

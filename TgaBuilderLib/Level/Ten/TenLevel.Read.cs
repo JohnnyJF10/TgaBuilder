@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System.IO;
+using System.Net.Security;
 using System.Text;
 using TgaBuilderLib.Utils;
 
-namespace TgaBuilderLib.Ten
+namespace TgaBuilderLib.Level
 {
     public partial class TenLevel
     {
@@ -17,64 +19,61 @@ namespace TgaBuilderLib.Ten
 
         internal void ReadLevel(string fileName)
         {
+            using var reader = new BinaryReader(File.OpenRead(fileName));
 
-            string levelName = fileName;
+            string tenMark = Encoding.ASCII.GetString(reader.ReadBytes(4));
+            if (tenMark != "TEN\0")
+                throw new NotSupportedException("Specified file is an unknown TEN file format. TEN header not found");
 
-            byte versionMajor ;
-            byte versionMinor ;
-            byte versionBuild ;
-            byte versionRevision;
+            versionMajor = reader.ReadByte();
+            versionMinor = reader.ReadByte();
+            versionBuild = reader.ReadByte();
+            versionRevision = reader.ReadByte();
 
-            byte[] mediaData;
-            byte[] geometryData;
 
-            //using (var writer = new BinaryWriter(File.OpenWrite(fileName + "Uncropmressed.ten")))
-            using (var reader = new BinaryReader(File.OpenRead(fileName)))
+            int systemHash = reader.ReadInt32();
+            int levelHash = reader.ReadInt32();
+
+            if (versionMajor < 2 && versionMinor < 6)
+                throw new NotSupportedException($"TEN files of version lower than 2.6 are not supported. File version: {versionMajor}.{versionMinor}.{versionBuild}.{versionRevision}");
+
+            if (versionMajor < 2 && versionMinor < 7)
+                ReadTenData_pre_1_7(reader);
+            else
+                ReadTenData(reader);
+        }
+
+        private void ReadTenData(BinaryReader reader)
+        {
+            uint mediaUncompressedSize = reader.ReadUInt32();
+            uint mediaCompressedSize = reader.ReadUInt32();
+
+            using (var mediaStream = DecompressTenStream(reader.BaseStream, mediaCompressedSize))
+            using (var mediaReader = new BinaryReader(mediaStream))
             {
-                string tenMark = ASCIIEncoding.ASCII.GetString(reader.ReadBytes(4));
-
-                if (String.Compare(tenMark, "TEN\0") != 0)
-                    throw new NotSupportedException(
-                        $"Specified file is an unknown TEN file format. TEN header not found");
-
-                versionMajor = reader.ReadByte();
-                versionMinor = reader.ReadByte();
-                versionBuild = reader.ReadByte();
-                versionRevision = reader.ReadByte();
-
-                if (versionMajor < 2 && versionMinor < 7)
-                    throw new NotSupportedException(
-                        $"TEN versions earlier than 2.8 are not supported. " +
-                        $"Version found: {versionMajor}.{versionMinor}.{versionBuild}.{versionRevision}");
-
-                int systemHash = reader.ReadInt32();
-                int levelHash =  reader.ReadInt32();
-
-               
-
-                var mediaUncompressedSize = reader.ReadUInt32(); 
-                var mediaCompressedSize = reader.ReadUInt32();
-                mediaData = DecompressTen(reader, mediaCompressedSize);
-                
-
-                var geometryUncompressedSize = reader.ReadUInt32(); 
-                var geometryCompressedSize = reader.ReadUInt32();
-                geometryData = DecompressTen(reader, geometryCompressedSize);
+                ReadTextures(mediaReader);
+                ReadSamples(mediaReader);
             }
 
-            // Media data
-            using (var stream = new MemoryStream(mediaData))
-            using (var levelReader = new BinaryReader(stream))
-            {
-                ReadTextures(levelReader);
-                ReadSamples(levelReader);
-            }
+            uint geometryUncompressedSize = reader.ReadUInt32();
+            uint geometryCompressedSize = reader.ReadUInt32();
 
-            // Geometry data
-            using (var stream = new MemoryStream(geometryData))
-            using (var levelReader = new BinaryReader(stream))
+            using (var geometryStream = DecompressTenStream(reader.BaseStream, geometryCompressedSize))
+            using (var geometryReader = new BinaryReader(geometryStream))
             {
-                ReadStaticRoomData(levelReader);
+                ReadStaticRoomData(geometryReader);
+            }
+        }
+
+        private void ReadTenData_pre_1_7(BinaryReader reader)
+        {
+            uint dataCompressedSize = reader.ReadUInt32();
+
+            using (var dataStream = DecompressTenStream(reader.BaseStream, dataCompressedSize))
+            using (var dataReader = new BinaryReader(dataStream))
+            {
+                ReadTextures(dataReader);
+                ReadStaticRoomData(dataReader, true);
             }
         }
 
@@ -224,38 +223,41 @@ namespace TgaBuilderLib.Ten
             }
         }
 
-        void ReadStaticRoomData(BinaryReader levelReader)
+        void ReadStaticRoomData(BinaryReader levelReader, bool Pre_1_7 = false)
         {
             int[] texCorners = new int[8];
             bool toSkip = false;
             int pageWidth = 0;
             int pageHeight = 0;
 
-            int ReadCount(int max = int.MaxValue)
-            {
-                int count = levelReader.ReadInt32();
-                if (count < 0 || count > max)
-                    throw new InvalidDataException($"Invalid Count: {count}");
-                return count;
-            }
 
-            int roomCount = ReadCount();
+            int roomCount = levelReader.ReadInt32();
 
             for (int i = 0; i < roomCount; i++)
             {
-                _ = levelReader.ReadInt32(); // room.Position.x
-                _ = 0;            // room.Position.y
-                _ = levelReader.ReadInt32(); // room.Position.z
-                _ = levelReader.ReadInt32(); // room.BottomHeight
-                _ = levelReader.ReadInt32(); // room.TopHeight
+                if (Pre_1_7)
+                {
+                    var name = ReadString(levelReader); // room.Name
+                    var tagCount = levelReader.ReadInt32(); // room.tagCount
+                    for (int j = 0; j < tagCount; j++)
+                    {
+                        var tagName = ReadString(levelReader); // room.Tags[j].Name
+                    }
+                }
 
-                int vertexCount = ReadCount(1024 * 1024 * 1024);
+                levelReader.ReadInt32(); // room.Position.x
+                                         // room.Position.y = 0
+                levelReader.ReadInt32(); // room.Position.z
+                levelReader.ReadInt32(); // room.BottomHeight
+                levelReader.ReadInt32(); // room.TopHeight
 
-                _ = levelReader.ReadBytes(vertexCount * 12); // positions
-                _ = levelReader.ReadBytes(vertexCount * 12); // colors
-                _ = levelReader.ReadBytes(vertexCount * 12); // effects
+                int vertexCount = levelReader.ReadInt32();
 
-                int bucketCount = ReadCount();
+               levelReader.ReadBytes(vertexCount * 12); // positions
+               levelReader.ReadBytes(vertexCount * 12); // colors
+               levelReader.ReadBytes(vertexCount * 12); // effects
+
+                int bucketCount = levelReader.ReadInt32();
                 for (int j = 0; j < bucketCount; j++)
                 {
                     toSkip = false;
@@ -269,15 +271,15 @@ namespace TgaBuilderLib.Ten
                         pageHeight = TexDimsList[pageIndex].height;
                     }
 
-                    _ = levelReader.ReadByte();  // blendMode
-                    _ = levelReader.ReadByte();  // animated
+                    levelReader.ReadByte();  // blendMode
+                    levelReader.ReadByte();  // animated
 
-                    int polyCount = ReadCount(1024 * 1024 * 1024);
+                    int polyCount = levelReader.ReadInt32();
                     for (int k = 0; k < polyCount; k++)
                     {
                         int shape = levelReader.ReadInt32();
-                        _ = levelReader.ReadInt32(); // animatedSequence
-                        _ = levelReader.ReadInt32(); // animatedFrame
+                        levelReader.ReadInt32(); // animatedSequence
+                        levelReader.ReadInt32(); // animatedFrame
 
                         int count = (shape == 0) ? 4 : 3;
                         for (int l = 0; l < count; l++) _ = levelReader.ReadInt32();        // indices
@@ -287,7 +289,7 @@ namespace TgaBuilderLib.Ten
                             texCorners[l * 2 + 1] = (int)Math.Round(levelReader.ReadSingle() * pageHeight); // textureCorners.y
                         }       
 
-                        _ = levelReader.ReadBytes(count * 12 * 3); // 3D Info
+                        levelReader.ReadBytes(count * 12 * 3); // 3D Info
 
                         if (toSkip) continue;
 
@@ -305,25 +307,101 @@ namespace TgaBuilderLib.Ten
                 }
 
                 // Read portal data
-                int portalCount = ReadCount();
-                _ = levelReader.ReadBytes(62 * portalCount); 
+                int portalCount = levelReader.ReadInt32();
+                levelReader.ReadBytes(62 * portalCount); 
 
                 // Read floor data
                 var zSize = levelReader.ReadInt32(); // room.ZSize
                 var xSize = levelReader.ReadInt32(); // room.XSize
-                _ = levelReader.ReadBytes(100 * zSize * xSize);
+                levelReader.ReadBytes(100 * zSize * xSize);
+
+                if (Pre_1_7)
+                {
+                    // Read room ambient
+                    levelReader.ReadBytes(12); 
+                }
+
 
                 // Read light data
-                int lightCount = ReadCount();
-                _ = levelReader.ReadBytes(58 * lightCount); 
+                int lightCount = levelReader.ReadInt32();
+                levelReader.ReadBytes(58 * lightCount); 
+
+                if (Pre_1_7)
+                {
+                    // Read room statics
+                    int staticCount = levelReader.ReadInt32();
+                    for (int j = 0; j < staticCount; j++)
+                    {
+                        levelReader.ReadBytes(44);
+                        var staticName = ReadString(levelReader); // roomStatics[j].Name
+                    }
+
+                    // Read Trigger Volume
+                    int triggerVolumeCount = levelReader.ReadInt32();
+                    for (int j = 0; j < triggerVolumeCount; j++)
+                    {
+                        levelReader.ReadBytes(44); // Trigger Volume data
+                        var triggerVolumeName = ReadString(levelReader); // roomTriggerVolumes[j].Name
+                        levelReader.ReadInt32(); // EventSetIndex 
+                    }
+
+                    var flippedRoom = levelReader.ReadInt32(); // room.flippedRoom
+                    var flags = levelReader.ReadInt32(); // room.flags
+                    var meshEffect = levelReader.ReadInt32(); // room.meshEffect
+                    var reverbType = levelReader.ReadInt32(); // room.reverbType
+                    var flipNumber = levelReader.ReadInt32(); // room.flipNumber
+                }
             }
         }
 
-        private byte[] DecompressTen(BinaryReader reader, uint compressedSize)
+        private Stream DecompressTenStream(Stream baseStream, uint compressedSize)
         {
-            byte[] levelData = reader.ReadBytes((int)compressedSize);
-            levelData = ZLib.DecompressData(levelData);
-            return levelData;
+            var limitedStream = new SubStream(baseStream, compressedSize);
+            return new InflaterInputStream(limitedStream);
+        }
+
+        public class SubStream : Stream
+        {
+            private readonly Stream _base;
+            private readonly long _start;
+            private readonly long _length;
+            private long _position;
+
+            public SubStream(Stream baseStream, uint length)
+            {
+                _base = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
+                _start = baseStream.Position;
+                _length = length;
+                _position = 0;
+            }
+
+            public override int Read(byte[] buffer, int offset, int count)
+            {
+                if (_position >= _length) return 0;
+
+                long remaining = _length - _position;
+                if (count > remaining)
+                    count = (int)remaining;
+
+                int bytesRead = _base.Read(buffer, offset, count);
+                _position += bytesRead;
+                return bytesRead;
+            }
+
+            public override bool CanRead => true;
+            public override bool CanSeek => false;
+            public override bool CanWrite => false;
+            public override long Length => _length;
+            public override long Position
+            {
+                get => _position;
+                set => throw new NotSupportedException();
+            }
+
+            public override void Flush() => throw new NotSupportedException();
+            public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+            public override void SetLength(long value) => throw new NotSupportedException();
+            public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
         }
     }
 }

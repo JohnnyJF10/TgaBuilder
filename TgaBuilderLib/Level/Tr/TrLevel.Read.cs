@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.Trng;
 using TgaBuilderLib.Utils;
 
-namespace TgaBuilderLib.Tr
+namespace TgaBuilderLib.Level
 {
     public partial class TrLevel
     {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace TgaBuilderLib.Trng
+namespace TgaBuilderLib.Level
 {
     public static partial class TrngDecrypter
     {

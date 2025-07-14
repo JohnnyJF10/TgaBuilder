@@ -129,8 +129,19 @@ namespace TgaBuilderLib.ViewModel
         }
 
         private int CalculateNewPageXValue(int proposedValue, int currentValue)
-            => proposedValue < currentValue
-                ? (proposedValue > 1 ? 2 : 1)
-                : (proposedValue <= 2 ? 2 : 4);
+            => proposedValue < currentValue ? proposedValue switch
+            {
+                < 2 => 1,
+                < 4 => 2,
+                < 8 => 4,
+                _ => 8
+            }
+            : proposedValue switch
+            {
+                > 8 => 16,
+                > 4 => 8,
+                > 2 => 4,
+                _ => 2
+            };
     }
 }
