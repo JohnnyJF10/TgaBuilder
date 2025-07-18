@@ -52,14 +52,13 @@ namespace TgaBuilderWpfUi
             services.AddSingleton<ITgaWriter,           TgaWriter>();
             services.AddSingleton<IImageFileManager,    ImageFileManager>(sp => new ImageFileManager(
                 tgaWriter: sp.GetRequiredService<ITgaWriter>()));
-            services.AddSingleton<IAsyncFileLoader,           AsyncFileLoader>();
+            services.AddSingleton<IAsyncFileLoader,     AsyncFileLoader>();
             services.AddSingleton<IBitmapOperations,    BitmapOperations>();
             services.AddSingleton<ILogger,              Logger>();
             services.AddSingleton<IEyeDropper,          EyeDropper>();
 
             services.AddSingleton<IUsageData,           UsageData>(_ => UsageData.Load());
-            services.AddSingleton(_ => ArrayPool<byte>.Shared);
-            services.AddSingleton<IUndoRedoManager, UndoRedoManager>(sp => new UndoRedoManager(
+            services.AddSingleton<IUndoRedoManager,     UndoRedoManager>(sp => new UndoRedoManager(
                 maxMemoryBytes:     10 * 1024 * 1024
             ));
         }

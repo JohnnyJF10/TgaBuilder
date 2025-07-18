@@ -441,9 +441,11 @@ namespace TgaBuilderLib.ViewModel
             int oldWidth = Presenter.PixelWidth;
             int oldHeight = Presenter.PixelHeight;
 
-            if (height < oldHeight)
+            if (height < oldHeight || width < oldWidth)
             {
-                int requiredBytes = width * (oldHeight - height) * 3;
+                int requiredBytes = height < oldHeight
+                    ? width * (oldHeight - height) * 3
+                    : (oldWidth - width) * height * 3;
 
                 if (_undoRedoManager.TryBeginRenting(
                     totalSizeInBytes:   requiredBytes,
@@ -451,10 +453,15 @@ namespace TgaBuilderLib.ViewModel
                 {
                     var undoPixels = _undoRedoManager.RentUndoRedoArray();
 
-                    Presenter = _bitmapOperations.ResizeHeightMonitored(
-                        sourceBitmap:   Presenter,
-                        newHeight:      height,
-                        undoData:       undoPixels);
+                    Presenter = height < oldHeight 
+                        ? _bitmapOperations.ResizeHeightMonitored(
+                            sourceBitmap:   Presenter,
+                            newHeight:      height,
+                            undoData:       undoPixels)
+                        : _bitmapOperations.ResizeWidthMonitored(
+                            sourceBitmap:   Presenter,
+                            newWidth:       width,
+                            undoData:       undoPixels);
 
                     _undoRedoManager.PushResizeSmallerAction(
                         croppedPixels:          undoPixels,
@@ -471,40 +478,6 @@ namespace TgaBuilderLib.ViewModel
                         sourceBitmap: Presenter,
                         newWidth: width,
                         newHeight: height);
-
-                    _undoRedoManager.ClearAllOutOfMemory();
-                }
-            }
-            else if (width < oldWidth)
-            {
-                int requiredBytes = (oldWidth - width) * height * 3;
-
-                if (_undoRedoManager.TryBeginRenting(
-                     totalSizeInBytes:  requiredBytes,
-                     arraysNeeded:      1))
-                {
-                    var undoPixels = _undoRedoManager.RentUndoRedoArray();
-
-                    Presenter = _bitmapOperations.ResizeWidthMonitored(
-                        sourceBitmap:   Presenter,
-                        newWidth:       width,
-                        undoData:       undoPixels);
-
-                    _undoRedoManager.PushResizeSmallerAction(
-                        croppedPixels:          undoPixels,
-                        oldWidth:               oldWidth,
-                        newWidth:               width,
-                        oldHeight:              oldHeight,
-                        newHeight:              height,
-                        resizeLargerCallback:   UndoRedoEnlargeandFillPresenter,
-                        resizeSmallerCallback:  UndoRedoResizePresenter);
-                }
-                else
-                {
-                    Presenter = _bitmapOperations.Resize(
-                        sourceBitmap:   Presenter,
-                        newWidth:       width,
-                        newHeight:  height);
 
                     _undoRedoManager.ClearAllOutOfMemory();
                 }

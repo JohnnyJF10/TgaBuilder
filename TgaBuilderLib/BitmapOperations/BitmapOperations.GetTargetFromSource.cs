@@ -91,9 +91,11 @@ namespace TgaBuilderLib.BitmapOperations
 
         private int EstimateTargetWidth(int sourceWidth) => sourceWidth switch
             {
-                <= 256 => 256,
-                <= 512 => 512,
-                _ => 1024
+                <= 256  => 256,
+                <= 512  => 512,
+                <= 1024 => 1024,
+                <= 2048 => 2048,
+                _       => 4096,
             };
     }
 }
