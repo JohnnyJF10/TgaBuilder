@@ -80,22 +80,8 @@ namespace TgaBuilderLib.ViewModel
         public override double Zoom
         {
             get => _zoom;
-            set
-            {
-                if (value == _zoom) return;
-                if (value <= 0) value = 1;
-                _zoom = value;
-                SelectionShape.StrokeThickness = 2 / value;
-                AnimSelectShape.StrokeThickness = 2 / value;
-                Picker.StrokeThickness = 2 / value;
-                OriginalPosShape.StrokeThickness = 4 / value;
-                TargetPosShape.StrokeThickness = 4 / value;
-                OnPropertyChanged(nameof(Zoom));
-            }
+            set => SetZoom(value);
         }
-
-        internal override bool CanScroll 
-            => Selection.IsPlacing || IsDragging || IsRightDragging || _eyeDropper.IsActive;
 
         public bool IsPreviewVisible
         {
@@ -108,6 +94,11 @@ namespace TgaBuilderLib.ViewModel
             get => _resizeSelectionToPicker;
             set => SetPropertyPrimitive(ref _resizeSelectionToPicker, value, nameof(ResizeSelectionToPicker));
         }
+
+        internal override bool CanScroll
+            => Selection.IsPlacing || IsDragging || IsRightDragging || _eyeDropper.IsActive;
+
+
 
 
         public override void SetPresenter(WriteableBitmap bitmap)
@@ -129,6 +120,24 @@ namespace TgaBuilderLib.ViewModel
             AnimSelectShape.PanelWidth = expectedWidth;
 
             RefreshPresenter();
+        }
+
+        public override void SetZoom(double zoom)
+        {
+            if (zoom == _zoom) 
+                return;
+            if (zoom <= 0) 
+                zoom = 1;
+
+            _zoom = zoom;
+
+            SelectionShape.StrokeThickness = 2 / zoom;
+            AnimSelectShape.StrokeThickness = 2 / zoom;
+            Picker.StrokeThickness = 2 / zoom;
+            OriginalPosShape.StrokeThickness = 4 / zoom;
+            TargetPosShape.StrokeThickness = 4 / zoom;
+
+            OnPropertyChanged(nameof(Zoom));
         }
 
         public void OpenFile(string filePath)
@@ -156,11 +165,11 @@ namespace TgaBuilderLib.ViewModel
             if (WetherSelectionRequiresResize())
                 Selection.Presenter = _bitmapOperations.ResizeScaled(Selection.Presenter, Picker.Size);
 
-            if (mode >= TargetMode.ClockwiseRotating && mode <= TargetMode.MirrorHorizontal)
+            if (mode is TargetMode.ClockwiseRotating or TargetMode.MirrorHorizontal or TargetMode.MirrorVertical)
                 Selection.IsPlacing = false;
 
             if (Selection.IsPlacing)
-                if (mode == TargetMode.Default)
+                if (mode is TargetMode.Default)
                 {
                     IsPreviewVisible = true;
                 }

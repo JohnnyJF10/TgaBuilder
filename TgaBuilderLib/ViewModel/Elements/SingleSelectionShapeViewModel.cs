@@ -18,7 +18,6 @@
         public int CenterX => X + Size / 2;
         public int CenterY => Y + Size / 2;
 
-
         public bool IsVisible
         {
             get => _isVisible;
@@ -28,42 +27,60 @@
         public int X
         {
             get => _x;
-            set
-            {
-                if (value == _x) return;
-                _x = value;
-                OnPropertyChanged(nameof(CenterX));
-                OnPropertyChanged(nameof(X));
-            }
+            set => SetX(value);
         }
 
         public int Y
         {
             get => _y;
-            set
-            {
-                if (value == _y) return;
-                _y = value;
-                OnPropertyChanged(nameof(CenterY));
-                OnPropertyChanged(nameof(Y));
-            }
+            set => SetY(value);
         }
+
         public int Size
         {
             get => _size;
-            set
-            {
-                if (value == _size) return;
-                _size = value;
-                OnPropertyChanged(nameof(CenterX));
-                OnPropertyChanged(nameof(CenterY));
-                OnPropertyChanged(nameof(Size));
-            }
+            set => SetSize(value);
         }
+
         public double StrokeThickness
         {
             get => _strokeThicknes;
             set => SetProperty(ref _strokeThicknes, value, nameof(StrokeThickness));
+        }
+
+
+
+        private void SetX(int value)
+        {
+            if (value == _x)
+                return;
+
+            _x = value;
+
+            OnPropertyChanged(nameof(CenterX));
+            OnPropertyChanged(nameof(X));
+        }
+
+        private void SetY(int value)
+        {
+            if (value == _y)
+                return;
+
+            _y = value;
+
+            OnPropertyChanged(nameof(CenterY));
+            OnPropertyChanged(nameof(Y));
+        }
+
+        private void SetSize(int value)
+        {
+            if (value == _size)
+                return;
+            _size = value;
+
+            OnPropertyChanged(nameof(CenterX));
+            OnPropertyChanged(nameof(CenterY));
+            OnPropertyChanged(nameof(Size));
         }
     }
 }

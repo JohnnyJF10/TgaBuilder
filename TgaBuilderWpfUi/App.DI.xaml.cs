@@ -59,7 +59,7 @@ namespace TgaBuilderWpfUi
 
             services.AddSingleton<IUsageData,           UsageData>(_ => UsageData.Load());
             services.AddSingleton<IUndoRedoManager,     UndoRedoManager>(sp => new UndoRedoManager(
-                maxMemoryBytes:     10 * 1024 * 1024
+                maxMemoryBytes:     sp.GetRequiredService<IUsageData>().UndoRedoMemoryBytes
             ));
         }
 

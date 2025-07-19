@@ -55,13 +55,7 @@ namespace TgaBuilderLib.ViewModel
         public double Zoom
         {
             get => _panel.Zoom;
-            set
-            {
-                if (value == _panel.Zoom) return;
-
-                _panel.Zoom = value;
-                OnPropertyChanged(nameof(Zoom));
-            }
+            set => SetPanelZoom(value);
         }
 
         public double HorizonatlMargin
@@ -74,6 +68,8 @@ namespace TgaBuilderLib.ViewModel
         public ICommand FitCommand => _FitCommand ??= new RelayCommand(Fit);
         public ICommand Zoom100Command => _100PercentCommand ??= new RelayCommand(Zoom100);
         public ICommand ScrollCommand => _scrollCommand ??= new RelayCommand<Point>(DoPanelScrolling);
+
+
 
         // A makeshift workaround to avoid a race condition when the panel is resized.
         // WPF seemingly requires time to set everything up appropriately.
@@ -117,6 +113,15 @@ namespace TgaBuilderLib.ViewModel
             Zoom = 1.0;
             OffsetX = (VisualPanelSize.ContentWidth - VisualPanelSize.ViewportWidth) / 2;
             OffsetY = (VisualPanelSize.ContentHeight - VisualPanelSize.ViewportHeight) / 2;
+        }
+
+        private void SetPanelZoom(double zoom)
+        {
+            if (zoom == _panel.Zoom) 
+                return;
+
+            _panel.Zoom = zoom;
+            OnPropertyChanged(nameof(Zoom));
         }
 
         private void DoPanelScrolling(Point pos)

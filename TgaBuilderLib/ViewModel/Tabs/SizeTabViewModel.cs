@@ -41,27 +41,35 @@ namespace TgaBuilderLib.ViewModel
         public int NumPagesX
         {
             get => _numPagesX;
-            set
-            {
-                var newValue = CalculateNewPageXValue(value, _numPagesX);
-
-                if (newValue == _numPagesX) return;
-
-                SetNewPageNumAndResize(ref _numPagesX, newValue);
-            }
+            set => SetNumPagesX(value);
         }
 
         public int NumPagesY
         {
             get => _numPagesY;
-            set
-            {
-                var newValue = Math.Clamp(value, 1, MAX_NUM_PAGES);
+            set => SetNumPagesY(value);
+        }
 
-                if (newValue == _numPagesY) return;
 
-                SetNewPageNumAndResize(ref _numPagesY, newValue);
-            }
+
+        private void SetNumPagesX(int value)
+        {
+            var newValue = CalculateNewPageXValue(value, _numPagesX);
+
+            if (newValue == _numPagesX) 
+                return;
+
+            SetNewPageNumAndResize(ref _numPagesX, newValue, nameof(NumPagesX));
+        }
+
+        private void SetNumPagesY(int value)
+        {
+            var newValue = Math.Clamp(value, 1, MAX_NUM_PAGES);
+
+            if (newValue == _numPagesY) 
+                return;
+
+            SetNewPageNumAndResize(ref _numPagesY, newValue, nameof(NumPagesY));
         }
 
         private void SubscribeToDestinationChanges()

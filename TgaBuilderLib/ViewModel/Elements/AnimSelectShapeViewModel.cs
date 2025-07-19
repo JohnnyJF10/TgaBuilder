@@ -83,6 +83,8 @@
             set => SetProperty(ref _strokeThicknes, value, nameof(StrokeThickness));
         }
 
+
+
         public void SetInitialsCoordinates(int x, int y)
         {
             InitialTexX = x;

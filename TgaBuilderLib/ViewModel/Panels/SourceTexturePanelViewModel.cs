@@ -62,44 +62,59 @@ namespace TgaBuilderLib.ViewModel
         public override double Zoom
         {
             get => _zoom;
-            set
-            {
-                if (value == _zoom) 
-                    return;
-                if (value <= 0) 
-                    value = 1;
-
-                _zoom = value;
-
-                ThicknessUpdate(value);
-                OnPropertyChanged(nameof(Zoom));
-            }
+            set => SetZoom(value);
         }
 
         public int SelectedPickerSize
         {
             get => Picker.Size;
-            set
-            {
-                if (value == Picker.Size) 
-                    return;
-
-                if ((VisualGrid.OffsetX > 0 || VisualGrid.OffsetY > 0) 
-                    && (NextHigherPowerOfTwo(value) >= Presenter.PixelWidth || NextHigherPowerOfTwo(value) >= Presenter.PixelHeight))
-                    return;
-
-                Picker.Size = value;
-
-                VisualGrid.CellSize = Picker.Size;
-
-                OnCallerPropertyChanged();
-            }
+            set => SetSelectedPickerSize(value);
         }
 
         internal bool ReplaceColorEnabled { get; set; }
 
         internal override bool CanScroll 
             => IsDragging || IsRightDragging || _eyeDropper.IsActive;
+
+
+
+        public override void SetPresenter(WriteableBitmap bitmap)
+        {
+            int expectedWidth = (int)Math.Ceiling(bitmap.PixelWidth / 256.0) * 256;
+            int expectedHeight = (int)Math.Ceiling(bitmap.PixelHeight / 256.0) * 256;
+
+            if (bitmap.PixelHeight != expectedHeight || bitmap.PixelWidth != expectedWidth)
+                throw new ArgumentException(
+                    $"Presenter must be a multiple of 256 in both dimensions. " +
+                    $"Current size: {bitmap.PixelWidth}x{bitmap.PixelHeight}, " +
+                    $"Expected size: {expectedWidth}x{expectedHeight}.");
+
+            SetProperty(ref _presenter, bitmap, nameof(Presenter));
+
+            Picker.MaxSize = expectedWidth > expectedHeight ? expectedHeight : expectedWidth;
+            SelectionShape.MaxX = expectedWidth;
+            SelectionShape.MaxY = expectedHeight;
+            AnimSelectShape.PanelWidth = expectedWidth;
+
+            VisualGrid.OffsetX = 0;
+            VisualGrid.OffsetY = 0;
+            VisualGrid.SourceWidth = expectedWidth;
+            VisualGrid.SourceHeight = expectedHeight;
+            RefreshPresenter();
+        }
+
+        public override void SetZoom(double zoom)
+        {
+            if (zoom == _zoom)
+                return;
+            if (zoom <= 0)
+                zoom = 1;
+
+            _zoom = zoom;
+
+            ThicknessUpdate(zoom);
+            OnPropertyChanged(nameof(Zoom));
+        }
 
         public void OpenFile(string filePath)
         {
@@ -236,29 +251,20 @@ namespace TgaBuilderLib.ViewModel
             Selection.IsPlacing = true;
         }
 
-        public override void SetPresenter(WriteableBitmap bitmap)
+        public void SetSelectedPickerSize(int value)
         {
-            int expectedWidth = (int)Math.Ceiling(bitmap.PixelWidth / 256.0) * 256;
-            int expectedHeight = (int)Math.Ceiling(bitmap.PixelHeight / 256.0) * 256;
+            if (value == Picker.Size)
+                return;
 
-            if (bitmap.PixelHeight != expectedHeight || bitmap.PixelWidth != expectedWidth)
-                throw new ArgumentException(
-                    $"Presenter must be a multiple of 256 in both dimensions. " +
-                    $"Current size: {bitmap.PixelWidth}x{bitmap.PixelHeight}, " +
-                    $"Expected size: {expectedWidth}x{expectedHeight}.");
+            if ((VisualGrid.OffsetX > 0 || VisualGrid.OffsetY > 0)
+                && (NextHigherPowerOfTwo(value) >= Presenter.PixelWidth || NextHigherPowerOfTwo(value) >= Presenter.PixelHeight))
+                return;
 
-            SetProperty(ref _presenter, bitmap, nameof(Presenter));
+            Picker.Size = value;
 
-            Picker.MaxSize = expectedWidth > expectedHeight ? expectedHeight : expectedWidth;
-            SelectionShape.MaxX = expectedWidth;
-            SelectionShape.MaxY = expectedHeight;
-            AnimSelectShape.PanelWidth = expectedWidth;
+            VisualGrid.CellSize = Picker.Size;
 
-            VisualGrid.OffsetX = 0;
-            VisualGrid.OffsetY = 0;
-            VisualGrid.SourceWidth = expectedWidth;
-            VisualGrid.SourceHeight = expectedHeight;
-            RefreshPresenter();
+            OnCallerPropertyChanged();
         }
 
 

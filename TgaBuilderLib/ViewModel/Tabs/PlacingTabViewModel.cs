@@ -6,67 +6,59 @@ namespace TgaBuilderLib.ViewModel
 {
     public class PlacingTabViewModel : ViewModelBase
     {
+        private readonly TargetTexturePanelViewModel _destination;
+
         public PlacingTabViewModel(TargetTexturePanelViewModel destination)
         {
             _destination = destination;
         }
 
-        private TargetTexturePanelViewModel _destination;
-
         public bool OverlayTransparentModeSelected
         {
             get => _destination.placingMode.HasFlag(PlacingMode.OverlayTransparent);
-            set
-            {
-                if (value)
-                    _destination.placingMode |= PlacingMode.OverlayTransparent;
-                else
-                    _destination.placingMode &= ~PlacingMode.OverlayTransparent;
-                OnPropertyChanged(nameof(OverlayTransparentModeSelected));
-                Debug.WriteLine($"Current Mode Flags: {_destination.placingMode}");
-            }
+            set => SetPlacingModeFlag(PlacingMode.OverlayTransparent, value, nameof(OverlayTransparentModeSelected));
         }
 
         public bool SwapAndPlaceModeSelected
         {
             get => _destination.placingMode.HasFlag(PlacingMode.PlaceAndSwap);
-            set
-            {
-                if (value)
-                    _destination.placingMode |= PlacingMode.PlaceAndSwap;
-                else
-                    _destination.placingMode &= ~PlacingMode.PlaceAndSwap;
-                OnPropertyChanged(nameof(SwapAndPlaceModeSelected));
-                Debug.WriteLine($"Current Mode Flags: {_destination.placingMode}");
-            }
+            set => SetPlacingModeFlag(PlacingMode.PlaceAndSwap, value, nameof(SwapAndPlaceModeSelected));
         }
 
         public bool ResizeToPickerModeSelected
         {
             get => _destination.placingMode.HasFlag(PlacingMode.ResizeToPicker);
-            set
-            {
-                if (value)
-                    _destination.placingMode |= PlacingMode.ResizeToPicker;
-                else
-                    _destination.placingMode &= ~PlacingMode.ResizeToPicker;
-                OnPropertyChanged(nameof(ResizeToPickerModeSelected));
-                Debug.WriteLine($"Current Mode Flags: {_destination.placingMode}");
-            }
+            set => SetPlacingModeFlag(PlacingMode.ResizeToPicker, value, nameof(ResizeToPickerModeSelected));
         }
-
 
         public int PickerSize
         {
             get => _destination.Picker.Size;
-            set
-            {
-                if (_destination.Picker.Size == value) return;
-                _destination.Picker.Size = value;
+            set => SetPickerSize(value);
+        }
 
-                OnPropertyChanged(nameof(PickerSize));
-                _destination.RefreshPanelStatement();
-            }
+
+
+        private void SetPlacingModeFlag(PlacingMode modeFlag, bool enabled, string propertyName)
+        {
+            if (enabled)
+                _destination.placingMode |= modeFlag;
+            else
+                _destination.placingMode &= ~modeFlag;
+
+            OnPropertyChanged(propertyName);
+            Debug.WriteLine($"Current Mode Flags: {_destination.placingMode}");
+        }
+
+        private void SetPickerSize(int value)
+        {
+            if (_destination.Picker.Size == value) 
+                return;
+
+            _destination.Picker.Size = value;
+            OnPropertyChanged(nameof(PickerSize));
+
+            _destination.RefreshPanelStatement();
         }
     }
 }

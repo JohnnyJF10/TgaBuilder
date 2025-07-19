@@ -31,50 +31,19 @@ namespace TgaBuilderLib.ViewModel
         public int OffsetX
         {
             get => _offsetX;
-            set
-            {
-                if (value == _offsetX) return;
-
-                int maxOffset = Math.Min(CellSize - 1, Math.Abs(SourceWidth - CellSize));
-
-                _offsetX = Math.Clamp(value, 0, maxOffset);
-
-                OnPropertyChanged(nameof(OffsetX));
-            }
+            set => SetOffsetX(value);
         }
 
         public int OffsetY
         {
             get => _offsetY;
-            set
-            {
-                if (value == _offsetY) return;
-
-                int maxOffset = Math.Min(CellSize - 1, Math.Abs(SourceHeight - CellSize));
-
-                _offsetY = Math.Clamp(value, 0, maxOffset);
-
-                OnPropertyChanged(nameof(OffsetY));
-            }
+            set => SetOffsetY(value);
         }
 
         public int CellSize
         {
             get => _cellSize;
-            set
-            {
-                if (value == _cellSize) return;
-
-                _cellSize = value;
-
-                if (_offsetX > _cellSize)
-                    OffsetX = _cellSize - 1;
-
-                if (_offsetY > _cellSize)
-                    OffsetY = _cellSize - 1;
-
-                OnPropertyChanged(nameof(CellSize));
-            }
+            set => SetCellSize(value);
         }
 
         public double StrokeThickness
@@ -86,36 +55,82 @@ namespace TgaBuilderLib.ViewModel
         public bool IsVisible
         {
             get => _isVisible;
-            set
-            {
-                if (value == _isVisible) 
-                    return;
-
-                if (!value && _gridVisibleSelected)
-                    return;
-
-                _isVisible = value;
-                OnPropertyChanged(nameof(IsVisible));
-            }
+            set => SetIsVisible(value);
         }
 
         public bool GridVisibleSelected
         {
             get => _gridVisibleSelected;
-            set
-            {
-                if (value == _gridVisibleSelected) 
-                    return;
+            set => SetGridVisibleSelected(value);
+        }
 
-                _gridVisibleSelected = value;
 
-                OnPropertyChanged(nameof(GridVisibleSelected));
-                
-                if (value)
-                    IsVisible = true;
-                else 
-                    IsVisible = false;
-            }
+
+        private void SetOffsetX(int value)
+        {
+            if (value == _offsetX) 
+                return;
+
+            int maxOffset = Math.Min(CellSize - 1, Math.Abs(SourceWidth - CellSize));
+
+            _offsetX = Math.Clamp(value, 0, maxOffset);
+
+            OnPropertyChanged(nameof(OffsetX));
+        }
+
+        private void SetOffsetY(int value)
+        {
+            if (value == _offsetY) return;
+
+            int maxOffset = Math.Min(CellSize - 1, Math.Abs(SourceHeight - CellSize));
+
+            _offsetY = Math.Clamp(value, 0, maxOffset);
+
+            OnPropertyChanged(nameof(OffsetY));
+        }
+
+        private void SetCellSize(int value)
+        {
+            if (value == _cellSize) 
+                return;
+
+            _cellSize = value;
+
+            if (_offsetX > _cellSize)
+                OffsetX = _cellSize - 1;
+
+            if (_offsetY > _cellSize)
+                OffsetY = _cellSize - 1;
+
+            OnPropertyChanged(nameof(CellSize));
+        }
+
+
+        private void SetIsVisible(bool value)
+        {
+            if (value == _isVisible)
+                return;
+
+            if (!value && _gridVisibleSelected)
+                return;
+
+            _isVisible = value;
+            OnPropertyChanged(nameof(IsVisible));
+        }
+
+        private void SetGridVisibleSelected(bool value)
+        {
+            if (value == _gridVisibleSelected)
+                return;
+
+            _gridVisibleSelected = value;
+
+            OnPropertyChanged(nameof(GridVisibleSelected));
+
+            if (value)
+                IsVisible = true;
+            else
+                IsVisible = false;
         }
 
         public DashStyle MainDashStyle 

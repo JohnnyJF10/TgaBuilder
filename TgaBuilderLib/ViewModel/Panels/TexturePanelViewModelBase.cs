@@ -85,6 +85,7 @@ namespace TgaBuilderLib.ViewModel
         internal abstract bool CanScroll { get; }
 
         public abstract void SetPresenter(WriteableBitmap bitmap);
+        public abstract void SetZoom(double zoom);
 
         public abstract void MouseEnter();
         public abstract void MouseLeave();

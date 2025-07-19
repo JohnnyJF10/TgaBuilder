@@ -460,88 +460,92 @@
                 DropCommand="{Binding FileDropSourceCommand}"
                 ap:MouseOverInfoAP.InfoText="Source Texture Panel: Drag with left: Select, Drag with right: Animate, Alt + Drag: Free selecting, Double Click: Move Grid"
                 >
-                <pzp:ZoomPanel
-                    x:Name="SourcePanel"
-                    DataContext="{Binding SourceViewTab}"
-                    ViewportZoom="{Binding Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    ContentOffsetX="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    ContentOffsetY="{Binding OffsetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    BorderBrush="Transparent"
-                    Background="Transparent"
-                    CanVerticallyScroll="True"
-                    ClipToBounds="True"
-                    MouseDragZoomModifier="Windows"
-                    ap:SizeObserverAP.ObserveSize="True"
-                    ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
-                    ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
-                    ap:ScrollingAP.ScrollCommand="{Binding ScrollCommand}">
-                    <Canvas
-                        x:Name="SourceCanvas"
-                        DataContext="{Binding DataContext.Source, RelativeSource={RelativeSource AncestorType=Window}}"
-                        d:DataContext="{d:DesignInstance Type=viewmodel:SourceTexturePanelViewModel, IsDesignTimeCreatable=False}"
-                        Width="{Binding ElementName=SourceImage, Path=ActualWidth}"
-                        Height="{Binding ElementName=SourceImage, Path=ActualHeight}"
-                        >
-
-                        <Image
-                            Name="SourceImage"
-                            Stretch="Uniform"
-                            Source="{Binding Presenter}"
-                            RenderOptions.BitmapScalingMode="NearestNeighbor"
-                            ap:SizeObserverAP.ObserveSize="True"
-                            ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ContentWidth, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
-                            ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ContentHeight, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
-                            ap:PanelMouseAP.CheckMouseEnterLeave="True"
-                            ap:PanelMouseAP.IsTargetPanel="False"/>
-                        <Rectangle
-                            d:Visibility="Hidden"
-                            DataContext="{Binding SelectionShape}"
-                            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                            Width="{Binding Width, UpdateSourceTrigger=PropertyChanged}"
-                            Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
-                            Stroke="Yellow"
-                            StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                            IsHitTestVisible="False"/>
-                        <elements:PickerShape
-                            DataContext="{Binding Picker}"
-                            Size="{Binding Size}"
-                            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            d:Visibility="Hidden"
-                            Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                            Stroke="Red"
-                            StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                            IsHitTestVisible="False"/>
-
-                        <elements:AnimRangeSelectionShape
-                            DataContext="{Binding AnimSelectShape}"
-                            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            StrokeColor="Green"
-                            StrokeThickness="{Binding StrokeThickness}"
-                            IsHitTestVisible="False"
-                            Canvas.Left="{Binding X}"
-                            Canvas.Top="{Binding Y}"
-                            StepHeight="{Binding StepHeight}"
-                            TopStepPosition="{Binding StepPositionTop}"
-                            BottomStepPosition="{Binding StepPositionBottom}"
-                            Width="{Binding Width}"
-                            Height="{Binding Height}"/>
-                        <elements:VisualGrid
-                            DataContext="{Binding VisualGrid}"
-                            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto"
+                    CanContentScroll="True">
+                    <pzp:ZoomPanel
+                        x:Name="SourcePanel"
+                        DataContext="{Binding SourceViewTab}"
+                        ViewportZoom="{Binding Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        ContentOffsetX="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        ContentOffsetY="{Binding OffsetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        BorderBrush="Transparent"
+                        Background="Transparent"
+                        CanVerticallyScroll="True"
+                        ClipToBounds="True"
+                        MouseDragZoomModifier="Windows"
+                        ap:SizeObserverAP.ObserveSize="True"
+                        ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
+                        ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
+                        ap:ScrollingAP.ScrollCommand="{Binding ScrollCommand}">
+                        <Canvas
+                            x:Name="SourceCanvas"
+                            DataContext="{Binding DataContext.Source, RelativeSource={RelativeSource AncestorType=Window}}"
+                            d:DataContext="{d:DesignInstance Type=viewmodel:SourceTexturePanelViewModel, IsDesignTimeCreatable=False}"
                             Width="{Binding ElementName=SourceImage, Path=ActualWidth}"
                             Height="{Binding ElementName=SourceImage, Path=ActualHeight}"
-                            GridOffsetX="{Binding OffsetX}"
-                            GridOffsetY="{Binding OffsetY}"
-                            CellSize="{Binding CellSize}"
-                            Stroke="DarkGoldenrod"
-                            StrokeThickness="{Binding StrokeThickness}"
-                            MainDashStyle="{Binding MainDashStyle}"
-                            IsHitTestVisible="False"/>
-                    </Canvas>
-                </pzp:ZoomPanel>
+                            >
+                            <Image
+                                Name="SourceImage"
+                                Stretch="None"
+                                Source="{Binding Presenter}"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                ap:SizeObserverAP.ObserveSize="True"
+                                ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ContentWidth, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
+                                ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ContentHeight, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
+                                ap:PanelMouseAP.CheckMouseEnterLeave="True"
+                                ap:PanelMouseAP.IsTargetPanel="False"/>
+                            <Rectangle
+                                d:Visibility="Hidden"
+                                DataContext="{Binding SelectionShape}"
+                                Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                                Width="{Binding Width, UpdateSourceTrigger=PropertyChanged}"
+                                Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
+                                Stroke="Yellow"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
+                                IsHitTestVisible="False"/>
+                            <elements:PickerShape
+                                DataContext="{Binding Picker}"
+                                Size="{Binding Size}"
+                                Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                d:Visibility="Hidden"
+                                Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                                Stroke="Red"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
+                                IsHitTestVisible="False"/>
+                                
+                            <elements:AnimRangeSelectionShape
+                                DataContext="{Binding AnimSelectShape}"
+                                Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                StrokeColor="Green"
+                                StrokeThickness="{Binding StrokeThickness}"
+                                IsHitTestVisible="False"
+                                Canvas.Left="{Binding X}"
+                                Canvas.Top="{Binding Y}"
+                                StepHeight="{Binding StepHeight}"
+                                TopStepPosition="{Binding StepPositionTop}"
+                                BottomStepPosition="{Binding StepPositionBottom}"
+                                Width="{Binding Width}"
+                                Height="{Binding Height}"/>
+                            <elements:VisualGrid
+                                DataContext="{Binding VisualGrid}"
+                                Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                Width="{Binding ElementName=SourceImage, Path=ActualWidth}"
+                                Height="{Binding ElementName=SourceImage, Path=ActualHeight}"
+                                GridOffsetX="{Binding OffsetX}"
+                                GridOffsetY="{Binding OffsetY}"
+                                CellSize="{Binding CellSize}"
+                                Stroke="DarkGoldenrod"
+                                StrokeThickness="{Binding StrokeThickness}"
+                                MainDashStyle="{Binding MainDashStyle}"
+                                IsHitTestVisible="False"/>
+                        </Canvas>
+                    </pzp:ZoomPanel>
+                </ScrollViewer>
             </elements:FileDropBorder>            
             <TextBlock
                 d:Foreground="White"
@@ -968,130 +972,135 @@
                 DropCommand="{Binding FileDropDestinationCommand}"
                 ap:MouseOverInfoAP.InfoText="Target Texture Panel: Drag with left: Select, Drag with right: Animate, Right click: Discard Selection"
                 >
-                <pzp:ZoomPanel
-                    x:Name="TargetPanel"
-                    DataContext="{Binding DestinationViewTab}"
-                    ViewportZoom="{Binding   Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    ContentOffsetX="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    ContentOffsetY="{Binding OffsetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    BorderBrush="Transparent"
-                    Background="Transparent"
-                    ClipToBounds="True"
-                    MouseDragZoomModifier="Windows"
-                    ap:SizeObserverAP.ObserveSize="True"
-                    ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, Mode=OneWayToSource}"
-                    ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, Mode=OneWayToSource}"
-                    ap:ScrollingAP.ScrollCommand="{Binding ScrollCommand}">
-                    <Canvas
-                        x:Name="TargetCanvas"
-                        DataContext="{Binding DataContext.Destination, RelativeSource={RelativeSource AncestorType=Window}}"
-                        d:DataContext="{d:DesignInstance Type=viewmodel:TargetTexturePanelViewModel, IsDesignTimeCreatable=False}"
-                        Width="{Binding ElementName=TargetImage, Path=ActualWidth}"
-                        Height="{Binding ElementName=TargetImage, Path=ActualHeight}"
-                        ClipToBounds="True">
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto"
+                    CanContentScroll="True">
+                    <pzp:ZoomPanel
+                        x:Name="TargetPanel"
+                        DataContext="{Binding DestinationViewTab}"
+                        ViewportZoom="{Binding   Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        ContentOffsetX="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        ContentOffsetY="{Binding OffsetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        BorderBrush="Transparent"
+                        Background="Transparent"
+                        ClipToBounds="True"
+                        MouseDragZoomModifier="Windows"
+                        ap:SizeObserverAP.ObserveSize="True"
+                        ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, Mode=OneWayToSource}"
+                        ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, Mode=OneWayToSource}"
+                        ap:ScrollingAP.ScrollCommand="{Binding ScrollCommand}">
+                        <Canvas
+                            x:Name="TargetCanvas"
+                            DataContext="{Binding DataContext.Destination, RelativeSource={RelativeSource AncestorType=Window}}"
+                            d:DataContext="{d:DesignInstance Type=viewmodel:TargetTexturePanelViewModel, IsDesignTimeCreatable=False}"
+                            Width="{Binding ElementName=TargetImage, Path=ActualWidth}"
+                            Height="{Binding ElementName=TargetImage, Path=ActualHeight}"
+                            ClipToBounds="True">
 
-                        <Image
-                            Name="TargetImage"
-                            Stretch="Uniform"
-                            Source="{Binding Presenter}"
-                            RenderOptions.BitmapScalingMode="NearestNeighbor"
-                            ap:SizeObserverAP.ObserveSize="True"
-                            ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ContentWidth, Mode=OneWayToSource}"
-                            ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ContentHeight, Mode=OneWayToSource}"
-                            ap:PanelMouseAP.CheckMouseEnterLeave="True"
-                            ap:PanelMouseAP.IsTargetPanel="True"/>
+                            <Image
+                                Name="TargetImage"
+                                Stretch="None"
+                                Source="{Binding Presenter}"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                ap:SizeObserverAP.ObserveSize="True"
+                                ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ContentWidth, Mode=OneWayToSource}"
+                                ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ContentHeight, Mode=OneWayToSource}"
+                                ap:PanelMouseAP.CheckMouseEnterLeave="True"
+                                ap:PanelMouseAP.IsTargetPanel="True"/>
 
-                        <Rectangle
-                            DataContext="{Binding SelectionShape}"
-                            d:Visibility="Hidden"
-                            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                            Width="{Binding Width, UpdateSourceTrigger=PropertyChanged}"
-                            Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
-                            Stroke="Yellow"
-                            StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                            IsHitTestVisible="False"/>
+                            <Rectangle
+                                DataContext="{Binding SelectionShape}"
+                                d:Visibility="Hidden"
+                                Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                                Width="{Binding Width, UpdateSourceTrigger=PropertyChanged}"
+                                Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
+                                Stroke="Yellow"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
+                                IsHitTestVisible="False"/>
 
-                        <elements:PickerShape
-                            DataContext="{Binding Picker}"
-                            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            d:Visibility="Hidden"
-                            Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                            Size="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
-                            Stroke="Red"
-                            StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                            IsHitTestVisible="False"/>
+                            <elements:PickerShape
+                                DataContext="{Binding Picker}"
+                                Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                d:Visibility="Hidden"
+                                Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                                Size="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
+                                Stroke="Red"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
+                                IsHitTestVisible="False"/>
 
-                        <Image
-                            Name="SelectionPreviewImage"
-                            Source="{Binding Selection.Presenter}"
-                            Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
-                            Visibility="{Binding IsPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            RenderOptions.BitmapScalingMode="NearestNeighbor"
-                            IsHitTestVisible="False"/>
+                            <Image
+                                Name="SelectionPreviewImage"
+                                Source="{Binding Selection.Presenter}"
+                                Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding IsPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                IsHitTestVisible="False"/>
 
-                        <Border
-                            BorderBrush="Yellow"
-                            Width="{Binding ElementName=SelectionPreviewImage, Path=ActualWidth}"
-                            Height="{Binding ElementName=SelectionPreviewImage, Path=ActualHeight}"
-                            BorderThickness="{Binding SelectionShape.StrokeThickness}"
-                            Visibility="{Binding ElementName=SelectionPreviewImage, Path=Visibility}"
-                            Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
-                            IsHitTestVisible="False"/>
+                            <Border
+                                BorderBrush="Yellow"
+                                Width="{Binding ElementName=SelectionPreviewImage, Path=ActualWidth}"
+                                Height="{Binding ElementName=SelectionPreviewImage, Path=ActualHeight}"
+                                BorderThickness="{Binding SelectionShape.StrokeThickness}"
+                                Visibility="{Binding ElementName=SelectionPreviewImage, Path=Visibility}"
+                                Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
+                                IsHitTestVisible="False"/>
 
-                        <elements:AnimRangeSelectionShape
-                            DataContext="{Binding AnimSelectShape}"
-                            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            StrokeColor="Green"
-                            StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                            IsHitTestVisible="False"
-                            Canvas.Left="{Binding X}"
-                            Canvas.Top="{Binding Y}"
-                            StepHeight="{Binding StepHeight}"
-                            TopStepPosition="{Binding StepPositionTop}"
-                            BottomStepPosition="{Binding StepPositionBottom}"
-                            Width="{Binding Width}"
-                            Height="{Binding Height}"/>
+                            <elements:AnimRangeSelectionShape
+                                DataContext="{Binding AnimSelectShape}"
+                                Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                StrokeColor="Green"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
+                                IsHitTestVisible="False"
+                                Canvas.Left="{Binding X}"
+                                Canvas.Top="{Binding Y}"
+                                StepHeight="{Binding StepHeight}"
+                                TopStepPosition="{Binding StepPositionTop}"
+                                BottomStepPosition="{Binding StepPositionBottom}"
+                                Width="{Binding Width}"
+                                Height="{Binding Height}"/>
 
-                        <Rectangle
-                            DataContext="{Binding OriginalPosShape}"
-                            Visibility="{Binding  IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                            Width="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
-                            Height="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
-                            Stroke="DarkOrchid"
-                            StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                            StrokeDashArray="1 1"
-                            IsHitTestVisible="False"/>
+                            <Rectangle
+                                DataContext="{Binding OriginalPosShape}"
+                                Visibility="{Binding  IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                                Width="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
+                                Height="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
+                                Stroke="DarkOrchid"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
+                                StrokeDashArray="1 1"
+                                IsHitTestVisible="False"/>
 
-                        <Line
-                            Visibility="{Binding TargetPosShape.IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            X1="{Binding OriginalPosShape.CenterX, UpdateSourceTrigger=PropertyChanged}"
-                            Y1="{Binding OriginalPosShape.CenterY, UpdateSourceTrigger=PropertyChanged}"
-                            X2="{Binding TargetPosShape.CenterX, UpdateSourceTrigger=PropertyChanged}"
-                            Y2="{Binding TargetPosShape.CenterY, UpdateSourceTrigger=PropertyChanged}"
-                            Stroke="MediumOrchid"
-                            StrokeThickness="{Binding TargetPosShape.StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                            StrokeDashArray="1 1"
-                            IsHitTestVisible="False"/>
-                        <Rectangle
-                            DataContext="{Binding TargetPosShape}"
-                            Visibility="{Binding  IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
-                            Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                            Width="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
-                            Height="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
-                            Stroke="Orchid"
-                            StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                            IsHitTestVisible="False"/>
-                    </Canvas>
+                            <Line
+                                Visibility="{Binding TargetPosShape.IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                X1="{Binding OriginalPosShape.CenterX, UpdateSourceTrigger=PropertyChanged}"
+                                Y1="{Binding OriginalPosShape.CenterY, UpdateSourceTrigger=PropertyChanged}"
+                                X2="{Binding TargetPosShape.CenterX, UpdateSourceTrigger=PropertyChanged}"
+                                Y2="{Binding TargetPosShape.CenterY, UpdateSourceTrigger=PropertyChanged}"
+                                Stroke="MediumOrchid"
+                                StrokeThickness="{Binding TargetPosShape.StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
+                                StrokeDashArray="1 1"
+                                IsHitTestVisible="False"/>
+                            <Rectangle
+                                DataContext="{Binding TargetPosShape}"
+                                Visibility="{Binding  IsVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                                Width="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
+                                Height="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
+                                Stroke="Orchid"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
+                                IsHitTestVisible="False"/>
+                        </Canvas>
 
-                </pzp:ZoomPanel>
+                    </pzp:ZoomPanel>
+                </ScrollViewer>
             </elements:FileDropBorder>
             <TextBlock
                 Grid.Row="2"

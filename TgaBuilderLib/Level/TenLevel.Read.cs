@@ -1,4 +1,6 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Security;
@@ -97,7 +99,7 @@ namespace TgaBuilderLib.Level
 
         private void ReadTexturePages(BinaryReader levelReader, bool discardTextures = false, bool isSprites = false, bool isSky = false)
         {
-            int size, width, height;
+            int size, width, height, bytesRead;
 
             bool hasNormalMap;
 
@@ -116,9 +118,23 @@ namespace TgaBuilderLib.Level
                 }
                 else
                 {
-                    var textureData = levelReader.ReadBytes(size);
-                    _texDimsList.Add((width, height, size));
-                    _texPagesList.Add(GetRentedPixelArrayFromPng(textureData, width, height));
+                    var textureData = _bytePool.Rent(size);
+
+                    try
+                    {
+                        bytesRead = levelReader.Read(textureData, 0, size);
+
+                        if (bytesRead != size)
+                            throw new InvalidOperationException(
+                                $"Expected to read {size} bytes, but only read {bytesRead} bytes for texture {i}.");
+
+                        _texDimsList.Add((width, height, size));
+                        _texPagesList.Add(GetRentedPixelArrayFromPng(textureData, width, height, size));
+                    }
+                    finally
+                    {
+                        _bytePool.Return(textureData);
+                    }
                 }
 
                 if (isSprites || isSky)
@@ -348,11 +364,6 @@ namespace TgaBuilderLib.Level
             byte[] stringBytes = reader.ReadBytes((int)numBytes);
 
             return System.Text.Encoding.UTF8.GetString(stringBytes);
-        }
-
-        public override void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 }

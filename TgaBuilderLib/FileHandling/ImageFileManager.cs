@@ -61,17 +61,17 @@ namespace TgaBuilderLib.FileHandling
                 case FileTypes.PHD:
                 case FileTypes.TR2:
                 case FileTypes.TR4:
-                    var trLevel = new TrLevel(
-                        fileName:                   fileName,
-                        trTexturePanelHorPagesNum:  TrImportHorPageNum,
-                        useTrTextureRepacking:      TrImportRepackingSelected);
+                    WriteableBitmap? trRes;
+                    using (TrLevel trLevel = new TrLevel(
+                        fileName: fileName,
+                        trTexturePanelHorPagesNum: TrImportHorPageNum,
+                        useTrTextureRepacking: TrImportRepackingSelected))
+                    {
+                        trRes = trLevel.ResultBitmap;
 
-                    var trRes = trLevel.ResultBitmap;
-
-                    if (!trLevel.BitmapSpaceSufficient)
-                        ResultInfo = ResultStatus.BitmapAreaNotSufficient;
-
-                    trLevel = null;
+                        if (!trLevel.BitmapSpaceSufficient)
+                            ResultInfo = ResultStatus.BitmapAreaNotSufficient;
+                    }
                     return trRes;
 
                 case FileTypes.TEN:

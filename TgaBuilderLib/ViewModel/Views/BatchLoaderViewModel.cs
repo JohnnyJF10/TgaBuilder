@@ -64,6 +64,8 @@ namespace TgaBuilderLib.ViewModel
         private int _startTexIndex = 0;
         private int _numTextures = 11;
         private int _textureSize = 128;
+        private int _panelWidth = 512;
+        private bool _isDropHintVisible = true;
 
         private RelayCommand? _selectTRRFolderCommand;
         private RelayCommand<IView>? _importCommand;
@@ -77,80 +79,37 @@ namespace TgaBuilderLib.ViewModel
         public WriteableBitmap Presenter
         {
             get => _presenter;
-            set
-            {
-                if (value == _presenter) return;
-                _presenter = value;
-                OnCallerPropertyChanged();
-            }
+            set => SetProperty(ref _presenter, value, nameof(Presenter));
         }
 
         public int StartTexIndex
         {
             get => _startTexIndex;
-            set 
-            {
-                if (value ==  _startTexIndex) return;
-
-                if (value < 0) 
-                    value = 0;
-
-                if (value >= _allFiles.Count) 
-                    value = _allFiles.Count - 1;
-
-                _startTexIndex = value;
-
-                _selectedFiles = _allFiles
-                    .Skip(_startTexIndex)
-                    .Take(_numTextures)
-                    .ToList();
-
-                OnCallerPropertyChanged();
-                _ = UpdatePresenterAsync();
-            }
+            set => SetStartTexIndex(value);
         }
 
         public int NumTextures
         {
             get => _numTextures;
-            set
-            {
-                if (value == _numTextures) return;
-                if (value < 0) value = 0;
-
-                int oldVal = _numTextures;
-
-                _numTextures = value;
-
-                _selectedFiles = _allFiles
-                    .Skip(_startTexIndex)
-                    .Take(_numTextures)
-                    .ToList();
-
-                OnCallerPropertyChanged();
-                _ = UpdatePresenterNumChangedAsync(oldVal, value);
-            }
+            set => SetNumTextures(value);
         }
-
 
         public int TextureSize
         {
             get => _textureSize;
-            set
-            {
-                if (value == _textureSize) return;
+            set => SetTextureSize(value);
+        }
 
-                value = Math.Clamp(value, TEX_MIN_SIZE, TEX_MAX_SIZE);
+        public int PanelWidth
+        {
+            get => _panelWidth;
+            set => SetImportPanelWidth(value);
+        }
 
-                if (value < _textureSize )
-                    value = NextLowerPowerOfTwo(value);
-                else
-                    value = NextHigherPowerOfTwo(value);
-                _textureSize = value;
-
-                OnCallerPropertyChanged();
-                _ = UpdatePresenterAsync();
-            }
+        public bool IsDropHintVisible
+        {
+            get => _isDropHintVisible;
+            set => SetProperty(ref _isDropHintVisible, value, nameof(IsDropHintVisible));
         }
 
         public ICommand SelectTRRFolderCommand
@@ -163,6 +122,82 @@ namespace TgaBuilderLib.ViewModel
             => openRecentFolderCommand ??= new RelayCommand<string>(SelectFolder);
         public ICommand FileDropCommand
             => _fileDropCommand ??= new RelayCommand<List<string>>(FileDrop);
+
+
+
+
+
+        public void SetStartTexIndex(int index)
+        {
+            if (index == _startTexIndex) return;
+
+            if (index < 0)
+                index = 0;
+
+            if (index >= _allFiles.Count)
+                index = _allFiles.Count - 1;
+
+            _startTexIndex = index;
+
+            _selectedFiles = _allFiles
+                .Skip(_startTexIndex)
+                .Take(_numTextures)
+                .ToList();
+
+            OnPropertyChanged(nameof(StartTexIndex));
+            _ = UpdatePresenterAsync();
+        }
+
+        public void SetNumTextures(int num)
+        {
+            if (num == _numTextures) 
+                return;
+            if (num < 0) 
+                num = 0;
+
+            int oldVal = _numTextures;
+
+            _numTextures = num;
+
+            _selectedFiles = _allFiles
+                .Skip(_startTexIndex)
+                .Take(_numTextures)
+                .ToList();
+
+            OnPropertyChanged(nameof(NumTextures));
+            _ = UpdatePresenterNumChangedAsync(oldVal, num);
+        }
+
+        public void SetTextureSize(int size)
+        {
+            if (size == _textureSize) 
+                return;
+
+            size = Math.Clamp(size, TEX_MIN_SIZE, TEX_MAX_SIZE);
+
+            if (size < _textureSize)
+                size = NextLowerPowerOfTwo(size);
+            else
+                size = NextHigherPowerOfTwo(size);
+            _textureSize = size;
+
+            OnPropertyChanged(nameof(TextureSize));
+            _ = UpdatePresenterAsync();
+        }
+
+
+        private void SetImportPanelWidth(int value)
+        {
+            if (value == _panelWidth) 
+                return;
+
+            value = CalculateNewPanelWidth(value, _panelWidth);
+
+            _panelWidth = value;
+
+            OnPropertyChanged(nameof(PanelWidth));
+            _ = UpdatePresenterAsync();
+        }
 
         public void Import(IView view)
         {
@@ -185,10 +220,10 @@ namespace TgaBuilderLib.ViewModel
             if (paddedHeight == Presenter.PixelHeight)
                 return;
 
-            int stride = Presenter.PixelWidth * 4;
+            int stride = PanelWidth * 4;
 
             WriteableBitmap paddedBitmap = new WriteableBitmap(
-                pixelWidth: Presenter.PixelWidth,
+                pixelWidth: PanelWidth,
                 pixelHeight: paddedHeight,
                 dpiX: 96,
                 dpiY: 96,
@@ -205,7 +240,7 @@ namespace TgaBuilderLib.ViewModel
             }
 
             paddedBitmap.WritePixels(
-                sourceRect: new Int32Rect(0, 0, Presenter.PixelWidth, paddedHeight),
+                sourceRect: new Int32Rect(0, 0, PanelWidth, paddedHeight),
                 pixels:     blackPixels, 
                 stride:     stride, 
                 offset:     0);
@@ -213,9 +248,9 @@ namespace TgaBuilderLib.ViewModel
             // Copy original pixels to the top of the padded bitmap
             CroppedBitmap croppedSource = new CroppedBitmap(
                 source:     Presenter, 
-                sourceRect: new Int32Rect(0, 0, Presenter.PixelWidth, Presenter.PixelHeight));
+                sourceRect: new Int32Rect(0, 0, PanelWidth, Presenter.PixelHeight));
 
-            int srcStride = Presenter.PixelWidth * 4;
+            int srcStride = PanelWidth * 4;
             byte[] srcPixels = new byte[Presenter.PixelHeight * srcStride];
 
             croppedSource.CopyPixels(
@@ -224,7 +259,7 @@ namespace TgaBuilderLib.ViewModel
                 offset: 0);
 
             paddedBitmap.WritePixels(
-                sourceRect: new Int32Rect(0, 0, Presenter.PixelWidth, Presenter.PixelHeight),
+                sourceRect: new Int32Rect(0, 0, PanelWidth, Presenter.PixelHeight),
                 pixels:     srcPixels, 
                 stride:     srcStride, 
                 offset:     0);
@@ -253,13 +288,13 @@ namespace TgaBuilderLib.ViewModel
 
             try
             {
-                int texPerRow = Presenter.PixelWidth / _textureSize;
+                int texPerRow = PanelWidth / _textureSize;
                 int newHeight = ((_selectedFiles.Count - 1) / texPerRow + 1) * _textureSize;
 
                 if (newHeight > Presenter.PixelHeight)
-                    Presenter = _bitmapOperations.Resize(Presenter, Presenter.PixelWidth, newHeight + _textureSize);
+                    Presenter = _bitmapOperations.Resize(Presenter, PanelWidth, newHeight + _textureSize);
                 else if (newHeight < Presenter.PixelHeight)
-                    Presenter = _bitmapOperations.Resize(Presenter, Presenter.PixelWidth, newHeight);
+                    Presenter = _bitmapOperations.Resize(Presenter, PanelWidth, newHeight);
 
                 for (int i = 0; i < _selectedFiles.Count; i++)
                 {
@@ -287,7 +322,7 @@ namespace TgaBuilderLib.ViewModel
                         scalingMode:    BitmapScalingMode.NearestNeighbor);
 
                     }
-                    catch (OperationCanceledException) when (token.IsCancellationRequested)
+                    catch (OperationCanceledException) 
                     {
                         throw;
                     }
@@ -312,7 +347,7 @@ namespace TgaBuilderLib.ViewModel
                     await Task.Yield(); 
                 }
             }
-            catch (OperationCanceledException) when (_updateTaskCts?.IsCancellationRequested == true) {}
+            catch (OperationCanceledException) {}
             catch (Exception ex) 
             {
                 _logger.LogError(ex);
@@ -345,13 +380,13 @@ namespace TgaBuilderLib.ViewModel
 
             try
             {
-                int texPerRow = Presenter.PixelWidth / _textureSize;
+                int texPerRow = PanelWidth / _textureSize;
                 int newHeight = ((newNum - 1) / texPerRow + 1) * _textureSize;
 
                 if (newNum > oldNum)
                 {
                     if (newHeight > Presenter.PixelHeight)
-                        Presenter = _bitmapOperations.Resize(Presenter, Presenter.PixelWidth, newHeight + _textureSize);
+                        Presenter = _bitmapOperations.Resize(Presenter, PanelWidth, newHeight + _textureSize);
 
                     for (int i = oldNum; i < newNum; i++)
                     {
@@ -381,7 +416,7 @@ namespace TgaBuilderLib.ViewModel
                             scalingMode:    BitmapScalingMode.NearestNeighbor);
 
                         }
-                        catch (OperationCanceledException) when (token.IsCancellationRequested)
+                        catch (OperationCanceledException) 
                         {
                             throw;
                         }
@@ -408,7 +443,7 @@ namespace TgaBuilderLib.ViewModel
                 else if (newNum < oldNum)
                 {
                     if (newHeight < Presenter.PixelHeight)
-                        Presenter = _bitmapOperations.Resize(Presenter, Presenter.PixelWidth, newHeight);
+                        Presenter = _bitmapOperations.Resize(Presenter, PanelWidth, newHeight);
 
                     for (int i = oldNum - 1; i >= newNum; i--)
                     {
@@ -419,7 +454,7 @@ namespace TgaBuilderLib.ViewModel
                     }
                 }
             }
-            catch (OperationCanceledException) when (_updateTaskCts?.IsCancellationRequested == true) { }
+            catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 _logger.LogError(ex);
@@ -474,7 +509,9 @@ namespace TgaBuilderLib.ViewModel
                 .Skip(_startTexIndex)
                 .Take(_numTextures)
                 .ToList();
-        
+
+            IsDropHintVisible = false;
+
             _ = UpdatePresenterAsync();
         }
 
@@ -500,8 +537,27 @@ namespace TgaBuilderLib.ViewModel
             _startTexIndex = 0;
             OnPropertyChanged(nameof(StartTexIndex));
 
+            IsDropHintVisible = false;
+
             _ = UpdatePresenterAsync();
         }
+
+        private int CalculateNewPanelWidth(int proposedValue, int currentValue)
+            => proposedValue < currentValue ? proposedValue switch
+            {
+                < 1024 => 512,
+                < 2048 => 1024,
+                < 4096 => 2048,
+                _      => 4096,
+            }
+            : proposedValue switch
+            {
+
+                > 2048 => 4096,
+                > 1024 => 2048,
+                > 512  => 1024,
+                _      => 512,
+            };
 
         private int NextLowerPowerOfTwo(int n)
         {

@@ -150,7 +150,11 @@ namespace TgaBuilderLib.Level
 
             // Only visible area
             IntPtr backBuffer = writeableBitmap.BackBuffer;
-            Marshal.Copy(byteArray, 0, backBuffer, croppedSize);
+            Marshal.Copy(
+                source:         byteArray, 
+                startIndex:     0, 
+                destination:    backBuffer, 
+                length:         croppedSize);
 
             writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, width, actualHeight));
             writeableBitmap.Unlock();

@@ -164,27 +164,13 @@ namespace TgaBuilderLib.ViewModel
         public bool TrImportRepackingSelected
         {
             get => _imageManager.TrImportRepackingSelected;
-            set
-            {
-                if (value == _imageManager.TrImportRepackingSelected)
-                    return;
-                _imageManager.TrImportRepackingSelected = value;
-                OnCallerPropertyChanged();
-            }
+            set => SetTrImportRepackingSelected(value);
         }
 
         public int TrImportHorPageNum
         {
             get => _imageManager.TrImportHorPageNum;
-            set
-            {
-                if (value == _imageManager.TrImportHorPageNum)
-                    return;
-
-                var newValue = CalculateNewPageXValue(value, _imageManager.TrImportHorPageNum);
-                _imageManager.TrImportHorPageNum = newValue;
-                OnCallerPropertyChanged();
-            }
+            set => SetTrImportHorPageNum(value);
         }
 
         public ICommand MousePanelCommand
@@ -259,6 +245,24 @@ namespace TgaBuilderLib.ViewModel
             => selectionMonoColorFillCommand ??= new RelayCommand<SolidColorBrush>(SelectionMonoColorFill);
 
 
+
+        public void SetTrImportRepackingSelected(bool value)
+        {
+            if (value == _imageManager.TrImportRepackingSelected)
+                return;
+            _imageManager.TrImportRepackingSelected = value;
+            OnPropertyChanged(nameof(TrImportRepackingSelected));
+        }
+
+        public void SetTrImportHorPageNum(int num)
+        {
+            if (num == _imageManager.TrImportHorPageNum)
+                return;
+
+            var newValue = CalculateNewPageXValue(num, _imageManager.TrImportHorPageNum);
+            _imageManager.TrImportHorPageNum = newValue;
+            OnPropertyChanged(nameof(TrImportHorPageNum));
+        }
 
         public void HandleMouseOnPanel(int x, int y, bool isTarget, MouseAction action, MouseModifier modifier)
         {

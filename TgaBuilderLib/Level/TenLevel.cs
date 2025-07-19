@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -35,7 +37,6 @@ namespace TgaBuilderLib.Level
                 height: targetPanelHeight,
                 pixelFormat: PixelFormats.Bgra32);
 
-            ReturnRentedArrays();
         }
 
         protected override void RepackAtlas()
@@ -43,7 +44,9 @@ namespace TgaBuilderLib.Level
             if (RepackedTexturePositions.Count != _roomsTextureInfos.Count)
                 throw new ArgumentException("The number of original and repack tiles must be the same.");
 
-            TargetAtlas = new byte[targetPanelHeight * targetPanelWidth * 4];
+            int atlasSize = targetPanelHeight * targetPanelWidth * IMPORT_BPP;
+            TargetAtlas = _bytePool.Rent(atlasSize);
+            Array.Clear(TargetAtlas, 0, atlasSize);
 
             for (int i = 0; i < _roomsTextureInfos.Count; i++)
             {
@@ -53,27 +56,40 @@ namespace TgaBuilderLib.Level
 
         protected override void PlaceTile(int idx)
         {
-            int pageIdx = _roomsTextureInfos[idx].page;
-            int sourceIndex = (_roomsTextureInfos[idx].y * _texDimsList[pageIdx].width + _roomsTextureInfos[idx].x) * 4;
-            int destinationIndex = (RepackedTexturePositions[idx].y * targetPanelWidth + RepackedTexturePositions[idx].x) * 4;
-            int width = _roomsTextureInfos[idx].width;
-            int height = _roomsTextureInfos[idx].height;
+            var oldInfo = _roomsTextureInfos[idx];
+            var page = _texPagesList[oldInfo.page];
+            var pageInfo = _texDimsList[oldInfo.page];
+            var newPos = RepackedTexturePositions[idx];
+
+            int sourceIndex = (oldInfo.y * pageInfo.width + oldInfo.x) * IMPORT_BPP;
+            int destinationIndex = (newPos.y * targetPanelWidth + newPos.x) * IMPORT_BPP;
+            int width = oldInfo.width;
+            int height = oldInfo.height;
 
             for (int i = 0; i < height; i++)
             {
-                if (destinationIndex + height * 3 > TargetAtlas!.Length) continue;
-                if (sourceIndex + height * 3 > _texPagesList[pageIdx].Length) continue;
+                if (destinationIndex + height * 3 > TargetAtlas!.Length) 
+                    continue;
 
-                Array.Copy(_texPagesList[pageIdx], sourceIndex, TargetAtlas, destinationIndex, width * 4);
-                destinationIndex += targetPanelWidth * 4;
-                sourceIndex += _texDimsList[pageIdx].width * 4;
+                if (sourceIndex + height * 3 > page.Length) 
+                    continue;
+
+                Array.Copy(
+                    sourceArray:        page, 
+                    sourceIndex:        sourceIndex, 
+                    destinationArray:   TargetAtlas, 
+                    destinationIndex:   destinationIndex, 
+                    length:             width * IMPORT_BPP);
+
+                destinationIndex += targetPanelWidth * IMPORT_BPP;
+                sourceIndex += pageInfo.width * IMPORT_BPP;
             }
         }
 
-        private byte[] GetRentedPixelArrayFromPng(byte[] pngBytes, int width, int height)
+        private byte[] GetRentedPixelArrayFromPng(byte[] pngBytes, int width, int height, int size)
         {
             var bitmapImage = new BitmapImage();
-            using (var ms = new MemoryStream(pngBytes))
+            using (var ms = new MemoryStream(pngBytes, 0, size, writable: false, publiclyVisible: true))
             {
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad; 
@@ -95,14 +111,20 @@ namespace TgaBuilderLib.Level
             return pixelData; // Format: BGRA (Blue, Green, Red, Alpha)
         }
 
-        private void ReturnRentedArrays()
+        public override void Dispose()
         {
-            foreach (var page in _texPagesList)
+            foreach (byte[] page in _texPagesList)
             {
                 if (page.Length == 0) 
                     continue; 
 
                 _bytePool.Return(page);
+            }
+
+            if (TargetAtlas != null)
+            {
+                _bytePool.Return(TargetAtlas);
+                TargetAtlas = null;
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
@@ -22,8 +24,10 @@ namespace TgaBuilderLib.Level
 
         private int _numPages;
 
-        private byte[]? _atlas8;
+        private byte[]? _paletteTr1;
+        private byte[]? _atlasTr1;
 
+        private byte[]? _rawAtlasCompressed;
         private byte[]? _rawAtlas;
 
 
@@ -51,12 +55,10 @@ namespace TgaBuilderLib.Level
                 int resHeight = ORIGINAL_PAGE_SIZE * _numPages / trTexturePanelHorPagesNum;
                 targetPanelHeight = NextHigherMultiple(resHeight, ORIGINAL_PAGE_SIZE);
 
-                TargetAtlas = targetPanelWidth == ORIGINAL_PAGE_SIZE
-                    ? _rawAtlas
-                    : RearrangeImagePages(
-                        inputData:      _rawAtlas!,
-                        originalWidth:  ORIGINAL_PAGE_SIZE,
-                        blocksPerRow:   trTexturePanelHorPagesNum);
+                if (targetPanelWidth == ORIGINAL_PAGE_SIZE)
+                    CopyRawToTarget();
+                else
+                    RearrangeImagePages();
             }
 
             ResultBitmap = CreateWriteableBitmapFromByteArray(
@@ -72,7 +74,9 @@ namespace TgaBuilderLib.Level
             if (RepackedTexturePositions.Count != _relevantTextureInfos.Count) 
                 throw new ArgumentException("The number of original and repack tiles must be the same.");
 
-            TargetAtlas = new byte[targetPanelHeight * targetPanelWidth * IMPORT_BPP];
+            int atlasSize = targetPanelHeight * targetPanelWidth * IMPORT_BPP;
+            TargetAtlas = ArrayPool<byte>.Shared.Rent(atlasSize);
+            Array.Clear(TargetAtlas, 0, atlasSize);
 
             for (int i = 0; i < _relevantTextureInfos.Count; i++)
             {
@@ -102,61 +106,96 @@ namespace TgaBuilderLib.Level
             }
         }
 
-        private byte[] RearrangeImagePages(
-            byte[] inputData,
-            int originalWidth,
-            int blocksPerRow)
+        private void CopyRawToTarget()
         {
-            if (originalWidth != 256)
-                throw new ArgumentException("Original width must be 256 pixels.");
+            if (_rawAtlas is null)
+                throw new InvalidOperationException("Raw atlas is not initialized.");
 
-            const int blockWidth = 256;
-            const int blockHeight = 256;
+            TargetAtlas = _bytePool.Rent(_rawAtlas.Length);
 
-            int totalPixels = inputData.Length / IMPORT_BPP;
-            int originalHeight = totalPixels / originalWidth;
+            Buffer.BlockCopy(
+                src:        _rawAtlas, 
+                srcOffset:  0, 
+                dst:        TargetAtlas, 
+                dstOffset:  0, 
+                count:      _rawAtlas.Length);
+        }
 
-            if (originalHeight % blockHeight != 0)
+        private void RearrangeImagePages()        
+        {
+            if (_rawAtlas is null)
+                throw new InvalidOperationException("Raw atlas is not initialized.");
+
+            int blocksPerRow = targetPanelWidth / ORIGINAL_PAGE_SIZE;
+
+            int originalHeight = _numPages * ORIGINAL_PAGE_SIZE;
+
+            if (originalHeight % ORIGINAL_PAGE_SIZE != 0)
                 throw new ArgumentException("Height must be a multiple of 256.");
 
-            int actualBlocks = originalHeight / blockHeight;
+            int atlasSize = targetPanelWidth * targetPanelHeight * IMPORT_BPP;
+            TargetAtlas = _bytePool.Rent(atlasSize);
+            Array.Clear(TargetAtlas, 0, atlasSize);
 
-            // Calculate rows, rounded
-            int blockRows = (int)Math.Ceiling((double)actualBlocks / blocksPerRow);
-            int totalBlocks = blockRows * blocksPerRow; 
-
-            int newWidth = blockWidth * blocksPerRow;
-            int newHeight = blockHeight * blockRows;
-
-            byte[] outputData = new byte[newWidth * newHeight * IMPORT_BPP]; 
-
-            for (int block = 0; block < actualBlocks; block++)
+            for (int block = 0; block < _numPages; block++)
             {
                 int blockRow = block / blocksPerRow;
                 int blockCol = block % blocksPerRow;
 
-                for (int y = 0; y < blockHeight; y++)
+                for (int y = 0; y < ORIGINAL_PAGE_SIZE; y++)
                 {
-                    for (int x = 0; x < blockWidth; x++)
+                    for (int x = 0; x < ORIGINAL_PAGE_SIZE; x++)
                     {
                         int srcX = x;
-                        int srcY = block * blockHeight + y;
-                        int srcIndex = (srcY * originalWidth + srcX) * IMPORT_BPP;
+                        int srcY = block * ORIGINAL_PAGE_SIZE + y;
+                        int srcIndex = (srcY * ORIGINAL_PAGE_SIZE + srcX) * IMPORT_BPP;
 
-                        int dstX = blockCol * blockWidth + x;
-                        int dstY = blockRow * blockHeight + y;
-                        int dstIndex = (dstY * newWidth + dstX) * IMPORT_BPP;
+                        int dstX = blockCol * ORIGINAL_PAGE_SIZE + x;
+                        int dstY = blockRow * ORIGINAL_PAGE_SIZE + y;
+                        int dstIndex = (dstY * targetPanelWidth + dstX) * IMPORT_BPP;
 
-                        Buffer.BlockCopy(inputData, srcIndex, outputData, dstIndex, IMPORT_BPP);
+                        Buffer.BlockCopy(
+                            src:        _rawAtlas, 
+                            srcOffset:  srcIndex, 
+                            dst:        TargetAtlas, 
+                            dstOffset:  dstIndex, 
+                            count:      IMPORT_BPP);
                     }
                 }
             }
-            return outputData;
         }
 
         public override void Dispose()
         {
-            throw new NotImplementedException();
+            if (_paletteTr1 is not null)
+            {
+                _bytePool.Return(_paletteTr1);
+                _paletteTr1 = null;
+            }
+
+            if (_atlasTr1 is not null)
+            {
+                _bytePool.Return(_atlasTr1);
+                _atlasTr1 = null;
+            }
+
+            if (_rawAtlasCompressed is not null)
+            {
+                _bytePool.Return(_rawAtlasCompressed);
+                _rawAtlasCompressed = null;
+            }
+
+            if (_rawAtlas is not null)
+            {
+                _bytePool.Return(_rawAtlas);
+                _rawAtlas = null;
+            }
+
+            if (TargetAtlas is not null)
+            {
+                _bytePool.Return(TargetAtlas);
+                TargetAtlas = null;
+            }
         }
     }
 }

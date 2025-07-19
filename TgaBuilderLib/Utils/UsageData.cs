@@ -8,7 +8,7 @@ namespace TgaBuilderLib.Utils
     {
         private const string USAGE_DATA_FILENAME = "TgaBuilder.usagedata.json";
 
-
+        public int UndoRedoMemoryBytes { get; set; } = 10 * 1024 * 1024;
         public List<string> RecentInputFiles { get; set; } = new();
         public List<string> RecentOutputFiles { get; set; } = new();
         public List<string> RecentBatchLoaderFolders { get; set; } = new();

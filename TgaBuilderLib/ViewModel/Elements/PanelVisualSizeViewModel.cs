@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace TgaBuilderLib.ViewModel
 {
@@ -12,42 +13,33 @@ namespace TgaBuilderLib.ViewModel
         public double ContentWidth
         {
             get => _contentWidth;
-            set
-            {
-                if (value == 0) return;
-                SetProperty(ref _contentWidth, value, nameof(ContentWidth));
-                Debug.WriteLine($"ContentWidth: {value}");
-            }
+            set => SetVisualSize(ref _contentWidth, value);
         }
         public double ContentHeight
         {
             get => _contentHeight;
-            set
-            {
-                if (value == 0) return;
-                SetProperty(ref _contentHeight, value, nameof(ContentHeight));
-                Debug.WriteLine($"ContentHeight: {value}");
-            }
+            set => SetVisualSize(ref _contentHeight, value);
         }
         public double ViewportWidth
         {
             get => _viewportWidth;
-            set
-            {
-                if (value == 0) return;
-                SetProperty(ref _viewportWidth, value, nameof(ViewportWidth));
-                Debug.WriteLine($"ViewportWidth: {value}");
-            }
+            set => SetVisualSize(ref _viewportWidth, value);
         }
         public double ViewportHeight
         {
             get => _viewportHeight;
-            set
-            {
-                if (value == 0) return;
-                SetProperty(ref _viewportHeight, value, nameof(ViewportHeight));
-                Debug.WriteLine($"ViewportHeight: {value}");
-            }
+            set => SetVisualSize(ref _viewportHeight, value);
+        }
+
+        protected void SetVisualSize(ref double field, double value, [CallerMemberName] string? propertyName = null)
+        {
+            if (value == 0 || string.IsNullOrEmpty(propertyName)) 
+                return;
+
+            field = value;
+            OnPropertyChanged(propertyName);
+
+            Debug.WriteLine($"{propertyName}: {value}");
         }
     }
 }

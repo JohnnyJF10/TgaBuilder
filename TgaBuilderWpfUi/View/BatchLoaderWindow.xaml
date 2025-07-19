@@ -16,8 +16,8 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     Title="MainWindow"
-    Height="420"
-    MinHeight="420"
+    Height="550"
+    MinHeight="550"
     Width="600"
     MinWidth="560"
     d:Background="Black"
@@ -108,6 +108,15 @@
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding TextureSize, UpdateSourceTrigger=PropertyChanged}"
                 />
+            <Label
+                Content="Import Panel Width:"
+                Margin="10"
+                HorizontalAlignment="Left"/>
+            <ui:NumberBox 
+                Margin="10"
+                Style="{StaticResource ModifiedUiNumberBoxStyle}"
+                Value="{Binding PanelWidth, UpdateSourceTrigger=PropertyChanged}"
+                />
         </StackPanel>
         <ui:Card
             VerticalAlignment="Stretch"
@@ -122,19 +131,36 @@
             Grid.Column="1"
             DropCommand="{Binding FileDropCommand}"
             >
-            <wpfzoompanel:ZoomPanel
-                BorderBrush="Transparent"
-                Background="Transparent"
-                Margin="5"
-                ZoomAndPanInitialPosition="FitScreen"
-                >
-                <Image
-                    Source="{Binding Presenter}"
-                    Stretch="Uniform"
-                    Margin="10"
-                    />
-            </wpfzoompanel:ZoomPanel>
+            <ScrollViewer
+                HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto"
+                CanContentScroll="True">
+                <wpfzoompanel:ZoomPanel
+                    BorderBrush="Transparent"
+                    Background="Transparent"
+                    Margin="5"
+                    ZoomAndPanInitialPosition="FitScreen"
+                    >
+                    <Image
+                        Source="{Binding Presenter}"
+                        Stretch="None"
+                        Margin="10"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                        />
+                </wpfzoompanel:ZoomPanel>
+            </ScrollViewer>
         </elements:FileDropBorder>
+        <TextBlock
+            Grid.Row="2"
+            Grid.Column="1"
+            Text="Drop Image Files here"
+            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+            IsHitTestVisible="False" 
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center" 
+            FontSize="24"
+            Visibility="{Binding IsDropHintVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+            />
 
         <Border
             Grid.Row="4"

@@ -111,7 +111,7 @@ From left to rigth:
   _Supports:_ **TR1–TRC, TRLE, TRNG, partially TEN (v1.7+)** (`Ctrl + Q`)
 - Enable remapping for imports (removes padding in TE-built atlases)
 ![Repacking](Screenshots/Repacking.png)
-- Set horizontal page count (1, 2, or 4 pages)
+- Set horizontal page count (1, 2, 4, 8, 16 pages)
 ![PageSizeImport](Screenshots/PageSizeImport.png)
 - Open Batch Loader (`Ctrl + W`)
 
@@ -188,7 +188,7 @@ From left to rigth:
 
 ![Size Tab](Screenshots/TabSize.png)
 - Set destination panel **height** (in pages, max 128 pages)
-- Set destination panel **width** (in pages, possible values 1, 2 or 4 pages)
+- Set destination panel **width** (in pages, possible values 1, 2, 4, 8 or 16 pages)
 - Enable texture **rearranging during width changes**
 ![TextureRearanging](Screenshots/ResizeSorted.png)
 
@@ -226,7 +226,8 @@ From left to rigth:
 - The application is currently limited to use **24 bpp pixel formates** for the destination texture panel. All incoming requests to modify image areas on the setination panel will be converted to 24bpp if they are not already. The color representing transparency is (r,g,b) = (255,0,255) as usual in TRLE; alpha = 0 areas will be converted to this color automatically.
 - The height of any bitmap/texture panel handled by this tool is currently capped at **32,768 px** or **128 pages** (~256 px length per page). This limitation is required to avoid issues with the .NET WPF Bitmap containers.
 - The height is always a **multiple of 256 px**, the standard TR page width, to ensure divisibility by picker sizes.
-- The width of the texture panel is limited to **256, 512, or 1,024 px** (1, 2, or 4 pages).
+- Current supported destination texture panel widths: **256, 512, 1024, 2048, 4096 px** (corresponding to 1, 2, 4, 8, and 16 pages).
+- Current supported picker sizes: **8, 16, 32, 64, 128, 256 px**
 - Image files that do not meet these requirements will be **automatically expanded or cropped**.
 
 ## License
@@ -236,13 +237,16 @@ This project is licensed under the MIT License.
 
 For WPFZoomPanel I did some custom modifications and adapted it to .net 8. This modified project is included in this reporsitory as well.
 
-| Package                          | Version | Source | License              | Project URL                                               |
+| Package                          | Version | Source | License               | Project URL                                               |
 |----------------------------------|---------|--------|-----------------------|-----------------------------------------------------------|
 | WPFZoomPanel                     | -       | GitHub | MIT                   | [GitHub](https://github.com/Moravuscz/WPFZoomPanel)       |
 | Pfim                             | 0.11.3  | NuGet  | MIT                   | [GitHub](https://github.com/nickbabcock/Pfim)             |
 | bzPSD                            | 0.1.0   | NuGet  | BSD-3-Clause license  | [GitHub](https://github.com/DsonKing/System.Drawing.PSD)  |
 | WPF UI                           | 4.0.3   | NuGet  | MIT                   | [GitHub](https://github.com/lepoco/wpfui)                 |
-| Microsoft Dependency Injection  | 9.0.6   | NuGet  | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)          |
+| Microsoft Dependency Injection   | 9.0.6   | NuGet  | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)          |
+| SharpZipLib                      | 1.4.2   | NuGet  | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)      |
+
+<PackageReference Include="SharpZipLib" Version="1.4.2" />
 
 I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their imppressive public contributions immensely helped me understanding the TR level file format. 
 

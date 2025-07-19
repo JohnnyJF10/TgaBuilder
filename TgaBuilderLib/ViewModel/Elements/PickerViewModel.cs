@@ -21,33 +21,13 @@
         internal int MaxSize
         {
             get => _maxSize;
-            set
-            {
-                if (value == _maxSize) return;
-                if (value > PICKER_MAX_SIZE) value = PICKER_MAX_SIZE;
-
-                _maxSize = value;
-
-                if (_size > _maxSize)
-                    Size = _maxSize;
-            }
+            set => SetMaxSize(value);
         }
 
         public int Size
         {
             get => _size;
-            set
-            {
-                if (value == _size) return;
-
-                if (value < _size)
-                    value = NextLowerPowerOfTwo(value);
-                else
-                    value = NextHigherPowerOfTwo(value);
-                _size = Math.Clamp(value, PICKER_MIN_SIZE, MaxSize);
-
-                OnCallerPropertyChanged();
-            }
+            set => SetSize(value);
         }
 
         public bool IsVisible
@@ -72,6 +52,35 @@
         {
             get => _strokeThicknes;
             set => SetProperty(ref _strokeThicknes, value, nameof(StrokeThickness));
+        }
+
+
+
+        private void SetMaxSize(int value)
+        {
+            if (value == _maxSize) 
+                return;
+
+            if (value > PICKER_MAX_SIZE) 
+                value = PICKER_MAX_SIZE;
+
+            _maxSize = value;
+
+            if (_size > _maxSize)
+                Size = _maxSize;
+        }
+
+        private void SetSize(int value)
+        {
+            if (value == _size) return;
+
+            if (value < _size)
+                value = NextLowerPowerOfTwo(value);
+            else
+                value = NextHigherPowerOfTwo(value);
+            _size = Math.Clamp(value, PICKER_MIN_SIZE, MaxSize);
+
+            OnPropertyChanged(nameof(Size));
         }
 
         private int NextLowerPowerOfTwo(int n)

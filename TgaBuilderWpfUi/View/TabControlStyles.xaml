@@ -28,14 +28,16 @@
                             Padding="5,0,5,0" 
                             Background="Transparent">
                             <Grid>
-                                <TextBlock
-                                    Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"
+                                <ContentPresenter
+                                    x:Name="ContentSite_BoldTransparentOverlay"
                                     Margin="5,0,5,0"
+                                    TextElement.FontWeight="DemiBold"
+                                    Opacity="0"
+                                    IsHitTestVisible="False"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    FontWeight="DemiBold"
-                                    Opacity="0"
-                                    IsHitTestVisible="False"/>
+                                    ContentSource="Header"
+                                    RecognizesAccessKey="True"/>
                                 <ContentPresenter
                                     x:Name="ContentSite"
                                     Margin="5,0,5,0"

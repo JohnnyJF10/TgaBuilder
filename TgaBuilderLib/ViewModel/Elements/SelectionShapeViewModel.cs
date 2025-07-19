@@ -27,58 +27,76 @@
             set => SetPropertyPrimitive(ref _isVisible, value, nameof(IsVisible));
         }
 
-        private DateTime _testTime = DateTime.Now;
-
         public int X
         {
             get => _x;
-            set
-            {
-                if (value == _x) return;
-
-                _x = Math.Clamp(value, MinX, MaxX);
-                OnPropertyChanged(nameof(X));
-            }
+            set => SetX(value);
         }
 
         public int Y
         {
             get => _y;
-            set
-            {
-                if (value == _y) return;
-
-                _y = Math.Clamp(value, MinY, MaxY);
-                OnPropertyChanged(nameof(Y));
-            }
+            set => SetY(value);
         }
 
         public int Width
         {
             get => _width;
-            set
-            {
-                if (value == _width) return;
-                _width = Math.Clamp(value, 0, MaxX);
-                OnPropertyChanged(nameof(Width));
-            }
+            set => SetWidth(value);
         }
 
         public int Height
         {
             get => _height;
-            set
-            {
-                if (value == _height) return;
-                _height = Math.Clamp(value, 0, MaxY);
-                OnPropertyChanged(nameof(Height));
-            }
+            set => SetHeight(value);
         }
 
         public double StrokeThickness
         {
             get => _strokeThickness;
             set => SetProperty(ref _strokeThickness, value, nameof(StrokeThickness));
+        }
+
+
+
+        private void SetX(int value)
+        {
+            if (value == _x)
+                return;
+
+            _x = Math.Clamp(value, MinX, MaxX);
+
+            OnPropertyChanged(nameof(X));
+        }
+
+        private void SetY(int value)
+        {
+            if (value == _y)
+                return;
+
+            _y = Math.Clamp(value, MinY, MaxY);
+
+            OnPropertyChanged(nameof(Y));
+        }
+
+        private void SetWidth(int value)
+        {
+            if (value == _width)
+                return;
+
+            _width = Math.Clamp(value, 0, MaxX);
+
+            OnPropertyChanged(nameof(Width));
+        }
+
+        private void SetHeight(int value)
+        {
+            if (value == _height)
+                return;
+
+            _height = Math.Clamp(value, 0, MaxY);
+
+            OnPropertyChanged(nameof(Height));
         }
     }
 }

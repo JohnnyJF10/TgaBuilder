@@ -1,5 +1,8 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System;
+using System.Buffers;
 using System.IO;
+using System.Reflection.PortableExecutable;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Utils;
 
@@ -470,32 +473,35 @@ namespace TgaBuilderLib.Level
 
         private void ReadPaletteAndGetAtlasTr1(BinaryReader levelReader)
         {
-            var palette24 = new byte[768]; // 256 * 3 = 768 bytes for 256 colors
+            // 256 * 3 = 768 bytes for 256 colors
+            _paletteTr1 = _bytePool.Rent(768);
+            int bytesRead = levelReader.Read(_paletteTr1, 0, 768);
 
-            for (var i = 0; i < 768; i+=3)
-            {
-                palette24[i    ] = levelReader.ReadByte();
-                palette24[i + 1] = levelReader.ReadByte();
-                palette24[i + 2] = levelReader.ReadByte();
-            }
+            if (bytesRead != 768)
+                throw new FileFormatException("TR1 atlas data is incomplete or corrupted.");
 
-            if (_atlas8 == null || _atlas8.Length == 0)
+            if (_atlasTr1 == null || _atlasTr1.Length == 0)
                 throw new FileFormatException("TR1 atlas data is missing or empty.");
 
             int pixelCount = _numPages * ORIGINAL_PAGE_PIXEL_COUNT;
             int index = 0;
 
-            _rawAtlas = new byte[pixelCount * 4];
+            _rawAtlas = _bytePool.Rent(pixelCount * IMPORT_BPP);
 
             for (int i = 0; i < pixelCount; i++)
             {
-                var atlas8val = _atlas8[i];
+                var atlas8val = _atlasTr1[i];
 
-                _rawAtlas[index++] = (byte)(palette24[3 * atlas8val + 2] << 2); // r
-                _rawAtlas[index++] = (byte)(palette24[3 * atlas8val + 1] << 2); // g
-                _rawAtlas[index++] = (byte)(palette24[3 * atlas8val    ] << 2); // b
+                _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 2] << 2); // r
+                _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 1] << 2); // g
+                _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val    ] << 2); // b
                 _rawAtlas[index++] = 255; // a
             }
+
+            _bytePool.Return(_paletteTr1);
+            _paletteTr1 = null;
+            _bytePool.Return(_atlasTr1);
+            _atlasTr1 = null; 
         }
 
         private void Read8BitAtlasTr1(BinaryReader reader)
@@ -504,7 +510,12 @@ namespace TgaBuilderLib.Level
 
             int numPixels = _numPages * ORIGINAL_PAGE_PIXEL_COUNT;
 
-            _atlas8 = reader.ReadBytes(numPixels);
+            _atlasTr1 = _bytePool.Rent(numPixels);
+
+            int bytesRead = reader.Read(_atlasTr1, 0, numPixels);
+
+            if (bytesRead != numPixels)
+                throw new FileFormatException("TR1 atlas data is incomplete or corrupted.");
         }
 
         private void ReadAtlasTr2Tr3(BinaryReader reader)
@@ -515,7 +526,7 @@ namespace TgaBuilderLib.Level
             // 8-bit palette indices not required for TR2-3
             reader.ReadBytes(pixelCount); 
 
-            _rawAtlas = new byte[pixelCount * 4];
+            _rawAtlas = _bytePool.Rent(pixelCount * IMPORT_BPP); 
 
             int index = 0;
             for (int i = 0; i < pixelCount; i++)
@@ -538,9 +549,17 @@ namespace TgaBuilderLib.Level
             // 32 bit textures
             var uncompressedSize = reader.ReadUInt32();
             var compressedSize = reader.ReadUInt32();
-            _rawAtlas = reader.ReadBytes((int)compressedSize);
-            _rawAtlas = DecompressZlib(_rawAtlas);
-            _numPages = (int)uncompressedSize / ORIGINAL_PAGE_PIXEL_COUNT / 4;
+
+            _rawAtlasCompressed = _bytePool.Rent((int)compressedSize);
+            int bytesRead = reader.Read(_rawAtlasCompressed, 0, (int)compressedSize);
+
+            if (bytesRead != compressedSize)
+                throw new FileFormatException("TR4-5 atlas data is incomplete or corrupted.");
+
+            _rawAtlas = DecompressZlib(_rawAtlasCompressed);
+            _numPages = (int)uncompressedSize / ORIGINAL_PAGE_PIXEL_COUNT / IMPORT_BPP;
+
+
 
             // 16 bit textures (not needed)
             uncompressedSize = reader.ReadUInt32();
@@ -551,16 +570,49 @@ namespace TgaBuilderLib.Level
             uncompressedSize = reader.ReadUInt32();
             compressedSize = reader.ReadUInt32();
             reader.ReadBytes((int)compressedSize);
+
+            _bytePool.Return(_rawAtlasCompressed);
+            _rawAtlasCompressed = null;
         }
 
         private byte[] DecompressZlib(byte[] compressedData)
         {
-            using (var inputStream = new MemoryStream(compressedData))
-            using (var inflaterStream = new InflaterInputStream(inputStream))
-            using (var outputStream = new MemoryStream())
+            var bufferSize = 81920; // 80 KB 
+            byte[] rentedBuffer = _bytePool.Rent(bufferSize);
+            byte[] decompressedBuffer = _bytePool.Rent(compressedData.Length * 4); 
+            int totalRead = 0;
+
+            try
             {
-                inflaterStream.CopyTo(outputStream);
-                return outputStream.ToArray();
+                using (var inputStream = new MemoryStream(compressedData))
+                using (var inflaterStream = new InflaterInputStream(inputStream))
+                {
+                    int bytesRead;
+                    while ((bytesRead = inflaterStream.Read(rentedBuffer, 0, rentedBuffer.Length)) > 0)
+                    {
+                        if (totalRead + bytesRead > decompressedBuffer.Length)
+                        {
+                            int newSize = decompressedBuffer.Length * 2;
+                            byte[] newBuffer = _bytePool.Rent(newSize);
+                            Buffer.BlockCopy(decompressedBuffer, 0, newBuffer, 0, totalRead);
+                            _bytePool.Return(decompressedBuffer);
+                            decompressedBuffer = newBuffer;
+                        }
+
+                        Buffer.BlockCopy(rentedBuffer, 0, decompressedBuffer, totalRead, bytesRead);
+                        totalRead += bytesRead;
+                    }
+                }
+                return decompressedBuffer;
+            }
+            catch
+            {
+                _bytePool.Return(decompressedBuffer);
+                throw;
+            }
+            finally
+            {
+                _bytePool.Return(rentedBuffer);
             }
         }
 

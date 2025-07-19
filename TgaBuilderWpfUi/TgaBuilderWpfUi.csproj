@@ -9,8 +9,8 @@
     <AssemblyName>TgaBuilder</AssemblyName>
     <ApplicationIcon>Resources\TgaBuilder_icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <AssemblyVersion>1.0.5.0</AssemblyVersion>
-    <FileVersion>1.0.500.0000</FileVersion>
+    <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <FileVersion>1.0.600.0000</FileVersion>
     <AssemblyTitle>TgaBuilder</AssemblyTitle>
     <Description>Texture Sets Building Tool for TRLE</Description>
     <Product>TgaBuilder</Product>
