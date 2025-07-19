@@ -1,4 +1,5 @@
-﻿using Pfim;
+﻿using Microsoft.VisualBasic.FileIO;
+using Pfim;
 using System.Drawing.PSD;
 using System.IO;
 using System.Windows;
@@ -61,11 +62,23 @@ namespace TgaBuilderLib.FileHandling
                 case FileTypes.PHD:
                 case FileTypes.TR2:
                 case FileTypes.TR4:
+                case FileTypes.TRC:
+                case FileTypes.TEN:
                     WriteableBitmap? trRes;
-                    using (TrLevel trLevel = new TrLevel(
-                        fileName: fileName,
-                        trTexturePanelHorPagesNum: TrImportHorPageNum,
-                        useTrTextureRepacking: TrImportRepackingSelected))
+
+                    bool isTen = false;
+
+                    if (fileType is FileTypes.TEN or FileTypes.TRC)
+                        isTen = CheckIfTen(fileName, fileType);
+
+                    using (Level.Level trLevel = isTen
+                        ? new TenLevel(
+                            fileName: fileName,
+                            trTexturePanelHorPagesNum: TrImportHorPageNum)
+                        : new TrLevel(
+                            fileName: fileName,
+                            trTexturePanelHorPagesNum: TrImportHorPageNum,
+                            useTrTextureRepacking: TrImportRepackingSelected))
                     {
                         trRes = trLevel.ResultBitmap;
 
@@ -74,36 +87,16 @@ namespace TgaBuilderLib.FileHandling
                     }
                     return trRes;
 
-                case FileTypes.TEN:
-                    var tenLevel = new TenLevel(fileName, TrImportHorPageNum);
-                    var tenRes = tenLevel.ResultBitmap;
-
-                    if (!tenLevel.BitmapSpaceSufficient)
-                        ResultInfo = ResultStatus.BitmapAreaNotSufficient;
-
-                    tenLevel = null;
-                    return tenRes;
-
-                case FileTypes.TRC:
-
-                    using (BinaryReader reader = new BinaryReader( new FileStream(fileName, FileMode.Open, FileAccess.Read)))
-                    {
-                        uint version = reader.ReadUInt32();
-                        if (version == 0x00345254)
-                            goto case FileTypes.TR4;
-                        else
-                            goto case FileTypes.TEN;
-                    }
 
                 case FileTypes.BMP:
-                        case FileTypes.PNG:
-                        case FileTypes.JPG:
-                        case FileTypes.JPEG:
-                            return UsualImageFiletoWriteableBitmap(fileName, targetFormat, mode);
+                case FileTypes.PNG:
+                case FileTypes.JPG:
+                case FileTypes.JPEG:
+                    return UsualImageFiletoWriteableBitmap(fileName, targetFormat, mode);
 
-                        default:
-                            throw new NotSupportedException($"Filetype '{extension}' is not supported.");
-                        }
+                default:
+                    throw new NotSupportedException($"Filetype '{extension}' is not supported.");
+                }
         }
 
         public void WriteImageFileFromBitmap(string fileName, BitmapSource bitmap)
@@ -435,6 +428,21 @@ namespace TgaBuilderLib.FileHandling
             }
 
             return buffer;
+        }
+
+        private bool CheckIfTen(string fileName, FileTypes fileType)
+        {
+            if (fileType == FileTypes.TEN)
+                return true;
+
+            using (BinaryReader reader = new(new FileStream(fileName, FileMode.Open, FileAccess.Read)))
+            {
+                uint version = reader.ReadUInt32();
+                if (version == 0x00345254)
+                    return false;
+                else
+                    return true;
+            }
         }
 
         private int RoundUpToNextMultiple(int number, int multiple)
