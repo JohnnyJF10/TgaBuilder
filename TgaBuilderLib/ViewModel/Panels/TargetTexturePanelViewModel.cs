@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
@@ -14,15 +15,12 @@ namespace TgaBuilderLib.ViewModel
     {
         public TargetTexturePanelViewModel(
             ICursorSetter cursorSetter,
-            IImageFileManager imageManager,
             IBitmapOperations bitmapOperations,
             IUndoRedoManager undoRedoManager,
             IEyeDropper eyeDropper,
 
-            Color initTransparentColor,
             WriteableBitmap presenter,
 
-            PanelVisualSizeViewModel visualPanelSize,
             SelectionViewModel SelectionVM,
             AnimationViewModel AnimationVM,
             SingleSelectionShapeViewModel originalPosShapeVM,
@@ -33,14 +31,10 @@ namespace TgaBuilderLib.ViewModel
             SelectionShapeViewModel selectionShapeVM) 
             : base(
                 cursorSetter:         cursorSetter,
-                imageManager:         imageManager,
                 bitmapOperations:     bitmapOperations,
                 eyeDropper:           eyeDropper,
 
-                initTransparentColor: initTransparentColor,
                 presenter:            presenter,
-
-                visualPanelSize:      visualPanelSize,
 
                 SelectionVM:          SelectionVM,
                 AnimationVM:          AnimationVM,
@@ -120,6 +114,9 @@ namespace TgaBuilderLib.ViewModel
             AnimSelectShape.PanelWidth = expectedWidth;
 
             RefreshPresenter();
+            OnPresenterChanged();
+            OnPropertyChanged(nameof(PanelStatement));
+            Debug.WriteLine($"Presenter set to {bitmap.PixelWidth}x{bitmap.PixelHeight} pixels.");
         }
 
         public override void SetZoom(double zoom)
@@ -138,20 +135,6 @@ namespace TgaBuilderLib.ViewModel
             TargetPosShape.StrokeThickness = 4 / zoom;
 
             OnPropertyChanged(nameof(Zoom));
-        }
-
-        public void OpenFile(string filePath)
-        {
-            Presenter = _imageManager.OpenImageFile(
-                fileName:       filePath,
-                targetFormat:   PixelFormats.Rgb24,
-                mode:           FileHandling.ResizeMode.TargetResize);
-
-            SelectionShape.MaxX = Presenter.PixelWidth;
-            SelectionShape.MaxY = Presenter.PixelHeight;
-
-            RefreshPresenter();
-            OnPropertyChanged(nameof(PanelStatement));
         }
 
         public override void MouseEnter()
@@ -298,16 +281,6 @@ namespace TgaBuilderLib.ViewModel
         public override void AltMove(int x, int y) => MouseMove(x, y);
 
         public override void AltDrag(int x, int y) => Drag(x, y);
-
-        internal void NewFile()
-        {
-            Presenter = new WriteableBitmap(256, 1536, 96, 96, PixelFormats.Rgb24, null);
-        }
-
-        internal void SaveFile(string fileName)
-            => _imageManager.WriteImageFileFromBitmap(
-                fileName:   fileName,
-                bitmap:     Presenter);
 
         internal void Undo()
         {

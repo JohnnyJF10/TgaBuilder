@@ -1,10 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace TgaBuilderLib.FileHandling
+namespace TgaBuilderLib.BitmapIO
 {
-    public class TgaWriter : ITgaWriter
+    public partial class BitmapIO
     {
         private const byte TR_TGA_DIMENSION_POSITION = 0x0C;
         private const byte TR_TGA_HEADER_LENGTH = 0x12;
@@ -31,7 +36,20 @@ namespace TgaBuilderLib.FileHandling
         private const int TR_LEVEL_PALLET_WIDTH = 256;
         private const int TR_LEVEL_PALLET_PAGE_SIZE = 65536;
 
-        public void WriteTrTgaFromBytes(string filePath, byte[] data, int width, int height)
+        public void ToTga(string filePath, BitmapSource bitmap)
+        {
+            if (bitmap.Format != PixelFormats.Rgb24)
+            {
+                throw new ArgumentException("Bitmap must be in BGR24 format.");
+            }
+            int width = bitmap.PixelWidth;
+            int height = bitmap.PixelHeight;
+            byte[] pixelData = new byte[width * height * 3];
+            bitmap.CopyPixels(pixelData, width * 3, 0);
+            WriteTrTgaFromBytes(filePath, pixelData, width, height);
+        }
+
+        private void WriteTrTgaFromBytes(string filePath, byte[] data, int width, int height)
         {
             using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             using (BinaryWriter bw = new BinaryWriter(fs))
@@ -50,19 +68,6 @@ namespace TgaBuilderLib.FileHandling
                 }
                 WriteTrTGaFooter(bw);
             }
-        }
-
-        public void WriteTrTgaFromBitmap(string filePath, BitmapSource bitmap)
-        {
-            if (bitmap.Format != PixelFormats.Rgb24)
-            {
-                throw new ArgumentException("Bitmap must be in BGR24 format.");
-            }
-            int width = bitmap.PixelWidth;
-            int height = bitmap.PixelHeight;
-            byte[] pixelData = new byte[width * height * 3];
-            bitmap.CopyPixels(pixelData, width * 3, 0);
-            WriteTrTgaFromBytes(filePath, pixelData, width, height);
         }
 
         private void WriteTrTgaHeader(BinaryWriter bw, short width, short height)
@@ -87,5 +92,6 @@ namespace TgaBuilderLib.FileHandling
             bw.Write(TR_TGA_FOOTER_DEVELOPER_DIRECTORY_OFFSET);
             bw.Write(TR_TGA_FOOTER_SIGNATURE_CHARS);
         }
+
     }
 }

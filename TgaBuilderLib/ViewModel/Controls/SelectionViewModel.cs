@@ -7,10 +7,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.Utils;
@@ -23,16 +25,20 @@ namespace TgaBuilderLib.ViewModel
         public SelectionViewModel(
             ILogger logger,
             IMessageService messageService,
+            IBitmapOperations bitmapOperations,
+
             WriteableBitmap presenter)
         {
             _logger = logger;
             _messageService = messageService;
+            _bitmapOperations = bitmapOperations;
 
             _presenter = presenter;
         }
 
         private readonly ILogger _logger;
         private readonly IMessageService _messageService;
+        private readonly IBitmapOperations _bitmapOperations;
 
         private WriteableBitmap _presenter;
 
@@ -43,6 +49,8 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _copyCommand;
         private RelayCommand? _pasteCommand;
         private RelayCommand? _autoPasteCommand;
+        private RelayCommand<SolidColorBrush>? _selectionMonoColorFillCommand;
+
 
 
         public WriteableBitmap Presenter
@@ -94,6 +102,9 @@ namespace TgaBuilderLib.ViewModel
         public RelayCommand PasteCommand => _pasteCommand ??= new RelayCommand(Paste);
 
         public RelayCommand AutoPasteCommand => _autoPasteCommand ??= new RelayCommand(Paste);
+
+        public ICommand SelectionMonoColorFillCommand
+            => _selectionMonoColorFillCommand ??= new RelayCommand<SolidColorBrush>(SelectionMonoColorFill);
 
 
         public void Copy()
@@ -163,6 +174,18 @@ namespace TgaBuilderLib.ViewModel
                     "Failed to paste image from clipboard. Please find more details in the log.", 
                     ex);
             }        
+        }
+
+        public void SelectionMonoColorFill(SolidColorBrush brush)
+        {
+            Int32Rect rect = new(0, 0,
+                Presenter.PixelWidth,
+                Presenter.PixelHeight);
+
+            _bitmapOperations.FillRectColor(
+                Presenter, rect, brush.Color);
+
+            IsPlacing = true;
         }
     }
 }

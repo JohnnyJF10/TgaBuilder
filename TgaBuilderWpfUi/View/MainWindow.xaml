@@ -109,7 +109,7 @@
                             Height="36"
                             BorderThickness="0"
                             Appearance="Transparent"
-                            ItemsSource="{Binding RecentSourceFileNames}"
+                            ItemsSource="{Binding SourceIO.RecentSourceFileNames}"
                             ItemCommand="{Binding OpenRecentSourceCommand}"
                             ap:MouseOverInfoAP.InfoText="Open Recent Source Panels"
                             />
@@ -183,7 +183,7 @@
                             Height="36"
                             BorderThickness="0"
                             Appearance="Transparent"
-                            ItemsSource="{Binding RecentDestinationFileNames}"
+                            ItemsSource="{Binding TargetIO.RecentDestinationFileNames}"
                             ItemCommand="{Binding OpenRecentDestinationCommand}"
                             ap:MouseOverInfoAP.InfoText="Open Recent Destination Panels"
                             />
@@ -269,7 +269,7 @@
                             Height="36"
                             Margin="5,0,0,0"
                             Icon="{ui:SymbolIcon Map24}"
-                            IsChecked="{Binding TrImportRepackingSelected}"
+                            IsChecked="{Binding SourceIO.TrImportRepackingSelected}"
                             ap:MouseOverInfoAP.InfoText="Use Texture Repacking (remove TE Padding)"/>
                         <ui:Button
                             DockPanel.Dock="Right"
@@ -284,7 +284,7 @@
                             Icon="{ui:SymbolIcon ArrowAutoFitWidth24}"
                             Margin="5,0"
                             ap:MouseOverInfoAP.InfoText="Set the number of pages of the TR file to import. Each page has a width of 256 pix."
-                            Value="{Binding TrImportHorPageNum, UpdateSourceTrigger=PropertyChanged}"/>
+                            Value="{Binding SourceIO.TrImportHorPageNum, UpdateSourceTrigger=PropertyChanged}"/>
                     </DockPanel>
                 </TabItem>
 
@@ -491,9 +491,6 @@
                                 Stretch="None"
                                 Source="{Binding Presenter}"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                ap:SizeObserverAP.ObserveSize="True"
-                                ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ContentWidth, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
-                                ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ContentHeight, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
                                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
                                 ap:PanelMouseAP.IsTargetPanel="False"/>
                             <Rectangle
@@ -585,6 +582,7 @@
                 HorizontalAlignment="Center"
                 Margin="5"/>
             <StackPanel
+                DataContext="{Binding Selection}"
                 HorizontalAlignment="Center"
                 Margin="5"
                 Orientation="Horizontal">
@@ -1003,9 +1001,6 @@
                                 Stretch="None"
                                 Source="{Binding Presenter}"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                ap:SizeObserverAP.ObserveSize="True"
-                                ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ContentWidth, Mode=OneWayToSource}"
-                                ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ContentHeight, Mode=OneWayToSource}"
                                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
                                 ap:PanelMouseAP.IsTargetPanel="True"/>
 

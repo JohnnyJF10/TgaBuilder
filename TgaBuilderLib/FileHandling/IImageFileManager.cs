@@ -1,5 +1,6 @@
 ﻿using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.FileHandling
 {
@@ -22,7 +23,10 @@ namespace TgaBuilderLib.FileHandling
             PixelFormat? targetFormat = null, 
             ResizeMode mode = ResizeMode.SourceResize);
 
-        void WriteImageFileFromBitmap(
+        WriteableBitmap GetDestinationConfirmBitmap(
+            WriteableBitmap inputBitmap);
+
+        void SaveImageFile(
             string fileName,
             BitmapSource bitmap);
     }

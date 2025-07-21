@@ -1,23 +1,19 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace TgaBuilderLib.BitmapOperations
+namespace TgaBuilderLib.BitmapIO
 {
-    public partial class BitmapOperations
+    public partial class BitmapIO
     {
-        public WriteableBitmap GetTargetFromSource(WriteableBitmap source) 
+        public WriteableBitmap FromOtherBitmap(WriteableBitmap source)
         {
-            if (source.Format == PixelFormats.Rgb24)
-                return CropBitmap(
-                    source:     source, 
-                    rectangle:  new Int32Rect(
-                        x:      0,
-                        y:      0,
-                        width:  EstimateTargetWidth(source.PixelWidth),
-                        height: source.PixelHeight));
-
-            if (source.Format != PixelFormats.Bgra32)
+            if (source.Format != PixelFormats.Bgra32 || source.Format == PixelFormats.Rgb24)
                 throw new ArgumentException("Source must be in Bgra32 or Rgb24 format");
 
             int sourceWidth = source.PixelWidth;
@@ -25,12 +21,12 @@ namespace TgaBuilderLib.BitmapOperations
             int targetWidth = EstimateTargetWidth(sourceWidth);
 
             WriteableBitmap target = new WriteableBitmap(
-                pixelWidth:     targetWidth,
-                pixelHeight:    height,
-                dpiX:           source.DpiX,
-                dpiY:           source.DpiY,
-                pixelFormat:    PixelFormats.Rgb24,
-                palette:        null);
+                pixelWidth: targetWidth,
+                pixelHeight: height,
+                dpiX: source.DpiX,
+                dpiY: source.DpiY,
+                pixelFormat: PixelFormats.Rgb24,
+                palette: null);
 
             source.Lock();
             target.Lock();
@@ -80,9 +76,9 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
 
-                target.AddDirtyRect(new Int32Rect(0, 0, targetWidth, height));
             }
 
+            target.AddDirtyRect(new Int32Rect(0, 0, targetWidth, height));
             source.Unlock();
             target.Unlock();
 
@@ -90,12 +86,13 @@ namespace TgaBuilderLib.BitmapOperations
         }
 
         private int EstimateTargetWidth(int sourceWidth) => sourceWidth switch
-            {
-                <= 256  => 256,
-                <= 512  => 512,
-                <= 1024 => 1024,
-                <= 2048 => 2048,
-                _       => 4096,
-            };
+        {
+            <= 256 => 256,
+            <= 512 => 512,
+            <= 1024 => 1024,
+            <= 2048 => 2048,
+            _ => 4096,
+        };
+
     }
 }

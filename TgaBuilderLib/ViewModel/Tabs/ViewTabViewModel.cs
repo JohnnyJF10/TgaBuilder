@@ -14,6 +14,8 @@ namespace TgaBuilderLib.ViewModel
         {
             _panel = panel;
             VisualPanelSize = visualPanelSize;
+
+            _panel.PresenterChanged += (_, _) => _ = DefferedFill();
         }
 
         private const int SCROLL_SPEED_PIX_PER_SEC = 420;
@@ -73,25 +75,36 @@ namespace TgaBuilderLib.ViewModel
 
         // A makeshift workaround to avoid a race condition when the panel is resized.
         // WPF seemingly requires time to set everything up appropriately.
-        public Task DefferedFill()
-            => Task.Run(async () =>
-            {
-                await Task.Delay(20);
-                Fill();
-                await Task.Delay(20);
-                OffsetY -= 1000;
-                OffsetY = 0;
-            });
+        public async Task DefferedFill()
+        {
+            await Task.Delay(20);
+
+            Zoom = 1;
+            Zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
+            ? Math.Max(
+                VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
+                VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight)
+            : Math.Min(
+                VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
+                VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight);
+
+            await Task.Delay(20);
+            OffsetY -= 1000;
+            OffsetY = 0;
+
+            Debug.WriteLine("DefferedFill called, OffsetY reset to 0");
+        }
 
         public void Fill()
         {
-            Zoom = VisualPanelSize.ContentWidth < VisualPanelSize.ContentHeight
-                ? Math.Max(
-                    VisualPanelSize.ViewportWidth / VisualPanelSize.ContentWidth,
-                    VisualPanelSize.ViewportHeight / VisualPanelSize.ContentHeight)
-                : Math.Min(
-                    VisualPanelSize.ViewportWidth / VisualPanelSize.ContentWidth,
-                    VisualPanelSize.ViewportHeight / VisualPanelSize.ContentHeight);
+            Zoom = 1.0;
+            Zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
+            ? Math.Max(
+                VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
+                VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight)
+            : Math.Min(
+                VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
+                VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight);
 
             OffsetX = 0;
             OffsetY = 0;
@@ -99,20 +112,21 @@ namespace TgaBuilderLib.ViewModel
 
         public void Fit()
         {
-            Zoom = VisualPanelSize.ContentWidth < VisualPanelSize.ContentHeight
+            Zoom = 1.0;
+            Zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
                 ? Math.Min(
-                    VisualPanelSize.ViewportWidth / VisualPanelSize.ContentWidth,
-                    VisualPanelSize.ViewportHeight / VisualPanelSize.ContentHeight)
+                    VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
+                    VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight)
                 : Math.Max(
-                    VisualPanelSize.ViewportWidth / VisualPanelSize.ContentWidth,
-                    VisualPanelSize.ViewportHeight / VisualPanelSize.ContentHeight);
+                    VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
+                    VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight);
         }
 
         public void Zoom100()
         {
             Zoom = 1.0;
-            OffsetX = (VisualPanelSize.ContentWidth - VisualPanelSize.ViewportWidth) / 2;
-            OffsetY = (VisualPanelSize.ContentHeight - VisualPanelSize.ViewportHeight) / 2;
+            OffsetX = (_panel.Presenter.PixelWidth - VisualPanelSize.ViewportWidth) / 2;
+            OffsetY = (_panel.Presenter.PixelHeight - VisualPanelSize.ViewportHeight) / 2;
         }
 
         private void SetPanelZoom(double zoom)
@@ -179,8 +193,8 @@ namespace TgaBuilderLib.ViewModel
                 OffsetX += deltaX;
                 OffsetY += deltaY;
 
-                maxX = Math.Max(0, VisualPanelSize.ContentWidth - (VisualPanelSize.ViewportWidth / Zoom));
-                maxY = Math.Max(0, VisualPanelSize.ContentHeight - (VisualPanelSize.ViewportHeight / Zoom));
+                maxX = Math.Max(0, _panel.Presenter.PixelWidth - (VisualPanelSize.ViewportWidth / Zoom));
+                maxY = Math.Max(0, _panel.Presenter.PixelHeight - (VisualPanelSize.ViewportHeight / Zoom));
 
                 OffsetX = Math.Clamp(OffsetX, 0, maxX);
                 OffsetY = Math.Clamp(OffsetY, 0, maxY);

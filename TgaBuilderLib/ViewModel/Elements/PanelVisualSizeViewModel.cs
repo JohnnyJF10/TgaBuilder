@@ -5,21 +5,9 @@ namespace TgaBuilderLib.ViewModel
 {
     public class PanelVisualSizeViewModel : ViewModelBase
     {
-        private double _contentWidth;
-        private double _contentHeight;
         private double _viewportWidth;
         private double _viewportHeight;
 
-        public double ContentWidth
-        {
-            get => _contentWidth;
-            set => SetVisualSize(ref _contentWidth, value);
-        }
-        public double ContentHeight
-        {
-            get => _contentHeight;
-            set => SetVisualSize(ref _contentHeight, value);
-        }
         public double ViewportWidth
         {
             get => _viewportWidth;

@@ -22,9 +22,6 @@ namespace TgaBuilderLib.BitmapOperations
             int targetHeight,
             BitmapScalingMode scalingMode);
 
-        WriteableBitmap GetTargetFromSource(
-            WriteableBitmap source);
-
 
         // Crop
         WriteableBitmap CropBitmap(

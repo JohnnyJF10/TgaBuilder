@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
@@ -12,14 +13,11 @@ namespace TgaBuilderLib.ViewModel
     {
         public SourceTexturePanelViewModel(
             ICursorSetter cursorSetter,
-            IImageFileManager imageManager,
             IBitmapOperations bitmapOperations,
             IEyeDropper eyeDropper,
 
-            Color initTransparentColor,
             WriteableBitmap presenter,
 
-            PanelVisualSizeViewModel visualPanelSize,
             SelectionViewModel SelectionVM,
             AnimationViewModel AnimationVM,
 
@@ -30,14 +28,10 @@ namespace TgaBuilderLib.ViewModel
             VisualGridViewModel visualGridVM)
             : base(
                   cursorSetter:         cursorSetter,
-                  imageManager:         imageManager,
                   bitmapOperations:     bitmapOperations,
                   eyeDropper:           eyeDropper,
 
-                  initTransparentColor: initTransparentColor,
                   presenter:            presenter,
-
-                  visualPanelSize:      visualPanelSize,
 
                   SelectionVM:          SelectionVM,
                   AnimationVM:          AnimationVM,
@@ -100,7 +94,11 @@ namespace TgaBuilderLib.ViewModel
             VisualGrid.OffsetY = 0;
             VisualGrid.SourceWidth = expectedWidth;
             VisualGrid.SourceHeight = expectedHeight;
+
             RefreshPresenter();
+            OnPresenterChanged();
+            OnPropertyChanged(nameof(PanelStatement));
+            Debug.WriteLine($"Presenter set to {bitmap.PixelWidth}x{bitmap.PixelHeight} pixels.");
         }
 
         public override void SetZoom(double zoom)
@@ -114,17 +112,6 @@ namespace TgaBuilderLib.ViewModel
 
             ThicknessUpdate(zoom);
             OnPropertyChanged(nameof(Zoom));
-        }
-
-        public void OpenFile(string filePath)
-        {
-            Presenter = _imageManager.OpenImageFile(filePath);
-
-            SelectionShape.MaxX = Presenter.PixelWidth;
-            SelectionShape.MaxY = Presenter.PixelHeight;
-
-            RefreshPresenter();
-            OnPropertyChanged(nameof(PanelStatement));
         }
 
         public override void MouseEnter() 

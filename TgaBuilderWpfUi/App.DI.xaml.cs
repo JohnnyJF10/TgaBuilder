@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.BitmapIO;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
@@ -49,9 +50,9 @@ namespace TgaBuilderWpfUi
 
         private void AddCoreServicesToProvider(IServiceCollection services)
         {
-            services.AddSingleton<ITgaWriter,           TgaWriter>();
+            services.AddSingleton<IBitmapIO,            BitmapIO>();
             services.AddSingleton<IImageFileManager,    ImageFileManager>(sp => new ImageFileManager(
-                tgaWriter: sp.GetRequiredService<ITgaWriter>()));
+                bitmapIO: sp.GetRequiredService<IBitmapIO>()));
             services.AddSingleton<IAsyncFileLoader,     AsyncFileLoader>();
             services.AddSingleton<IBitmapOperations,    BitmapOperations>();
             services.AddSingleton<ILogger,              Logger>();
@@ -136,25 +137,42 @@ namespace TgaBuilderWpfUi
             services.AddSingleton<AnimationViewModel>();
 
             services.AddSingleton(sp => new SelectionViewModel(
-                logger:         sp.GetRequiredService<ILogger>(),
-                messageService: sp.GetRequiredService<IMessageService>(),
-                presenter:      sp.GetServices<WriteableBitmap>()
+                logger:             sp.GetRequiredService<ILogger>(),
+                messageService:     sp.GetRequiredService<IMessageService>(),
+                bitmapOperations:   sp.GetRequiredService<IBitmapOperations>(),
+                presenter:          sp.GetServices<WriteableBitmap>()
                     .ElementAt((int)PresenterType.Selection)
             ));
+
+            services.AddSingleton(sp => new SourceIOViewModel(
+                getViewCallback:     idx => sp.GetServices<IView>().ElementAt((int)idx),
+                fileService:         sp.GetRequiredService<IFileService>(),
+                messageService:      sp.GetRequiredService<IMessageService>(),
+                imageManager:        sp.GetRequiredService<IImageFileManager>(),
+                logger:              sp.GetRequiredService<ILogger>(),
+                usageData:           sp.GetRequiredService<IUsageData>(),
+                source:              sp.GetRequiredService<SourceTexturePanelViewModel>()));
+
+            services.AddSingleton(sp => new TargetIOViewModel(
+                getViewCallback:     idx => sp.GetServices<IView>().ElementAt((int)idx),
+                fileService:         sp.GetRequiredService<IFileService>(),
+                messageService:      sp.GetRequiredService<IMessageService>(),
+                messageBoxService:   sp.GetRequiredService<IMessageBoxService>(),
+                undoRedoManager:     sp.GetRequiredService<IUndoRedoManager>(),
+                imageManager:        sp.GetRequiredService<IImageFileManager>(),
+                logger:              sp.GetRequiredService<ILogger>(),
+                usageData:           sp.GetRequiredService<IUsageData>(),
+                destination:         sp.GetRequiredService<TargetTexturePanelViewModel>()));
         }
 
         private void AddPanelVMsToProvider(IServiceCollection services)
         {
             services.AddSingleton(sp => new SourceTexturePanelViewModel(
                 cursorSetter:           sp.GetRequiredService<ICursorSetter>(),
-                imageManager:           sp.GetRequiredService<IImageFileManager>(),
                 bitmapOperations:       sp.GetRequiredService<IBitmapOperations>(),
                 eyeDropper:             sp.GetRequiredService<IEyeDropper>(),
 
-                initTransparentColor:   sp.GetRequiredService<Color>(),
                 presenter:              sp.GetServices<WriteableBitmap>()
-                                            .ElementAt((int)PresenterType.Source),
-                visualPanelSize:        sp.GetServices<PanelVisualSizeViewModel>()
                                             .ElementAt((int)PresenterType.Source),
 
                 SelectionVM:            sp.GetRequiredService<SelectionViewModel>(),
@@ -167,15 +185,11 @@ namespace TgaBuilderWpfUi
 
             services.AddSingleton(sp => new TargetTexturePanelViewModel(
                 cursorSetter:           sp.GetRequiredService<ICursorSetter>(),
-                imageManager:           sp.GetRequiredService<IImageFileManager>(),
                 bitmapOperations:       sp.GetRequiredService<IBitmapOperations>(),
                 eyeDropper:             sp.GetRequiredService<IEyeDropper>(),
                 undoRedoManager:        sp.GetRequiredService<IUndoRedoManager>(),
 
-                initTransparentColor:   sp.GetRequiredService<Color>(),
                 presenter:              sp.GetServices<WriteableBitmap>()
-                                            .ElementAt((int)PresenterType.Target),
-                visualPanelSize:        sp.GetServices<PanelVisualSizeViewModel>()
                                             .ElementAt((int)PresenterType.Target),
 
                 SelectionVM:            sp.GetRequiredService<SelectionViewModel>(),
@@ -240,14 +254,8 @@ namespace TgaBuilderWpfUi
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback:        idx => sp.GetServices<IView>().ElementAt((int)idx),
 
-                fileService:            sp.GetRequiredService<IFileService>(),
                 messageService:         sp.GetRequiredService<IMessageService>(),
-                messageBoxService:      sp.GetRequiredService<IMessageBoxService>(),
-
-                imageManager:           sp.GetRequiredService<IImageFileManager>(),
-                bitmapOperations:       sp.GetRequiredService<IBitmapOperations>(),
                 undoRedoManager:        sp.GetRequiredService<IUndoRedoManager>(),
-                usageData:              sp.GetRequiredService<IUsageData>(),
                 logger:                 sp.GetRequiredService<ILogger>(),
 
                 source:                 sp.GetRequiredService<SourceTexturePanelViewModel>(),
@@ -256,6 +264,9 @@ namespace TgaBuilderWpfUi
                 selection:              sp.GetRequiredService<SelectionViewModel>(),
                 animation:              sp.GetRequiredService<AnimationViewModel>(),
 
+                sourceIO:               sp.GetRequiredService<SourceIOViewModel>(),
+                destinationIO:          sp.GetRequiredService<TargetIOViewModel>(),
+
                 placing:                sp.GetRequiredService<PlacingTabViewModel>(),
                 alphaTab:               sp.GetRequiredService<AlphaTabViewModel>(),
                 edits:                  sp.GetRequiredService<EditTabViewModel>(),
@@ -263,7 +274,11 @@ namespace TgaBuilderWpfUi
                 sourceViewTab:          sp.GetServices<ViewTabViewModel>()
                                             .ElementAt((int)PresenterType.Source),
                 destinationViewTab:     sp.GetServices<ViewTabViewModel>()
-                                            .ElementAt((int)PresenterType.Target)));
+                                            .ElementAt((int)PresenterType.Target),
+                
+                usageData:             sp.GetRequiredService<IUsageData>()));
+
+
         }
 
         private void AddViewsToProvider(IServiceCollection services)

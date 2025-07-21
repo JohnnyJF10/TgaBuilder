@@ -13,14 +13,11 @@ namespace TgaBuilderLib.ViewModel
     {
         public TexturePanelViewModelBase(
             ICursorSetter cursorSetter,
-            IImageFileManager imageManager,
             IBitmapOperations bitmapOperations,
             IEyeDropper eyeDropper,
 
-            Color initTransparentColor,
             WriteableBitmap presenter,
 
-            PanelVisualSizeViewModel visualPanelSize,
             SelectionViewModel SelectionVM,
             AnimationViewModel AnimationVM,
 
@@ -30,12 +27,9 @@ namespace TgaBuilderLib.ViewModel
             )
         {
             _cursorSetter =     cursorSetter;
-            _imageManager =     imageManager;
             _bitmapOperations = bitmapOperations;
             _eyeDropper =       eyeDropper;
-            AlphaColor =        initTransparentColor;
             _presenter =        presenter;
-            VisualPanelSize =   visualPanelSize;
             Selection =         SelectionVM;
             Animation =         AnimationVM;
             Picker =            pickerVM;
@@ -52,15 +46,11 @@ namespace TgaBuilderLib.ViewModel
 
         protected readonly ICursorSetter _cursorSetter;
 
-        protected readonly IImageFileManager _imageManager;
         protected readonly IBitmapOperations _bitmapOperations;
 
         protected IEyeDropper _eyeDropper;
 
         protected WriteableBitmap _presenter;
-
-        private double _observedWidth;
-        private double _observedHeight;
 
         public bool IsDragging { get; set; }
         public bool IsRightDragging { get; set; }
@@ -70,14 +60,17 @@ namespace TgaBuilderLib.ViewModel
         public SelectionShapeViewModel SelectionShape { get; set; }
         public AnimSelectShapeViewModel AnimSelectShape { get; set; }
         public AnimationViewModel Animation { get; set; }
-        public PanelVisualSizeViewModel VisualPanelSize { get; set; } 
 
         public WriteableBitmap Presenter
         {
             get => _presenter;
             set => SetPresenter(value);
         }
-        public Color AlphaColor { get; set; }
+        public Color AlphaColor { get; set; } = Colors.Magenta;
+
+
+        public event EventHandler? PresenterChanged;
+
 
         public abstract string PanelStatement { get; }
         public abstract double Zoom { get; set; }
@@ -144,6 +137,9 @@ namespace TgaBuilderLib.ViewModel
                 tileSize: Picker.Size
                 );
         }
+
+        protected void OnPresenterChanged()
+            => PresenterChanged?.Invoke(this, EventArgs.Empty);
 
         public void RefreshPresenter()
         {
