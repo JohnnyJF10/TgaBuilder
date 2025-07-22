@@ -1,12 +1,13 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using Pfim;
+using System.Buffers;
 using System.Drawing.PSD;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.BitmapIO;
+using TgaBuilderLib.BitmapBytesIO;
 using TgaBuilderLib.Level;
 using ResizeMode = TgaBuilderLib.Abstraction.ResizeMode;
 
@@ -15,13 +16,15 @@ namespace TgaBuilderLib.FileHandling
 
     public class ImageFileManager : IImageFileManager
     {
-        public ImageFileManager(IBitmapIO bitmapIO)
+        public ImageFileManager(IBitmapBytesIO bitmapIO)
         {
             _bitmapIO = bitmapIO;
         }
 
 
-        private readonly IBitmapIO _bitmapIO;
+        private readonly IBitmapBytesIO _bitmapIO;
+        private readonly ArrayPool<byte> _bytesPool = ArrayPool<byte>.Shared;
+        private LevelBase? _loadedLevel;
 
         public ResultStatus ResultInfo { get; private set; } = ResultStatus.Success;
 
@@ -29,7 +32,7 @@ namespace TgaBuilderLib.FileHandling
         public int TrImportHorPageNum { get; set; } = 1;
 
 
-        public WriteableBitmap OpenImageFile(
+        public void LoadImageFile(
             string fileName, 
             PixelFormat? targetFormat = null, 
             ResizeMode mode = ResizeMode.SourceResize)
@@ -47,45 +50,45 @@ namespace TgaBuilderLib.FileHandling
             {
                 case FileTypes.TGA:
                 case FileTypes.DDS:
-                    return _bitmapIO.FromPfim(fileName, targetFormat, mode);
+                    _bitmapIO.FromPfim(fileName, targetFormat, mode);
+                    return;
 
                 case FileTypes.PSD:
-                    return _bitmapIO.FromPsd(fileName, targetFormat, mode);
+                    _bitmapIO.FromPsd(fileName, targetFormat, mode);
+                    return;
 
                 case FileTypes.PHD:
                 case FileTypes.TR2:
                 case FileTypes.TR4:
                 case FileTypes.TRC:
                 case FileTypes.TEN:
-                    WriteableBitmap? trRes;
 
                     bool isTen = false;
 
                     if (fileType is FileTypes.TEN or FileTypes.TRC)
                         isTen = CheckIfTen(fileName, fileType);
 
-                    using (Level.Level trLevel = isTen
+                    _loadedLevel = isTen
                         ? new TenLevel(
                             fileName: fileName,
                             trTexturePanelHorPagesNum: TrImportHorPageNum)
                         : new TrLevel(
                             fileName: fileName,
                             trTexturePanelHorPagesNum: TrImportHorPageNum,
-                            useTrTextureRepacking: TrImportRepackingSelected))
-                    {
-                        trRes = trLevel.ResultBitmap;
+                            useTrTextureRepacking: TrImportRepackingSelected);
 
-                        if (!trLevel.BitmapSpaceSufficient)
-                            ResultInfo = ResultStatus.BitmapAreaNotSufficient;
-                    }
-                    return trRes;
+                    if (!_loadedLevel.BitmapSpaceSufficient)
+                        ResultInfo = ResultStatus.BitmapAreaNotSufficient;
+
+                    return;
 
 
                 case FileTypes.BMP:
                 case FileTypes.PNG:
                 case FileTypes.JPG:
                 case FileTypes.JPEG:
-                    return _bitmapIO.FromUsual(fileName, targetFormat, mode);
+                    _bitmapIO.FromUsual(fileName, targetFormat, mode);
+                    return;
 
                 default:
                     throw new NotSupportedException($"Filetype '{extension}' is not supported.");
@@ -101,27 +104,73 @@ namespace TgaBuilderLib.FileHandling
                 throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
 
             string extension = Path.GetExtension(fileName).TrimStart('.').ToLower();
-            switch (extension)
-            {
-                case "tga":
-                    _bitmapIO.ToTga(fileName, bitmap);
-                    break;
 
-                case "png":
-                case "jpg":
-                case "jpeg":
-                case "bmp":
-                    _bitmapIO.ToUsual(fileName, extension, bitmap);
-                    break;
-                default:
-                    throw new NotSupportedException($"Unsupported file format: {extension}");
-            }
+            if (IsTga(extension))
+                _bitmapIO.ToTga(bitmap);
+
+            else if (IsUsual(extension))
+                _bitmapIO.ToUsual(bitmap, extension);
+
+            else
+                throw new NotSupportedException($"Unsupported file format: {extension}");
+        }
+
+        public void WriteImageFile(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
+
+            if (_bitmapIO.LoadedBytes is null)
+                throw new InvalidOperationException("No image data loaded. Please load an image first.");
+
+            string extension = Path.GetExtension(fileName).TrimStart('.').ToLower();
+
+            if (IsTga(extension))
+                _bitmapIO.WriteTga(fileName);
+
+            else if (IsUsual(extension))
+                _bitmapIO.WriteUsual(fileName);
+
+            else
+                throw new NotSupportedException($"Unsupported file format: {extension}");
+
+            _bitmapIO.ClearLoadedData();
         }
 
 
         public WriteableBitmap GetDestinationConfirmBitmap(WriteableBitmap inputBitmap)
             => _bitmapIO.FromOtherBitmap(inputBitmap);
 
+        public WriteableBitmap GetLoadedBitmap()
+        {
+            WriteableBitmap? wb = null;
+            if (_loadedLevel is not null)
+            {
+                wb = _loadedLevel.GetResultBitmap();
+
+                _loadedLevel.ClearAllData();
+
+                _loadedLevel = null;
+            }
+            else if (_bitmapIO.LoadedBytes is not null)
+            {
+                wb = _bitmapIO.GetLoadedBitmap();
+
+                _bitmapIO.ClearLoadedData();
+            }
+
+            if (wb is null)
+                throw new InvalidOperationException("No bitmap data loaded or available.");
+
+            return wb;
+        }
+
+        public void ClearLoadedData()
+        {
+            _bitmapIO.ClearLoadedData();
+            _loadedLevel?.ClearAllData();
+            _loadedLevel = null;
+        }
 
         private bool CheckIfTen(string fileName, FileTypes fileType)
         {
@@ -137,5 +186,11 @@ namespace TgaBuilderLib.FileHandling
                     return true;
             }
         }
+
+        private bool IsTga(string extension)
+            => extension == "tga";
+
+        private bool IsUsual(string extension)
+            => extension is "png" or "jpg" or "jpeg" or "bmp";
     }
 }

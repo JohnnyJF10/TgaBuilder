@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 
 namespace TgaBuilderLib.Level
 {
-    public abstract class Level : IDisposable
+    public abstract class LevelBase
     {
         protected const int ORIGINAL_PAGE_SIZE = 256;
         protected const int MAX_SUPPORTED_TEX_SIZE = 512;
@@ -28,10 +28,9 @@ namespace TgaBuilderLib.Level
 
         protected List<(int x, int y)> RepackedTexturePositions = new();
 
-        protected byte[]? TargetAtlas;
+        public byte[]? TargetAtlas;
 
 
-        public WriteableBitmap ResultBitmap { get; protected set; }
         public bool BitmapSpaceSufficient { get; protected set; } = true;
 
 
@@ -40,8 +39,17 @@ namespace TgaBuilderLib.Level
         protected abstract void PlaceTile(int idx);
 
 
-        public abstract void Dispose();
+        public abstract void ClearTempData();
 
+        public void ClearAllData()
+        {
+            ClearTempData();
+            if (TargetAtlas != null)
+            {
+                _bytePool.Return(TargetAtlas);
+                TargetAtlas = null;
+            }
+        }
 
         protected (int x, int y, int width, int height) GetBoundingBox4(int[] corners)
         {
@@ -129,34 +137,36 @@ namespace TgaBuilderLib.Level
             return new InflaterInputStream(limitedStream);
         }
 
-        protected WriteableBitmap CreateWriteableBitmapFromByteArray(byte[] byteArray, int width, int height, PixelFormat pixelFormat)
+        public WriteableBitmap GetResultBitmap()
         {
-            int bitsPerPixel = pixelFormat.BitsPerPixel;
-            int stride = (width * bitsPerPixel + 7) / 8;
-            int actualHeight = Math.Min(height, ATLAS_MAX_HEIGHT);
-            int expectedSize = stride * height;
+            if (TargetAtlas == null)
+                throw new ArgumentNullException(nameof(TargetAtlas), "TargetAtlas byte array cannot be null.");
+            int bitsPerPixel = PixelFormats.Bgra32.BitsPerPixel;
+            int stride = (targetPanelWidth * bitsPerPixel + 7) / 8;
+            int actualHeight = Math.Min(targetPanelHeight, ATLAS_MAX_HEIGHT);
+            int expectedSize = stride * targetPanelHeight;
             int croppedSize = stride * actualHeight;
 
-            if (byteArray.Length < expectedSize)
+            if (TargetAtlas.Length < expectedSize)
                 throw new ArgumentException("The byte array is smaller than the expected size for the given width and height.");
 
-            if (height > ATLAS_MAX_HEIGHT)
+            if (targetPanelHeight > ATLAS_MAX_HEIGHT)
                 BitmapSpaceSufficient = false;
 
             // WriteableBitmap with capped height
-            WriteableBitmap writeableBitmap = new WriteableBitmap(width, actualHeight, 96, 96, pixelFormat, null);
+            WriteableBitmap writeableBitmap = new WriteableBitmap(targetPanelWidth, actualHeight, 96, 96, PixelFormats.Bgra32, null);
 
             writeableBitmap.Lock();
 
             // Only visible area
             IntPtr backBuffer = writeableBitmap.BackBuffer;
             Marshal.Copy(
-                source:         byteArray, 
+                source: TargetAtlas, 
                 startIndex:     0, 
                 destination:    backBuffer, 
                 length:         croppedSize);
 
-            writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, width, actualHeight));
+            writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, targetPanelWidth, actualHeight));
             writeableBitmap.Unlock();
 
             return writeableBitmap;

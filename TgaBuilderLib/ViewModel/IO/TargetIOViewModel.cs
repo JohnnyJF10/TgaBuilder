@@ -14,6 +14,7 @@ using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
+using ResizeMode = TgaBuilderLib.Abstraction.ResizeMode;
 
 namespace TgaBuilderLib.ViewModel
 {
@@ -79,16 +80,28 @@ namespace TgaBuilderLib.ViewModel
         private readonly IUndoRedoManager _undoRedoManager;
         private IUsageData _usageData;
 
+        private bool _isLoading;
+        private bool _controlEnabled = true;
         private string _lastDestinationFilePath = string.Empty;
 
 
         public TargetTexturePanelViewModel Destination { get; set; }
 
-
         public IEnumerable<string> RecentDestinationFileNames => _usageData.RecentOutputFiles;
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetPropertyPrimitive(ref _isLoading, value, nameof(IsLoading));
+        }
+        public bool ControlsEnabled
+        {
+            get => _controlEnabled;
+            set => SetPropertyPrimitive(ref _controlEnabled, value, nameof(ControlsEnabled));
+        }
 
-        public void CopyEntire(WriteableBitmap bitmap)
+
+        public async Task CopyEntire(WriteableBitmap bitmap)
         {
             if (_undoRedoManager.IsTargetDirty())
             {
@@ -99,7 +112,7 @@ namespace TgaBuilderLib.ViewModel
                 switch (result)
                 {
                     case YesNoCancel.Yes:
-                        if (Save(_lastDestinationFilePath)) break;
+                        if (await Save(_lastDestinationFilePath)) break;
                         else return;
                     case YesNoCancel.No: break;
                     case YesNoCancel.Cancel: return;
@@ -114,7 +127,7 @@ namespace TgaBuilderLib.ViewModel
             _undoRedoManager.ClearAllNewFile();
         }
 
-        public void NewFile()
+        public async Task NewFile()
         {
             if (_undoRedoManager.IsTargetDirty())
             {
@@ -125,7 +138,7 @@ namespace TgaBuilderLib.ViewModel
                 switch (result)
                 {
                     case YesNoCancel.Yes:
-                        if (Save(_lastDestinationFilePath)) break;
+                        if (await Save(_lastDestinationFilePath)) break;
                         else return;
                     case YesNoCancel.No: break;
                     case YesNoCancel.Cancel: return;
@@ -145,7 +158,7 @@ namespace TgaBuilderLib.ViewModel
             _undoRedoManager.ClearAllNewFile();
         }
 
-        public void Open(string? fileName = null)
+        public async Task Open(string? fileName = null)
         {
             if (_undoRedoManager.IsTargetDirty())
             {
@@ -156,7 +169,7 @@ namespace TgaBuilderLib.ViewModel
                 switch (result)
                 {
                     case YesNoCancel.Yes:
-                        if (Save(_lastDestinationFilePath)) break;
+                        if (await Save(_lastDestinationFilePath)) break;
                         else return;
                     case YesNoCancel.No: break;
                     case YesNoCancel.Cancel: return;
@@ -170,10 +183,14 @@ namespace TgaBuilderLib.ViewModel
 
             try
             {
-                Destination.Presenter = _imageManager.OpenImageFile(
+                SetControlsStateForLoading();
+
+                await Task.Run(() => _imageManager.LoadImageFile(
                     fileName: fileName,
                     targetFormat: PixelFormats.Rgb24,
-                    mode: Abstraction.ResizeMode.TargetResize);
+                    mode: ResizeMode.SourceResize));
+
+                Destination.Presenter = _imageManager.GetLoadedBitmap();
             }
             catch (Exception e) when (IsHandleableOpenFileException(e))
             {
@@ -185,6 +202,11 @@ namespace TgaBuilderLib.ViewModel
             {
                 _logger.LogError(e);
                 throw;
+            }
+            finally
+            {
+                _imageManager.ClearLoadedData();
+                SetControlsStateAfterLoading();
             }
 
             _usageData.AddRecentOutputFile(fileName);
@@ -200,10 +222,10 @@ namespace TgaBuilderLib.ViewModel
                 ResultStatus.BitmapAreaNotSufficient => MessageType.DestinationOpenSuccessButIncomplete,
                 _ => MessageType.UnknownError
             };
-            _messageService.SendMessage(resMessage);
+            Application.Current.Dispatcher.Invoke(() => _messageService.SendMessage(resMessage));
         }
 
-        public bool Save(string? fileName = null)
+        public async Task<bool> Save(string? fileName = null)
         {
             if (String.IsNullOrEmpty(fileName) || !IsFileWriteable(fileName))
                 if (_fileService.SaveFileDialog(WRITEABLE_FILE_TYPES) == true)
@@ -212,15 +234,24 @@ namespace TgaBuilderLib.ViewModel
 
             try
             {
+                SetControlsStateForLoading();
+
                 _imageManager.SaveImageFile(
                     fileName: fileName,
                     bitmap: Destination.Presenter);
+                
+                await Task.Run(() => _imageManager.WriteImageFile(fileName));
             }
             catch (Exception e) when (IsHandleableSaveFileException(e))
             {
                 _messageService.SendMessage(MessageType.DestinationSaveError);
                 _logger.LogError(e);
                 return false;
+            }
+            finally
+            {
+                _imageManager.ClearLoadedData();
+                SetControlsStateAfterLoading();
             }
 
             _lastDestinationFilePath = fileName;
@@ -232,7 +263,19 @@ namespace TgaBuilderLib.ViewModel
             return true;
         }
 
-        public bool SaveCurrent() => Save(_lastDestinationFilePath);
+        public async Task<bool> SaveCurrent() => await Save(_lastDestinationFilePath);
+
+        private void SetControlsStateForLoading()
+        {
+            IsLoading = true;
+            ControlsEnabled = false;
+        }
+
+        private void SetControlsStateAfterLoading()
+        {
+            IsLoading = false;
+            ControlsEnabled = true;
+        }
 
         private bool IsFileWriteable(string filePath)
         {

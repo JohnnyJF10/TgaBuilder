@@ -45,10 +45,10 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="TabControlStyles.xaml"/>
-                <ResourceDictionary Source="ModifiedUiNumberBoxStyle.xaml"/>
-                <ResourceDictionary Source="ToggleButtonExStyle.xaml"/>
-                <ResourceDictionary Source="SingleColorButtonStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/TabControlStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/SingleColorButtonStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <Style TargetType="{x:Type elements:ContextMenuButton}"
@@ -92,7 +92,9 @@
                 ShowClose="False"
                 Height="40">
                 <ui:TitleBar.Header>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal"
+                                IsEnabled="{Binding SourceIO.ControlsEnabled}"
+                                >
                         <ui:Button
                             Icon="{ui:SymbolIcon FolderOpen24}"
                             Width="36"
@@ -157,7 +159,9 @@
                 ShowClose="False"
                 Height="40">
                 <ui:TitleBar.Header>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal"
+                                IsEnabled="{Binding TargetIO.ControlsEnabled}"
+                                >
                         <ui:Button Icon="{ui:SymbolIcon DocumentAdd24}"
                                    Width="36"
                                    Height="36"
@@ -233,7 +237,9 @@
             <TabControl
                 Margin="5"
                 BorderBrush="Transparent"
-                TabStripPlacement="Top">
+                TabStripPlacement="Top"
+                IsEnabled="{Binding SourceIO.ControlsEnabled}"
+                >
                 <TabControl.Resources>
                     <Style TargetType="TabItem"
                             BasedOn="{StaticResource NavTabItemStyle}">
@@ -255,6 +261,7 @@
                             Width="36"
                             Height="36"
                             Command="{Binding CopyEntireCommand}"
+                            IsEnabled="{Binding TargetIO.ControlsEnabled}"
                             ap:MouseOverInfoAP.InfoText="Copy entire Source Texture Panel to Target. CAUTION: This clears the undo and redo stacks."/>
                         <ui:Button
                             Icon="{ui:SymbolIcon XBoxController24}"
@@ -543,7 +550,28 @@
                         </Canvas>
                     </pzp:ZoomPanel>
                 </ScrollViewer>
-            </elements:FileDropBorder>            
+            </elements:FileDropBorder>
+            <Rectangle
+                Visibility="{Binding SourceIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                Grid.Row="1"
+                Fill="Gray"
+                Margin="10,0"
+                Opacity="0.5"
+                />
+            <ui:ProgressRing
+                Grid.Row="1"
+                Visibility="{Binding SourceIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                IsIndeterminate="{Binding SourceIO.IsLoading}"
+                />
+            <ui:Button
+                Grid.Row="1"
+                Content="Cancel" 
+                Margin="0,150,0,0" 
+                Visibility="{Binding SourceIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                />
+
             <TextBlock
                 d:Foreground="White"
                 Grid.Row="2"
@@ -778,7 +806,9 @@
                 Grid.Row="0"
                 BorderBrush="Transparent"
                 Margin="5"
-                TabStripPlacement="Top">
+                TabStripPlacement="Top"
+                IsEnabled="{Binding TargetIO.ControlsEnabled}"
+                >
                 <TabControl.Resources>
                     <Style TargetType="TabItem"
                             BasedOn="{StaticResource NavTabItemStyle}">
@@ -1097,6 +1127,26 @@
                     </pzp:ZoomPanel>
                 </ScrollViewer>
             </elements:FileDropBorder>
+            <Rectangle
+                Visibility="{Binding TargetIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                Grid.Row="1"
+                Fill="Gray"
+                Margin="10,0"
+                Opacity="0.5"
+                />
+            <ui:ProgressRing
+                Grid.Row="1"
+                Visibility="{Binding TargetIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                IsIndeterminate="{Binding TargetIO.IsLoading}"
+                />
+            <ui:Button
+                Grid.Row="1"
+                Content="Cancel" 
+                Margin="0,150,0,0" 
+                Visibility="{Binding SourceIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                />
             <TextBlock
                 Grid.Row="2"
                 d:Foreground="White"

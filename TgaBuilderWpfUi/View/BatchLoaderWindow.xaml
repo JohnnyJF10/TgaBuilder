@@ -26,7 +26,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ModifiedUiNumberBoxStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <sys:Boolean x:Key="True">True</sys:Boolean>
@@ -73,7 +73,7 @@
                 ItemCommand="{Binding OpenRecentFolderCommand}">
                 <TextBlock>
                     <Run Text=" Open Recent Folders" />
-                    <Run FontFamily="Wingdings 3" Text="&#x82;" />
+                    <Run FontFamily="Segoe UI Symbol" Text="&#xE0E5;" />
                 </TextBlock>
             </elements:ContextMenuButton>
         </StackPanel>
@@ -83,40 +83,58 @@
             >
             <Label
                 Content="First Texture Index:"
-                Margin="10"
+                Margin="10, 10, 10, 0"
                 HorizontalAlignment="Left"/>
             <ui:NumberBox 
-                Margin="10"
+                Margin="10, 0, 10, 10"
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding StartTexIndex, UpdateSourceTrigger=PropertyChanged}"
                 />
             <Label
                 Content="Number of Textures:"
-                Margin="10"
+                Margin="10, 10, 10, 0"
                 HorizontalAlignment="Left"/>
             <ui:NumberBox 
-                Margin="10"
+                Margin="10, 0, 10, 10"
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding NumTextures, UpdateSourceTrigger=PropertyChanged}"
                 />
             <Label
                 Content="Texture Size:"
-                Margin="10"
+                Margin="10, 10, 10, 0"
                 HorizontalAlignment="Left"/>
             <ui:NumberBox 
-                Margin="10"
+                Margin="10, 0, 10, 10"
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding TextureSize, UpdateSourceTrigger=PropertyChanged}"
                 />
             <Label
                 Content="Import Panel Width:"
-                Margin="10"
-                HorizontalAlignment="Left"/>
+                Margin="10, 10, 10, 0"
+                HorizontalAlignment="Left"
+                />
             <ui:NumberBox 
-                Margin="10"
+                Margin="10, 0, 10, 10"
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding PanelWidth, UpdateSourceTrigger=PropertyChanged}"
                 />
+            <Label
+                Content="Scaling Mode:"
+                Margin="10, 10, 10, 0"
+                HorizontalAlignment="Left"
+                />
+            <ComboBox 
+                Margin="10, 0, 10, 10"
+                SelectedIndex="{Binding ScalingModeIndex, UpdateSourceTrigger=PropertyChanged}"
+                >
+                <ComboBoxItem Content="Linear" />
+                <ComboBoxItem Content="Fant" />
+                <ComboBoxItem Content="Near. Neigh." 
+                              IsSelected="True"
+                              />
+
+            </ComboBox>
+            
         </StackPanel>
         <ui:Card
             VerticalAlignment="Stretch"

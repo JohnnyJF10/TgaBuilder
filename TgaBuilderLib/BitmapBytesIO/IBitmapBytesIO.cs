@@ -3,37 +3,55 @@ using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.FileHandling;
 
-namespace TgaBuilderLib.BitmapIO
+namespace TgaBuilderLib.BitmapBytesIO
 {
-    public interface IBitmapIO
+    public interface IBitmapBytesIO
     {
         ResultStatus ResultInfo { get; }
+
+        byte[]? LoadedBytes { get; }
+
+        int LoadedWidth { get; }
+        int LoadedHeight { get; }
+
+        int LoadedStride { get; }
+        PixelFormat LoadedFormat { get; }
+
+        int ActualDataLength { get; }
 
         WriteableBitmap FromOtherBitmap(
             WriteableBitmap source);
 
-        WriteableBitmap FromUsual(
+        void FromUsual(
             string filePath,
             PixelFormat? targetFormat = null,
             ResizeMode mode = ResizeMode.SourceResize);
 
-        WriteableBitmap FromPfim(
+        void FromPfim(
             string filePath, 
             PixelFormat? targetFormat = null, 
             ResizeMode mode = ResizeMode.SourceResize);
 
-        WriteableBitmap FromPsd(
+        void FromPsd(
             string filePath, PixelFormat? 
             targetFormat = null, 
             ResizeMode mode = ResizeMode.SourceResize);
 
+        WriteableBitmap GetLoadedBitmap();
+
         void ToUsual(
-            string filePath, 
-            string extension,
-            BitmapSource bitmap);
+            BitmapSource bitmap,
+            string extension);
+
+        void WriteUsual(
+            string filePath);
 
         void ToTga(
-            string filePath, 
             BitmapSource bitmap);
+
+        void WriteTga(
+            string filePath);
+
+        void ClearLoadedData();
     }
 }

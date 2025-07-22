@@ -3,7 +3,7 @@ using System.Buffers;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.BitmapIO;
+using TgaBuilderLib.BitmapBytesIO;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
@@ -50,9 +50,9 @@ namespace TgaBuilderWpfUi
 
         private void AddCoreServicesToProvider(IServiceCollection services)
         {
-            services.AddSingleton<IBitmapIO,            BitmapIO>();
+            services.AddSingleton<IBitmapBytesIO,            BitmapBytesIO>();
             services.AddSingleton<IImageFileManager,    ImageFileManager>(sp => new ImageFileManager(
-                bitmapIO: sp.GetRequiredService<IBitmapIO>()));
+                bitmapIO: sp.GetRequiredService<IBitmapBytesIO>()));
             services.AddSingleton<IAsyncFileLoader,     AsyncFileLoader>();
             services.AddSingleton<IBitmapOperations,    BitmapOperations>();
             services.AddSingleton<ILogger,              Logger>();

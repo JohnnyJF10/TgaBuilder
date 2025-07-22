@@ -106,6 +106,14 @@ namespace TgaBuilderLib.ViewModel
             set => SetImportPanelWidth(value);
         }
 
+        private BitmapScalingMode _bitmapScalingMode = BitmapScalingMode.NearestNeighbor;
+
+        public int ScalingModeIndex
+        {
+            get => (int)_bitmapScalingMode - 1;
+            set => SetScalingModeIndex(value);  
+        }
+
         public bool IsDropHintVisible
         {
             get => _isDropHintVisible;
@@ -319,7 +327,7 @@ namespace TgaBuilderLib.ViewModel
                         pixelFormat:    _asyncFileLoader.LoadedPixelFormat,
                         targetWidth:    _textureSize, 
                         targetHeight:   _textureSize, 
-                        scalingMode:    BitmapScalingMode.NearestNeighbor);
+                        scalingMode:    _bitmapScalingMode);
 
                     }
                     catch (OperationCanceledException) 
@@ -413,7 +421,7 @@ namespace TgaBuilderLib.ViewModel
                             pixelFormat:    _asyncFileLoader.LoadedPixelFormat,
                             targetWidth:    _textureSize,
                             targetHeight:   _textureSize,
-                            scalingMode:    BitmapScalingMode.NearestNeighbor);
+                            scalingMode:    _bitmapScalingMode);
 
                         }
                         catch (OperationCanceledException) 
@@ -539,6 +547,17 @@ namespace TgaBuilderLib.ViewModel
 
             IsDropHintVisible = false;
 
+            _ = UpdatePresenterAsync();
+        }
+
+        private void SetScalingModeIndex(int value)
+        {
+            if (value < 0 || value > 3)
+                throw new ArgumentOutOfRangeException(nameof(value), "Scaling mode index must be between 0 and 3.");
+
+            _bitmapScalingMode = (BitmapScalingMode)(value + 1);
+
+            OnPropertyChanged(nameof(ScalingModeIndex));
             _ = UpdatePresenterAsync();
         }
 

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace TgaBuilderLib.BitmapIO
+namespace TgaBuilderLib.BitmapBytesIO
 {
-    public partial class BitmapIO
+    public partial class BitmapBytesIO
     {
         private const byte TR_TGA_DIMENSION_POSITION = 0x0C;
         private const byte TR_TGA_HEADER_LENGTH = 0x12;
@@ -36,34 +36,39 @@ namespace TgaBuilderLib.BitmapIO
         private const int TR_LEVEL_PALLET_WIDTH = 256;
         private const int TR_LEVEL_PALLET_PAGE_SIZE = 65536;
 
-        public void ToTga(string filePath, BitmapSource bitmap)
+        public void ToTga(BitmapSource bitmap)
         {
             if (bitmap.Format != PixelFormats.Rgb24)
             {
                 throw new ArgumentException("Bitmap must be in BGR24 format.");
             }
-            int width = bitmap.PixelWidth;
-            int height = bitmap.PixelHeight;
-            byte[] pixelData = new byte[width * height * 3];
-            bitmap.CopyPixels(pixelData, width * 3, 0);
-            WriteTrTgaFromBytes(filePath, pixelData, width, height);
+            LoadedWidth = bitmap.PixelWidth;
+            LoadedHeight = bitmap.PixelHeight;
+
+            ActualDataLength = LoadedWidth * LoadedHeight * 3;
+
+            LoadedBytes = _bytesPool.Rent(ActualDataLength);
+            bitmap.CopyPixels(LoadedBytes, LoadedWidth * 3, 0);
         }
 
-        private void WriteTrTgaFromBytes(string filePath, byte[] data, int width, int height)
+        public void WriteTga(string filePath)
         {
+            if (LoadedBytes is null)
+                throw new InvalidOperationException("No image data loaded. Please load an image first.");
+
             using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             using (BinaryWriter bw = new BinaryWriter(fs))
             {
                 int index = 0;
-                WriteTrTgaHeader(bw, (short)width, (short)height);
-                for (int s = height - 1; s >= 0; s--)
+                WriteTrTgaHeader(bw, (short)LoadedWidth, (short)LoadedHeight);
+                for (int s = LoadedHeight - 1; s >= 0; s--)
                 {
-                    for (int c = 0; c < width; c++)
+                    for (int c = 0; c < LoadedWidth; c++)
                     {
-                        index = (s * width + c) * 3;
-                        bw.Write(data[index + 2]);
-                        bw.Write(data[index + 1]);
-                        bw.Write(data[index]);
+                        index = (s * LoadedWidth + c) * 3;
+                        bw.Write(LoadedBytes[index + 2]);
+                        bw.Write(LoadedBytes[index + 1]);
+                        bw.Write(LoadedBytes[index]);
                     }
                 }
                 WriteTrTGaFooter(bw);

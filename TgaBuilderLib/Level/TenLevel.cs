@@ -9,14 +9,14 @@ using System.Windows.Media.Imaging;
 
 namespace TgaBuilderLib.Level
 {
-    public partial class TenLevel : Level
+    public partial class TenLevel : LevelBase
     {
         private List<byte[]> _texPagesList = new();
         private List<(int width, int height, int size)> _texDimsList = new();
 
         private List<(int page, int x, int y, int width, int height)> _roomsTextureInfos = new();
 
-        public TenVersion Version { get; private set; } 
+        public TenVersion Version { get; private set; }
 
         public TenLevel(string fileName,
             int trTexturePanelHorPagesNum = 2)
@@ -31,11 +31,7 @@ namespace TgaBuilderLib.Level
 
             RepackAtlas();
 
-            ResultBitmap = CreateWriteableBitmapFromByteArray(
-                byteArray: TargetAtlas!,
-                width: targetPanelWidth,
-                height: targetPanelHeight,
-                pixelFormat: PixelFormats.Bgra32);
+            ClearTempData();
 
         }
 
@@ -68,18 +64,18 @@ namespace TgaBuilderLib.Level
 
             for (int i = 0; i < height; i++)
             {
-                if (destinationIndex + height * 3 > TargetAtlas!.Length) 
+                if (destinationIndex + height * 3 > TargetAtlas!.Length)
                     continue;
 
-                if (sourceIndex + height * 3 > page.Length) 
+                if (sourceIndex + height * 3 > page.Length)
                     continue;
 
                 Array.Copy(
-                    sourceArray:        page, 
-                    sourceIndex:        sourceIndex, 
-                    destinationArray:   TargetAtlas, 
-                    destinationIndex:   destinationIndex, 
-                    length:             width * IMPORT_BPP);
+                    sourceArray: page,
+                    sourceIndex: sourceIndex,
+                    destinationArray: TargetAtlas,
+                    destinationIndex: destinationIndex,
+                    length: width * IMPORT_BPP);
 
                 destinationIndex += targetPanelWidth * IMPORT_BPP;
                 sourceIndex += pageInfo.width * IMPORT_BPP;
@@ -92,10 +88,10 @@ namespace TgaBuilderLib.Level
             using (var ms = new MemoryStream(pngBytes, 0, size, writable: false, publiclyVisible: true))
             {
                 bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad; 
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.StreamSource = ms;
                 bitmapImage.EndInit();
-                bitmapImage.Freeze(); 
+                bitmapImage.Freeze();
             }
 
             width = bitmapImage.PixelWidth;
@@ -111,20 +107,14 @@ namespace TgaBuilderLib.Level
             return pixelData; // Format: BGRA (Blue, Green, Red, Alpha)
         }
 
-        public override void Dispose()
+        public override void ClearTempData()
         {
             foreach (byte[] page in _texPagesList)
             {
-                if (page.Length == 0) 
-                    continue; 
+                if (page.Length == 0)
+                    continue;
 
                 _bytePool.Return(page);
-            }
-
-            if (TargetAtlas != null)
-            {
-                _bytePool.Return(TargetAtlas);
-                TargetAtlas = null;
             }
         }
     }

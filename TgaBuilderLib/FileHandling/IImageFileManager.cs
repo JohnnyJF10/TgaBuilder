@@ -18,10 +18,12 @@ namespace TgaBuilderLib.FileHandling
         public bool TrImportRepackingSelected { get; set; }
         public int TrImportHorPageNum { get; set; }
 
-        WriteableBitmap OpenImageFile(
+        void LoadImageFile(
             string fileName, 
             PixelFormat? targetFormat = null, 
             ResizeMode mode = ResizeMode.SourceResize);
+
+        WriteableBitmap GetLoadedBitmap();
 
         WriteableBitmap GetDestinationConfirmBitmap(
             WriteableBitmap inputBitmap);
@@ -29,5 +31,10 @@ namespace TgaBuilderLib.FileHandling
         void SaveImageFile(
             string fileName,
             BitmapSource bitmap);
+
+        void WriteImageFile(
+            string fileName);
+
+        void ClearLoadedData();
     }
 }

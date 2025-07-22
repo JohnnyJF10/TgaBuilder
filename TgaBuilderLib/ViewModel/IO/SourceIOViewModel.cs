@@ -63,12 +63,25 @@ namespace TgaBuilderLib.ViewModel
 
         private IUsageData _usageData;
 
+        private bool _isLoading;
+        private bool _controlsEnabled = true;
 
 
         public SourceTexturePanelViewModel Source { get; set; }
 
         public IEnumerable<string> RecentSourceFileNames => _usageData.RecentInputFiles;
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetPropertyPrimitive(ref _isLoading, value, nameof(IsLoading));
+        }
+
+        public bool ControlsEnabled
+        {
+            get => _controlsEnabled;
+            set => SetPropertyPrimitive(ref _controlsEnabled, value, nameof(ControlsEnabled));
+        }
 
         public bool TrImportRepackingSelected
         {
@@ -103,18 +116,20 @@ namespace TgaBuilderLib.ViewModel
         public void BatchLoader()
         {
             var batchLoaderView = _getViewCallback(ViewIndex.BatchLoader);
-            if (batchLoaderView.DataContext is not BatchLoaderViewModel batchLoaderVM) return;
+            if (batchLoaderView.DataContext is not BatchLoaderViewModel batchLoaderVM) 
+                return;
 
             batchLoaderView.ShowDialog();
 
-            if (batchLoaderView.DialogResult != true) return;
+            if (batchLoaderView.DialogResult != true) 
+                return;
 
             Source.SetPresenter(batchLoaderVM.Presenter);
 
             Source.VisualGrid.Reset();
         }
 
-        public void Open(string? fileName = null, List<FileTypes>? fileTypes = null)
+        public async Task Open(string? fileName = null, List<FileTypes>? fileTypes = null)
         {
             if (fileTypes == null)
                 fileTypes = new List<FileTypes>
@@ -130,11 +145,16 @@ namespace TgaBuilderLib.ViewModel
 
             try
             {
-                Source.Presenter = _imageManager.OpenImageFile(
+                SetControlsStateForLoading();
+
+                await Task.Run(() => _imageManager.LoadImageFile(
                     fileName: fileName,
                     targetFormat: PixelFormats.Rgb24,
-                    mode: Abstraction.ResizeMode.SourceResize);
+                    mode: Abstraction.ResizeMode.SourceResize));
+
+                Source.Presenter = _imageManager.GetLoadedBitmap();
             }
+            catch (OperationCanceledException) { }
             catch (Exception e) when (IsHandleableOpenFileException(e))
             {
                 _messageService.SendMessage(MessageType.SourceOpenError, ex: e);
@@ -145,6 +165,11 @@ namespace TgaBuilderLib.ViewModel
             {
                 _logger.LogError(e);
                 throw;
+            }
+            finally
+            {
+                _imageManager.ClearLoadedData();
+                SetControlsStateAfterLoading();
             }
 
             _usageData.AddRecentInputFile(fileName);
@@ -158,10 +183,11 @@ namespace TgaBuilderLib.ViewModel
                 ResultStatus.BitmapAreaNotSufficient => MessageType.SourceOpenSuccessButIncomplete,
                 _ => MessageType.UnknownError
             };
-            _messageService.SendMessage(resMessage);
+
+            Application.Current.Dispatcher.Invoke(() => _messageService.SendMessage(resMessage));
         }
 
-        public void Reload()
+        public async Task Reload()
         {
             if (_usageData.RecentInputFiles.Count == 0)
                 return;
@@ -170,11 +196,18 @@ namespace TgaBuilderLib.ViewModel
 
             try
             {
-                Source.Presenter = _imageManager.OpenImageFile(
+                SetControlsStateForLoading();
+
+                await Task.Run(() => _imageManager.LoadImageFile(
                     fileName: fileName,
                     targetFormat: PixelFormats.Rgb24,
-                    mode: Abstraction.ResizeMode.TargetResize);
+                    mode: Abstraction.ResizeMode.SourceResize));
+
+                Source.MouseLeave();
+
+                Source.Presenter = _imageManager.GetLoadedBitmap();
             }
+            catch (OperationCanceledException) { }
             catch (Exception e) when (IsHandleableOpenFileException(e))
             {
                 _messageService.SendMessage(MessageType.SourceOpenError, ex: e);
@@ -185,10 +218,27 @@ namespace TgaBuilderLib.ViewModel
                 _logger.LogError(e);
                 throw;
             }
+            finally
+            {
+                _imageManager.ClearLoadedData();
+                SetControlsStateAfterLoading();
+            }
         }
 
-        public void OpenTr()
-            => Open(fileTypes: [TR_FILE_TYPES, DEF_FILE_TYPES]);
+        public async Task OpenTr()
+            => await Open(fileTypes: [TR_FILE_TYPES, DEF_FILE_TYPES]);
+
+        private void SetControlsStateForLoading()
+        {
+            IsLoading = true;
+            ControlsEnabled = false;
+        }
+
+        private void SetControlsStateAfterLoading()
+        {
+            IsLoading = false;
+            ControlsEnabled = true;
+        }
 
         private int CalculateNewPageXValue(int proposedValue, int currentValue)
             => proposedValue < currentValue ? proposedValue switch

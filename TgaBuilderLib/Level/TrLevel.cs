@@ -9,7 +9,7 @@ using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Level
 {
-    public partial class TrLevel : Level
+    public partial class TrLevel : LevelBase
     {
 
 
@@ -61,11 +61,13 @@ namespace TgaBuilderLib.Level
                     RearrangeImagePages();
             }
 
-            ResultBitmap = CreateWriteableBitmapFromByteArray(
-                byteArray:      TargetAtlas!,
-                width:          targetPanelWidth,
-                height:         targetPanelHeight,
-                pixelFormat:    PixelFormats.Bgra32);
+            //ResultBitmap = GetResultBitmap(
+            //    byteArray:      TargetAtlas!,
+            //    width:          targetPanelWidth,
+            //    height:         targetPanelHeight,
+            //    pixelFormat:    PixelFormats.Bgra32);
+
+            ClearTempData();
         }
 
 
@@ -165,7 +167,7 @@ namespace TgaBuilderLib.Level
             }
         }
 
-        public override void Dispose()
+        public override void ClearTempData()
         {
             if (_paletteTr1 is not null)
             {
@@ -189,12 +191,6 @@ namespace TgaBuilderLib.Level
             {
                 _bytePool.Return(_rawAtlas);
                 _rawAtlas = null;
-            }
-
-            if (TargetAtlas is not null)
-            {
-                _bytePool.Return(TargetAtlas);
-                TargetAtlas = null;
             }
         }
     }

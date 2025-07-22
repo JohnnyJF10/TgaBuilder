@@ -7,14 +7,16 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace TgaBuilderLib.BitmapIO
+namespace TgaBuilderLib.BitmapBytesIO
 {
-    public partial class BitmapIO
+    public partial class BitmapBytesIO
     {
         public WriteableBitmap FromOtherBitmap(WriteableBitmap source)
         {
-            if (source.Format != PixelFormats.Bgra32 || source.Format == PixelFormats.Rgb24)
+            if (source.Format != PixelFormats.Bgra32 && source.Format != PixelFormats.Rgb24)
                 throw new ArgumentException("Source must be in Bgra32 or Rgb24 format");
+
+            bool isSourceBgra32 = source.Format == PixelFormats.Bgra32;
 
             int sourceWidth = source.PixelWidth;
             int height = source.PixelHeight;
@@ -30,6 +32,8 @@ namespace TgaBuilderLib.BitmapIO
 
             source.Lock();
             target.Lock();
+
+            byte r, g, b, a;
 
             unsafe
             {
@@ -48,10 +52,20 @@ namespace TgaBuilderLib.BitmapIO
                     {
                         if (x < sourceWidth)
                         {
-                            byte b = srcRow[x * 4 + 0];
-                            byte g = srcRow[x * 4 + 1];
-                            byte r = srcRow[x * 4 + 2];
-                            byte a = srcRow[x * 4 + 3];
+                            if (isSourceBgra32)
+                            {
+                                b = srcRow[x * 4 + 0]; // B
+                                g = srcRow[x * 4 + 1]; // G
+                                r = srcRow[x * 4 + 2]; // R
+                                a = srcRow[x * 4 + 3]; // A
+                            }
+                            else
+                            {
+                                r = srcRow[x * 3 + 0]; // R
+                                g = srcRow[x * 3 + 1]; // G
+                                b = srcRow[x * 3 + 2]; // B
+                                a = 255;               // A
+                            }
 
                             if (a != 0)
                             {

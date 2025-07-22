@@ -1,23 +1,68 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.FileHandling;
 
-namespace TgaBuilderLib.BitmapIO
+namespace TgaBuilderLib.BitmapBytesIO
 {
-    public partial class BitmapIO : IBitmapIO
+    public partial class BitmapBytesIO : IBitmapBytesIO
     {
         private const int MAX_SIZE = 32768;
         private const int TR_PAGE_SIZE = 256;
         private const int MAX_TARGET_WIDTH = 16 * TR_PAGE_SIZE;
 
+        private readonly ArrayPool<byte> _bytesPool = ArrayPool<byte>.Shared;
+
         public ResultStatus ResultInfo { get; private set; } = ResultStatus.Success;
 
+        public byte[]? LoadedBytes { get; private set; }
+
+        public int LoadedWidth { get; private set; }
+        public int LoadedHeight { get; private set; }
+
+        public int LoadedStride { get; private set; }
+
+        public PixelFormat LoadedFormat { get; private set; }
+
+        public int ActualDataLength { get; private set; }
+
+        public WriteableBitmap GetLoadedBitmap()
+        {
+            if (LoadedBytes == null)
+                throw new InvalidOperationException("No image data loaded.");
+
+            var wb = new WriteableBitmap(
+                pixelWidth: LoadedWidth,
+                pixelHeight: LoadedHeight,
+                dpiX: 96,
+                dpiY: 96,
+                pixelFormat: LoadedFormat,
+                palette: null);
+
+            wb.WritePixels(
+                sourceRect: new System.Windows.Int32Rect(0, 0, LoadedWidth, LoadedHeight),
+                pixels: LoadedBytes,
+                stride: LoadedStride,
+                offset: 0);
+
+            return wb;
+        }
+
+        public void ClearLoadedData()
+        {
+            if (LoadedBytes != null)
+            {
+                _bytesPool.Return(LoadedBytes);
+                LoadedBytes = null;
+            }
+        }
 
         private void ValidateImageInput(string filePath, PixelFormat format)
         {
@@ -58,12 +103,13 @@ namespace TgaBuilderLib.BitmapIO
             return paddedHeight;
         }
 
-        private byte[] CreateBlackPixelBuffer(int width, int height, int bytesPerPixel, byte alpha = 255)
+        private byte[] RentBlackPixelBuffer(int width, int height, int bytesPerPixel, byte alpha = 255)
         {
             int stride = width * bytesPerPixel;
-            byte[] buffer = new byte[height * stride];
+            int desiredSize = height * stride;
+            byte[] buffer = _bytesPool.Rent(desiredSize);
 
-            for (int i = 0; i < buffer.Length; i += bytesPerPixel)
+            for (int i = 0; i < desiredSize; i += bytesPerPixel)
             {
                 buffer[i + 0] = 0; // B
                 buffer[i + 1] = 0; // G
