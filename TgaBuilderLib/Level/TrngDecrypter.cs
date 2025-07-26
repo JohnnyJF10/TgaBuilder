@@ -1,8 +1,9 @@
-﻿using System.IO;
+﻿using System.Buffers;
+using System.IO;
 
 namespace TgaBuilderLib.Level
 {
-    public static partial class TrngDecrypter
+    public partial class TrngDecrypter : ITrngDecrypter
     {
         private const int KeyLength = 99;
         private const int MapCount = 16;
@@ -10,12 +11,12 @@ namespace TgaBuilderLib.Level
 
 
         // Key offsets - precomputed offsets for each key
-        private static readonly int[] KeyOffsets = new int[MapCount];
+        private readonly int[] KeyOffsets = new int[MapCount];
 
         // Map offsets - precomputed offsets for each map
-        private static readonly int[] MapOffsets = new int[MapCount];
+        private readonly int[] MapOffsets = new int[MapCount];
 
-        static TrngDecrypter()
+        public TrngDecrypter()
         {
             // Initialize offsets
             for (int i = 0; i < MapCount; i++)
@@ -25,9 +26,12 @@ namespace TgaBuilderLib.Level
             }
         }
 
-        public static bool DecryptLevel(string source, string target)
+        public bool DecryptLevel(string source, string target)
         {
-            if (!File.Exists(source)) return false;
+            if (!File.Exists(source)) 
+                return false;
+
+            byte[] header = new byte[KeyLength]; 
 
             try
             {
@@ -52,7 +56,7 @@ namespace TgaBuilderLib.Level
                     for (int chunk = 0; chunk < 4; chunk++)
                     {
                         uint size = reader.ReadUInt32();
-                        byte[] header = reader.ReadBytes(KeyLength);
+                        reader.Read(header, 0, KeyLength);
 
                         // Skip size field in output
                         writer.Seek(4, SeekOrigin.Current);
@@ -60,7 +64,7 @@ namespace TgaBuilderLib.Level
                         int mapIndex = (int)(size >> chunk + 5) & 0x0F;
                         int keyIndex = (int)(size >> chunk + 1) & 0x0F;
 
-                        writer.Write(DecryptOptimized(header, mapIndex, keyIndex));
+                        writer.Write(Decrypt(header, mapIndex, keyIndex));
 
                         // Skip remaining data
                         long remaining = size - KeyLength + sizeof(uint);
@@ -79,7 +83,7 @@ namespace TgaBuilderLib.Level
             }
         }
 
-        private static byte[] DecryptOptimized(byte[] buffer, int mapIndex, int keyIndex)
+        private byte[] Decrypt(byte[] buffer, int mapIndex, int keyIndex)
         {
             // Get the correct map and key segments
             ReadOnlySpan<byte> map = new ReadOnlySpan<byte>(ObfuscationMapsData, MapOffsets[mapIndex], MapSize);

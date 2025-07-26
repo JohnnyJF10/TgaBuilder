@@ -11,7 +11,7 @@ namespace TgaBuilderLib.Level
 {
     public partial class TrLevel : LevelBase
     {
-
+        private readonly ITrngDecrypter? _trngDecrypter;
 
         private bool _isNg;
         private long _textureInfosStreamPosition;
@@ -36,8 +36,11 @@ namespace TgaBuilderLib.Level
 
         public TrLevel(string fileName,            
             int trTexturePanelHorPagesNum = 2,
-            bool useTrTextureRepacking = false)
+            bool useTrTextureRepacking = false,
+            ITrngDecrypter? trngDecrypter = null)
         {
+            _trngDecrypter = trngDecrypter;
+
             targetPanelWidth = trTexturePanelHorPagesNum * ORIGINAL_PAGE_SIZE;
 
             ReadLevel(fileName);
@@ -60,13 +63,6 @@ namespace TgaBuilderLib.Level
                 else
                     RearrangeImagePages();
             }
-
-            //ResultBitmap = GetResultBitmap(
-            //    byteArray:      TargetAtlas!,
-            //    width:          targetPanelWidth,
-            //    height:         targetPanelHeight,
-            //    pixelFormat:    PixelFormats.Bgra32);
-
             ClearTempData();
         }
 

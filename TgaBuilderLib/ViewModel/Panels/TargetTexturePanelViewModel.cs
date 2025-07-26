@@ -357,7 +357,8 @@ namespace TgaBuilderLib.ViewModel
             if (Picker.Y + SelectionHeight > Presenter.PixelHeight)
                 SelectionHeight = Presenter.PixelHeight - Picker.Y;
 
-            int finalByteSize = SelectionWidth * SelectionHeight * 3;
+            int finalByteSize = SelectionWidth * SelectionHeight
+                * (Presenter.Format == PixelFormats.Rgb24 ? 3 : 4);
 
             if ((placingMode & PlacingMode.PlaceAndSwap) == PlacingMode.PlaceAndSwap)
                 _bitmapOperations.SwapBitmap = new WriteableBitmap(
@@ -365,7 +366,7 @@ namespace TgaBuilderLib.ViewModel
                     pixelHeight:    SelectionHeight,
                     dpiX:           96,
                     dpiY:           96,
-                    pixelFormat:    PixelFormats.Rgb24,
+                    pixelFormat:    Presenter.Format,
                     palette:        null);
             else
                 _bitmapOperations.SwapBitmap = null;
@@ -375,7 +376,7 @@ namespace TgaBuilderLib.ViewModel
                 var undoPixels = _undoRedoManager.RentUndoRedoArray();
                 var redoPixels = _undoRedoManager.RentUndoRedoArray();
 
-                _bitmapOperations.FillRectBitmapMonitored(
+                _bitmapOperations.FillRectBitmap(
                     source:         Selection.Presenter,
                     target:         Presenter,
                     pos:            (Picker.X, Picker.Y),
@@ -392,7 +393,7 @@ namespace TgaBuilderLib.ViewModel
             }
             else
             {
-                _bitmapOperations.FillRectBitmap(
+                _bitmapOperations.FillRectBitmapUnmonitored(
                     source:         Selection.Presenter,
                     target:         Presenter,
                     pos:            (Picker.X, Picker.Y),
@@ -692,6 +693,32 @@ namespace TgaBuilderLib.ViewModel
             (placingMode & PlacingMode.ResizeToPicker) == PlacingMode.ResizeToPicker &&
                 (Picker.Size != Selection.Presenter.PixelWidth ||
                 Picker.Size != Selection.Presenter.PixelHeight);
+
+        public void ConvertToBgra32()
+        {
+            if (Presenter.Format == PixelFormats.Bgra32)
+                return;
+
+            _undoRedoManager.ClearAllNewFile();
+
+            Presenter = _bitmapOperations.ConvertRGB24ToBGRA32(Presenter);
+
+            OnPropertyChanged(nameof(Presenter));
+            OnPropertyChanged(nameof(PanelStatement));
+        }
+
+        public void ConvertToRgb24()
+        {
+            if (Presenter.Format == PixelFormats.Rgb24)
+                return;
+
+            _undoRedoManager.ClearAllNewFile();
+
+            Presenter = _bitmapOperations.ConvertBGRA32ToRGB24(Presenter);
+
+            OnPropertyChanged(nameof(Presenter));
+            OnPropertyChanged(nameof(PanelStatement));
+        }
 
         [Obsolete]
         private byte[] GetByteArrayFromWriteableBitmap(WriteableBitmap writeableBitmap)

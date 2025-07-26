@@ -23,17 +23,15 @@ namespace TgaBuilderLib.BitmapBytesIO
             int targetWidth = EstimateTargetWidth(sourceWidth);
 
             WriteableBitmap target = new WriteableBitmap(
-                pixelWidth: targetWidth,
-                pixelHeight: height,
-                dpiX: source.DpiX,
-                dpiY: source.DpiY,
-                pixelFormat: PixelFormats.Rgb24,
-                palette: null);
+                pixelWidth:     targetWidth,
+                pixelHeight:    height,
+                dpiX:           source.DpiX,
+                dpiY:           source.DpiY,
+                pixelFormat:    source.Format,
+                palette:        null);
 
             source.Lock();
             target.Lock();
-
-            byte r, g, b, a;
 
             unsafe
             {
@@ -48,45 +46,13 @@ namespace TgaBuilderLib.BitmapBytesIO
                     byte* srcRow = srcPtr + y * sourceStride;
                     byte* dstRow = dstPtr + y * targetStride;
 
-                    for (int x = 0; x < targetWidth; x++)
+                    for (int b = 0; b < targetStride; b++)
                     {
-                        if (x < sourceWidth)
+                        if (b < sourceStride)
                         {
-                            if (isSourceBgra32)
-                            {
-                                b = srcRow[x * 4 + 0]; // B
-                                g = srcRow[x * 4 + 1]; // G
-                                r = srcRow[x * 4 + 2]; // R
-                                a = srcRow[x * 4 + 3]; // A
-                            }
-                            else
-                            {
-                                r = srcRow[x * 3 + 0]; // R
-                                g = srcRow[x * 3 + 1]; // G
-                                b = srcRow[x * 3 + 2]; // B
-                                a = 255;               // A
-                            }
+                            *dstRow++ = *srcRow++;
+                        }
 
-                            if (a != 0)
-                            {
-                                dstRow[x * 3 + 0] = r;
-                                dstRow[x * 3 + 1] = g;
-                                dstRow[x * 3 + 2] = b;
-                            }
-                            else
-                            {
-                                dstRow[x * 3 + 0] = 255; // R
-                                dstRow[x * 3 + 1] = 0;   // G
-                                dstRow[x * 3 + 2] = 255; // B
-                            }
-                        }
-                        else
-                        {
-                            // Magenta 
-                            dstRow[x * 3 + 0] = 255; // R
-                            dstRow[x * 3 + 1] = 0;   // G
-                            dstRow[x * 3 + 2] = 255; // B
-                        }
                     }
                 }
 

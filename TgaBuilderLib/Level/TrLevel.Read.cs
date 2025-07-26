@@ -631,11 +631,16 @@ namespace TgaBuilderLib.Level
 
         private string NgGetDecryptedLevelName(string fileName)
         {
+            if (_trngDecrypter is null)
+                throw new ArgumentNullException(nameof(_trngDecrypter), "TRNG decrypter is not initialized.");
+
             string levelName = Path.Combine(
                 Path.GetDirectoryName(fileName)!, 
                 Path.GetFileNameWithoutExtension(fileName) + "_decrypted" + Path.GetExtension(fileName));
-            if (!TrngDecrypter.DecryptLevel(fileName, levelName))
-                throw new Exception("Can't decrypt TRNG level " + fileName + ".");
+
+            if (!_trngDecrypter.DecryptLevel(fileName, levelName))
+                throw new FileFormatException("Failed to decrypt the level file: " + fileName);
+
             return levelName;
         }
 

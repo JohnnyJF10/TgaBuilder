@@ -16,11 +16,18 @@ namespace TgaBuilderLib.FileHandling
 
     public class ImageFileManager : IImageFileManager
     {
-        public ImageFileManager(IBitmapBytesIO bitmapIO)
+        public ImageFileManager(
+            Func<string, int, bool, LevelBase> trLevelFactory,
+            Func<string, int, LevelBase> tenLevelFactory,
+            IBitmapBytesIO bitmapIO)
         {
+            _trLevelFactory = trLevelFactory;
+            _tenLevelFactory = tenLevelFactory;
             _bitmapIO = bitmapIO;
         }
 
+        private readonly Func<string, int, bool, LevelBase> _trLevelFactory;
+        private readonly Func<string, int, LevelBase> _tenLevelFactory;
 
         private readonly IBitmapBytesIO _bitmapIO;
         private readonly ArrayPool<byte> _bytesPool = ArrayPool<byte>.Shared;
@@ -34,7 +41,6 @@ namespace TgaBuilderLib.FileHandling
 
         public void LoadImageFile(
             string fileName, 
-            PixelFormat? targetFormat = null, 
             ResizeMode mode = ResizeMode.SourceResize)
         {
             string extension = Path.GetExtension(fileName).TrimStart('.').ToLower();
@@ -50,11 +56,11 @@ namespace TgaBuilderLib.FileHandling
             {
                 case FileTypes.TGA:
                 case FileTypes.DDS:
-                    _bitmapIO.FromPfim(fileName, targetFormat, mode);
+                    _bitmapIO.FromPfim(fileName, mode);
                     return;
 
                 case FileTypes.PSD:
-                    _bitmapIO.FromPsd(fileName, targetFormat, mode);
+                    _bitmapIO.FromPsd(fileName, mode);
                     return;
 
                 case FileTypes.PHD:
@@ -69,10 +75,10 @@ namespace TgaBuilderLib.FileHandling
                         isTen = CheckIfTen(fileName, fileType);
 
                     _loadedLevel = isTen
-                        ? new TenLevel(
+                        ? GetNewTenLevel(
                             fileName: fileName,
                             trTexturePanelHorPagesNum: TrImportHorPageNum)
-                        : new TrLevel(
+                        : GetNewTrLevel(
                             fileName: fileName,
                             trTexturePanelHorPagesNum: TrImportHorPageNum,
                             useTrTextureRepacking: TrImportRepackingSelected);
@@ -87,7 +93,7 @@ namespace TgaBuilderLib.FileHandling
                 case FileTypes.PNG:
                 case FileTypes.JPG:
                 case FileTypes.JPEG:
-                    _bitmapIO.FromUsual(fileName, targetFormat, mode);
+                    _bitmapIO.FromUsual(fileName, mode);
                     return;
 
                 default:
@@ -186,6 +192,12 @@ namespace TgaBuilderLib.FileHandling
                     return true;
             }
         }
+
+        private LevelBase GetNewTrLevel(string fileName, int trTexturePanelHorPagesNum, bool useTrTextureRepacking)
+            => _trLevelFactory.Invoke(fileName, trTexturePanelHorPagesNum, useTrTextureRepacking);
+
+        private LevelBase GetNewTenLevel(string fileName, int trTexturePanelHorPagesNum)
+            => _tenLevelFactory.Invoke(fileName, trTexturePanelHorPagesNum);
 
         private bool IsTga(string extension)
             => extension == "tga";

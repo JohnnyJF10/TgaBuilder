@@ -12,7 +12,6 @@ using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
-using TgaBuilderLib.ViewModel.Views;
 using MouseAction = TgaBuilderLib.Abstraction.MouseAction;
 
 
@@ -37,10 +36,11 @@ namespace TgaBuilderLib.ViewModel
 
             ViewTabViewModel sourceViewTab,
             ViewTabViewModel destinationViewTab,
-            AlphaTabViewModel alphaTab,
+            AlphaTabViewModel alpha,
             PlacingTabViewModel placing,
             EditTabViewModel edits,
             SizeTabViewModel size,
+            FormatTabViewModel format,
 
             IUsageData? usageData = null)
         {
@@ -63,10 +63,11 @@ namespace TgaBuilderLib.ViewModel
 
             SourceViewTab = sourceViewTab;
             DestinationViewTab = destinationViewTab;
-            AlphaTab = alphaTab;
+            AlphaTab = alpha;
             PlacingTab = placing;
             EditsTab = edits;
             SizeTab = size;
+            FormatTab = format;
 
             if (usageData != null)
                 _ = CheckUsageDataLoading(usageData);
@@ -114,6 +115,7 @@ namespace TgaBuilderLib.ViewModel
         public PlacingTabViewModel PlacingTab { get; set; }
         public EditTabViewModel EditsTab { get; set; }
         public SizeTabViewModel SizeTab { get; set; }
+        public FormatTabViewModel FormatTab { get; set; }
         public ViewTabViewModel SourceViewTab { get; set; }
         public ViewTabViewModel DestinationViewTab { get; set; }
 

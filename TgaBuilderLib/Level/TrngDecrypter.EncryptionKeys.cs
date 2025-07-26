@@ -1,8 +1,8 @@
 ﻿namespace TgaBuilderLib.Level
 {
-    public static partial class TrngDecrypter
+    public partial class TrngDecrypter
     {
-        private static readonly byte[] EncryptionKeysData =
+        private readonly byte[] EncryptionKeysData =
         { 
             // Source: https://github.com/MontyTRC89/Tomb-Editor/blob/master/TombLib/TombLib/NG/NgEncryption.cs
 

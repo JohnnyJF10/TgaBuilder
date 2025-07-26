@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pfim;
+using System;
 using System.Collections.Generic;
 using System.Drawing.PSD;
 using System.Linq;
@@ -14,17 +15,19 @@ namespace TgaBuilderLib.BitmapBytesIO
     {
         public void FromPsd(
             string psdFilePath,
-            PixelFormat? targetFormat = null,
             ResizeMode mode = ResizeMode.SourceResize)
         {
-            LoadedFormat = targetFormat ?? PixelFormats.Rgb24;
-
             ValidateImageInput(psdFilePath, LoadedFormat);
 
             var psd = new PsdFile();
             psd.Load(psdFilePath);
 
-            int bytesPerPixel = LoadedFormat == PixelFormats.Bgra32 ? 4 : 3;
+            var data = psd.ImageData;
+            int bytesPerPixel = data.Length;
+
+            bool isPsd4Channels = bytesPerPixel == 4;
+
+            LoadedFormat = isPsd4Channels ? PixelFormats.Bgra32 : PixelFormats.Rgb24;
 
             int originalWidth = psd.Columns;
             int originalHeight = psd.Rows;
@@ -39,9 +42,6 @@ namespace TgaBuilderLib.BitmapBytesIO
                 height: LoadedHeight,
                 bytesPerPixel: bytesPerPixel);
 
-            var data = psd.ImageData;
-            int channelCount = data.Length;
-
             for (int y = 0; y < originalHeight; y++)
             {
                 for (int x = 0; x < originalWidth; x++)
@@ -49,7 +49,7 @@ namespace TgaBuilderLib.BitmapBytesIO
                     int layerIndex = y * originalWidth + x;
                     int globalIndex = (y * LoadedWidth + x) * bytesPerPixel;
 
-                    byte a = channelCount == 4 ? data[3][layerIndex] : (byte)255;
+                    byte a = isPsd4Channels ? data[3][layerIndex] : (byte)255;
                     byte r = data[0][layerIndex];
                     byte g = data[1][layerIndex];
                     byte b = data[2][layerIndex];

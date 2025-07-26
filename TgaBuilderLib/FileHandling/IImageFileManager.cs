@@ -20,7 +20,6 @@ namespace TgaBuilderLib.FileHandling
 
         void LoadImageFile(
             string fileName, 
-            PixelFormat? targetFormat = null, 
             ResizeMode mode = ResizeMode.SourceResize);
 
         WriteableBitmap GetLoadedBitmap();

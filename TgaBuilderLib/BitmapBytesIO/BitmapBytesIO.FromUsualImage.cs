@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pfim;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,18 +15,19 @@ namespace TgaBuilderLib.BitmapBytesIO
     {
         public void FromUsual(
             string filePath,
-            PixelFormat? targetFormat = null,
             ResizeMode mode = ResizeMode.SourceResize)
         {
-            LoadedFormat = targetFormat ?? PixelFormats.Rgb24;
-            ValidateImageInput(filePath, LoadedFormat);
-
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
             bitmapImage.UriSource = new Uri(filePath);
             bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
             bitmapImage.EndInit();
-            bitmapImage.Freeze(); // Optional, for thread safety
+            bitmapImage.Freeze();
+
+            LoadedFormat = bitmapImage.Format.BitsPerPixel == 32
+                ? PixelFormats.Bgra32
+                : PixelFormats.Rgb24;
+            ValidateImageInput(filePath, LoadedFormat);
 
             int originalWidth = bitmapImage.PixelWidth;
             int originalHeight = bitmapImage.PixelHeight;

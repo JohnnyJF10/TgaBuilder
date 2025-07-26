@@ -187,7 +187,6 @@ namespace TgaBuilderLib.ViewModel
 
                 await Task.Run(() => _imageManager.LoadImageFile(
                     fileName: fileName,
-                    targetFormat: PixelFormats.Rgb24,
                     mode: ResizeMode.SourceResize));
 
                 Destination.Presenter = _imageManager.GetLoadedBitmap();

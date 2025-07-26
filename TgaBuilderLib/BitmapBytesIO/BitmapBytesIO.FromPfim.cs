@@ -15,13 +15,14 @@ namespace TgaBuilderLib.BitmapBytesIO
     {
         public void FromPfim(
             string filePath,
-            PixelFormat? targetFormat = null,
             ResizeMode mode = ResizeMode.SourceResize)
         {
             using var stream = File.OpenRead(filePath);
             using var image = Pfimage.FromStream(stream);
 
-            LoadedFormat = targetFormat ?? PixelFormats.Rgb24;
+            bool isPfimRgba32 = image.Format == ImageFormat.Rgba32;
+
+            LoadedFormat = isPfimRgba32 ? PixelFormats.Bgra32 : PixelFormats.Rgb24;
 
             ValidateImageInput(filePath, LoadedFormat);
 
@@ -37,8 +38,6 @@ namespace TgaBuilderLib.BitmapBytesIO
 
             LoadedBytes = RentBlackPixelBuffer(LoadedWidth, LoadedHeight, bytesPerPixel);
 
-            bool sourceIsRgba = image.Format == ImageFormat.Rgba32;
-
             for (int y = 0; y < originalHeight; y++)
             {
                 int srcOffset = y * image.Stride;
@@ -49,7 +48,7 @@ namespace TgaBuilderLib.BitmapBytesIO
                     int srcIndex = srcOffset + x * image.BitsPerPixel / 8;
                     int dstIndex = dstOffset + x * bytesPerPixel;
 
-                    if (LoadedFormat == PixelFormats.Bgra32 && sourceIsRgba)
+                    if (LoadedFormat == PixelFormats.Bgra32 && isPfimRgba32)
                     {
                         LoadedBytes[dstIndex + 0] = image.Data[srcIndex + 2]; // B
                         LoadedBytes[dstIndex + 1] = image.Data[srcIndex + 1]; // G

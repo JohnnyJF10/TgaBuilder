@@ -6,6 +6,7 @@ using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapBytesIO;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.FileHandling;
+using TgaBuilderLib.Level;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
@@ -40,6 +41,7 @@ namespace TgaBuilderWpfUi
             AddUIServicesToProvider(services);
             AddCoreServicesToProvider(services);
             AddBitmapsToProvider(services);
+            AddFactoriesToProvider(services);
             AddElementVMsToProvider(services);
             AddControlVMsToProvider(services);
             AddPanelVMsToProvider(services);
@@ -48,11 +50,28 @@ namespace TgaBuilderWpfUi
             AddViewsToProvider(services);
         }
 
+        private void AddFactoriesToProvider(IServiceCollection services)
+        {
+            services.AddSingleton<Func<string, int, bool, LevelBase>>(sp => 
+                (fileName, trTexturePanelHorPagesNum, useTrTextureRepacking) => 
+                    new TrLevel(fileName, trTexturePanelHorPagesNum, useTrTextureRepacking, 
+                        sp.GetRequiredService<ITrngDecrypter>()));
+
+            services.AddSingleton<Func<string, int, LevelBase>>(sp => 
+                (fileName, trTexturePanelHorPagesNum) => 
+                    new TenLevel(fileName, trTexturePanelHorPagesNum));
+        }
+
         private void AddCoreServicesToProvider(IServiceCollection services)
         {
-            services.AddSingleton<IBitmapBytesIO,            BitmapBytesIO>();
+            services.AddSingleton<ITrngDecrypter,       TrngDecrypter>();
+            services.AddSingleton<IBitmapBytesIO,       BitmapBytesIO>();
+
             services.AddSingleton<IImageFileManager,    ImageFileManager>(sp => new ImageFileManager(
-                bitmapIO: sp.GetRequiredService<IBitmapBytesIO>()));
+                trLevelFactory:     sp.GetRequiredService<Func<string, int, bool, LevelBase>>(),
+                tenLevelFactory:    sp.GetRequiredService<Func<string, int, LevelBase>>(),
+                bitmapIO:           sp.GetRequiredService<IBitmapBytesIO>()));
+
             services.AddSingleton<IAsyncFileLoader,     AsyncFileLoader>();
             services.AddSingleton<IBitmapOperations,    BitmapOperations>();
             services.AddSingleton<ILogger,              Logger>();
@@ -220,12 +239,14 @@ namespace TgaBuilderWpfUi
                 destination:    sp.GetRequiredService<TargetTexturePanelViewModel>()));
 
             services.AddSingleton(sp => new PlacingTabViewModel(
-                destination: sp.GetRequiredService<TargetTexturePanelViewModel>()
-            ));
+                destination: sp.GetRequiredService<TargetTexturePanelViewModel>()));
 
             services.AddSingleton(sp => new EditTabViewModel(
-                destination: sp.GetRequiredService<TargetTexturePanelViewModel>()
-            ));
+                destination: sp.GetRequiredService<TargetTexturePanelViewModel>()));
+
+            services.AddSingleton(sp => new FormatTabViewModel(
+                messageBoxService: sp.GetRequiredService<IMessageBoxService>(),
+                target:            sp.GetRequiredService<TargetTexturePanelViewModel>()));
 
             services.AddTransient(sp => new ViewTabViewModel(
                 visualPanelSize: sp.GetServices<PanelVisualSizeViewModel>()
@@ -268,9 +289,10 @@ namespace TgaBuilderWpfUi
                 destinationIO:          sp.GetRequiredService<TargetIOViewModel>(),
 
                 placing:                sp.GetRequiredService<PlacingTabViewModel>(),
-                alphaTab:               sp.GetRequiredService<AlphaTabViewModel>(),
+                alpha:               sp.GetRequiredService<AlphaTabViewModel>(),
                 edits:                  sp.GetRequiredService<EditTabViewModel>(),
                 size:                   sp.GetRequiredService<SizeTabViewModel>(),
+                format:                 sp.GetRequiredService<FormatTabViewModel>(),
                 sourceViewTab:          sp.GetServices<ViewTabViewModel>()
                                             .ElementAt((int)PresenterType.Source),
                 destinationViewTab:     sp.GetServices<ViewTabViewModel>()

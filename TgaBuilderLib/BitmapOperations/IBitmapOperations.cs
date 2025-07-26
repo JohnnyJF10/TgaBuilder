@@ -23,6 +23,14 @@ namespace TgaBuilderLib.BitmapOperations
             BitmapScalingMode scalingMode);
 
 
+        //Convert
+        WriteableBitmap ConvertRGB24ToBGRA32(
+            WriteableBitmap sourceBitmap);
+
+        WriteableBitmap ConvertBGRA32ToRGB24(
+            WriteableBitmap sourceBitmap);
+
+
         // Crop
         WriteableBitmap CropBitmap(
             WriteableBitmap source,
@@ -69,13 +77,13 @@ namespace TgaBuilderLib.BitmapOperations
             Int32Rect rect,
             byte[] pixels);
 
-        void FillRectBitmap(
+        void FillRectBitmapUnmonitored(
             WriteableBitmap source,
             WriteableBitmap target,
             (int X, int Y) pos,
             PlacingMode placingMode = PlacingMode.Default);
 
-        void FillRectBitmapMonitored(
+        void FillRectBitmap(
             WriteableBitmap source,
             WriteableBitmap target,
             (int X, int Y) pos,

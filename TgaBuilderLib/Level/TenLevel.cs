@@ -100,22 +100,13 @@ namespace TgaBuilderLib.Level
             var wb = new WriteableBitmap(bitmapImage);
 
             int stride = width * 4; // BGRA32
-            byte[] pixelData = _bytePool.Rent(height * stride);
+            byte[] pixelData = new byte[height * stride];
 
             wb.CopyPixels(pixelData, stride, 0);
 
             return pixelData; // Format: BGRA (Blue, Green, Red, Alpha)
         }
 
-        public override void ClearTempData()
-        {
-            foreach (byte[] page in _texPagesList)
-            {
-                if (page.Length == 0)
-                    continue;
-
-                _bytePool.Return(page);
-            }
-        }
+        public override void ClearTempData() {}
     }
 }

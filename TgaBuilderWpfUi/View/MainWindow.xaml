@@ -49,6 +49,7 @@
                 <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/SingleColorButtonStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/ToggleSwitchExStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <Style TargetType="{x:Type elements:ContextMenuButton}"
@@ -558,20 +559,25 @@
                 Margin="10,0"
                 Opacity="0.5"
                 />
-            <ui:ProgressRing
+            <ui:Card
                 Grid.Row="1"
+                Width="150"
+                Height="150"
                 Visibility="{Binding SourceIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
-                IsIndeterminate="{Binding SourceIO.IsLoading}"
-                />
-            <ui:Button
-                Grid.Row="1"
-                Content="Cancel" 
-                Margin="0,150,0,0" 
-                Visibility="{Binding SourceIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                />
-
+                >
+                <StackPanel>
+                    <ui:ProgressRing
+                        IsIndeterminate="{Binding SourceIO.IsLoading}"
+                        />
+                    <ui:Button
+                        Grid.Row="1"
+                        Content="Cancel" 
+                        Margin="0,15,0,0" 
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        />
+                </StackPanel>
+            </ui:Card>
             <TextBlock
                 d:Foreground="White"
                 Grid.Row="2"
@@ -956,6 +962,33 @@
                     </StackPanel>
                 </TabItem>
                 <TabItem
+                    Header="Format"
+                    Height="27"
+                    Width="Auto">
+                    <StackPanel
+                        Margin="5,0,5,0"
+                        DataContext="{Binding FormatTab}"
+                        Orientation="Horizontal">
+                        <Label
+                            Content="RGB 24 BPP"
+                            Margin="5"
+                            VerticalAlignment="Center"
+                            />
+
+                        <ui:ToggleSwitch
+                            Style="{StaticResource ModifiedUiToggleSwitchStyle}"
+                            IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            />
+
+                        <Label
+                            Content="BGRA 32 BPP"
+                            Margin="5"
+                            VerticalAlignment="Center"
+                            />
+                    </StackPanel>
+                </TabItem>
+
+                <TabItem
                     Header="View"
                     Height="25"
                     Width="Auto">
@@ -1134,19 +1167,26 @@
                 Margin="10,0"
                 Opacity="0.5"
                 />
-            <ui:ProgressRing
+            <ui:Card
                 Grid.Row="1"
+                Width="150"
+                Height="150"
                 Visibility="{Binding TargetIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
-                IsIndeterminate="{Binding TargetIO.IsLoading}"
-                />
-            <ui:Button
-                Grid.Row="1"
-                Content="Cancel" 
-                Margin="0,150,0,0" 
-                Visibility="{Binding SourceIO.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                />
+                >
+                <StackPanel>
+                    <ui:ProgressRing
+                        IsIndeterminate="{Binding TargetIO.IsLoading}"
+                        />
+                    <ui:Button
+                        Grid.Row="1"
+                        Content="Cancel" 
+                        Margin="0,15,0,0" 
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        />
+                </StackPanel>
+            </ui:Card>
+
             <TextBlock
                 Grid.Row="2"
                 d:Foreground="White"

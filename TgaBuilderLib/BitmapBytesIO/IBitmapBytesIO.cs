@@ -24,17 +24,14 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         void FromUsual(
             string filePath,
-            PixelFormat? targetFormat = null,
             ResizeMode mode = ResizeMode.SourceResize);
 
         void FromPfim(
             string filePath, 
-            PixelFormat? targetFormat = null, 
             ResizeMode mode = ResizeMode.SourceResize);
 
         void FromPsd(
-            string filePath, PixelFormat? 
-            targetFormat = null, 
+            string filePath, 
             ResizeMode mode = ResizeMode.SourceResize);
 
         WriteableBitmap GetLoadedBitmap();
