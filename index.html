@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="google-site-verification" content="P2WkutHNyjf_pJ2zK8n0XdmGVwwaJBPMVEqMFEaD4Uw" />
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TgaBuilder | Texture Panel Building tool for TRLE</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="TgaBuilder" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Texture Panel Building tool for TRLE" />
+<meta property="og:description" content="Texture Panel Building tool for TRLE" />
+<link rel="canonical" href="https://johnnyjf10.github.io/TgaBuilder/" />
+<meta property="og:url" content="https://johnnyjf10.github.io/TgaBuilder/" />
+<meta property="og:site_name" content="TgaBuilder" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TgaBuilder" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"Texture Panel Building tool for TRLE","headline":"TgaBuilder","name":"TgaBuilder","url":"https://johnnyjf10.github.io/TgaBuilder/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/TgaBuilder/assets/css/style.css?v=62d446cf98639e34aca1071c165379c0e68d5a0b">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/TgaBuilder/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+
+      <h1 id="tgabuilder">TgaBuilder</h1>
+<h3 id="texture-panel-building-tool-for-trle"><strong>Texture Panel Building Tool for TRLE</strong></h3>
+<p><img src="/TgaBuilder/Screenshots/Overview.png" alt="Overview" /></p>
+
+<h2 id="description">Description</h2>
+<p>TgaBuilder is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .net 8, C# WPF by me.</p>
+
+<p>If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It should cover most of the features TBuilder also has and introduces a few things more, most prominently:</p>
+<ul>
+  <li>Texture Panel Panning and Zooming</li>
+  <li>Undo / Redo</li>
+  <li>Window Resizable</li>
+  <li>Extended dimensioning with panel hights up to 128 pages, panel widths up to 4 pages</li>
+  <li>Better support for 128x128 or 256x256 pix texture sets</li>
+  <li>Batch Loader to create texture panels from multiple single texture files at once</li>
+  <li>Imported texture repacking to remove TE compiled atlas padding</li>
+  <li>and others…</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+<p>Download the latest release from <a href="https://github.com/JohnnyJF10/TgaBuilder/releases">GitHub Releases</a> and extract the files.</p>
+
+<h3 id="requirements">Requirements</h3>
+<ul>
+  <li>Windows 10/11</li>
+  <li>.net 8 runtime installed</li>
+</ul>
+
+<p>Please note that, as a .net WPF tool, TgaBuilder has significantly higher system resource requirements, particularly for RAM, than TBuilder, which was written in Delphi. If you are still satisfied using TBuilder, please continue using it. TgaBuilder is not intended as a substitute for it.</p>
+
+<h2 id="usage">Usage</h2>
+
+<h3 id="title-bar">Title Bar</h3>
+
+<p><img src="/TgaBuilder/Screenshots/TitleBar.png" alt="TitleBar" /></p>
+
+<h4 id="source-loading">Source Loading</h4>
+
+<ul>
+  <li>Open image files as source texture panel<br />
+<em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG, PSD</strong> (<code class="language-plaintext highlighter-rouge">Ctrl + E</code>)
+    <ul>
+      <li>… or simply <strong>drop</strong> a supported image file on source panel.</li>
+    </ul>
+  </li>
+  <li>Reopen recently used source image files</li>
+</ul>
+
+<h4 id="undo--redo">Undo / Redo</h4>
+
+<ul>
+  <li>Undo: <code class="language-plaintext highlighter-rouge">Ctrl + Z</code></li>
+  <li>Redo: <code class="language-plaintext highlighter-rouge">Ctrl + Y</code></li>
+</ul>
+
+<h4 id="destination-loading--saving">Destination Loading / Saving</h4>
+
+<ul>
+  <li>Create a new texture panel: <code class="language-plaintext highlighter-rouge">Ctrl + N</code></li>
+  <li>Open image files as destination texture panel<br />
+<em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG, PSD</strong> (<code class="language-plaintext highlighter-rouge">Ctrl + D</code>)
+    <ul>
+      <li>… or simply <strong>drop</strong> a supported image file on destination panel.</li>
+    </ul>
+  </li>
+  <li>Reopen recently used destination image files</li>
+  <li>Save the destination texture<br />
+<em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG</strong> (<code class="language-plaintext highlighter-rouge">Ctrl + S</code>)</li>
+  <li>Save to a specified file<br />
+<em>Formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG</strong> (<code class="language-plaintext highlighter-rouge">Ctrl + Shift + S</code>)</li>
+</ul>
+
+<h3 id="source-panel-left">Source Panel (Left)</h3>
+
+<ul>
+  <li><strong>Left click</strong> a tile: copy into selection</li>
+  <li><strong>Left click + drag</strong>: copy area into selection</li>
+  <li><strong>Right click</strong> a tile: preview UV rotate (river rotate)</li>
+  <li><strong>Right click + drag</strong>: preview range-based animation of <code class="language-plaintext highlighter-rouge">AnimRange</code></li>
+  <li><strong>Left click + Alt + drag</strong>: copy ignoring grid</li>
+  <li><strong>Left click + Ctrl + drag</strong>: move panel</li>
+  <li><strong>Mouse wheel</strong>: scroll vertically</li>
+  <li><strong>Mouse wheel + Ctrl</strong>: zoom in/out</li>
+</ul>
+
+<h3 id="destination-panel-rigth">Destination Panel (Rigth)</h3>
+
+<h4 id="picking-mode">Picking Mode</h4>
+
+<ul>
+  <li><strong>Left click</strong>: copy into selection or apply transformation</li>
+  <li><strong>Left click + drag</strong>: copy area into selection</li>
+  <li><strong>Right click</strong>: preview UV rotate</li>
+  <li><strong>Right click + drag</strong>: preview animation range</li>
+</ul>
+
+<h4 id="placing-mode">Placing Mode</h4>
+
+<ul>
+  <li><strong>Left click</strong>: place selected tile and return to picking</li>
+  <li><strong>Right click</strong>: return to picking without placing</li>
+</ul>
+
+<h4 id="general-controls">General Controls</h4>
+
+<ul>
+  <li><strong>Left click + Ctrl + drag</strong>: move panel</li>
+  <li><strong>Mouse wheel</strong>: scroll vertically</li>
+  <li><strong>Mouse wheel + Ctrl</strong>: zoom</li>
+</ul>
+
+<h3 id="selection-area">Selection Area</h3>
+
+<p><img src="/TgaBuilder/Screenshots/Selection.png" alt="SelectionArea" /></p>
+<ul>
+  <li>Fill selection with chosen color</li>
+  <li>Copy selection to clipboard (<code class="language-plaintext highlighter-rouge">Ctrl + C</code>)</li>
+  <li>Paste clipboard into selection (<code class="language-plaintext highlighter-rouge">Ctrl + V</code>)</li>
+  <li>Auto-copy new selections to clipboard</li>
+  <li>Auto-paste clipboard into selection when it has new image data</li>
+</ul>
+
+<h3 id="animationarea">AnimationArea</h3>
+
+<p><img src="/TgaBuilder/Screenshots/Animation.png" alt="Animation Area" /></p>
+<ul>
+  <li>Set animation speed</li>
+  <li>Start / stop animation</li>
+  <li>Close animation preview</li>
+</ul>
+
+<h3 id="import-tab-source-panel">Import Tab (Source Panel)</h3>
+
+<p><img src="/TgaBuilder/Screenshots/TabImport.png" alt="Import Tab" /></p>
+
+<p>From left to rigth:</p>
+<ul>
+  <li>Import atlas from Classic TR levels<br />
+<em>Supports:</em> <strong>TR1–TRC, TRLE, TRNG, partially TEN (v1.7+)</strong> (<code class="language-plaintext highlighter-rouge">Ctrl + Q</code>)</li>
+  <li>Enable remapping for imports (removes padding in TE-built atlases)
+<img src="/TgaBuilder/Screenshots/Repacking.png" alt="Repacking" /></li>
+  <li>Set horizontal page count (1, 2, 4, 8, 16 pages)
+<img src="/TgaBuilder/Screenshots/PageSizeImport.png" alt="PageSizeImport" /></li>
+  <li>Open Batch Loader (<code class="language-plaintext highlighter-rouge">Ctrl + W</code>)</li>
+</ul>
+
+<p>Please use Imports carefully and conscientiously when building own custom levels.
+Specifically, clarify with the creator whether you are authorised to use custom assets.
+If in doubt, use assets that are guaranteed to be acceptable for use in your own custom levels instead.
+Please also note that this tool is licensed under the MIT licence.</p>
+
+<h3 id="batch-file-loader">Batch File Loader</h3>
+
+<p><img src="/TgaBuilder/Screenshots/BatchLoader.png" alt="Batch Loader" /></p>
+<ul>
+  <li>Import multiple image files from folder<br />
+<em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG</strong></li>
+  <li>Select or reopen folder
+    <ul>
+      <li>… or simply <strong>drop</strong> a set of supported image files on preview panel.</li>
+    </ul>
+  </li>
+  <li>Set Range:
+    <ul>
+      <li><strong>First Texture Index</strong></li>
+      <li><strong>Number of Textures</strong></li>
+    </ul>
+  </li>
+  <li>Define square resize size for textures</li>
+</ul>
+
+<h3 id="grid-tab-source-panel">Grid Tab (Source Panel)</h3>
+
+<p><img src="/TgaBuilder/Screenshots/TabGrid.png" alt="Grid Tab" /></p>
+
+<p>From left to rigth:</p>
+<ul>
+  <li>Toggle grid on/off</li>
+  <li>Change layout</li>
+  <li>Set picker size: <strong>8, 16, 32, 64, 128, 256 px</strong></li>
+</ul>
+
+<h3 id="offset-tab-source-panel">Offset Tab (Source Panel)</h3>
+
+<p><img src="/TgaBuilder/Screenshots/TabOffset.png" alt="Offset Tab" /></p>
+
+<p>From left to rigth:</p>
+<ul>
+  <li>Set <strong>X offset</strong></li>
+  <li>Set <strong>Y offset</strong></li>
+  <li>Reset offset</li>
+</ul>
+
+<h3 id="alpha-tab-source-panel">Alpha Tab (Source Panel)</h3>
+
+<p><img src="/TgaBuilder/Screenshots/TabAlpha.png" alt="Alpha Tab" /></p>
+
+<p>From left to rigth:</p>
+<ul>
+  <li>Restore original image</li>
+  <li>Replace selected color with <strong>magenta</strong></li>
+  <li>Use eyedropper to set color to replace</li>
+  <li>Auto-apply magenta replacement for new selections</li>
+</ul>
+
+<h3 id="view-tab-source-and-destination-panel">View Tab (Source and Destination Panel)</h3>
+
+<p><img src="/TgaBuilder/Screenshots/TabView.png" alt="View Tab" /></p>
+
+<p>From left to rigth:</p>
+<ul>
+  <li>Fit panel <strong>width</strong> to viewport</li>
+  <li>Fit panel <strong>height</strong> to viewport</li>
+  <li>Set zoom to <strong>100%</strong></li>
+</ul>
+
+<h3 id="placing-tab-destination-panel">Placing Tab (Destination Panel)</h3>
+
+<p>From left to rigth:</p>
+
+<p><img src="/TgaBuilder/Screenshots/TabPlacing.png" alt="Placing Tab" /></p>
+
+<p>From left to rigth:</p>
+<ul>
+  <li>Set target picker size: <strong>8, 16, 32, 64, 128, 256 px</strong></li>
+  <li>Enable transparent overlay (do not draw magenta/alpha 0 to destination)
+<img src="/TgaBuilder/Screenshots/OverlayTransparent.png" alt="TransparentOverlay" /></li>
+  <li>Enable <strong>Swap and Place</strong> mode (put replaced tile into selection)</li>
+  <li>Enable <strong>Resize to Picker</strong> mode (resize selection to destination picker size)</li>
+</ul>
+
+<h3 id="size-tab-destination-panel">Size Tab (Destination Panel)</h3>
+
+<p>From left to rigth:</p>
+
+<p><img src="/TgaBuilder/Screenshots/TabSize.png" alt="Size Tab" /></p>
+<ul>
+  <li>Set destination panel <strong>height</strong> (in pages, max 128 pages)</li>
+  <li>Set destination panel <strong>width</strong> (in pages, possible values 1, 2, 4, 8 or 16 pages)</li>
+  <li>Enable texture <strong>rearranging during width changes</strong>
+<img src="/TgaBuilder/Screenshots/ResizeSorted.png" alt="TextureRearanging" /></li>
+</ul>
+
+<h3 id="mode-tab-destination-panel">Mode Tab (Destination Panel)</h3>
+
+<p>Same functions as in TBuilder.
+From left to rigth:</p>
+
+<p><img src="/TgaBuilder/Screenshots/TabMode.png" alt="Mode Tab" /></p>
+<ul>
+  <li>Standard tile placing</li>
+  <li>Rotate tile</li>
+  <li>Mirror tile <strong>horizontally</strong></li>
+  <li>Mirror tile <strong>vertically</strong></li>
+  <li><strong>Tile Rally mode</strong>: move one tile and shift all tiles inbetween</li>
+  <li><strong>Swap Tile mode</strong>: swap two tiles</li>
+</ul>
+
+<h3 id="keyboard-shortcuts">Keyboard Shortcuts</h3>
+<p>| Key Combination    | Description                                               |
+|——————–|———————————————————–|
+| Ctrl + A           | Create a new texture panel                                |
+| Ctrl + C           | Copy selection to clipboard                               |
+| Ctrl + V           | Paste from clipboard to selection                         |
+| Ctrl + Z           | Undo                                                      |
+| Ctrl + Y           | Redo                                                      |
+| Ctrl + S           | Save destination texture panel                            |
+| Ctrl + Shift + S   | Save destination texture panel to new / other file        |
+| Ctrl + E           | Open source texture panel                                 |
+| Ctrl + D           | Open destination texture panel                            |
+| Ctrl + Q           | Import from TR Level                                      |
+| Ctrl + W           | Open batch loader                                         |</p>
+
+<h2 id="limitations">Limitations</h2>
+
+<ul>
+  <li>The application is currently limited to use <strong>24 bpp pixel formates</strong> for the destination texture panel. All incoming requests to modify image areas on the setination panel will be converted to 24bpp if they are not already. The color representing transparency is (r,g,b) = (255,0,255) as usual in TRLE; alpha = 0 areas will be converted to this color automatically.</li>
+  <li>The height of any bitmap/texture panel handled by this tool is currently capped at <strong>32,768 px</strong> or <strong>128 pages</strong> (~256 px length per page). This limitation is required to avoid issues with the .NET WPF Bitmap containers.</li>
+  <li>The height is always a <strong>multiple of 256 px</strong>, the standard TR page width, to ensure divisibility by picker sizes.</li>
+  <li>Current supported destination texture panel widths: <strong>256, 512, 1024, 2048, 4096 px</strong> (corresponding to 1, 2, 4, 8, and 16 pages).</li>
+  <li>Current supported picker sizes: <strong>8, 16, 32, 64, 128, 256 px</strong></li>
+  <li>Image files that do not meet these requirements will be <strong>automatically expanded or cropped</strong>.</li>
+</ul>
+
+<h2 id="license">License</h2>
+<p>This project is licensed under the MIT License.</p>
+
+<h3 id="third-party-libraries">Third-Party Libraries</h3>
+
+<p>For WPFZoomPanel I did some custom modifications and adapted it to .net 8. This modified project is included in this reporsitory as well.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Package</th>
+      <th>Version</th>
+      <th>Source</th>
+      <th>License</th>
+      <th>Project URL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>WPFZoomPanel</td>
+      <td>-</td>
+      <td>GitHub</td>
+      <td>MIT</td>
+      <td><a href="https://github.com/Moravuscz/WPFZoomPanel">GitHub</a></td>
+    </tr>
+    <tr>
+      <td>Pfim</td>
+      <td>0.11.3</td>
+      <td>NuGet</td>
+      <td>MIT</td>
+      <td><a href="https://github.com/nickbabcock/Pfim">GitHub</a></td>
+    </tr>
+    <tr>
+      <td>bzPSD</td>
+      <td>0.1.0</td>
+      <td>NuGet</td>
+      <td>BSD-3-Clause license</td>
+      <td><a href="https://github.com/DsonKing/System.Drawing.PSD">GitHub</a></td>
+    </tr>
+    <tr>
+      <td>WPF UI</td>
+      <td>4.0.3</td>
+      <td>NuGet</td>
+      <td>MIT</td>
+      <td><a href="https://github.com/lepoco/wpfui">GitHub</a></td>
+    </tr>
+    <tr>
+      <td>Microsoft Dependency Injection</td>
+      <td>9.0.6</td>
+      <td>NuGet</td>
+      <td>MIT</td>
+      <td><a href="https://dotnet.microsoft.com/en-us/">Microsoft</a></td>
+    </tr>
+    <tr>
+      <td>SharpZipLib</td>
+      <td>1.4.2</td>
+      <td>NuGet</td>
+      <td>MIT</td>
+      <td><a href="https://github.com/icsharpcode/SharpZipLib">GitHub</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<PackageReference Include="SharpZipLib" Version="1.4.2" />
+
+<p>I would like to express my gratitude to the <a href="https://github.com/MontyTRC89/Tomb-Editor">TombEditor</a> team and the authors of <a href="http://xproger.info/projects/OpenLara/trs.html">TRosettaStone</a>. Their imppressive public contributions immensely helped me understanding the TR level file format.</p>
+
+<h2 id="contributing">Contributing</h2>
+<p>Contributions are welcome! If you find a bug or have a feature request, please open an <a href="https://github.com/JohnnyJF10/TgaBuilder/issues">issue</a>.<br />
+If you want to contribute code, feel free to fork the repository and create a pull request.</p>
+
+<h2 id="support">Support</h2>
+<p>If you have any issues, please open a <a href="https://github.com/JohnnyJF10/TgaBuilder/issues">GitHub Issue</a>.</p>
+
+<h2 id="to-do-list">To Do List:</h2>
+<ul>
+  <li>Optimize the memory management during Classic TR level Import</li>
+  <li>Support <strong>32 bpp pixel formates</strong> for the destination panel as well</li>
+  <li>Fix bugs</li>
+  <li>Migrate from WPF to Win UI 3 or Avalonia</li>
+</ul>
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/JohnnyJF10/TgaBuilder/edit/master/README.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>
