@@ -1,5 +1,8 @@
 # TgaBuilder
 ### **Texture Panel Building Tool for TRLE**
+
+[Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [Github Repository](https://github.com/JohnnyJF10/TgaBuilder)
+
 ![Overview](Screenshots/Overview.png)
 
 ## Description
@@ -245,8 +248,6 @@ For WPFZoomPanel I did some custom modifications and adapted it to .net 8. This 
 | WPF UI                           | 4.0.3   | NuGet  | MIT                   | [GitHub](https://github.com/lepoco/wpfui)                 |
 | Microsoft Dependency Injection   | 9.0.6   | NuGet  | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)          |
 | SharpZipLib                      | 1.4.2   | NuGet  | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)      |
-
-<PackageReference Include="SharpZipLib" Version="1.4.2" />
 
 I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their imppressive public contributions immensely helped me understanding the TR level file format. 
 

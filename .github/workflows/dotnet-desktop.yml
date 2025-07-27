@@ -1,4 +1,4 @@
-name: Build and Upload .NET 8 WPF App
+name: Build and Upload .NET 8 WPF App as Zip
 
 on:
   push:
