@@ -5,13 +5,20 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.Level
 {
-    public partial class TrLevel : LevelBase
+    public partial class TrLevel(
+        string fileName,
+        int trTexturePanelHorPagesNum = 2,
+        bool useTrTextureRepacking = false,
+        ITrngDecrypter? trngDecrypter = null) : LevelBase
     {
-        private readonly ITrngDecrypter? _trngDecrypter;
+        private readonly string _fileName = fileName;
+        private int _trTexturePanelHorPagesNum = trTexturePanelHorPagesNum;
+        private bool _useTrTextureRepacking = useTrTextureRepacking;
+        private readonly ITrngDecrypter? _trngDecrypter = trngDecrypter;
 
         private bool _isNg;
         private long _textureInfosStreamPosition;
@@ -34,40 +41,35 @@ namespace TgaBuilderLib.Level
         public TrVersion Version { get; private set; }
 
 
-        public TrLevel(string fileName,            
-            int trTexturePanelHorPagesNum = 2,
-            bool useTrTextureRepacking = false,
-            ITrngDecrypter? trngDecrypter = null)
+        public override void LoadLevel(CancellationToken? cancellationToken = null)
         {
-            _trngDecrypter = trngDecrypter;
+            targetPanelWidth = _trTexturePanelHorPagesNum * ORIGINAL_PAGE_SIZE;
 
-            targetPanelWidth = trTexturePanelHorPagesNum * ORIGINAL_PAGE_SIZE;
-
-            ReadLevel(fileName);
+            ReadLevel(_fileName, cancellationToken);
 
             if (Version == TrVersion.TRC)
-                useTrTextureRepacking = false; // not supported currently
+                _useTrTextureRepacking = false; // not supported currently
 
-            if (useTrTextureRepacking)
+            if (_useTrTextureRepacking)
             {
                 RepackedTexturePositions = GetRepackedPositions(_relevantTextureInfos.Select(x => (x.width, x.height)).ToList());
-                RepackAtlas();
+                RepackAtlas(cancellationToken);
             }
             else
             {
-                int resHeight = ORIGINAL_PAGE_SIZE * _numPages / trTexturePanelHorPagesNum;
+                int resHeight = ORIGINAL_PAGE_SIZE * _numPages / _trTexturePanelHorPagesNum;
                 targetPanelHeight = NextHigherMultiple(resHeight, ORIGINAL_PAGE_SIZE);
 
                 if (targetPanelWidth == ORIGINAL_PAGE_SIZE)
-                    CopyRawToTarget();
+                    CopyRawToTarget(cancellationToken);
                 else
-                    RearrangeImagePages();
+                    RearrangeImagePages(cancellationToken);
             }
             ClearTempData();
         }
 
 
-        protected override void RepackAtlas()
+        protected override void RepackAtlas(CancellationToken? cancellationToken = null)
         {
             if (RepackedTexturePositions.Count != _relevantTextureInfos.Count) 
                 throw new ArgumentException("The number of original and repack tiles must be the same.");
@@ -104,7 +106,7 @@ namespace TgaBuilderLib.Level
             }
         }
 
-        private void CopyRawToTarget()
+        private void CopyRawToTarget(CancellationToken? cancellationToken = null)
         {
             if (_rawAtlas is null)
                 throw new InvalidOperationException("Raw atlas is not initialized.");
@@ -119,7 +121,7 @@ namespace TgaBuilderLib.Level
                 count:      _rawAtlas.Length);
         }
 
-        private void RearrangeImagePages()        
+        private void RearrangeImagePages(CancellationToken? cancellationToken = null)        
         {
             if (_rawAtlas is null)
                 throw new InvalidOperationException("Raw atlas is not initialized.");

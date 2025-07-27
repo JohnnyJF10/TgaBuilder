@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.FileHandling
 {
@@ -20,7 +20,8 @@ namespace TgaBuilderLib.FileHandling
 
         void LoadImageFile(
             string fileName, 
-            ResizeMode mode = ResizeMode.SourceResize);
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
 
         WriteableBitmap GetLoadedBitmap();
 
@@ -32,7 +33,8 @@ namespace TgaBuilderLib.FileHandling
             BitmapSource bitmap);
 
         void WriteImageFile(
-            string fileName);
+            string fileName,
+            CancellationToken? cancellationToken = null);
 
         void ClearLoadedData();
     }

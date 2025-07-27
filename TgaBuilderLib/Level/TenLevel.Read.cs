@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Security;
 using System.Text;
+using System.Threading;
 using TgaBuilderLib.Utils;
 
 namespace TgaBuilderLib.Level
@@ -19,7 +20,7 @@ namespace TgaBuilderLib.Level
             Version_1_7,
         }
 
-        protected override void ReadLevel(string fileName)
+        protected override void ReadLevel(string fileName, CancellationToken? cancellationToken = null)
         {
             using var reader = new BinaryReader(File.OpenRead(fileName));
 
@@ -48,12 +49,12 @@ namespace TgaBuilderLib.Level
                     $"File version: {versionMajor}.{versionMinor}.{versionBuild}.{versionRevision}");
 
             if (Version < TenVersion.Version_1_7)
-                ReadTenData_pre_1_7(reader);
+                ReadTenData_pre_1_7(reader, cancellationToken);
             else
-                ReadTenData(reader);
+                ReadTenData(reader, cancellationToken);
         }
 
-        private void ReadTenData(BinaryReader reader)
+        private void ReadTenData(BinaryReader reader, CancellationToken? cancellationToken = null)
         {
             uint mediaUncompressedSize = reader.ReadUInt32();
             uint mediaCompressedSize = reader.ReadUInt32();
@@ -61,8 +62,8 @@ namespace TgaBuilderLib.Level
             using (var mediaStream = DecompressStream(reader.BaseStream, mediaCompressedSize))
             using (var mediaReader = new BinaryReader(mediaStream))
             {
-                ReadTextures(mediaReader);
-                ReadSamples(mediaReader);
+                ReadTextures(mediaReader, cancellationToken);
+                ReadSamples(mediaReader, cancellationToken);
             }
 
             uint geometryUncompressedSize = reader.ReadUInt32();
@@ -71,33 +72,38 @@ namespace TgaBuilderLib.Level
             using (var geometryStream = DecompressStream(reader.BaseStream, geometryCompressedSize))
             using (var geometryReader = new BinaryReader(geometryStream))
             {
-                ReadStaticRoomData(geometryReader);
+                ReadStaticRoomData(geometryReader, cancellationToken);
             }
         }
 
-        private void ReadTenData_pre_1_7(BinaryReader reader)
+        private void ReadTenData_pre_1_7(BinaryReader reader, CancellationToken? cancellationToken = null)
         {
             uint dataCompressedSize = reader.ReadUInt32();
 
             using (var dataStream = DecompressStream(reader.BaseStream, dataCompressedSize))
             using (var dataReader = new BinaryReader(dataStream))
             {
-                ReadTextures(dataReader);
-                ReadStaticRoomData(dataReader);
+                ReadTextures(dataReader, cancellationToken);
+                ReadStaticRoomData(dataReader, cancellationToken);
             }
         }
 
-        private void ReadTextures(BinaryReader levelReader)
+        private void ReadTextures(BinaryReader levelReader, CancellationToken? cancellationToken = null)
         {
-            ReadTexturePages(levelReader);                                          // Read room textures
-            ReadTexturePages(levelReader, discardTextures: true);                   // Read object textures
-            ReadTexturePages(levelReader, discardTextures: true);                   // Read static textures
-            ReadTexturePages(levelReader);                                          // Read animated textures
-            ReadTexturePages(levelReader, discardTextures: true, isSprites: true);  // Read sprite textures
-            ReadTexturePages(levelReader, discardTextures: true, isSky: true);      // Read sky texture
+            ReadTexturePages(levelReader, cancellationToken);                                          // Read room textures
+            ReadTexturePages(levelReader, cancellationToken, discardTextures: true);                   // Read object textures
+            ReadTexturePages(levelReader, cancellationToken, discardTextures: true);                   // Read static textures
+            ReadTexturePages(levelReader, cancellationToken);                                          // Read animated textures
+            ReadTexturePages(levelReader, cancellationToken, discardTextures: true, isSprites: true);  // Read sprite textures
+            ReadTexturePages(levelReader, cancellationToken, discardTextures: true, isSky: true);      // Read sky texture
         }
 
-        private void ReadTexturePages(BinaryReader levelReader, bool discardTextures = false, bool isSprites = false, bool isSky = false)
+        private void ReadTexturePages(
+            BinaryReader levelReader, 
+            CancellationToken? cancellationToken = null, 
+            bool discardTextures = false, 
+            bool isSprites = false, 
+            bool isSky = false)
         {
             int size, width, height, bytesRead;
 
@@ -106,6 +112,8 @@ namespace TgaBuilderLib.Level
             int numRoomTextures = isSky ? 1 : levelReader.ReadInt32();
             for (int i = 0; i < numRoomTextures; i++)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
+
                 width = levelReader.ReadInt32();
                 height = levelReader.ReadInt32();
                 size = levelReader.ReadInt32();
@@ -149,9 +157,8 @@ namespace TgaBuilderLib.Level
             }
         }
 
-        private void ReadSamples(BinaryReader levelReader)
+        private void ReadSamples(BinaryReader levelReader, CancellationToken? cancellationToken = null)
         {
-
             int ReadCount(int max = int.MaxValue)
             {
                 int count = levelReader.ReadInt32();
@@ -163,14 +170,14 @@ namespace TgaBuilderLib.Level
 
             short soundMapSize = levelReader.ReadInt16();
             int soundMapByteSize = soundMapSize * sizeof(short);
-            _ = levelReader.ReadBytes(soundMapByteSize); // SoundMap
+            levelReader.ReadBytes(soundMapByteSize); // SoundMap
 
             int sampleInfoCount = ReadCount();
             if (sampleInfoCount == 0)
                 return;
 
             int sampleInfoByteSize = sampleInfoCount * 8; // 
-            _ = levelReader.ReadBytes(sampleInfoByteSize); // SoundDetails
+            levelReader.ReadBytes(sampleInfoByteSize); // SoundDetails
 
             int sampleCount = ReadCount();
             if (sampleCount <= 0)
@@ -178,15 +185,16 @@ namespace TgaBuilderLib.Level
 
             for (int i = 0; i < sampleCount; i++)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
+
                 int uncompressedSize = levelReader.ReadInt32();
                 int compressedSize = levelReader.ReadInt32();
 
-                _ = levelReader.ReadBytes(compressedSize); 
-                                             
+                levelReader.ReadBytes(compressedSize);                        
             }
         }
 
-        void ReadStaticRoomData(BinaryReader levelReader)
+        void ReadStaticRoomData(BinaryReader levelReader, CancellationToken? cancellationToken = null)
         {
             int[] texCorners = new int[8];
             bool toSkip = false;
@@ -199,6 +207,8 @@ namespace TgaBuilderLib.Level
 
             for (int i = 0; i < roomCount; i++)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
+
                 if (Version == TenVersion.Version_1_6)
                 {
                     stringValue = ReadString(levelReader); // room.Name
@@ -224,6 +234,8 @@ namespace TgaBuilderLib.Level
                 int bucketCount = levelReader.ReadInt32();
                 for (int j = 0; j < bucketCount; j++)
                 {
+                    cancellationToken?.ThrowIfCancellationRequested();
+
                     toSkip = false;
                     int pageIndex = levelReader.ReadInt32(); // page
 
@@ -241,6 +253,8 @@ namespace TgaBuilderLib.Level
                     int polyCount = levelReader.ReadInt32();
                     for (int k = 0; k < polyCount; k++)
                     {
+                        cancellationToken?.ThrowIfCancellationRequested();
+
                         int shape = levelReader.ReadInt32();
                         levelReader.ReadInt32(); // animatedSequence
                         levelReader.ReadInt32(); // animatedFrame
@@ -285,6 +299,7 @@ namespace TgaBuilderLib.Level
                     levelReader.ReadBytes(12); 
                 }
 
+                cancellationToken?.ThrowIfCancellationRequested();
 
                 // Read light data
                 int lightCount = levelReader.ReadInt32();
@@ -298,6 +313,8 @@ namespace TgaBuilderLib.Level
                 int staticCount = levelReader.ReadInt32();
                 for (int j = 0; j < staticCount; j++)
                 {
+                    cancellationToken?.ThrowIfCancellationRequested();
+
                     // Static data
                     if (Version == TenVersion.Version_1_6)
                         levelReader.ReadBytes(44);
@@ -311,6 +328,8 @@ namespace TgaBuilderLib.Level
                 int triggerVolumeCount = levelReader.ReadInt32();
                 for (int j = 0; j < triggerVolumeCount; j++)
                 {
+                    cancellationToken?.ThrowIfCancellationRequested();
+
                     if (Version == TenVersion.Version_1_5)
                     {
                         levelReader.ReadBytes(48); // Trigger Volume data

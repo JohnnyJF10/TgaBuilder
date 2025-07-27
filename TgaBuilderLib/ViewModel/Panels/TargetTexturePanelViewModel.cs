@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;

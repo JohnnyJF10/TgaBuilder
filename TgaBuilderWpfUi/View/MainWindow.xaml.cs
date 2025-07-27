@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 using TgaBuilderWpfUi.Services;
 using WPFZoomPanel;
 using Application = System.Windows.Application;

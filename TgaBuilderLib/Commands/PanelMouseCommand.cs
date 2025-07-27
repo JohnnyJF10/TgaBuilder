@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
-using TgaBuilderLib.Abstraction;
-using MouseAction = TgaBuilderLib.Abstraction.MouseAction;
+using TgaBuilderLib.Enums;
+using MouseAction = TgaBuilderLib.Enums.MouseAction;
 
 namespace TgaBuilderLib.Commands
 {

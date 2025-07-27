@@ -5,14 +5,17 @@
         SourceOpenSuccess,
         SourceOpenSuccessButResized,
         SourceOpenSuccessButIncomplete,
+        SourceOpenCancelledByUser,
         SourceOpenError,
 
         DestinationOpenSuccess,
         DestinationOpenSuccessButResized,
         DestinationOpenSuccessButIncomplete,
+        DestinationOpenCancelledByUser,
         DestinationOpenError,
 
         DestinationSaveSuccess,
+        DestinationSaveCancelledByUser,
         DestinationSaveError,
 
         UnsupportedDimensions,

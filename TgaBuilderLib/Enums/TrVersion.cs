@@ -1,4 +1,4 @@
-﻿namespace TgaBuilderLib.Abstraction
+﻿namespace TgaBuilderLib.Enums
 {
     public enum TrVersion
     {
@@ -6,7 +6,6 @@
         TR2,
         TR3,
         TR4,
-        TRC,
-        TRAOD
+        TRC
     }
 }

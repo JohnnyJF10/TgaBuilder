@@ -13,6 +13,7 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         public void ToUsual(BitmapSource bitmap, string extension)
         {
+            // ToDo: Implement cancellation logic if needed.
             BitmapEncoder encoder = extension.ToLower() switch
             {
                 "png" => new PngBitmapEncoder(),
@@ -30,16 +31,22 @@ namespace TgaBuilderLib.BitmapBytesIO
 
             LoadedBytes = _bytesPool.Rent(ActualDataLength);
 
+            memoryStream.Position = 0;
+
             memoryStream.Read(LoadedBytes, 0, ActualDataLength);
         }
 
-        public void WriteUsual(string fileName)
+        public void WriteUsual(string fileName, CancellationToken? cancellationToken = null)
         {
             if (LoadedBytes is null)
                 throw new InvalidOperationException("No data loaded to save.");
 
             using var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true);
-            fileStream.WriteAsync(LoadedBytes, 0, LoadedBytes.Length);
+            if (cancellationToken is not CancellationToken token)
+                fileStream.WriteAsync(LoadedBytes, 0, ActualDataLength);
+            else
+                fileStream.WriteAsync(LoadedBytes, 0, ActualDataLength, token);
+
         }
     }
 }

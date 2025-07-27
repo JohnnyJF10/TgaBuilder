@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 
 namespace TgaBuilderLib.BitmapBytesIO
@@ -24,15 +24,18 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         void FromUsual(
             string filePath,
-            ResizeMode mode = ResizeMode.SourceResize);
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
 
         void FromPfim(
             string filePath, 
-            ResizeMode mode = ResizeMode.SourceResize);
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
 
         void FromPsd(
             string filePath, 
-            ResizeMode mode = ResizeMode.SourceResize);
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
 
         WriteableBitmap GetLoadedBitmap();
 
@@ -41,13 +44,15 @@ namespace TgaBuilderLib.BitmapBytesIO
             string extension);
 
         void WriteUsual(
-            string filePath);
+            string filePath,
+            CancellationToken? cancellationToken = null);
 
         void ToTga(
             BitmapSource bitmap);
 
         void WriteTga(
-            string filePath);
+            string filePath,
+            CancellationToken? cancellationToken = null);
 
         void ClearLoadedData();
     }

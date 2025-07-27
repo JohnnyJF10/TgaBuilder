@@ -8,11 +8,12 @@ using System.Windows.Shapes;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
-using MouseAction = TgaBuilderLib.Abstraction.MouseAction;
+using MouseAction = TgaBuilderLib.Enums.MouseAction;
 
 
 namespace TgaBuilderLib.ViewModel
@@ -86,16 +87,18 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _aboutCommand;
         private AsyncCommand? _copyEntireCommand;
         private AsyncCommand? _newCommand;
-        private AsyncCommand? _openSourceCommand;
-        private AsyncCommand<List<string>>? _fileDropSourceCommand;
-        private AsyncCommand? _reloadSourceCommand;
-        private AsyncCommand<string>? _openRecentSourceCommand;
-        private AsyncCommand? _openSourceTrCommand;
-        private AsyncCommand<string>? _openRecentDestinationCommand;
-        private AsyncCommand? _openDestinationCommand;
-        private AsyncCommand<List<string>>? _fileDropDestinationCommand;
-        private AsyncCommand? _saveCommand;
-        private AsyncCommand? _saveAsCommand;
+        private RelayCommand? _openSourceCommand;
+        private RelayCommand<List<string>>? _fileDropSourceCommand;
+        private RelayCommand? _reloadSourceCommand;
+        private RelayCommand<string>? _openRecentSourceCommand;
+        private RelayCommand? _openSourceTrCommand;
+        private RelayCommand<string>? _openRecentDestinationCommand;
+        private RelayCommand? _openDestinationCommand;
+        private RelayCommand<List<string>>? _fileDropDestinationCommand;
+        private RelayCommand? _saveCommand;
+        private RelayCommand? _saveAsCommand;
+        private RelayCommand? _cancelSourceIOCommand;
+        private RelayCommand? _cancelDestinationIOCommand;
         private RelayCommand? _undoCommand;
         private RelayCommand? _redoCommand;
         private RelayCommand? _copyCommand;
@@ -134,32 +137,38 @@ namespace TgaBuilderLib.ViewModel
 
         public ICommand NewCommand => _newCommand ??= new(TargetIO.NewFile);
 
-        public ICommand OpenSourceCommand => _openSourceCommand ??= new(() => SourceIO.Open());
+        public ICommand OpenSourceCommand => _openSourceCommand ??= new(() => SourceIO.SetupOpenTask());
 
         public ICommand OpenSourceTrCommand => _openSourceTrCommand ??= new(SourceIO.OpenTr);
 
-        public ICommand ReloadSourceCommand => _reloadSourceCommand ??= new(SourceIO.Reload);
+        public ICommand ReloadSourceCommand => _reloadSourceCommand ??= new(SourceIO.SetupReloadTask);
 
         public ICommand OpenRecentSourceCommand
-            => _openRecentSourceCommand ??= new(fn => SourceIO.Open(fn));
+            => _openRecentSourceCommand ??= new(fn => SourceIO.SetupOpenTask(fn));
 
         public ICommand OpenRecentDestinationCommand
-            => _openRecentDestinationCommand ??= new (TargetIO.Open);
+            => _openRecentDestinationCommand ??= new(fn => TargetIO.SetupOpenTask(fn));
 
         public ICommand FileDropSourceCommand
-            => _fileDropSourceCommand ??= new ( files => SourceIO.Open(files.FirstOrDefault()));
+            => _fileDropSourceCommand ??= new ( files => SourceIO.SetupOpenTask(files.FirstOrDefault()));
 
         public ICommand SaveCommand
-            => _saveCommand ??= new(() => TargetIO.SaveCurrent());
+            => _saveCommand ??= new(TargetIO.SaveCurrent);
 
         public ICommand SaveAsCommand
-            => _saveAsCommand ??= new(() => TargetIO.Save());
+            => _saveAsCommand ??= new(() => TargetIO.SetupSaveTask());
 
         public ICommand OpenDestinationCommand
-            => _openDestinationCommand ??= new(() => TargetIO.Open());
+            => _openDestinationCommand ??= new(() => TargetIO.SetupOpenTask());
 
         public ICommand FileDropDestinationCommand
-            => _fileDropDestinationCommand ??= new(files => TargetIO.Open(files.FirstOrDefault()));
+            => _fileDropDestinationCommand ??= new(files => TargetIO.SetupOpenTask(files.FirstOrDefault()));
+
+        public ICommand CancelSourceIOCommand
+            => _cancelSourceIOCommand ??= new(SourceIO.CancelOpen);
+
+        public ICommand CancelDestinationIOCommand
+            => _cancelDestinationIOCommand ??= new(TargetIO.CancelOpen);
 
         public ICommand UndoCommand
             => _undoCommand ??= new(() => _undoRedoManager.Undo(), () => _undoRedoManager.CanUndo);

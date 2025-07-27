@@ -1,9 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 using TgaBuilderWpfUi.AttachedProperties;
 using FluentWindow = Wpf.Ui.Controls.FluentWindow;
-using MouseAction = TgaBuilderLib.Abstraction.MouseAction;
+using MouseAction = TgaBuilderLib.Enums.MouseAction;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace TgaBuilderWpfUi.View

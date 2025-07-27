@@ -3,14 +3,15 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.Reflection.PortableExecutable;
-using TgaBuilderLib.Abstraction;
+using System.Threading;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.Utils;
 
 namespace TgaBuilderLib.Level
 {
     public partial class TrLevel
     {
-        protected override void ReadLevel(string fileName)
+        protected override void ReadLevel(string fileName, CancellationToken? cancellationToken = null)
         {
 
             long uncompressedEndPos = 0;
@@ -73,8 +74,8 @@ namespace TgaBuilderLib.Level
                 {
                     // Palette data not required for TR2-3. Skip (3 + 4) * 256 bytes = 1792 bytes.
                     reader.ReadBytes(1792);
-                    ReadAtlasTr2Tr3(reader);
-                    ReadLevelData(reader);
+                    ReadAtlasTr2Tr3(reader, cancellationToken);
+                    ReadLevelData(reader, cancellationToken);
                 }
 
                 uncompressedEndPos = reader.BaseStream.Position;
@@ -82,7 +83,7 @@ namespace TgaBuilderLib.Level
                 // Read 16 and 32 bit textures, uncompress and read data if TR4 and TRC
                 if (Version >= TrVersion.TR4)
                 {
-                    ReadAtlasTr4Tr5(reader);
+                    ReadAtlasTr4Tr5(reader, cancellationToken);
 
                     if (Version == TrVersion.TRC)
                         reader.ReadBytes(32);
@@ -103,13 +104,13 @@ namespace TgaBuilderLib.Level
             }
         }
 
-        private void ReadLevelData(BinaryReader reader)
+        private void ReadLevelData(BinaryReader reader, CancellationToken? cancellationToken = null)
         {
             // 32-bit unused value 
             reader.ReadUInt32();
 
             // Read rooms
-            ReadRooms(Version, reader);
+            ReadRooms(Version, reader, cancellationToken);
 
             // Floordata
             var numFloorData = reader.ReadUInt32();
@@ -215,7 +216,7 @@ namespace TgaBuilderLib.Level
             reader.ReadBytes((int)numBoxes * (Version == TrVersion.TR1 ? 12 : 20));
 
             // Animated textures
-            ReadAnimatedTextures(reader);
+            ReadAnimatedTextures(reader, cancellationToken);
 
             // If Version >= TR3, object textures are here, amis already red, so afterwards we are finished
             if (Version == TrVersion.TR3 || Version == TrVersion.TR4 || Version == TrVersion.TRC)
@@ -225,7 +226,7 @@ namespace TgaBuilderLib.Level
                 if (Version == TrVersion.TRC)
                     marker = System.Text.Encoding.ASCII.GetString(reader.ReadBytes(5));
 
-                ReadTextureInfos(reader);
+                ReadTextureInfos(reader, cancellationToken);
 
                 return; // Finished reading level for TR3, TR4 and TRC
             }
@@ -242,29 +243,30 @@ namespace TgaBuilderLib.Level
                 // Palette
                 if (Version == TrVersion.TR1)
                 {
-                    ReadPaletteAndGetAtlasTr1(reader);
+                    ReadPaletteAndGetAtlasTr1(reader, cancellationToken);
                 }
             }
 
             // If Version is TR1 or TR2, we need to read the object textures
             // as the animated textures infos are available now
             reader.BaseStream.Position = _textureInfosStreamPosition;
-            ReadTextureInfos(reader);
+            ReadTextureInfos(reader, cancellationToken);
         }
 
         // --- Rooms Reading ---
 
-        private void ReadRooms(TrVersion Version, BinaryReader levelReader)
+        private void ReadRooms(TrVersion Version, BinaryReader levelReader, CancellationToken? cancellationToken = null)
         {
             var numRooms = Version != TrVersion.TRC ? levelReader.ReadUInt16() : levelReader.ReadUInt32();
             for (var i = 0; i < numRooms; i++)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
                 if (Version != TrVersion.TRC)
                 {
                     // Room info
                     levelReader.ReadBytes(16);
 
-                    ReadRoomData(levelReader);
+                    ReadRoomData(levelReader, cancellationToken);
 
                     var numPortals = levelReader.ReadUInt16();
                     levelReader.ReadBytes(numPortals * 32);
@@ -313,7 +315,7 @@ namespace TgaBuilderLib.Level
             }
         }
 
-        private void ReadRoomData(BinaryReader levelReader)
+        private void ReadRoomData(BinaryReader levelReader, CancellationToken? cancellationToken = null)
         {
             var numDataWords = levelReader.ReadUInt32();
 
@@ -327,6 +329,8 @@ namespace TgaBuilderLib.Level
             var numRectangles = levelReader.ReadUInt16();
             for (var i = 0; i < numRectangles; i++)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
+
                 levelReader.ReadBytes(8); // Vertices
                 _rectTexIndices.Add(levelReader.ReadUInt16()); // Texture
             }
@@ -334,6 +338,8 @@ namespace TgaBuilderLib.Level
             var numTriangles = levelReader.ReadUInt16();
             for (var i = 0; i < numTriangles; i++)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
+
                 levelReader.ReadBytes(6); // Vertices
                 _triagTexIndices.Add(levelReader.ReadUInt16()); // Texture
             }
@@ -344,7 +350,7 @@ namespace TgaBuilderLib.Level
 
         // --- Texture Infos Reading ---
 
-        private void ReadTextureInfos(BinaryReader levelReader)
+        private void ReadTextureInfos(BinaryReader levelReader, CancellationToken? cancellationToken = null)
         {
             var ufixes = new ushort[8];
             var cornerPoints = new int[8];
@@ -353,6 +359,8 @@ namespace TgaBuilderLib.Level
             var numObjectTextures = levelReader.ReadUInt32();
             for (var i = 0; i < numObjectTextures; i++)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
+
                 levelReader.ReadUInt16(); // Attributes
                 ushort PageAndFlags = levelReader.ReadUInt16();
 
@@ -444,7 +452,7 @@ namespace TgaBuilderLib.Level
 
             _relevantTextureInfos = _relevantTextureInfos.Distinct().ToList();
         }
-        private void ReadAnimatedTextures(BinaryReader levelReader)
+        private void ReadAnimatedTextures(BinaryReader levelReader, CancellationToken? cancellationToken = null)
         {
             var numAnimatedTextures = levelReader.ReadUInt32();
 
@@ -455,6 +463,8 @@ namespace TgaBuilderLib.Level
                 var size = levelReader.ReadUInt16();
                 for (var j = 0; j <= size; j++)
                 {
+                    cancellationToken?.ThrowIfCancellationRequested();
+
                     _animTexIndices.Add(levelReader.ReadUInt16());
                 }
             }
@@ -471,7 +481,7 @@ namespace TgaBuilderLib.Level
 
         // --- Palette and Atlas Reading ---
 
-        private void ReadPaletteAndGetAtlasTr1(BinaryReader levelReader)
+        private void ReadPaletteAndGetAtlasTr1(BinaryReader levelReader, CancellationToken? cancellationToken = null)
         {
             // 256 * 3 = 768 bytes for 256 colors
             _paletteTr1 = _bytePool.Rent(768);
@@ -488,20 +498,27 @@ namespace TgaBuilderLib.Level
 
             _rawAtlas = _bytePool.Rent(pixelCount * IMPORT_BPP);
 
-            for (int i = 0; i < pixelCount; i++)
+            try
             {
-                var atlas8val = _atlasTr1[i];
+                for (int i = 0; i < pixelCount; i++)
+                {
+                    cancellationToken?.ThrowIfCancellationRequested();
 
-                _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 2] << 2); // r
-                _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 1] << 2); // g
-                _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val    ] << 2); // b
-                _rawAtlas[index++] = 255; // a
+                    var atlas8val = _atlasTr1[i];
+
+                    _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 2] << 2); // r
+                    _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 1] << 2); // g
+                    _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val] << 2); // b
+                    _rawAtlas[index++] = 255; // a
+                }
             }
-
-            _bytePool.Return(_paletteTr1);
-            _paletteTr1 = null;
-            _bytePool.Return(_atlasTr1);
-            _atlasTr1 = null; 
+            finally
+            {
+                _bytePool.Return(_paletteTr1);
+                _paletteTr1 = null;
+                _bytePool.Return(_atlasTr1);
+                _atlasTr1 = null;
+            }
         }
 
         private void Read8BitAtlasTr1(BinaryReader reader)
@@ -518,7 +535,7 @@ namespace TgaBuilderLib.Level
                 throw new FileFormatException("TR1 atlas data is incomplete or corrupted.");
         }
 
-        private void ReadAtlasTr2Tr3(BinaryReader reader)
+        private void ReadAtlasTr2Tr3(BinaryReader reader, CancellationToken? cancellationToken = null)
         {
             _numPages = (int)reader.ReadUInt32();
             int pixelCount = _numPages * ORIGINAL_PAGE_PIXEL_COUNT;
@@ -531,6 +548,8 @@ namespace TgaBuilderLib.Level
             int index = 0;
             for (int i = 0; i < pixelCount; i++)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
+
                 ushort color = reader.ReadUInt16();
 
                 _rawAtlas[index++] = (byte)((color & 0x1F) << 3); // 5 bits blue
@@ -540,7 +559,7 @@ namespace TgaBuilderLib.Level
             }
         }
 
-        private void ReadAtlasTr4Tr5(BinaryReader reader)
+        private void ReadAtlasTr4Tr5(BinaryReader reader, CancellationToken? cancellationToken = null)
         {
             var numRoomTiles = reader.ReadUInt16();
             var numObjectTiles = reader.ReadUInt16();
@@ -556,10 +575,10 @@ namespace TgaBuilderLib.Level
             if (bytesRead != compressedSize)
                 throw new FileFormatException("TR4-5 atlas data is incomplete or corrupted.");
 
-            _rawAtlas = DecompressZlib(_rawAtlasCompressed);
+            _rawAtlas = DecompressZlib(_rawAtlasCompressed, cancellationToken);
             _numPages = (int)uncompressedSize / ORIGINAL_PAGE_PIXEL_COUNT / IMPORT_BPP;
 
-
+            cancellationToken?.ThrowIfCancellationRequested();
 
             // 16 bit textures (not needed)
             uncompressedSize = reader.ReadUInt32();
@@ -575,7 +594,7 @@ namespace TgaBuilderLib.Level
             _rawAtlasCompressed = null;
         }
 
-        private byte[] DecompressZlib(byte[] compressedData)
+        private byte[] DecompressZlib(byte[] compressedData, CancellationToken? cancellationToken = null)
         {
             var bufferSize = 81920; // 80 KB 
             byte[] rentedBuffer = _bytePool.Rent(bufferSize);
@@ -590,6 +609,8 @@ namespace TgaBuilderLib.Level
                     int bytesRead;
                     while ((bytesRead = inflaterStream.Read(rentedBuffer, 0, rentedBuffer.Length)) > 0)
                     {
+                        cancellationToken?.ThrowIfCancellationRequested();
+
                         if (totalRead + bytesRead > decompressedBuffer.Length)
                         {
                             int newSize = decompressedBuffer.Length * 2;

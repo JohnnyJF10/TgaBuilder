@@ -575,6 +575,7 @@
                         Margin="0,15,0,0" 
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"
+                        Command="{Binding CancelSourceIOCommand}"
                         />
                 </StackPanel>
             </ui:Card>

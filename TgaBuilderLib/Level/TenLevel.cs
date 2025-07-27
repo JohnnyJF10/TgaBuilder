@@ -9,8 +9,13 @@ using System.Windows.Media.Imaging;
 
 namespace TgaBuilderLib.Level
 {
-    public partial class TenLevel : LevelBase
+    public partial class TenLevel(
+        string fileName,
+        int trTexturePanelHorPagesNum = 2) : LevelBase
     {
+        private readonly string _fileName = fileName;
+        private int _trTexturePanelHorPagesNum = trTexturePanelHorPagesNum;
+
         private List<byte[]> _texPagesList = new();
         private List<(int width, int height, int size)> _texDimsList = new();
 
@@ -18,24 +23,23 @@ namespace TgaBuilderLib.Level
 
         public TenVersion Version { get; private set; }
 
-        public TenLevel(string fileName,
-            int trTexturePanelHorPagesNum = 2)
+        public override void LoadLevel(CancellationToken? cancellationToken = null)
         {
-            targetPanelWidth = trTexturePanelHorPagesNum * ORIGINAL_PAGE_SIZE;
+            targetPanelWidth = _trTexturePanelHorPagesNum * ORIGINAL_PAGE_SIZE;
 
-            ReadLevel(fileName);
+            ReadLevel(_fileName, cancellationToken);
 
             _roomsTextureInfos = _roomsTextureInfos.Distinct().ToList();
 
             RepackedTexturePositions = GetRepackedPositions(_roomsTextureInfos.Select(d => (d.width, d.height)).ToList());
 
-            RepackAtlas();
+            RepackAtlas(cancellationToken);
 
             ClearTempData();
 
         }
 
-        protected override void RepackAtlas()
+        protected override void RepackAtlas(CancellationToken? cancellationToken = null)
         {
             if (RepackedTexturePositions.Count != _roomsTextureInfos.Count)
                 throw new ArgumentException("The number of original and repack tiles must be the same.");

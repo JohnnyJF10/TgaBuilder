@@ -7,7 +7,7 @@
 	  <UseWPF>true</UseWPF>
 	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	  <AssemblyVersion>1.0.7.1</AssemblyVersion>
-	  <FileVersion>1.0.700.0000</FileVersion>
+	  <FileVersion>1.0.701.1000</FileVersion>
     <AssemblyTitle>TgaBuilderLib</AssemblyTitle>
     <Description>Library for TgaBuilder</Description>
     <Copyright>Copyright © 2025 Jonas Nebel</Copyright>

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Commands;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.Utils;
@@ -60,6 +61,9 @@ namespace TgaBuilderLib.ViewModel
         private readonly IImageFileManager _imageManager;
 
         private readonly ILogger _logger;
+
+        private CancellationTokenSource? _cancellationTokenSource;
+        private Task? _ioTask;
 
         private IUsageData _usageData;
 
@@ -129,7 +133,43 @@ namespace TgaBuilderLib.ViewModel
             Source.VisualGrid.Reset();
         }
 
-        public async Task Open(string? fileName = null, List<FileTypes>? fileTypes = null)
+        public void SetupOpenTask(string? fileName = null, List<FileTypes>? fileTypes = null)
+        {
+            if (_ioTask != null && !_ioTask.IsCompleted)
+            {
+                _cancellationTokenSource?.Cancel();
+                _cancellationTokenSource?.Dispose();
+                _ioTask.Wait();
+            }
+
+            _ioTask = Open(fileName, fileTypes);
+        }
+
+        public void SetupReloadTask()
+        {
+            if (_ioTask != null && !_ioTask.IsCompleted)
+            {
+                _cancellationTokenSource?.Cancel();
+                _cancellationTokenSource?.Dispose();
+                _ioTask.Wait();
+            }
+
+            _ioTask = Reload();
+        }
+
+        public void OpenTr() => SetupOpenTask(fileTypes: [TR_FILE_TYPES, DEF_FILE_TYPES]);
+
+        public void CancelOpen()
+        {
+            if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+            }
+            SetControlsStateAfterLoading();
+        }
+
+        private async Task Open(string? fileName = null, List<FileTypes>? fileTypes = null)
         {
             if (fileTypes == null)
                 fileTypes = new List<FileTypes>
@@ -143,17 +183,25 @@ namespace TgaBuilderLib.ViewModel
                     fileName = _fileService.SelectedPath;
                 else return;
 
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
+
             try
             {
                 SetControlsStateForLoading();
 
                 await Task.Run(() => _imageManager.LoadImageFile(
                     fileName: fileName,
-                    mode: Abstraction.ResizeMode.SourceResize));
+                    mode: Enums.ResizeMode.SourceResize,
+                    cancellationToken: token));
 
                 Source.Presenter = _imageManager.GetLoadedBitmap();
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException) 
+            {
+                _messageService.SendMessage(MessageType.SourceOpenCancelledByUser);
+                return;
+            }
             catch (Exception e) when (IsHandleableOpenFileException(e))
             {
                 _messageService.SendMessage(MessageType.SourceOpenError, ex: e);
@@ -169,12 +217,18 @@ namespace TgaBuilderLib.ViewModel
             {
                 _imageManager.ClearLoadedData();
                 SetControlsStateAfterLoading();
+                _cancellationTokenSource?.Dispose();
             }
 
             _usageData.AddRecentInputFile(fileName);
 
             Source.VisualGrid.Reset();
 
+            SendLoadStatus();
+        }
+
+        private void SendLoadStatus()
+        {
             var resMessage = _imageManager.ResultInfo switch
             {
                 ResultStatus.Success => MessageType.SourceOpenSuccess,
@@ -186,12 +240,15 @@ namespace TgaBuilderLib.ViewModel
             Application.Current.Dispatcher.Invoke(() => _messageService.SendMessage(resMessage));
         }
 
-        public async Task Reload()
+        private async Task Reload()
         {
             if (_usageData.RecentInputFiles.Count == 0)
                 return;
 
             string fileName = _usageData.RecentInputFiles.FirstOrDefault()!;
+
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
 
             try
             {
@@ -199,7 +256,8 @@ namespace TgaBuilderLib.ViewModel
 
                 await Task.Run(() => _imageManager.LoadImageFile(
                     fileName: fileName,
-                    mode: Abstraction.ResizeMode.SourceResize));
+                    mode: Enums.ResizeMode.SourceResize,
+                    cancellationToken: token));
 
                 Source.MouseLeave();
 
@@ -220,11 +278,9 @@ namespace TgaBuilderLib.ViewModel
             {
                 _imageManager.ClearLoadedData();
                 SetControlsStateAfterLoading();
+                _cancellationTokenSource?.Dispose();
             }
         }
-
-        public async Task OpenTr()
-            => await Open(fileTypes: [TR_FILE_TYPES, DEF_FILE_TYPES]);
 
         private void SetControlsStateForLoading()
         {

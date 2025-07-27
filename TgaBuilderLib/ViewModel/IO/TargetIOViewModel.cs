@@ -10,11 +10,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Commands;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
-using ResizeMode = TgaBuilderLib.Abstraction.ResizeMode;
+using ResizeMode = TgaBuilderLib.Enums.ResizeMode;
 
 namespace TgaBuilderLib.ViewModel
 {
@@ -80,6 +81,9 @@ namespace TgaBuilderLib.ViewModel
         private readonly IUndoRedoManager _undoRedoManager;
         private IUsageData _usageData;
 
+        private CancellationTokenSource? _cancellationTokenSource;
+        private Task? _ioTask;
+
         private bool _isLoading;
         private bool _controlEnabled = true;
         private string _lastDestinationFilePath = string.Empty;
@@ -100,6 +104,41 @@ namespace TgaBuilderLib.ViewModel
             set => SetPropertyPrimitive(ref _controlEnabled, value, nameof(ControlsEnabled));
         }
 
+
+        public void SetupOpenTask(string? fileName = null, List<FileTypes>? fileTypes = null)
+        {
+            if (_ioTask != null && !_ioTask.IsCompleted)
+            {
+                _cancellationTokenSource?.Cancel();
+                _cancellationTokenSource?.Dispose();
+                _ioTask.Wait();
+            }
+
+            _ioTask = Open(fileName);
+        }
+
+        public void SetupSaveTask(string? fileName = null)
+        {
+            if (_ioTask != null && !_ioTask.IsCompleted)
+            {
+                _cancellationTokenSource?.Cancel();
+                _cancellationTokenSource?.Dispose();
+                _ioTask.Wait();
+            }
+            _ioTask = Save(fileName);
+        }
+
+        public void SaveCurrent() => SetupSaveTask(_lastDestinationFilePath);
+
+        public void CancelOpen()
+        {
+            if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+            }
+            SetControlsStateAfterLoading();
+        }
 
         public async Task CopyEntire(WriteableBitmap bitmap)
         {
@@ -158,7 +197,7 @@ namespace TgaBuilderLib.ViewModel
             _undoRedoManager.ClearAllNewFile();
         }
 
-        public async Task Open(string? fileName = null)
+        private async Task Open(string? fileName = null)
         {
             if (_undoRedoManager.IsTargetDirty())
             {
@@ -181,15 +220,24 @@ namespace TgaBuilderLib.ViewModel
                     fileName = _fileService.SelectedPath;
                 else return;
 
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
+
             try
             {
                 SetControlsStateForLoading();
 
                 await Task.Run(() => _imageManager.LoadImageFile(
                     fileName: fileName,
-                    mode: ResizeMode.SourceResize));
+                    mode: ResizeMode.SourceResize,
+                    cancellationToken: token));
 
                 Destination.Presenter = _imageManager.GetLoadedBitmap();
+            }
+            catch (OperationCanceledException)
+            {
+                _messageService.SendMessage(MessageType.DestinationOpenCancelledByUser);
+                return;
             }
             catch (Exception e) when (IsHandleableOpenFileException(e))
             {
@@ -206,6 +254,7 @@ namespace TgaBuilderLib.ViewModel
             {
                 _imageManager.ClearLoadedData();
                 SetControlsStateAfterLoading();
+                _cancellationTokenSource?.Dispose();
             }
 
             _usageData.AddRecentOutputFile(fileName);
@@ -224,12 +273,15 @@ namespace TgaBuilderLib.ViewModel
             Application.Current.Dispatcher.Invoke(() => _messageService.SendMessage(resMessage));
         }
 
-        public async Task<bool> Save(string? fileName = null)
+        private async Task<bool> Save(string? fileName = null)
         {
             if (String.IsNullOrEmpty(fileName) || !IsFileWriteable(fileName))
                 if (_fileService.SaveFileDialog(WRITEABLE_FILE_TYPES) == true)
                     fileName = _fileService.SelectedPath;
                 else return false;
+
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
 
             try
             {
@@ -239,7 +291,12 @@ namespace TgaBuilderLib.ViewModel
                     fileName: fileName,
                     bitmap: Destination.Presenter);
                 
-                await Task.Run(() => _imageManager.WriteImageFile(fileName));
+                await Task.Run(() => _imageManager.WriteImageFile(fileName, token));
+            }
+            catch (OperationCanceledException)
+            {
+                _messageService.SendMessage(MessageType.DestinationSaveCancelledByUser);
+                return false;
             }
             catch (Exception e) when (IsHandleableSaveFileException(e))
             {
@@ -251,6 +308,7 @@ namespace TgaBuilderLib.ViewModel
             {
                 _imageManager.ClearLoadedData();
                 SetControlsStateAfterLoading();
+                _cancellationTokenSource?.Dispose();
             }
 
             _lastDestinationFilePath = fileName;
@@ -261,8 +319,6 @@ namespace TgaBuilderLib.ViewModel
             _messageService.SendMessage(MessageType.DestinationSaveSuccess);
             return true;
         }
-
-        public async Task<bool> SaveCurrent() => await Save(_lastDestinationFilePath);
 
         private void SetControlsStateForLoading()
         {

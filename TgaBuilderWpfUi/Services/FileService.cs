@@ -1,12 +1,20 @@
 ﻿using Microsoft.Win32;
 
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 
 namespace TgaBuilderWpfUi.Services
 {
     public partial class FileService : IFileService
     {
+        private record FileTypeInfo
+        {
+            public string Extension { get; set; } = string.Empty;
+            public string Description { get; set; } = string.Empty;
+            public string Title { get; set; } = string.Empty;
+        }
+
         private const string DEFAULT_OPEN_FILE_TITLE = "Select an Image File";
         private const string DEFAULT_SAVE_FILE_TITLE = "Save TGA File";
         private const string DEFAULT_OPEN_FOLDER_TITLE = "Select a Folder";

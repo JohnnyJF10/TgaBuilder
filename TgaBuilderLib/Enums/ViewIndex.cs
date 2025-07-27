@@ -1,4 +1,4 @@
-﻿namespace TgaBuilderLib.Abstraction
+﻿namespace TgaBuilderLib.Enums
 {
     public enum ViewIndex
     {

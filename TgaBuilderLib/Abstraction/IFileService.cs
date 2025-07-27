@@ -1,4 +1,6 @@
-﻿namespace TgaBuilderLib.Abstraction
+﻿using TgaBuilderLib.Enums;
+
+namespace TgaBuilderLib.Abstraction
 {
     public interface IFileService
     {

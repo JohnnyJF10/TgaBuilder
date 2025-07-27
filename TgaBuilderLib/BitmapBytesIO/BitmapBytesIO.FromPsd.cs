@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {
@@ -15,7 +15,8 @@ namespace TgaBuilderLib.BitmapBytesIO
     {
         public void FromPsd(
             string psdFilePath,
-            ResizeMode mode = ResizeMode.SourceResize)
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null)
         {
             ValidateImageInput(psdFilePath, LoadedFormat);
 
@@ -46,6 +47,8 @@ namespace TgaBuilderLib.BitmapBytesIO
             {
                 for (int x = 0; x < originalWidth; x++)
                 {
+                    cancellationToken?.ThrowIfCancellationRequested();
+
                     int layerIndex = y * originalWidth + x;
                     int globalIndex = (y * LoadedWidth + x) * bytesPerPixel;
 
@@ -69,22 +72,6 @@ namespace TgaBuilderLib.BitmapBytesIO
                     }
                 }
             }
-
-            //WriteableBitmap wb = new WriteableBitmap(
-            //    pixelWidth: LoadedWidth,
-            //    pixelHeight: LoadedHeight,
-            //    dpiX: 96,
-            //    dpiY: 96,
-            //    pixelFormat: LoadedFormat,
-            //    palette: null);
-            //
-            //wb.WritePixels(
-            //    sourceRect: new System.Windows.Int32Rect(0, 0, LoadedWidth, LoadedHeight),
-            //    pixels: LoadedBytes,
-            //    stride: LoadedStride,
-            //    offset: 0);
-            //
-            //return wb;
         }
     }
 }

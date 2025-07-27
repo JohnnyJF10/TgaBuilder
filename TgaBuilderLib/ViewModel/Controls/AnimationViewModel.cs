@@ -101,6 +101,7 @@ namespace TgaBuilderLib.ViewModel
         public void Stop()
         {
             _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
 
             _animationTask = null;
 

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {
@@ -15,7 +15,8 @@ namespace TgaBuilderLib.BitmapBytesIO
     {
         public void FromPfim(
             string filePath,
-            ResizeMode mode = ResizeMode.SourceResize)
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null)
         {
             using var stream = File.OpenRead(filePath);
             using var image = Pfimage.FromStream(stream);
@@ -45,14 +46,16 @@ namespace TgaBuilderLib.BitmapBytesIO
 
                 for (int x = 0; x < originalWidth; x++)
                 {
+                    cancellationToken?.ThrowIfCancellationRequested();
+
                     int srcIndex = srcOffset + x * image.BitsPerPixel / 8;
                     int dstIndex = dstOffset + x * bytesPerPixel;
 
                     if (LoadedFormat == PixelFormats.Bgra32 && isPfimRgba32)
                     {
-                        LoadedBytes[dstIndex + 0] = image.Data[srcIndex + 2]; // B
+                        LoadedBytes[dstIndex + 0] = image.Data[srcIndex + 0]; // B
                         LoadedBytes[dstIndex + 1] = image.Data[srcIndex + 1]; // G
-                        LoadedBytes[dstIndex + 2] = image.Data[srcIndex + 0]; // R
+                        LoadedBytes[dstIndex + 2] = image.Data[srcIndex + 2]; // R
                         LoadedBytes[dstIndex + 3] = image.Data[srcIndex + 3]; // A
                     }
                     else if (LoadedFormat == PixelFormats.Rgb24)
@@ -67,22 +70,6 @@ namespace TgaBuilderLib.BitmapBytesIO
                     }
                 }
             }
-
-            //WriteableBitmap bitmap = new WriteableBitmap(
-            //    pixelWidth: LoadedWidth,
-            //    pixelHeight: LoadedHeight,
-            //    dpiX: 96,
-            //    dpiY: 96,
-            //    pixelFormat: LoadedFormat,
-            //    palette: null);
-            //
-            //bitmap.WritePixels(
-            //    sourceRect: new System.Windows.Int32Rect(0, 0, LoadedWidth, LoadedHeight),
-            //    pixels: LoadedBytes,
-            //    stride: LoadedStride,
-            //    offset: 0);
-            //
-            //return bitmap;
         }
     }
 }

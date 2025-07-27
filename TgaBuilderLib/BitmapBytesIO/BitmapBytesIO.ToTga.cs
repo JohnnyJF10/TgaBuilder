@@ -82,15 +82,15 @@ namespace TgaBuilderLib.BitmapBytesIO
             bitmap.CopyPixels(LoadedBytes, LoadedWidth * 4, 0);
         }
 
-        public void WriteTga(string filePath)
+        public void WriteTga(string filePath, CancellationToken? cancellationToken = null)
         {
             if (_lastFormatWasBgra32)
-                WriteTga32(filePath);
+                WriteTga32(filePath, cancellationToken);
             else
-                WriteTga24(filePath);
+                WriteTga24(filePath, cancellationToken);
         }
 
-        public void WriteTga24(string filePath)
+        public void WriteTga24(string filePath, CancellationToken? cancellationToken = null)
         {
             if (LoadedBytes is null)
                 throw new InvalidOperationException("No image data loaded. Please load an image first.");
@@ -104,6 +104,8 @@ namespace TgaBuilderLib.BitmapBytesIO
                 {
                     for (int c = 0; c < LoadedWidth; c++)
                     {
+                        cancellationToken?.ThrowIfCancellationRequested();
+
                         index = (s * LoadedWidth + c) * 3;
 
                         bw.Write(LoadedBytes[index + 2]);
@@ -115,7 +117,7 @@ namespace TgaBuilderLib.BitmapBytesIO
             }
         }
 
-        public void WriteTga32(string filePath)
+        public void WriteTga32(string filePath, CancellationToken? cancellationToken = null)
         {
             if (LoadedBytes is null)
                 throw new InvalidOperationException("No image data loaded. Please load an image first.");
@@ -129,6 +131,8 @@ namespace TgaBuilderLib.BitmapBytesIO
                 {
                     for (int x = 0; x < LoadedWidth; x++)
                     {
+                        cancellationToken?.ThrowIfCancellationRequested();
+
                         index = (y * LoadedWidth + x) * 4;
 
                         bw.Write(LoadedBytes[index    ]); // Blue

@@ -6,10 +6,10 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapBytesIO;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.Level;
-using ResizeMode = TgaBuilderLib.Abstraction.ResizeMode;
+using ResizeMode = TgaBuilderLib.Enums.ResizeMode;
 
 namespace TgaBuilderLib.FileHandling
 {
@@ -30,7 +30,7 @@ namespace TgaBuilderLib.FileHandling
         private readonly Func<string, int, LevelBase> _tenLevelFactory;
 
         private readonly IBitmapBytesIO _bitmapIO;
-        private readonly ArrayPool<byte> _bytesPool = ArrayPool<byte>.Shared;
+
         private LevelBase? _loadedLevel;
 
         public ResultStatus ResultInfo { get; private set; } = ResultStatus.Success;
@@ -41,7 +41,8 @@ namespace TgaBuilderLib.FileHandling
 
         public void LoadImageFile(
             string fileName, 
-            ResizeMode mode = ResizeMode.SourceResize)
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null)
         {
             string extension = Path.GetExtension(fileName).TrimStart('.').ToLower();
 
@@ -56,11 +57,11 @@ namespace TgaBuilderLib.FileHandling
             {
                 case FileTypes.TGA:
                 case FileTypes.DDS:
-                    _bitmapIO.FromPfim(fileName, mode);
+                    _bitmapIO.FromPfim(fileName, mode, cancellationToken);
                     return;
 
                 case FileTypes.PSD:
-                    _bitmapIO.FromPsd(fileName, mode);
+                    _bitmapIO.FromPsd(fileName, mode, cancellationToken);
                     return;
 
                 case FileTypes.PHD:
@@ -83,6 +84,8 @@ namespace TgaBuilderLib.FileHandling
                             trTexturePanelHorPagesNum: TrImportHorPageNum,
                             useTrTextureRepacking: TrImportRepackingSelected);
 
+                    _loadedLevel.LoadLevel(cancellationToken);
+
                     if (!_loadedLevel.BitmapSpaceSufficient)
                         ResultInfo = ResultStatus.BitmapAreaNotSufficient;
 
@@ -93,7 +96,7 @@ namespace TgaBuilderLib.FileHandling
                 case FileTypes.PNG:
                 case FileTypes.JPG:
                 case FileTypes.JPEG:
-                    _bitmapIO.FromUsual(fileName, mode);
+                    _bitmapIO.FromUsual(fileName, mode, cancellationToken);
                     return;
 
                 default:
@@ -121,7 +124,7 @@ namespace TgaBuilderLib.FileHandling
                 throw new NotSupportedException($"Unsupported file format: {extension}");
         }
 
-        public void WriteImageFile(string fileName)
+        public void WriteImageFile(string fileName, CancellationToken? cancellationToken = null)
         {
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
@@ -132,10 +135,10 @@ namespace TgaBuilderLib.FileHandling
             string extension = Path.GetExtension(fileName).TrimStart('.').ToLower();
 
             if (IsTga(extension))
-                _bitmapIO.WriteTga(fileName);
+                _bitmapIO.WriteTga(fileName, cancellationToken);
 
             else if (IsUsual(extension))
-                _bitmapIO.WriteUsual(fileName);
+                _bitmapIO.WriteUsual(fileName, cancellationToken);
 
             else
                 throw new NotSupportedException($"Unsupported file format: {extension}");

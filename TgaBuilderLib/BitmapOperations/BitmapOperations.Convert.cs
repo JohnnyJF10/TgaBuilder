@@ -109,11 +109,11 @@ namespace TgaBuilderLib.BitmapOperations
                         r = srcPtr[y * srcStride + x * 4 + 2];
                         a = srcPtr[y * srcStride + x * 4 + 3];
 
-                        if (a == 0) // If fully transparent, skip writing
+                        if (a == 0) // If fully transparent, write magegenta
                         {
-                            dstPtr[y * dstStride + x * 3    ] = r;   // R
-                            dstPtr[y * dstStride + x * 3 + 1] = g;   // G
-                            dstPtr[y * dstStride + x * 3 + 2] = b;   // B
+                            dstPtr[y * dstStride + x * 3    ] = 255;   // R
+                            dstPtr[y * dstStride + x * 3 + 1] = 0;     // G
+                            dstPtr[y * dstStride + x * 3 + 2] = 255;   // B
                         }
                         else if (a < 255) // If semi-transparent, blend with black
                         {

@@ -34,10 +34,11 @@ namespace TgaBuilderLib.Level
         public bool BitmapSpaceSufficient { get; protected set; } = true;
 
 
-        protected abstract void ReadLevel(string fileName);
-        protected abstract void RepackAtlas();
+        protected abstract void ReadLevel(string fileName, CancellationToken? cancellationToken = null);
+        protected abstract void RepackAtlas(CancellationToken? cancellationToken = null);
         protected abstract void PlaceTile(int idx);
 
+        public abstract void LoadLevel(CancellationToken? cancellationToken = null);
 
         public abstract void ClearTempData();
 

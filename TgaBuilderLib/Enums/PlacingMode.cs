@@ -1,4 +1,4 @@
-﻿namespace TgaBuilderLib.Abstraction
+﻿namespace TgaBuilderLib.Enums
 {
     [Flags]
     public enum PlacingMode

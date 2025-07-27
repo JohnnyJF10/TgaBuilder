@@ -1,4 +1,4 @@
-﻿using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.Commands
 {

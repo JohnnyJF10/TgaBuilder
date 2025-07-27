@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.ViewModel
 {

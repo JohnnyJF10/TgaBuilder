@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {
@@ -15,7 +15,8 @@ namespace TgaBuilderLib.BitmapBytesIO
     {
         public void FromUsual(
             string filePath,
-            ResizeMode mode = ResizeMode.SourceResize)
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null)
         {
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
@@ -46,6 +47,8 @@ namespace TgaBuilderLib.BitmapBytesIO
 
             for (int y = 0; y < originalHeight; y++)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
+
                 int srcOffset = y * stride;
                 int dstOffset = y * LoadedStride;
 

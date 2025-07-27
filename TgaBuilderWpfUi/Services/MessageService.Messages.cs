@@ -35,6 +35,15 @@ namespace TgaBuilderWpfUi.Services
                     TimeSpan.FromSeconds(10))
             },
             {
+                MessageType.SourceOpenCancelledByUser,
+                new WpfUiMessage(
+                    "File Open Cancelled",
+                    "The file open operation was cancelled by the user.",
+                    ControlAppearance.Info,
+                    new SymbolIcon(SymbolRegular.Info24),
+                    TimeSpan.FromSeconds(5))
+            },
+            {
                 MessageType.SourceOpenError,
                 new WpfUiMessage(
                     "File Open Error",
@@ -71,6 +80,15 @@ namespace TgaBuilderWpfUi.Services
                     TimeSpan.FromSeconds(10))
             },
             {
+                MessageType.DestinationOpenCancelledByUser,
+                new WpfUiMessage(
+                    "Destination Open Cancelled",
+                    "The destination open operation was cancelled by the user.",
+                    ControlAppearance.Info,
+                    new SymbolIcon(SymbolRegular.Info24),
+                    TimeSpan.FromSeconds(5))
+            },
+            {
                 MessageType.DestinationOpenError,
                 new WpfUiMessage(
                     "Destination Open Error",
@@ -87,6 +105,15 @@ namespace TgaBuilderWpfUi.Services
                     ControlAppearance.Success,
                     new SymbolIcon(SymbolRegular.CheckboxChecked24),
                     TimeSpan.FromSeconds(2))
+            },
+            {
+                MessageType.DestinationSaveCancelledByUser,
+                new WpfUiMessage(
+                    "Destination Save Cancelled",
+                    "The destination save operation was cancelled by the user.",
+                    ControlAppearance.Info,
+                    new SymbolIcon(SymbolRegular.Info24),
+                    TimeSpan.FromSeconds(5))
             },
             {
                 MessageType.DestinationSaveError,
