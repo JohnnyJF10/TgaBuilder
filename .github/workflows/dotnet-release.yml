@@ -28,7 +28,7 @@ jobs:
         id: meta
         shell: pwsh
         run: |
-          [xml]$csproj = Get-Content ./THelperWpfUi/THelperWpfUi.csproj
+          [xml]$csproj = Get-Content ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj
           $title = $csproj.Project.PropertyGroup.AssemblyTitle
           $version = $csproj.Project.PropertyGroup.AssemblyVersion
           $shortVersion = ($version -split '\.')[0..2] -join '.'
@@ -46,7 +46,7 @@ jobs:
 
       - name: Publish WPF project
         run: |
-          dotnet publish ./THelperWpfUi/THelperWpfUi.csproj `
+          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
             -c Release `
             -r win-x64 `
             --self-contained false `
@@ -54,7 +54,7 @@ jobs:
 
       - name: Remove .pdb files
         run: |
-          $publishDir = "THelperWpfUi\bin\Release\net8.0-windows\win-x64\publish"
+          $publishDir = "TgaBuilderWpfUi\bin\Release\net8.0-windows\win-x64\publish"
           if (Test-Path $publishDir) {
             Get-ChildItem $publishDir -Recurse -Filter *.pdb | Remove-Item -Force
           }
@@ -62,7 +62,7 @@ jobs:
       - name: Zip publish folder
         run: |
           $zipName = "${{ steps.meta.outputs.artifact_name }}.zip"
-          Compress-Archive -Path THelperWpfUi/bin/Release/net8.0-windows/win-x64/publish/* -DestinationPath $zipName
+          Compress-Archive -Path TgaBuilderWpfUi/bin/Release/net8.0-windows/win-x64/publish/* -DestinationPath $zipName
 
       - name: Upload ZIP as artifact
         uses: actions/upload-artifact@v4
