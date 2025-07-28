@@ -208,6 +208,18 @@ From left to rigth:
 - **Tile Rally mode**: move one tile and shift all tiles inbetween
 - **Swap Tile mode**: swap two tiles
 
+### Format Tab (Destination Panel)
+
+This tab allows you to modify the format of the destination texture panel. TgaBuilder now fully supports the opening, modification and writing of both **24-bit** and **32-bit** pixel formats.
+
+![Format Tab](Screenshots/TabFormat.png)
+
+The tab setting will be set automatically depending on the input after loading. You can then set it manually if you wish. If you select **RGB 24 BPP**, magenta will be used for transparent parts. If you select **BGRA 32 BPP**, you will have a real alpha channel. Switching between the two settings will set the pixel values appropriately (e.g. alpha = 0 areas will be converted to magenta areas, and so on).
+
+
+![Format](Screenshots/Format.png)
+
+Switching from **BGRA 32 BPP** to **RGB 24 BPP** will set the magenta colour correctly, but since pixels with an alpha value other than **0** or **255** are not supported by **RGB 24 BPP**, information will be lost, possibly making the switching step irreversible.
 
 ### Keyboard Shortcuts
 | Key Combination    | Description                                               |
@@ -226,7 +238,6 @@ From left to rigth:
 
 ## Limitations
 
-- The application is currently limited to use **24 bpp pixel formates** for the destination texture panel. All incoming requests to modify image areas on the setination panel will be converted to 24bpp if they are not already. The color representing transparency is (r,g,b) = (255,0,255) as usual in TRLE; alpha = 0 areas will be converted to this color automatically.
 - The height of any bitmap/texture panel handled by this tool is currently capped at **32,768 px** or **128 pages** (~256 px length per page). This limitation is required to avoid issues with the .NET WPF Bitmap containers.
 - The height is always a **multiple of 256 px**, the standard TR page width, to ensure divisibility by picker sizes.
 - Current supported destination texture panel widths: **256, 512, 1024, 2048, 4096 px** (corresponding to 1, 2, 4, 8, and 16 pages).

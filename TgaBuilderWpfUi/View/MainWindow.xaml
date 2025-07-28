@@ -970,8 +970,8 @@
                         Margin="5,0,5,0"
                         DataContext="{Binding FormatTab}"
                         Orientation="Horizontal">
-                        <Label
-                            Content="RGB 24 BPP"
+                        <ui:TextBlock
+                            Text="RGB 24 BPP"
                             Margin="5"
                             VerticalAlignment="Center"
                             />
@@ -981,8 +981,8 @@
                             IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             />
 
-                        <Label
-                            Content="BGRA 32 BPP"
+                        <TextBlock
+                            Text="BGRA 32 BPP"
                             Margin="5"
                             VerticalAlignment="Center"
                             />

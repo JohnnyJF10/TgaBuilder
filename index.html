@@ -303,6 +303,19 @@ From left to rigth:</p>
   <li><strong>Swap Tile mode</strong>: swap two tiles</li>
 </ul>
 
+<h3 id="format-tab-destination-panel">Format Tab (Destination Panel)</h3>
+
+<p>This tab allows you to modify the format of the destination texture panel. TgaBuilder now fully supports the opening, modification and writing of both <strong>24-bit</strong> and <strong>32-bit</strong> pixel formats.</p>
+
+<p><img src="/TgaBuilder/Screenshots/TabFormat.png" alt="Format Tab" /></p>
+
+<p>The tab setting will be set automatically depending on the input after loading. You can then set it manually if you wish. If you select <strong>RGB 24 BPP</strong>, magenta will be used for transparent parts. If you select <strong>BGRA 32 BPP</strong>, you will have a real alpha channel. Switching between the two settings will set the pixel values appropriately (e.g. alpha = 0 areas will be converted to magenta areas, and so on).</p>
+
+<p><img src="/TgaBuilder/Screenshots/Format.png" alt="Format" /></p>
+
+<p>Switching from <strong>BGRA 32 BPP</strong> to <strong>RGB 24 BPP</strong> will set the magenta colour correctly, but since pixels with an alpha value other than <strong>0</strong> or <strong>255</strong> are not supported by <strong>RGB 24 BPP</strong>, information will be lost, possibly making the switching step irreversible.</p>
+
+
 <h3 id="keyboard-shortcuts">Keyboard Shortcuts</h3>
 <table>
   <thead>
@@ -329,7 +342,6 @@ From left to rigth:</p>
 <h2 id="limitations">Limitations</h2>
 
 <ul>
-  <li>The application is currently limited to use <strong>24 bpp pixel formates</strong> for the destination texture panel. All incoming requests to modify image areas on the setination panel will be converted to 24bpp if they are not already. The color representing transparency is (r,g,b) = (255,0,255) as usual in TRLE; alpha = 0 areas will be converted to this color automatically.</li>
   <li>The height of any bitmap/texture panel handled by this tool is currently capped at <strong>32,768 px</strong> or <strong>128 pages</strong> (~256 px length per page). This limitation is required to avoid issues with the .NET WPF Bitmap containers.</li>
   <li>The height is always a <strong>multiple of 256 px</strong>, the standard TR page width, to ensure divisibility by picker sizes.</li>
   <li>Current supported destination texture panel widths: <strong>256, 512, 1024, 2048, 4096 px</strong> (corresponding to 1, 2, 4, 8, and 16 pages).</li>
