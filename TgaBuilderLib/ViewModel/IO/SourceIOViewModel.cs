@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -62,6 +63,8 @@ namespace TgaBuilderLib.ViewModel
 
         private readonly ILogger _logger;
 
+        private Dictionary<FileTypes, string>? _extensions;
+
         private CancellationTokenSource? _cancellationTokenSource;
         private Task? _ioTask;
 
@@ -69,9 +72,13 @@ namespace TgaBuilderLib.ViewModel
 
         private bool _isLoading;
         private bool _controlsEnabled = true;
+        private string _lastFilePath = string.Empty;
+
 
 
         public SourceTexturePanelViewModel Source { get; set; }
+
+        public IList<string> LastFolderFileNames { get; private set; } = new List<string>();
 
         public IEnumerable<string> RecentSourceFileNames => _usageData.RecentInputFiles;
 
@@ -222,6 +229,12 @@ namespace TgaBuilderLib.ViewModel
 
             _usageData.AddRecentInputFile(fileName);
 
+            _lastFilePath = fileName;
+
+            LastFolderFileNames = GetFilesWithSpecificExtensions(
+                Path.GetDirectoryName(fileName) ?? string.Empty,
+                DEF_FILE_TYPES | TR_FILE_TYPES);
+
             Source.VisualGrid.Reset();
 
             SendLoadStatus();
@@ -280,6 +293,65 @@ namespace TgaBuilderLib.ViewModel
                 SetControlsStateAfterLoading();
                 _cancellationTokenSource?.Dispose();
             }
+        }
+
+        public void OpenPreviosFile()
+        {
+            if (string.IsNullOrEmpty(_lastFilePath) || LastFolderFileNames.Count() == 0)
+                return;
+
+            int currentIndex = LastFolderFileNames.IndexOf(_lastFilePath);
+
+            if (currentIndex < 1)
+            {
+                _messageService.SendMessage(MessageType.SourceOpenFirstFileReached);
+                return;
+            }
+
+            var fileName = LastFolderFileNames[currentIndex - 1];
+
+            SetupOpenTask(fileName);
+        }
+
+        public void OpenNextFile()
+        {
+            if (string.IsNullOrEmpty(_lastFilePath) || LastFolderFileNames.Count() == 0)
+                return;
+
+            int currentIndex = LastFolderFileNames.IndexOf(_lastFilePath);
+
+            if (currentIndex < 0 || currentIndex >= LastFolderFileNames.Count - 1)
+            {
+                _messageService.SendMessage(MessageType.SourceOpenLastFileReached);
+                return;
+            }
+
+            var fileName = LastFolderFileNames[currentIndex + 1];
+
+            SetupOpenTask(fileName);
+        }
+
+        private List<string> GetFilesWithSpecificExtensions(string directory, FileTypes fileTypes)
+        {
+            if (!Directory.Exists(directory))
+                throw new DirectoryNotFoundException("The specified directory does not exist: " + directory);
+
+            var extensions = _extensions ?? Enum.GetValues(typeof(FileTypes))
+                .Cast<FileTypes>()
+                .Where(ft => ft != FileTypes.None)
+                .ToDictionary(ft => ft, ft => $"*.{ft.ToString().ToLower()}");
+
+            List<string> files = new List<string>();
+
+            foreach (var entry in extensions)
+            {
+                if (fileTypes.HasFlag(entry.Key))
+                {
+                    files.AddRange(Directory.GetFiles(directory, entry.Value, SearchOption.TopDirectoryOnly));
+                }
+            }
+
+            return files;
         }
 
         private void SetControlsStateForLoading()

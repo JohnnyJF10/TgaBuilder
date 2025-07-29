@@ -5,6 +5,8 @@
         SourceOpenSuccess,
         SourceOpenSuccessButResized,
         SourceOpenSuccessButIncomplete,
+        SourceOpenFirstFileReached,
+        SourceOpenLastFileReached,
         SourceOpenCancelledByUser,
         SourceOpenError,
 

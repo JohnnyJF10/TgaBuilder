@@ -86,7 +86,7 @@ namespace TgaBuilderLib.ViewModel
 
         private bool _isLoading;
         private bool _controlEnabled = true;
-        private string _lastDestinationFilePath = string.Empty;
+        private string _lastFilePath = string.Empty;
 
 
         public TargetTexturePanelViewModel Destination { get; set; }
@@ -128,7 +128,7 @@ namespace TgaBuilderLib.ViewModel
             _ioTask = Save(fileName);
         }
 
-        public void SaveCurrent() => SetupSaveTask(_lastDestinationFilePath);
+        public void SaveCurrent() => SetupSaveTask(_lastFilePath);
 
         public void CancelOpen()
         {
@@ -151,7 +151,7 @@ namespace TgaBuilderLib.ViewModel
                 switch (result)
                 {
                     case YesNoCancel.Yes:
-                        if (await Save(_lastDestinationFilePath)) break;
+                        if (await Save(_lastFilePath)) break;
                         else return;
                     case YesNoCancel.No: break;
                     case YesNoCancel.Cancel: return;
@@ -161,7 +161,7 @@ namespace TgaBuilderLib.ViewModel
             Destination.Presenter = _imageManager.GetDestinationConfirmBitmap(bitmap);
             Destination.RefreshPresenter();
 
-            _lastDestinationFilePath = string.Empty;
+            _lastFilePath = string.Empty;
 
             _undoRedoManager.ClearAllNewFile();
         }
@@ -177,7 +177,7 @@ namespace TgaBuilderLib.ViewModel
                 switch (result)
                 {
                     case YesNoCancel.Yes:
-                        if (await Save(_lastDestinationFilePath)) break;
+                        if (await Save(_lastFilePath)) break;
                         else return;
                     case YesNoCancel.No: break;
                     case YesNoCancel.Cancel: return;
@@ -192,7 +192,7 @@ namespace TgaBuilderLib.ViewModel
                 pixelFormat: PixelFormats.Rgb24,
                 palette: null);
 
-            _lastDestinationFilePath = string.Empty;
+            _lastFilePath = string.Empty;
 
             _undoRedoManager.ClearAllNewFile();
         }
@@ -208,7 +208,7 @@ namespace TgaBuilderLib.ViewModel
                 switch (result)
                 {
                     case YesNoCancel.Yes:
-                        if (await Save(_lastDestinationFilePath)) break;
+                        if (await Save(_lastFilePath)) break;
                         else return;
                     case YesNoCancel.No: break;
                     case YesNoCancel.Cancel: return;
@@ -259,7 +259,7 @@ namespace TgaBuilderLib.ViewModel
 
             _usageData.AddRecentOutputFile(fileName);
 
-            _lastDestinationFilePath = IsFileWriteable(fileName) ? fileName : string.Empty;
+            _lastFilePath = IsFileWriteable(fileName) ? fileName : string.Empty;
 
             _undoRedoManager.ClearAllNewFile();
 
@@ -311,7 +311,7 @@ namespace TgaBuilderLib.ViewModel
                 _cancellationTokenSource?.Dispose();
             }
 
-            _lastDestinationFilePath = fileName;
+            _lastFilePath = fileName;
             _usageData.AddRecentOutputFile(fileName);
 
             _undoRedoManager.TakeStatusSnapshot();

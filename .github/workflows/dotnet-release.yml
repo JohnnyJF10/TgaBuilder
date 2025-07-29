@@ -48,6 +48,7 @@ jobs:
         run: |
           dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
             -c Release `
+            -f net8.0-windows `
             -r win-x64 `
             --self-contained false `
             /p:PublishReadyToRun=true
@@ -73,32 +74,27 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-
+  
+    permissions:
+      contents: write
+  
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build.outputs.artifact-name }}
           path: ./artifact
-
-      - name: Create GitHub Release (tag from csproj)
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Create GitHub Release and upload asset
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.build.outputs.tag }}
-          release_name: Release ${{ needs.build.outputs.tag }}
+          name: Release ${{ needs.build.outputs.tag }}
           body: ${{ needs.build.outputs.last-commit-msg }}
-          draft: false
-          prerelease: false
-
-      - name: Upload ZIP to Release
-        uses: actions/upload-release-asset@v1
+          files: ./artifact/${{ needs.build.outputs.artifact-name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifact/${{ needs.build.outputs.artifact-name }}.zip
-          asset_name: ${{ needs.build.outputs.artifact-name }}.zip
-          asset_content_type: application/zip
+

@@ -35,6 +35,24 @@ namespace TgaBuilderWpfUi.Services
                     TimeSpan.FromSeconds(10))
             },
             {
+                MessageType.SourceOpenFirstFileReached,
+                new WpfUiMessage(
+                    "First File Reached",
+                    "The first file in the source directory was reached. No more files to open.",
+                    ControlAppearance.Info,
+                    new SymbolIcon(SymbolRegular.Info24),
+                    TimeSpan.FromSeconds(5))
+            },
+            {
+                MessageType.SourceOpenLastFileReached,
+                new WpfUiMessage(
+                    "Last File Reached",
+                    "The last file in the source directory was reached. No more files to open.",
+                    ControlAppearance.Info,
+                    new SymbolIcon(SymbolRegular.Info24),
+                    TimeSpan.FromSeconds(5))
+            },
+            {
                 MessageType.SourceOpenCancelledByUser,
                 new WpfUiMessage(
                     "File Open Cancelled",

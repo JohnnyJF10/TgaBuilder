@@ -40,6 +40,9 @@ Please note that, as a .net WPF tool, TgaBuilder has significantly higher system
   _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG, PSD** (`Ctrl + E`)
   - ... or simply **drop** a supported image file on source panel.
 - Reopen recently used source image files
+- Reload the current file in case of changes to load settings (Import Tab) or file changes
+- Open previous file in current folder
+- Open next file in current folder
 
 #### Undo / Redo
 

@@ -116,6 +116,37 @@
                             ItemCommand="{Binding OpenRecentSourceCommand}"
                             ap:MouseOverInfoAP.InfoText="Open Recent Source Panels"
                             />
+
+                        <ui:Button
+                            Icon="{ui:SymbolIcon ArrowClockwise24}"
+                            Width="36"
+                            Height="36"
+                            BorderThickness="0"
+                            Appearance="Transparent"
+                            Command="{Binding ReloadSourceCommand}"
+                            ap:MouseOverInfoAP.InfoText="Reload Source Panels"
+                            />
+
+                        <ui:Button
+                            Icon="{ui:SymbolIcon ArrowUp24}"
+                            Width="36"
+                            Height="36"
+                            BorderThickness="0"
+                            Appearance="Transparent"
+                            Command="{Binding OpenPreviousSourceCommand}"
+                            ap:MouseOverInfoAP.InfoText="Open previous file in current Folder"
+                            />
+
+                        <ui:Button
+                            Icon="{ui:SymbolIcon ArrowDown24}"
+                            Width="36"
+                            Height="36"
+                            BorderThickness="0"
+                            Appearance="Transparent"
+                            Command="{Binding OpenNextSourceCommand}"
+                            ap:MouseOverInfoAP.InfoText="Open next file in current Folder"
+                            />
+
                     </StackPanel>
                 </ui:TitleBar.Header>
             </ui:TitleBar>
