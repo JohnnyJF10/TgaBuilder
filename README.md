@@ -1,7 +1,7 @@
 # TgaBuilder
 ### **Texture Panel Building Tool for TRLE**
 
-[Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [Github Repository](https://github.com/JohnnyJF10/TgaBuilder)
+[Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [Github Page](https://johnnyjf10.github.io/TgaBuilder/)
 
 ![Overview](Screenshots/Overview.png)
 
