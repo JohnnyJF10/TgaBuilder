@@ -1,4 +1,4 @@
-name: Build and Release .NET 8 WPF App as Zip
+name: dotnet-release
 
 on:
   workflow_dispatch:
