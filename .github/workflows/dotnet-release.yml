@@ -1,4 +1,4 @@
-name: Build and Release .NET 8 WPF App as Zip
+name: dotnet-release
 
 on:
   workflow_dispatch:
@@ -97,4 +97,3 @@ jobs:
           files: ./artifact/${{ needs.build.outputs.artifact-name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

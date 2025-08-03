@@ -100,21 +100,21 @@ namespace TgaBuilderWpfUi
                 pixelHeight:    PANEL_HEIGHT_INIT, 
                 dpiX:           APP_DEFAULT_DPI, 
                 dpiY:           APP_DEFAULT_DPI, 
-                pixelFormat:    PixelFormats.Rgb24, 
+                pixelFormat:    PixelFormats.Bgra32, 
                 palette:        null));
             services.AddSingleton(sp => new WriteableBitmap(
                 pixelWidth:     PANEL_WIDTH_INIT, 
                 pixelHeight:    PANEL_HEIGHT_INIT, 
                 dpiX:           APP_DEFAULT_DPI, 
                 dpiY:           APP_DEFAULT_DPI, 
-                pixelFormat:    PixelFormats.Rgb24, 
+                pixelFormat:    PixelFormats.Bgra32, 
                 palette: null));
             services.AddSingleton(sp => new WriteableBitmap(
                 pixelWidth:     SELECTION_SIZE_INIT,
                 pixelHeight:    SELECTION_SIZE_INIT,
                 dpiX:           APP_DEFAULT_DPI,
                 dpiY:           APP_DEFAULT_DPI,
-                pixelFormat:    PixelFormats.Rgb24,
+                pixelFormat:    PixelFormats.Bgra32,
                 palette:        null));
         }
 
@@ -132,8 +132,8 @@ namespace TgaBuilderWpfUi
             services.AddSingleton(sp => new SingleSelectionShapeViewModel(
                 initSize: SELECTION_SIZE_INIT));
 
-            services.AddSingleton<PanelVisualSizeViewModel>(); //Source
-            services.AddSingleton<PanelVisualSizeViewModel>(); //Destination
+            services.AddSingleton<PanelVisualSizeViewModel>(); //_panel
+            services.AddSingleton<PanelVisualSizeViewModel>(); //SourceTexturePanelViewModel
 
             services.AddTransient(sp => new AnimSelectShapeViewModel(
                 panelWidth: PANEL_WIDTH_INIT,
@@ -170,7 +170,7 @@ namespace TgaBuilderWpfUi
                 imageManager:        sp.GetRequiredService<IImageFileManager>(),
                 logger:              sp.GetRequiredService<ILogger>(),
                 usageData:           sp.GetRequiredService<IUsageData>(),
-                source:              sp.GetRequiredService<SourceTexturePanelViewModel>()));
+                panel:               sp.GetRequiredService<SourceTexturePanelViewModel>()));
 
             services.AddSingleton(sp => new TargetIOViewModel(
                 getViewCallback:     idx => sp.GetServices<IView>().ElementAt((int)idx),
@@ -181,7 +181,7 @@ namespace TgaBuilderWpfUi
                 imageManager:        sp.GetRequiredService<IImageFileManager>(),
                 logger:              sp.GetRequiredService<ILogger>(),
                 usageData:           sp.GetRequiredService<IUsageData>(),
-                destination:         sp.GetRequiredService<TargetTexturePanelViewModel>()));
+                panel:               sp.GetRequiredService<TargetTexturePanelViewModel>()));
         }
 
         private void AddPanelVMsToProvider(IServiceCollection services)

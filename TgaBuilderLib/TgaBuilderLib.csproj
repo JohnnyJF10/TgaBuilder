@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
 	  <UseWPF>true</UseWPF>
 	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-	  <AssemblyVersion>2.0.1.0</AssemblyVersion>
-	  <FileVersion>2.0.100.0000</FileVersion>
+	  <AssemblyVersion>2.0.2.0</AssemblyVersion>
+	  <FileVersion>2.0.200.0000</FileVersion>
     <AssemblyTitle>TgaBuilderLib</AssemblyTitle>
     <Description>Library for TgaBuilder</Description>
     <Copyright>Copyright © 2025 Jonas Nebel</Copyright>

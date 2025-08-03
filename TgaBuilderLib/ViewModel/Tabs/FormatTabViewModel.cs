@@ -18,7 +18,7 @@ namespace TgaBuilderLib.ViewModel
             _messageBoxService = messageBoxService;
             _target = target;
 
-            _target.PresenterChanged += (_, _) => OnPropertyChanged(nameof(IsBgra32));
+            _target.PresenterChanged += (_, _) => OnFormatBooleanPropertiesChanged();
         }
 
         private readonly IMessageBoxService _messageBoxService;
@@ -29,6 +29,8 @@ namespace TgaBuilderLib.ViewModel
             get => _target.Presenter.Format == PixelFormats.Bgra32;
             set => SetIsBgra32(value);
         }
+
+        public bool IsRgb24 => !IsBgra32;
 
         private void SetIsBgra32(bool value)
         {
@@ -50,7 +52,13 @@ namespace TgaBuilderLib.ViewModel
                 if (result == true)
                     _target.ConvertToRgb24();
             }
+            OnFormatBooleanPropertiesChanged();
+        }
+
+        private void OnFormatBooleanPropertiesChanged()
+        {
             OnPropertyChanged(nameof(IsBgra32));
+            OnPropertyChanged(nameof(IsRgb24));
         }
     }
 }

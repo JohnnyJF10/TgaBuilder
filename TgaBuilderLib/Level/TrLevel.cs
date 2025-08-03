@@ -47,7 +47,7 @@ namespace TgaBuilderLib.Level
 
             ReadLevel(_fileName, cancellationToken);
 
-            if (Version == TrVersion.TRC)
+            if (Version == TrVersion.TRC || _relevantTextureInfos.Count == 0)
                 _useTrTextureRepacking = false; // not supported currently
 
             if (_useTrTextureRepacking)

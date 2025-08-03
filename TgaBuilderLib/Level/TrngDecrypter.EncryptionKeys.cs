@@ -4,7 +4,7 @@
     {
         private readonly byte[] EncryptionKeysData =
         { 
-            // Source: https://github.com/MontyTRC89/Tomb-Editor/blob/master/TombLib/TombLib/NG/NgEncryption.cs
+            // _panel: https://github.com/MontyTRC89/Tomb-Editor/blob/master/TombLib/TombLib/NG/NgEncryption.cs
 
             //Key 1
             0x38, 0x22, 0xE9, 0x4F, 0x20, 0xF1, 0x37, 0x69, 0x15, 0x13, 0xD3,

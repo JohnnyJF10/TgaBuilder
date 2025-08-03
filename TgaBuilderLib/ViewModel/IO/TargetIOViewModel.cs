@@ -19,7 +19,7 @@ using ResizeMode = TgaBuilderLib.Enums.ResizeMode;
 
 namespace TgaBuilderLib.ViewModel
 {
-    public class TargetIOViewModel : ViewModelBase
+    public class TargetIOViewModel : IOViewModelBase
     {
         public TargetIOViewModel(
             Func<ViewIndex, IView> getViewCallback,
@@ -30,19 +30,11 @@ namespace TgaBuilderLib.ViewModel
             ILogger logger,
             IUndoRedoManager undoRedoManager,
             IUsageData usageData,
-
-            TargetTexturePanelViewModel destination)
+            TexturePanelViewModelBase panel)
+            : base(getViewCallback, fileService, messageService, imageManager, logger, usageData, panel)
         {
-            _getViewCallback = getViewCallback;
-            _fileService = fileService;
-            _messageService = messageService;
             _messageBoxService = messageBoxService;
-            _imageManager = imageManager;
-            _logger = logger;
             _undoRedoManager = undoRedoManager;
-            _usageData = usageData;
-
-            Destination = destination;
         }
 
         private const FileTypes DEF_FILE_TYPES =
@@ -54,13 +46,6 @@ namespace TgaBuilderLib.ViewModel
             FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
             | FileTypes.JPEG;
 
-        private static bool IsHandleableOpenFileException(Exception e)
-            => e is FileNotFoundException
-            or DirectoryNotFoundException
-            or FileFormatException
-            or NotSupportedException
-            or InvalidOperationException;
-
         private static bool IsHandleableSaveFileException(Exception e)
             => e is FileNotFoundException
             or DirectoryNotFoundException
@@ -70,39 +55,13 @@ namespace TgaBuilderLib.ViewModel
             or NotSupportedException
             or InvalidOperationException;
 
-        private readonly Func<ViewIndex, IView> _getViewCallback;
-
-        private readonly IFileService _fileService;
-        private readonly IMessageService _messageService;
-        private readonly IMessageBoxService _messageBoxService;
-        private readonly IImageFileManager _imageManager;
-
-        private readonly ILogger _logger;
         private readonly IUndoRedoManager _undoRedoManager;
-        private IUsageData _usageData;
+        private readonly IMessageBoxService _messageBoxService;
 
-        private CancellationTokenSource? _cancellationTokenSource;
-        private Task? _ioTask;
-
-        private bool _isLoading;
-        private bool _controlEnabled = true;
-        private string _lastFilePath = string.Empty;
-
-
-        public TargetTexturePanelViewModel Destination { get; set; }
 
         public IEnumerable<string> RecentDestinationFileNames => _usageData.RecentOutputFiles;
 
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set => SetPropertyPrimitive(ref _isLoading, value, nameof(IsLoading));
-        }
-        public bool ControlsEnabled
-        {
-            get => _controlEnabled;
-            set => SetPropertyPrimitive(ref _controlEnabled, value, nameof(ControlsEnabled));
-        }
+
 
 
         public void SetupOpenTask(string? fileName = null, List<FileTypes>? fileTypes = null)
@@ -130,16 +89,6 @@ namespace TgaBuilderLib.ViewModel
 
         public void SaveCurrent() => SetupSaveTask(_lastFilePath);
 
-        public void CancelOpen()
-        {
-            if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
-            {
-                _cancellationTokenSource.Cancel();
-                _cancellationTokenSource.Dispose();
-            }
-            SetControlsStateAfterLoading();
-        }
-
         public async Task CopyEntire(WriteableBitmap bitmap)
         {
             if (_undoRedoManager.IsTargetDirty())
@@ -158,8 +107,8 @@ namespace TgaBuilderLib.ViewModel
                 }
             }
 
-            Destination.Presenter = _imageManager.GetDestinationConfirmBitmap(bitmap);
-            Destination.RefreshPresenter();
+            _panel.Presenter = _imageManager.GetDestinationConfirmBitmap(bitmap);
+            _panel.RefreshPresenter();
 
             _lastFilePath = string.Empty;
 
@@ -184,15 +133,16 @@ namespace TgaBuilderLib.ViewModel
                 }
             }
 
-            Destination.Presenter = new WriteableBitmap(
+            _panel.Presenter = new WriteableBitmap(
                 pixelWidth: 256,
                 pixelHeight: 1536,
                 dpiX: 96,
                 dpiY: 96,
-                pixelFormat: PixelFormats.Rgb24,
+                pixelFormat: PixelFormats.Bgra32,
                 palette: null);
 
-            _lastFilePath = string.Empty;
+            _lastFilePath = "";
+            OnPropertyChanged(nameof(LastFileName));
 
             _undoRedoManager.ClearAllNewFile();
         }
@@ -232,7 +182,7 @@ namespace TgaBuilderLib.ViewModel
                     mode: ResizeMode.SourceResize,
                     cancellationToken: token));
 
-                Destination.Presenter = _imageManager.GetLoadedBitmap();
+                _panel.Presenter = _imageManager.GetLoadedBitmap();
             }
             catch (OperationCanceledException)
             {
@@ -260,6 +210,7 @@ namespace TgaBuilderLib.ViewModel
             _usageData.AddRecentOutputFile(fileName);
 
             _lastFilePath = IsFileWriteable(fileName) ? fileName : string.Empty;
+            OnPropertyChanged(nameof(LastFileName));
 
             _undoRedoManager.ClearAllNewFile();
 
@@ -289,7 +240,7 @@ namespace TgaBuilderLib.ViewModel
 
                 _imageManager.SaveImageFile(
                     fileName: fileName,
-                    bitmap: Destination.Presenter);
+                    bitmap: _panel.Presenter);
                 
                 await Task.Run(() => _imageManager.WriteImageFile(fileName, token));
             }
@@ -318,18 +269,6 @@ namespace TgaBuilderLib.ViewModel
 
             _messageService.SendMessage(MessageType.DestinationSaveSuccess);
             return true;
-        }
-
-        private void SetControlsStateForLoading()
-        {
-            IsLoading = true;
-            ControlsEnabled = false;
-        }
-
-        private void SetControlsStateAfterLoading()
-        {
-            IsLoading = false;
-            ControlsEnabled = true;
         }
 
         private bool IsFileWriteable(string filePath)

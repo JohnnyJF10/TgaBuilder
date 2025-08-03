@@ -310,6 +310,9 @@ namespace TgaBuilderLib.ViewModel
         {
             SourceViewTab.IsScrolling = false;
             DestinationViewTab.IsScrolling = false;
+
+            SourceIO.IsDropHintVisible = false;
+            TargetIO.IsDropHintVisible = false;
         }
 
         private async Task CheckUsageDataLoading(IUsageData usageData)

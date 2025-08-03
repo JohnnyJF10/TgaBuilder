@@ -3,16 +3,19 @@
 
 [Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [Github Repository](https://github.com/JohnnyJF10/TgaBuilder)
 
-![Overview](Screenshots/Overview.png)
+![Logo](Screenshots/TgaBuilder_logo.png)
 
 ## Description
+
+
+![Overview](Screenshots/Overview.png)
 TgaBuilder is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .net 8, C# WPF by me. 
 
 If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It should cover most of the features TBuilder also has and introduces a few things more, most prominently:
 - Texture Panel Panning and Zooming
 - Undo / Redo
 - Window Resizable
-- Extended dimensioning with panel hights up to 128 pages, panel widths up to 4 pages
+- Extended dimensioning with panel hights up to 128 pages, panel widths up to 16 pages
 - Better support for 128x128 or 256x256 pix texture sets
 - Batch Loader to create texture panels from multiple single texture files at once
 - Imported texture repacking to remove TE compiled atlas padding

@@ -16,6 +16,7 @@ namespace TgaBuilderLib.ViewModel
             VisualPanelSize = visualPanelSize;
 
             _panel.PresenterChanged += (_, _) => _ = DefferedFill();
+            VisualPanelSize.PropertyChanged += (_, _) => OnContentActualSizeChanged();
         }
 
         private const int SCROLL_SPEED_PIX_PER_SEC = 420;
@@ -43,6 +44,12 @@ namespace TgaBuilderLib.ViewModel
         double maxY;
 
         public PanelVisualSizeViewModel VisualPanelSize { get; set; }
+
+        public double ContentActualWidth 
+            => Math.Min(_panel.Presenter.PixelWidth * Zoom, VisualPanelSize.ViewportWidth);
+
+        public double ContentActualHeight 
+            => Math.Min(_panel.Presenter.PixelHeight * Zoom, VisualPanelSize.ViewportHeight);
 
         public double OffsetX
         {
@@ -131,11 +138,19 @@ namespace TgaBuilderLib.ViewModel
 
         private void SetPanelZoom(double zoom)
         {
-            if (zoom == _panel.Zoom) 
+            if (zoom == _panel.Zoom)
                 return;
 
             _panel.Zoom = zoom;
+
+            OnContentActualSizeChanged();
             OnPropertyChanged(nameof(Zoom));
+        }
+
+        private void OnContentActualSizeChanged()
+        {
+            OnPropertyChanged(nameof(ContentActualWidth));
+            OnPropertyChanged(nameof(ContentActualHeight));
         }
 
         private void DoPanelScrolling(Point pos)

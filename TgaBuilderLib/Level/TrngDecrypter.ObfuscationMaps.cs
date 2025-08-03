@@ -4,7 +4,7 @@
     {
         private readonly byte[] ObfuscationMapsData =
         {
-            // Source: https://github.com/MontyTRC89/Tomb-Editor/blob/master/TombLib/TombLib/NG/NgEncryption.cs
+            // _panel: https://github.com/MontyTRC89/Tomb-Editor/blob/master/TombLib/TombLib/NG/NgEncryption.cs
 
             //Map 1
             0x00, 0x11, 0x07, 0x09, 0x06, 0x19, 0x01, 0x18, 0x30, 0x1A,

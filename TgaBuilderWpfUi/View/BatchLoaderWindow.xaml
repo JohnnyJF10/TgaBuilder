@@ -27,6 +27,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <sys:Boolean x:Key="True">True</sys:Boolean>
@@ -35,9 +36,7 @@
                     BasedOn="{StaticResource {x:Type ui:Button}}"/>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid
-        Margin="2.5"
-        >
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150"/>
             <ColumnDefinition Width="*"/>
@@ -48,13 +47,28 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ui:TitleBar
-            Title="Batch File Loader"
-            Grid.ColumnSpan="2">
-            <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
-            </ui:TitleBar.Icon>
-        </ui:TitleBar>
+        <DockPanel
+            Grid.ColumnSpan="2"
+            >
+            <ui:TitleBar
+                DockPanel.Dock="Right"
+                Width="133"
+                Style="{StaticResource TitleBarNavigationAreaStyle}"
+                />
+
+            <ui:TitleBar
+                Title="Batch File Loader"
+                ShowMinimize="False"
+                ShowMaximize="False"
+                ShowClose="False"
+                Margin="3,3,0,0"
+                Grid.ColumnSpan="2">
+                    <ui:TitleBar.Icon>
+                        <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
+                    </ui:TitleBar.Icon>
+            </ui:TitleBar>
+        </DockPanel>
+
         <StackPanel
             Orientation="Horizontal"
             Grid.Row="1"

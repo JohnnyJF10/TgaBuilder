@@ -456,18 +456,30 @@ namespace TgaBuilderLib.Level
         {
             var numAnimatedTextures = levelReader.ReadUInt32();
 
+            int checksum = 0;
+
             var numRanges = levelReader.ReadUInt16();
+            checksum += 2;
 
             for (var i = 0; i < numRanges; i++)
             {
                 var size = levelReader.ReadUInt16();
+                checksum += 2;
                 for (var j = 0; j <= size; j++)
                 {
                     cancellationToken?.ThrowIfCancellationRequested();
 
                     _animTexIndices.Add(levelReader.ReadUInt16());
+                    checksum += 2;
                 }
             }
+
+            int expectedChecksum = (int)(numAnimatedTextures * 2);
+
+            // weird issue in DXTRE3D Levels, where the checksum is not correct
+            if (checksum < expectedChecksum)
+                levelReader.ReadBytes(expectedChecksum - checksum);
+
         }
 
         private ushort UFixed16ToUShort(ushort ufixed16)
@@ -508,8 +520,8 @@ namespace TgaBuilderLib.Level
 
                     _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 2] << 2); // r
                     _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 1] << 2); // g
-                    _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val] << 2); // b
-                    _rawAtlas[index++] = 255; // a
+                    _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val    ] << 2); // b
+                    _rawAtlas[index++] = (byte)(atlas8val == 0 ? 0 : 255); // a
                 }
             }
             finally
@@ -657,7 +669,7 @@ namespace TgaBuilderLib.Level
 
             string levelName = Path.Combine(
                 Path.GetDirectoryName(fileName)!, 
-                Path.GetFileNameWithoutExtension(fileName) + "_decrypted" + Path.GetExtension(fileName));
+                Path.GetFileNameWithoutExtension(fileName) + "_decrypted.temp");
 
             if (!_trngDecrypter.DecryptLevel(fileName, levelName))
                 throw new FileFormatException("Failed to decrypt the level file: " + fileName);

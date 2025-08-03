@@ -1,0 +1,163 @@
+/* Sidebar for desktop */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100%;
+  background: #f5f5f5;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: none;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li a {
+  text-decoration: none;
+  display: block;
+  padding: 5px 0;
+  color: #333;
+}
+
+#main-content {
+  margin-left: 0;
+}
+
+/* Mobile menu */
+.mobile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+#menu-toggle {
+  align-self: flex-start;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.mobile-menu {
+  flex-direction: column;
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 6px;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-menu a {
+  display: block;
+  width: 100%;
+  padding: 16px 12px;
+  text-decoration: none;
+  color: #000;
+  font-size: 18px;
+  border-bottom: 1px solid #ccc;
+}
+
+.mobile-menu a:last-child {
+  border-bottom: none;
+}
+
+.mobile-menu a:hover {
+  background-color: #ddd;
+  border-radius: 4px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .sidebar {
+    display: block;
+  }
+
+  #main-content {
+    margin-left: 240px;
+  }
+
+  .mobile-header,
+  .mobile-menu {
+    display: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+
+  .sidebar {
+    background: #1e1e1e;
+    box-shadow: 2px 0 5px rgba(255, 255, 255, 0.05);
+  }
+
+  .sidebar li a {
+    color: #ddd;
+  }
+
+  .mobile-menu {
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  }
+
+  .mobile-menu a {
+    color: #e0e0e0;
+    border-bottom: 1px solid #444;
+  }
+
+  .mobile-menu a:hover {
+    background-color: #333;
+  }
+
+  .footer {
+    color: #999;
+  }
+
+  a {
+    color: #8ab4f8;
+  }
+
+  table {
+    border-color: #444;
+  }
+
+  th,
+  td {
+    border: 1px solid #444;
+  }
+
+  #menu-toggle {
+    color: #fff;
+  }
+
+  table {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-collapse: collapse;
+    border: 1px solid #444;
+  }
+
+  th,
+  td {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+  }
+
+  thead {
+    background-color: #2a2a2a;
+  }
+}

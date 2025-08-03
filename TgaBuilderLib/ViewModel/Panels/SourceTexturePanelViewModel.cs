@@ -51,7 +51,7 @@ namespace TgaBuilderLib.ViewModel
         public VisualGridViewModel VisualGrid { get; set; }
 
         public override string PanelStatement
-            => $"{Presenter.PixelWidth} x {Presenter.PixelHeight} pixels x {Presenter.Format.BitsPerPixel}";
+            => $"{Presenter.PixelWidth} x {Presenter.PixelHeight} px, {Presenter.Format.BitsPerPixel} bpp";
 
         public override double Zoom
         {

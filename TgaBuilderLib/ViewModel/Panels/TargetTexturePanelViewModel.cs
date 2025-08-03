@@ -68,9 +68,10 @@ namespace TgaBuilderLib.ViewModel
         public SingleSelectionShapeViewModel TargetPosShape { get; set; }
 
         public override string PanelStatement 
-            => $"{Presenter.PixelWidth} x {Presenter.PixelHeight} pixels " +
+            => $"{Presenter.PixelWidth} x {Presenter.PixelHeight} px " +
             $"({Presenter.PixelWidth / Picker.Size} x {Presenter.PixelHeight / Picker.Size} = " +
-            $"{Presenter.PixelWidth / Picker.Size * Presenter.PixelHeight / Picker.Size} textures)";
+            $"{Presenter.PixelWidth / Picker.Size * Presenter.PixelHeight / Picker.Size} tiles), " +
+            $"{Presenter.Format.BitsPerPixel} bpp";
 
         public override double Zoom
         {

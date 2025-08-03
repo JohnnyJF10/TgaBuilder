@@ -18,7 +18,7 @@ using TgaBuilderLib.Utils;
 
 namespace TgaBuilderLib.ViewModel
 {
-    public class SourceIOViewModel : ViewModelBase
+    public class SourceIOViewModel : IOViewModelBase
     {
         public SourceIOViewModel(
             Func<ViewIndex, IView> getViewCallback,
@@ -27,18 +27,8 @@ namespace TgaBuilderLib.ViewModel
             IImageFileManager imageManager,
             ILogger logger,
             IUsageData usageData,
-            
-            SourceTexturePanelViewModel source)
-        {
-            _getViewCallback = getViewCallback;
-            _fileService = fileService;
-            _messageService = messageService;
-            _imageManager = imageManager;
-            _logger = logger;
-            _usageData = usageData;
-
-            Source = source;
-        }
+            TexturePanelViewModelBase panel)
+            : base(getViewCallback, fileService, messageService, imageManager, logger, usageData, panel) {}
 
         private const FileTypes DEF_FILE_TYPES =
             FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
@@ -47,52 +37,21 @@ namespace TgaBuilderLib.ViewModel
         private const FileTypes TR_FILE_TYPES = FileTypes.PHD | FileTypes.TR2
             | FileTypes.TR4 | FileTypes.TRC | FileTypes.TEN;
 
-        private static bool IsHandleableOpenFileException(Exception e)
-            => e is FileNotFoundException
-            or DirectoryNotFoundException
-            or FileFormatException
-            or NotSupportedException
-            or InvalidOperationException;
-
-        private readonly Func<ViewIndex, IView> _getViewCallback;
-
-        private readonly IFileService _fileService;
-        private readonly IMessageService _messageService;
-
-        private readonly IImageFileManager _imageManager;
-
-        private readonly ILogger _logger;
 
         private Dictionary<FileTypes, string>? _extensions;
 
-        private CancellationTokenSource? _cancellationTokenSource;
-        private Task? _ioTask;
+        private string _previousFile = string.Empty;
+        private string _nextFile = string.Empty;
 
-        private IUsageData _usageData;
-
-        private bool _isLoading;
-        private bool _controlsEnabled = true;
-        private string _lastFilePath = string.Empty;
-
-
-
-        public SourceTexturePanelViewModel Source { get; set; }
 
         public IList<string> LastFolderFileNames { get; private set; } = new List<string>();
 
         public IEnumerable<string> RecentSourceFileNames => _usageData.RecentInputFiles;
 
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set => SetPropertyPrimitive(ref _isLoading, value, nameof(IsLoading));
-        }
+        public string ReloadFileText => "Reload " + Path.GetFileName(_lastFilePath);
+        public string NextFileOpenText => "Open " + Path.GetFileName(_nextFile);
+        public string PreviousFileOpenText => "Open " + Path.GetFileName(_previousFile);
 
-        public bool ControlsEnabled
-        {
-            get => _controlsEnabled;
-            set => SetPropertyPrimitive(ref _controlsEnabled, value, nameof(ControlsEnabled));
-        }
 
         public bool TrImportRepackingSelected
         {
@@ -105,6 +64,8 @@ namespace TgaBuilderLib.ViewModel
             get => _imageManager.TrImportHorPageNum;
             set => SetTrImportHorPageNum(value);
         }
+
+
 
         public void SetTrImportRepackingSelected(bool value)
         {
@@ -135,9 +96,9 @@ namespace TgaBuilderLib.ViewModel
             if (batchLoaderView.DialogResult != true) 
                 return;
 
-            Source.SetPresenter(batchLoaderVM.Presenter);
+            _panel.SetPresenter(batchLoaderVM.Presenter);
 
-            Source.VisualGrid.Reset();
+            ResetVisualGrid();
         }
 
         public void SetupOpenTask(string? fileName = null, List<FileTypes>? fileTypes = null)
@@ -166,16 +127,6 @@ namespace TgaBuilderLib.ViewModel
 
         public void OpenTr() => SetupOpenTask(fileTypes: [TR_FILE_TYPES, DEF_FILE_TYPES]);
 
-        public void CancelOpen()
-        {
-            if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
-            {
-                _cancellationTokenSource.Cancel();
-                _cancellationTokenSource.Dispose();
-            }
-            SetControlsStateAfterLoading();
-        }
-
         private async Task Open(string? fileName = null, List<FileTypes>? fileTypes = null)
         {
             if (fileTypes == null)
@@ -202,7 +153,7 @@ namespace TgaBuilderLib.ViewModel
                     mode: Enums.ResizeMode.SourceResize,
                     cancellationToken: token));
 
-                Source.Presenter = _imageManager.GetLoadedBitmap();
+                _panel.Presenter = _imageManager.GetLoadedBitmap();
             }
             catch (OperationCanceledException) 
             {
@@ -217,6 +168,7 @@ namespace TgaBuilderLib.ViewModel
             }
             catch (Exception e)
             {
+                _messageService.SendMessage(MessageType.UnknownError, ex: e);
                 _logger.LogError(e);
                 throw;
             }
@@ -229,13 +181,9 @@ namespace TgaBuilderLib.ViewModel
 
             _usageData.AddRecentInputFile(fileName);
 
-            _lastFilePath = fileName;
+            GetPreviousAndNextFileNames(fileName);
 
-            LastFolderFileNames = GetFilesWithSpecificExtensions(
-                Path.GetDirectoryName(fileName) ?? string.Empty,
-                DEF_FILE_TYPES | TR_FILE_TYPES);
-
-            Source.VisualGrid.Reset();
+            ResetVisualGrid();
 
             SendLoadStatus();
         }
@@ -272,9 +220,9 @@ namespace TgaBuilderLib.ViewModel
                     mode: Enums.ResizeMode.SourceResize,
                     cancellationToken: token));
 
-                Source.MouseLeave();
+                _panel.MouseLeave();
 
-                Source.Presenter = _imageManager.GetLoadedBitmap();
+                _panel.Presenter = _imageManager.GetLoadedBitmap();
             }
             catch (OperationCanceledException) { }
             catch (Exception e) when (IsHandleableOpenFileException(e))
@@ -295,40 +243,34 @@ namespace TgaBuilderLib.ViewModel
             }
         }
 
-        public void OpenPreviosFile()
+        public void OpenPreviosFile() => SetupOpenTask(_previousFile);
+
+        public void OpenNextFile() => SetupOpenTask(_nextFile);
+
+        private void GetPreviousAndNextFileNames(string fileName)
         {
-            if (string.IsNullOrEmpty(_lastFilePath) || LastFolderFileNames.Count() == 0)
-                return;
+            _lastFilePath = fileName;
+
+            LastFolderFileNames = GetFilesWithSpecificExtensions(
+                Path.GetDirectoryName(fileName) ?? string.Empty,
+                DEF_FILE_TYPES | TR_FILE_TYPES);
 
             int currentIndex = LastFolderFileNames.IndexOf(_lastFilePath);
 
             if (currentIndex < 1)
-            {
-                _messageService.SendMessage(MessageType.SourceOpenFirstFileReached);
-                return;
-            }
-
-            var fileName = LastFolderFileNames[currentIndex - 1];
-
-            SetupOpenTask(fileName);
-        }
-
-        public void OpenNextFile()
-        {
-            if (string.IsNullOrEmpty(_lastFilePath) || LastFolderFileNames.Count() == 0)
-                return;
-
-            int currentIndex = LastFolderFileNames.IndexOf(_lastFilePath);
-
+                _previousFile = LastFolderFileNames[LastFolderFileNames.Count - 1];
+            else
+                _previousFile = LastFolderFileNames[currentIndex - 1];
+            
             if (currentIndex < 0 || currentIndex >= LastFolderFileNames.Count - 1)
-            {
-                _messageService.SendMessage(MessageType.SourceOpenLastFileReached);
-                return;
-            }
+                _nextFile = LastFolderFileNames[0];
+            else
+                _nextFile = LastFolderFileNames[currentIndex + 1];
 
-            var fileName = LastFolderFileNames[currentIndex + 1];
-
-            SetupOpenTask(fileName);
+            OnPropertyChanged(nameof(LastFileName));
+            OnPropertyChanged(nameof(ReloadFileText));
+            OnPropertyChanged(nameof(PreviousFileOpenText));
+            OnPropertyChanged(nameof(NextFileOpenText));
         }
 
         private List<string> GetFilesWithSpecificExtensions(string directory, FileTypes fileTypes)
@@ -354,16 +296,10 @@ namespace TgaBuilderLib.ViewModel
             return files;
         }
 
-        private void SetControlsStateForLoading()
+        private void ResetVisualGrid()
         {
-            IsLoading = true;
-            ControlsEnabled = false;
-        }
-
-        private void SetControlsStateAfterLoading()
-        {
-            IsLoading = false;
-            ControlsEnabled = true;
+            if (_panel is SourceTexturePanelViewModel sourcePanel)
+                sourcePanel.VisualGrid.Reset();
         }
 
         private int CalculateNewPageXValue(int proposedValue, int currentValue)
