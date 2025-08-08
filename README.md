@@ -2,6 +2,7 @@
 ### **Texture Panel Building Tool for TRLE**
 
 [Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [Github Page](https://johnnyjf10.github.io/TgaBuilder/)
+
 ![LatestReleaseBuildStatus](https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release.yml/badge.svg)
 
 ![Logo](Screenshots/TgaBuilder_logo.png)
