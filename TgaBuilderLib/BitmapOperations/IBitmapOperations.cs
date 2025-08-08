@@ -81,6 +81,7 @@ namespace TgaBuilderLib.BitmapOperations
             WriteableBitmap source,
             WriteableBitmap target,
             (int X, int Y) pos,
+            double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default);
 
         void FillRectBitmap(
@@ -89,6 +90,7 @@ namespace TgaBuilderLib.BitmapOperations
             (int X, int Y) pos,
             byte[] undoPixels,
             byte[] redoPixels,
+            double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default);
 
         void FillRectBitmapNoConvert(

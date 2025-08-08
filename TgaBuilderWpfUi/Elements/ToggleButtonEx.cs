@@ -42,7 +42,7 @@ namespace TgaBuilderWpfUi.Elements
 
         public ToggleButtonEx()
         {
-            this.DefaultStyleKey = typeof(ToggleButtonEx);
+            DefaultStyleKey = typeof(ToggleButtonEx);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderWpfUi.Services;
@@ -29,6 +30,7 @@ namespace TgaBuilderWpfUi.View
             MouseDoubleClick += Window_MouseDoubleClick;
             PreviewMouseMove += Window_PreviewMouseMove;
             PreviewMouseUp += Window_PreviewMouseUp;
+            PreviewMouseWheel += MainWindow_PreviewMouseWheel;
 
             InitializeComponent();
             DataContext = mainViewModel;

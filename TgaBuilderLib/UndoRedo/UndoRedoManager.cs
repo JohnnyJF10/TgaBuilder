@@ -194,14 +194,14 @@ namespace TgaBuilderLib.UndoRedo
         public void PushResizeLargerAction(
             int oldWidth, int newWidth,
             int oldHeight, int newHeight,
-            Action<int, int, Color> resizeLargerCallback,
+            Action<int, int> resizeLargerCallback,
             Action<int, int> resizeSmallerCallback)
         {
             if (_state != State.Acting)
                 throw new InvalidOperationException("Can only push an action during acting mode.");
             var action = new SingleAction(
                 undo: () => resizeSmallerCallback(oldWidth, oldHeight),
-                redo: () => resizeLargerCallback(newWidth, newHeight, Colors.Black));
+                redo: () => resizeLargerCallback(newWidth, newHeight));
             Push(action);
             Debug.WriteLine("Pushed region resize larger action.");
         }

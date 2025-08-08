@@ -9,16 +9,24 @@ using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.Level
 {
-    public partial class TrLevel(
+    public partial class TrLevel : LevelBase
+    {
+        public TrLevel(
         string fileName,
         int trTexturePanelHorPagesNum = 2,
         bool useTrTextureRepacking = false,
-        ITrngDecrypter? trngDecrypter = null) : LevelBase
-    {
-        private readonly string _fileName = fileName;
-        private int _trTexturePanelHorPagesNum = trTexturePanelHorPagesNum;
-        private bool _useTrTextureRepacking = useTrTextureRepacking;
-        private readonly ITrngDecrypter? _trngDecrypter = trngDecrypter;
+        ITrngDecrypter? trngDecrypter = null)
+        {
+            _fileName = fileName;
+            _trTexturePanelHorPagesNum = trTexturePanelHorPagesNum;
+            _useTrTextureRepacking = useTrTextureRepacking;
+            _trngDecrypter = trngDecrypter;
+        }
+
+        private readonly string _fileName;
+        private int _trTexturePanelHorPagesNum;
+        private bool _useTrTextureRepacking;
+        private readonly ITrngDecrypter? _trngDecrypter;
 
         private bool _isNg;
         private long _textureInfosStreamPosition;
@@ -47,8 +55,8 @@ namespace TgaBuilderLib.Level
 
             ReadLevel(_fileName, cancellationToken);
 
-            if (Version == TrVersion.TRC || _relevantTextureInfos.Count == 0)
-                _useTrTextureRepacking = false; // not supported currently
+            if (_relevantTextureInfos.Count == 0)
+                _useTrTextureRepacking = false; 
 
             if (_useTrTextureRepacking)
             {

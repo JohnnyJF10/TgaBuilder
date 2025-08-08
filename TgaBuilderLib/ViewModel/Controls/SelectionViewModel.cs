@@ -187,5 +187,17 @@ namespace TgaBuilderLib.ViewModel
 
             IsPlacing = true;
         }
+
+        internal void FillSelection(WriteableBitmap presenter, Color color)
+        {
+            Int32Rect rect = new(0, 0,
+                Presenter.PixelWidth,
+                Presenter.PixelHeight);
+
+            _bitmapOperations.FillRectColor(
+                Presenter, rect, color);
+
+            IsPlacing = true;
+        }
     }
 }

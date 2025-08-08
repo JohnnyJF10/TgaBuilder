@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.ComponentModel.Design;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 using TgaBuilderLib.Enums;
 using TgaBuilderWpfUi.AttachedProperties;
@@ -67,8 +69,8 @@ namespace TgaBuilderWpfUi.View
                     ? MouseModifier.Alt : MouseModifier.None;
             }
 
-            if (CurrentPanel != null && 
-                ScrollingAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand)
+            if (CurrentPanel != null &&
+                PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand)
                 scrollCommand.Execute(e.GetPosition(CurrentPanel));
 
             if (PanelMouseAP.GetPanelMouseCommand(window) is ICommand mousePanelCommand)
@@ -88,6 +90,20 @@ namespace TgaBuilderWpfUi.View
 
             CurrentImage.ReleaseMouseCapture();
             _modifier = MouseModifier.None;
+        }
+
+        private void MainWindow_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (sender is not MainWindow window) return;
+
+            if (CurrentImage == null) return;
+
+            if (Keyboard.Modifiers != ModifierKeys.Shift) return;
+
+            bool isDestination = CurrentImage.Name == "TargetImage";
+
+            if (PanelMouseAP.GetWheelShiftCommand(window) is ICommand wheelShiftCommand)
+                wheelShiftCommand.Execute((isDestination, e.Delta < 0));
         }
     }
 }

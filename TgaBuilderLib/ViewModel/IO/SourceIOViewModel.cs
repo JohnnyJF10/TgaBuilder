@@ -125,7 +125,7 @@ namespace TgaBuilderLib.ViewModel
             _ioTask = Reload();
         }
 
-        public void OpenTr() => SetupOpenTask(fileTypes: [TR_FILE_TYPES, DEF_FILE_TYPES]);
+        public void OpenTr() => SetupOpenTask(fileTypes: new() { TR_FILE_TYPES, DEF_FILE_TYPES });
 
         private async Task Open(string? fileName = null, List<FileTypes>? fileTypes = null)
         {
@@ -294,6 +294,12 @@ namespace TgaBuilderLib.ViewModel
             }
 
             return files;
+        }
+
+        public void CopyEntire(WriteableBitmap bitmap)
+        {
+            _panel.Presenter = _imageManager.GetDestinationConfirmBitmap(bitmap);
+            _panel.RefreshPresenter();
         }
 
         private void ResetVisualGrid()

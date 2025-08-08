@@ -37,7 +37,22 @@ namespace TgaBuilderLib.ViewModel
             set => SetPickerSize(value);
         }
 
+        public double Opacity
+        {
+            get => _destination.Opacity;
+            set => SetOpacity(value);
+        }
 
+        private void SetOpacity(double value)
+        {
+            if (Opacity == value) 
+                return;
+
+
+            _destination.Opacity = Math.Clamp(value, 0, 1);
+
+            OnPropertyChanged(nameof(Opacity));
+        }
 
         private void SetPlacingModeFlag(PlacingMode modeFlag, bool enabled, string propertyName)
         {
@@ -57,8 +72,6 @@ namespace TgaBuilderLib.ViewModel
 
             _destination.Picker.Size = value;
             OnPropertyChanged(nameof(PickerSize));
-
-            _destination.RefreshPanelStatement();
         }
     }
 }

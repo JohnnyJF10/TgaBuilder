@@ -8,15 +8,34 @@ namespace TgaBuilderLib.BitmapOperations
     {
         public WriteableBitmap ReplaceColor(WriteableBitmap source, Color replacedColor, Color newColor)
         {
-            if (source.Format != PixelFormats.Bgra32 && source.Format != PixelFormats.Rgb24)
+            if (source.Format == PixelFormats.Bgra32)
+            {
+                return ReplaceColor32(source, replacedColor, newColor);
+            }
+            else if (source.Format == PixelFormats.Rgb24)
+            {
+                return ReplaceColor24(source, replacedColor, newColor);
+            }
+            else
+            {
                 throw new ArgumentException("Unsupported pixel format. Only Bgra32 and Rgb24 are supported.");
+            }
+        }
 
+        private WriteableBitmap ReplaceColor24(WriteableBitmap source, Color replacedColor, Color newColor)
+        {
             int width = source.PixelWidth;
             int height = source.PixelHeight;
             int sourceStride = width * 3;
             int targetStride = width * 3;
 
-            WriteableBitmap result = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Rgb24, null);
+            var result = new WriteableBitmap(
+                pixelWidth:     width,
+                pixelHeight:    height,
+                dpiX:           source.DpiX,
+                dpiY:           source.DpiY,
+                pixelFormat:    source.Format,
+                palette:        null);
 
             source.Lock();
             result.Lock();
@@ -36,19 +55,9 @@ namespace TgaBuilderLib.BitmapOperations
 
                     for (int x = 0; x < width; x++)
                     {
-                        if (source.Format == PixelFormats.Bgra32)
-                        {
-                            b = srcRow[0];
-                            g = srcRow[1];
-                            r = srcRow[2];
-                            a = srcRow[3];
-                        }
-                        else
-                        {
-                            r = srcRow[0];
-                            g = srcRow[1];
-                            b = srcRow[2];
-                        }
+                        r = srcRow[0];
+                        g = srcRow[1];
+                        b = srcRow[2];
 
                         if (a == 0 ||
                             (replacedColor.R == r && replacedColor.G == g && replacedColor.B == b))
@@ -65,7 +74,7 @@ namespace TgaBuilderLib.BitmapOperations
                             resRow[2] = b; // B  
                         }
 
-                        srcRow += sourceBbp;
+                        srcRow += 3;
                         resRow += 3;
                     }
                 }
@@ -77,5 +86,74 @@ namespace TgaBuilderLib.BitmapOperations
 
             return result;
         }
+
+        private WriteableBitmap ReplaceColor32(WriteableBitmap source, Color replacedColor, Color newColor)
+        {
+            int width = source.PixelWidth;
+            int height = source.PixelHeight;
+            int sourceStride = width * 3;
+            int targetStride = width * 3;
+
+            var result = new WriteableBitmap(
+                pixelWidth: width,
+                pixelHeight: height,
+                dpiX: source.DpiX,
+                dpiY: source.DpiY,
+                pixelFormat: source.Format,
+                palette: null);
+
+            source.Lock();
+            result.Lock();
+
+            byte r, g, b, a = 255;
+            int sourceBbp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
+
+            unsafe
+            {
+                byte* srcPtr = (byte*)source.BackBuffer;
+                byte* resPtr = (byte*)result.BackBuffer;
+
+                for (int y = 0; y < height; y++)
+                {
+                    byte* srcRow = srcPtr + y * source.BackBufferStride;
+                    byte* resRow = resPtr + y * result.BackBufferStride;
+
+                    for (int x = 0; x < width; x++)
+                    {
+                        b = srcRow[0];
+                        g = srcRow[1];
+                        r = srcRow[2];
+                        a = srcRow[3];
+
+                        if (a == 0 ||
+                            (replacedColor.R == r && replacedColor.G == g && replacedColor.B == b))
+                        {
+                            // Replace with new color  
+                            resRow[0] = newColor.B; // B 
+                            resRow[1] = newColor.G; // G  
+                            resRow[2] = newColor.R; // R  
+                            resRow[3] = newColor.A; // A
+                        }
+                        else
+                        {
+                            resRow[0] = b; // R  
+                            resRow[1] = g; // G  
+                            resRow[2] = r; // B  
+                            resRow[3] = a; // A
+                        }
+
+                        srcRow += 4;
+                        resRow += 4;
+                    }
+                }
+            }
+            result.AddDirtyRect(new Int32Rect(0, 0, width, height));
+
+            source.Unlock();
+            result.Unlock();
+
+            return result;
+        }
+
     }
 }

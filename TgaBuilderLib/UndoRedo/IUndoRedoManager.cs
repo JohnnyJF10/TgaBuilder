@@ -52,7 +52,7 @@ namespace TgaBuilderLib.UndoRedo
             int newWidth,
             int oldHeight,
             int newHeight,
-            Action<int, int, Color> resizeLargerCallback,
+            Action<int, int> resizeLargerCallback,
             Action<int, int> resizeSmallerCallback);
 
         void PushResizeSmallerAction(

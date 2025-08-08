@@ -59,13 +59,17 @@
                         FontSize="18"
                         TextWrapping="Wrap"
                         FontWeight="Bold"
-                        Margin="0,5"
                 />
                     <TextBlock
                         Text="{Binding Subtitle}"
                         FontSize="16"
                         TextWrapping="Wrap"
-                        Margin="0,5"
+                />
+                    <TextBlock
+                        Text="{Binding DotNetInfo}"
+                        FontSize="12"
+                        TextWrapping="Wrap"
+                        Margin="0,5,0,0"
                 />
                 </StackPanel>
             </StackPanel>

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -24,7 +25,6 @@ namespace TgaBuilderLib.ViewModel
             Func<ViewIndex, IView> getViewCallback,
             IMessageService messageService,
             IUndoRedoManager undoRedoManager,
-            ILogger logger,
 
             SourceTexturePanelViewModel source,
             TargetTexturePanelViewModel destination,
@@ -37,11 +37,13 @@ namespace TgaBuilderLib.ViewModel
 
             ViewTabViewModel sourceViewTab,
             ViewTabViewModel destinationViewTab,
-            AlphaTabViewModel alpha,
+
             PlacingTabViewModel placing,
             EditTabViewModel edits,
             SizeTabViewModel size,
-            FormatTabViewModel format,
+
+            FormatTabViewModel sourceFormat,
+            FormatTabViewModel targetFormat,
 
             IUsageData? usageData = null)
         {
@@ -50,7 +52,6 @@ namespace TgaBuilderLib.ViewModel
             _messageService = messageService;
 
             _undoRedoManager = undoRedoManager;
-            _logger = logger;
 
 
             Source = source;
@@ -64,14 +65,22 @@ namespace TgaBuilderLib.ViewModel
 
             SourceViewTab = sourceViewTab;
             DestinationViewTab = destinationViewTab;
-            AlphaTab = alpha;
+
+            SourceFormatTab = sourceFormat;
+            DestinationFormatTab = targetFormat;
+
             PlacingTab = placing;
             EditsTab = edits;
             SizeTab = size;
-            FormatTab = format;
 
             if (usageData != null)
                 _ = CheckUsageDataLoading(usageData);
+
+            SourceFormatTab.EyedroppingRequested += (_, _)
+                => _currnetlyEyedroppingTab = SourceFormatTab;
+
+            DestinationFormatTab.EyedroppingRequested += (_, _)
+                => _currnetlyEyedroppingTab = DestinationFormatTab;
         }
 
         private readonly Func<ViewIndex, IView> _getViewCallback;
@@ -79,13 +88,23 @@ namespace TgaBuilderLib.ViewModel
         private readonly IMessageService _messageService;
 
         private readonly IUndoRedoManager _undoRedoManager;
-        private readonly ILogger _logger;
+
+        private FormatTabViewModel? _currnetlyEyedroppingTab;
+
+        private bool _panelInfoVisible;
+        private bool _tileInfoVisible = true;
+
+        private string _pixelInfo = string.Empty;
+        private string _tileInfo = string.Empty;
+        private string _panelInfo = string.Empty;
+        private string _panelHelp = string.Empty;
 
 
         private PanelMouseCommand? _mousePanelCommand;
         private RelayCommand? _batchLoaderCommand;
         private RelayCommand? _aboutCommand;
-        private AsyncCommand? _copyEntireCommand;
+        private RelayCommand? _entireToSourceCommand;
+        private AsyncCommand? _entireToTargetCommand;
         private AsyncCommand? _newCommand;
         private RelayCommand? _openSourceCommand;
         private RelayCommand? _openPreviousSourceCommand;
@@ -106,8 +125,8 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _copyCommand;
         private RelayCommand? _pasteCommand;
         private RelayCommand<bool>? _enterPanelCommand;
-        private RelayCommand? _leavePanelCommand;
-
+        private RelayCommand<bool>? _leavePanelCommand;
+        private RelayCommand<(bool, bool)>? _wheelShiftCommand;
 
 
         public SourceTexturePanelViewModel Source { get; set; }
@@ -116,16 +135,64 @@ namespace TgaBuilderLib.ViewModel
         public SourceIOViewModel SourceIO { get; set; }
         public TargetIOViewModel TargetIO { get; set; }
 
-        public AlphaTabViewModel AlphaTab { get; set; }
         public PlacingTabViewModel PlacingTab { get; set; }
         public EditTabViewModel EditsTab { get; set; }
         public SizeTabViewModel SizeTab { get; set; }
-        public FormatTabViewModel FormatTab { get; set; }
+
+        public FormatTabViewModel SourceFormatTab { get; set; }
+        public FormatTabViewModel DestinationFormatTab { get; set; }
+
         public ViewTabViewModel SourceViewTab { get; set; }
         public ViewTabViewModel DestinationViewTab { get; set; }
 
         public SelectionViewModel Selection { get; set; }
         public AnimationViewModel Animation { get; set; }
+
+        public bool PanelInfoVisible
+        {
+            get => _panelInfoVisible;
+            set => SetCallerProperty(ref _panelInfoVisible, value);
+        }
+
+        public bool TileInfoVisible 
+        { 
+            get => _tileInfoVisible;
+            set
+            {
+                SetCallerProperty(ref _tileInfoVisible, value);
+                OnPropertyChanged(nameof(SelectionInfoVisible));
+            }
+        }
+
+        public bool SelectionInfoVisible => !TileInfoVisible;
+
+        public string PixelInfo
+        {
+            get => _pixelInfo;
+            set => SetCallerProperty(ref _pixelInfo, value);
+        }
+        public string TileInfo
+        {
+            get => _tileInfo;
+            set => SetCallerProperty(ref _tileInfo, value);
+        }
+        public string PanelInfo
+        {
+            get => _panelInfo;
+            set => SetCallerProperty(ref _panelInfo, value);
+        }
+        public string PanelHelp
+        {
+            get => _panelHelp;
+            set => SetCallerProperty(ref _panelHelp, value);
+        }
+
+        public string DebugNote =>
+#if DEBUG
+            "Debug ";
+#else
+            string.Empty;
+#endif
 
 
         public ICommand MousePanelCommand  => _mousePanelCommand 
@@ -137,7 +204,10 @@ namespace TgaBuilderLib.ViewModel
         public ICommand AboutCommand => _aboutCommand 
             ??= new(About);
 
-        public ICommand CopyEntireCommand => _copyEntireCommand 
+        public ICommand EntireToSourceCommand => _entireToSourceCommand
+            ??= new(() => SourceIO.CopyEntire(Destination.Presenter));
+
+        public ICommand EntireToTargetCommand => _entireToTargetCommand 
             ??= new(() => TargetIO.CopyEntire(Source.Presenter));
 
         public ICommand NewCommand => _newCommand 
@@ -204,83 +274,98 @@ namespace TgaBuilderLib.ViewModel
         public ICommand LeavePanelCommand => _leavePanelCommand 
             ??= new (LeavePanel);
 
+        public ICommand WheelShiftCommand => _wheelShiftCommand
+            ??= new(args => WheelShift(args.Item1, args.Item2));
+
 
 
         public void HandleMouseOnPanel(int x, int y, bool isTarget, MouseAction action, MouseModifier modifier)
         {
             TexturePanelViewModelBase panel = isTarget ? Destination : Source;
 
-            if (AlphaTab.IsEyedropperMode)
+            if (_currnetlyEyedroppingTab is not null)
             {
                 modifier = MouseModifier.Eyedropper;
             }
 
+            panel.XPointer = x;
+            panel.YPointer = y;
+
             switch (action, modifier) 
             {
+                case (MouseAction.DragStart, MouseModifier.Left):
+                    TileInfoVisible = false;
+                    break;
+
                 case (MouseAction.Move, MouseModifier.Alt):
-                    panel.AltMove(x, y);
-                    return;
+                    panel.AltMove();
+                    break;
 
                 case (MouseAction.Move, MouseModifier.AltLeft):
-                    panel.AltDrag(x, y);
-                    return;
+                    panel.AltDrag();
+                    break;
 
                 case (MouseAction.Move, MouseModifier.None):
-                    panel.MouseMove(x, y);
-                    return;
+                    panel.MouseMove();
+                    break;
 
                 case (MouseAction.Move, MouseModifier.Left):
-                    panel.Drag(x, y);
-                    return;
+                    panel.Drag();
+                    break;
 
                 case (MouseAction.Move, MouseModifier.Right):
-                    panel.RightDrag(x, y);
-                    return;
+                    panel.RightDrag();
+                    break;
 
                 case (MouseAction.Move, MouseModifier.Double):
-                    panel.DoubleDrag(x, y);
-                    return;
+                    panel.DoubleDrag();
+                    break;
 
                 case (MouseAction.Move, MouseModifier.Eyedropper):
-                    panel.EyedropperMove(x, y);
-                    AlphaTab.DoColorPicking();
-                    return;
+                    panel.EyedropperMove();
+                    _currnetlyEyedroppingTab?.DoColorPicking();
+                    break;
 
 
                 case (MouseAction.DragEnd, MouseModifier.Left):
                     panel.DragEnd();
+                    TileInfoVisible = true;
                     EndScrolling();
-                    return;
+                    break;
 
                 case (MouseAction.DragEnd, MouseModifier.Right):
                     panel.RightDragEnd();
                     EndScrolling();
-                    return;
+                    break;
 
                 case (MouseAction.DragEnd, MouseModifier.AltLeft):
                     panel.DragEnd();
                     EndScrolling();
-                    return;
+                    break;
 
                 case (MouseAction.DragEnd, MouseModifier.Double):
                     panel.DoubleDragEnd();
                     EndScrolling();
-                    return;
+                    break;
 
                 case (MouseAction.DragEnd, MouseModifier.Eyedropper):
                     HanldeEyedropperEnd();
-                    return;
+                    break;
 
                 default:
                     break;
             }
+            PixelInfo = panel.PixelInfo;
+            TileInfo = panel.TileInfo;
+            PanelInfo = panel.PanelInfo;
+            PanelHelp = panel.PanelHelp;
         }
 
         private void HanldeEyedropperEnd()
         {
-            AlphaTab.EndColorPicking();
+            _currnetlyEyedroppingTab?.EndColorPicking();
 
-            Source.EyedropperEnd();
+            _currnetlyEyedroppingTab = null;
         }
 
         public void About()
@@ -296,12 +381,31 @@ namespace TgaBuilderLib.ViewModel
                 Destination.MouseEnter();
             else
                 Source.MouseEnter();
+
+            PanelInfoVisible = true;
         }
 
-        public void LeavePanel()
+        public void LeavePanel(bool isTargetPanel)
         {
-            Source.MouseLeave();
-            Destination.MouseLeave();
+            PixelInfo = string.Empty;
+            TileInfo = string.Empty;
+
+            if (isTargetPanel)
+            {
+                Destination.MouseLeave();
+                PanelInfo = $"{Destination.Presenter.PixelWidth} x {Destination.Presenter.PixelHeight}px, " +
+                            $"{Destination.Presenter.Format.BitsPerPixel} bpp";
+                PanelHelp = $"Destination Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
+            }
+            else
+            {
+                Source.MouseLeave();
+                PanelInfo = $"{Source.Presenter.PixelWidth} x {Source.Presenter.PixelHeight}px, " +
+                            $"{Source.Presenter.Format.BitsPerPixel} bpp";
+                PanelHelp = $"Source Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
+            }
+
+            PanelInfoVisible = false;
 
             EndScrolling();
         }
@@ -313,6 +417,15 @@ namespace TgaBuilderLib.ViewModel
 
             SourceIO.IsDropHintVisible = false;
             TargetIO.IsDropHintVisible = false;
+        }
+
+        private void WheelShift(bool isTarget, bool isNegative)
+        {
+            TexturePanelViewModelBase panel = isTarget ? Destination : Source;
+
+            panel.SelectedPickerSize += isNegative ? -1 : 1;
+
+            TileInfo = panel.TileInfo;
         }
 
         private async Task CheckUsageDataLoading(IUsageData usageData)

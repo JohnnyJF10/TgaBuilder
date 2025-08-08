@@ -13,21 +13,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8
+      - name: Setup .NET SDKs
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       - name: Restore dependencies
         run: dotnet restore
-
-      - name: Publish TgaBuilderWpfUi project
-        run: |
-          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
-            -c Release `
-            -r win-x64 `
-            --self-contained false `
-            /p:PublishReadyToRun=true
 
       - name: Extract Assembly Info from CSPROJ
         id: meta
@@ -36,20 +30,57 @@ jobs:
           $title = $csproj.Project.PropertyGroup.AssemblyTitle
           $version = $csproj.Project.PropertyGroup.AssemblyVersion
           $shortVersion = ($version -split '\.')[0..2] -join '.'
-          $artifactName = "${title}V${shortVersion}"
-          echo "ZIP_BASE=$artifactName" >> $env:GITHUB_ENV
+          echo "ZIP_BASE_NET6=${title}V${shortVersion}net6" >> $env:GITHUB_ENV
+          echo "ZIP_BASE_NET8=${title}V${shortVersion}net8" >> $env:GITHUB_ENV
 
-      - name: Remove .pdb files from publish output
+      # === .NET 6 Build ===
+      - name: Publish TgaBuilderWpfUi project (.NET 6)
         run: |
-          $publishDir = "TgaBuilderWpfUi\bin\Release\net8.0-windows\win-x64\publish"
+          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
+            -c Release `
+            -f net6.0-windows `
+            -r win-x64 `
+            --self-contained false `
+            /p:PublishReadyToRun=true `
+            -o TgaBuilderWpfUi/publish/net6
+
+      - name: Remove .pdb files (.NET 6)
+        run: |
+          $publishDir = "TgaBuilderWpfUi\publish\net6"
           if (Test-Path $publishDir) {
             Get-ChildItem $publishDir -Recurse -Filter *.pdb | Remove-Item -Force
           } else {
             Write-Error "Publish directory '$publishDir' not found."
           }
 
-      - name: Upload publish folder as artifact (auto-zipped by GitHub)
+      - name: Upload .NET 6 build as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ZIP_BASE }}
-          path: TgaBuilderWpfUi/bin/Release/net8.0-windows/win-x64/publish
+          name: ${{ env.ZIP_BASE_NET6 }}
+          path: TgaBuilderWpfUi/publish/net6
+
+      # === .NET 8 Build ===
+      - name: Publish TgaBuilderWpfUi project (.NET 8)
+        run: |
+          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
+            -c Release `
+            -f net8.0-windows `
+            -r win-x64 `
+            --self-contained false `
+            /p:PublishReadyToRun=true `
+            -o TgaBuilderWpfUi/publish/net8
+
+      - name: Remove .pdb files (.NET 8)
+        run: |
+          $publishDir = "TgaBuilderWpfUi\publish\net8"
+          if (Test-Path $publishDir) {
+            Get-ChildItem $publishDir -Recurse -Filter *.pdb | Remove-Item -Force
+          } else {
+            Write-Error "Publish directory '$publishDir' not found."
+          }
+
+      - name: Upload .NET 8 build as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ZIP_BASE_NET8 }}
+          path: TgaBuilderWpfUi/publish/net8

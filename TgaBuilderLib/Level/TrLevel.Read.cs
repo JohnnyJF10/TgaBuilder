@@ -1,6 +1,7 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Threading;
@@ -75,7 +76,8 @@ namespace TgaBuilderLib.Level
                     // Palette data not required for TR2-3. Skip (3 + 4) * 256 bytes = 1792 bytes.
                     reader.ReadBytes(1792);
                     ReadAtlasTr2Tr3(reader, cancellationToken);
-                    ReadLevelData(reader, cancellationToken);
+                    if (_useTrTextureRepacking)
+                        ReadLevelData(reader, cancellationToken);
                 }
 
                 uncompressedEndPos = reader.BaseStream.Position;
@@ -110,7 +112,10 @@ namespace TgaBuilderLib.Level
             reader.ReadUInt32();
 
             // Read rooms
-            ReadRooms(Version, reader, cancellationToken);
+            if (Version == TrVersion.TRC)
+                ReadRoomsTRC(reader, cancellationToken);
+            else
+                ReadRooms(Version, reader, cancellationToken);
 
             // Floordata
             var numFloorData = reader.ReadUInt32();
@@ -249,7 +254,7 @@ namespace TgaBuilderLib.Level
 
             // If Version is TR1 or TR2, we need to read the object textures
             // as the animated textures infos are available now
-            reader.BaseStream.Position = _textureInfosStreamPosition;
+            reader.BaseStream.Seek(_textureInfosStreamPosition, SeekOrigin.Begin);
             ReadTextureInfos(reader, cancellationToken);
         }
 
@@ -257,61 +262,286 @@ namespace TgaBuilderLib.Level
 
         private void ReadRooms(TrVersion Version, BinaryReader levelReader, CancellationToken? cancellationToken = null)
         {
-            var numRooms = Version != TrVersion.TRC ? levelReader.ReadUInt16() : levelReader.ReadUInt32();
+            var numRooms = levelReader.ReadUInt16();
             for (var i = 0; i < numRooms; i++)
             {
                 cancellationToken?.ThrowIfCancellationRequested();
-                if (Version != TrVersion.TRC)
-                {
-                    // Room info
-                    levelReader.ReadBytes(16);
 
-                    ReadRoomData(levelReader, cancellationToken);
+                // Room info
+                levelReader.ReadBytes(16);
 
-                    var numPortals = levelReader.ReadUInt16();
-                    levelReader.ReadBytes(numPortals * 32);
+                ReadRoomData(levelReader, cancellationToken);
 
-                    var numXsectors = levelReader.ReadUInt16();
-                    var numZsectors = levelReader.ReadUInt16();
-                    levelReader.ReadBytes(numXsectors * numZsectors * 8);
+                var numPortals = levelReader.ReadUInt16();
+                levelReader.ReadBytes(numPortals * 32);
 
-                    // Ambient intensity 1 & 2
+                var numXsectors = levelReader.ReadUInt16();
+                var numZsectors = levelReader.ReadUInt16();
+                levelReader.ReadBytes(numXsectors * numZsectors * 8);
+
+                // Ambient intensity 1 & 2
+                levelReader.ReadUInt16();
+                if (Version != TrVersion.TR1)
                     levelReader.ReadUInt16();
-                    if (Version != TrVersion.TR1)
-                        levelReader.ReadUInt16();
 
-                    // Lightmode
-                    if (Version == TrVersion.TR2)
-                        levelReader.ReadUInt16();
+                // Lightmode
+                if (Version == TrVersion.TR2)
+                    levelReader.ReadUInt16();
 
-                    var numLights = levelReader.ReadUInt16();
-                    if (Version == TrVersion.TR1)
-                        levelReader.ReadBytes(numLights * 18);
-                    if (Version == TrVersion.TR2)
-                        levelReader.ReadBytes(numLights * 24);
-                    if (Version == TrVersion.TR3)
-                        levelReader.ReadBytes(numLights * 24);
-                    if (Version == TrVersion.TR4)
-                        levelReader.ReadBytes(numLights * 46);
+                var numLights = levelReader.ReadUInt16();
+                if (Version == TrVersion.TR1)
+                    levelReader.ReadBytes(numLights * 18);
+                if (Version == TrVersion.TR2)
+                    levelReader.ReadBytes(numLights * 24);
+                if (Version == TrVersion.TR3)
+                    levelReader.ReadBytes(numLights * 24);
+                if (Version == TrVersion.TR4)
+                    levelReader.ReadBytes(numLights * 46);
 
-                    var numRoomStaticMeshes = levelReader.ReadUInt16();
-                    if (Version == TrVersion.TR1)
-                        levelReader.ReadBytes(numRoomStaticMeshes * 18);
-                    else
-                        levelReader.ReadBytes(numRoomStaticMeshes * 20);
-
-                    // Various flags and alternate room
-                    if (Version <= TrVersion.TR2)
-                        levelReader.ReadBytes(4);
-                    else
-                        levelReader.ReadBytes(7);
-                }
+                var numRoomStaticMeshes = levelReader.ReadUInt16();
+                if (Version == TrVersion.TR1)
+                    levelReader.ReadBytes(numRoomStaticMeshes * 18);
                 else
+                    levelReader.ReadBytes(numRoomStaticMeshes * 20);
+
+                // Various flags and alternate room
+                if (Version <= TrVersion.TR2)
+                    levelReader.ReadBytes(4);
+                else
+                    levelReader.ReadBytes(7);
+            }
+        }
+
+        private void ReadRoomsTRC(BinaryReader levelReader, CancellationToken? cancellationToken = null)
+        {
+            uint tr5ValueCheck;
+
+            var numRooms = levelReader.ReadUInt32();
+            for (var i = 0; i < numRooms; i++)
+            {
+                cancellationToken?.ThrowIfCancellationRequested();
+
+                // Read room header marker (should be "XELA", 0x414c4558)
+                var xela = System.Text.Encoding.ASCII.GetString(levelReader.ReadBytes(4));
+                if (string.Compare(xela, "XELA", StringComparison.Ordinal) != 0)
+                    throw new FileFormatException("Invalid room header marker: " + xela);
+
+                // Total size of the room block
+                var roomDataSize = levelReader.ReadUInt32();
+
+                // Store current stream position to later skip to the end of this room block
+                int startPos = (int)levelReader.BaseStream.Position;
+
+                // --- ROOM HEADER FIELDS --- //
+
+                // Separator (0xCDCDCDCD)
+                levelReader.ReadUInt32();
+
+                // EndSDOffset
+                levelReader.ReadUInt32();
+
+                // StartSDOffset
+                levelReader.ReadUInt32();
+
+                // Separator (0 or 0xCDCDCDCD)
+                levelReader.ReadUInt32();
+
+                // EndPortalOffset
+                levelReader.ReadUInt32();
+
+                // tr_room_info fields
+                var roomX = levelReader.ReadInt32();     // Room position X
+                var roomY = levelReader.ReadInt32();     // Room position Y
+                var roomZ = levelReader.ReadInt32();     // Room position Z
+                var roomYbottom = levelReader.ReadInt32(); // Bottom Y (floor level)
+                var roomYtop = levelReader.ReadInt32();    // Top Y (ceiling level)
+
+                // Sector grid dimensions
+                var numZsectors = levelReader.ReadUInt16();
+                var numXsectors = levelReader.ReadUInt16();
+
+                // Room color in ARGB format
+                var roomColor = levelReader.ReadUInt32();
+
+                // Light and static mesh counts
+                var numLights = levelReader.ReadUInt16();
+                var numStatics = levelReader.ReadUInt16();
+
+                // ReverbInfo (1 byte), AlternateGroup (1 byte), WaterScheme (2 bytes)
+                levelReader.ReadUInt32(); // Skipped as combined 4 bytes
+
+                // Filler[2] (both 0x00007FFF)
+                levelReader.ReadUInt32();
+                levelReader.ReadUInt32();
+
+                // Separator[2] (both 0xCDCDCDCD)
+                levelReader.ReadUInt32();
+
+                levelReader.ReadUInt32();
+
+                // Filler (always 0xFFFFFFFF)
+                levelReader.ReadUInt32();
+
+                // Alternate room index (-1 if none)
+                var alternateRoom = levelReader.ReadUInt16();
+
+                // Room flags
+                var flags = levelReader.ReadUInt16();
+
+                // Unknown values
+                levelReader.ReadUInt32(); // Unknown1
+                levelReader.ReadUInt32(); // Unknown2 (always 0)
+                levelReader.ReadUInt32(); // Unknown3 (always 0)
+
+                // Separator (null room = 0, normal = 0xCDCDCDCD)
+                tr5ValueCheck = levelReader.ReadUInt32();
+                if (tr5ValueCheck == 0)
                 {
-                    var xela = System.Text.Encoding.ASCII.GetString(levelReader.ReadBytes(4));
-                    var roomDataSize = levelReader.ReadUInt32();
-                    levelReader.ReadBytes((int)roomDataSize);
+                    // --- SKIP TO NEXT ROOM --- //
+                    // Move back to start and skip whole roomDataSize block to get ready for next room
+                    levelReader.BaseStream.Seek(startPos, SeekOrigin.Begin);
+                    levelReader.BaseStream.Seek(roomDataSize, SeekOrigin.Current);
+
+                    continue;
                 }
+
+                // Unknown4 and Unknown5
+                levelReader.ReadUInt16();
+                levelReader.ReadUInt16();
+
+                // Room position (floating point precision)
+                var roomXfloat = levelReader.ReadSingle();
+                var roomYfloat = levelReader.ReadSingle();
+                var roomZfloat = levelReader.ReadSingle();
+
+                // Separator[4] (0xCDCDCDCD each)
+                tr5ValueCheck = levelReader.ReadUInt32();
+                tr5ValueCheck = levelReader.ReadUInt32();
+                tr5ValueCheck = levelReader.ReadUInt32();
+                tr5ValueCheck = levelReader.ReadUInt32();
+
+
+                // Separator (normal = 0, null room = 0xCDCDCDCD)
+                tr5ValueCheck = levelReader.ReadUInt32();
+                if (tr5ValueCheck == 0xCDCDCDCD)
+                {
+                    // --- SKIP TO NEXT ROOM --- //
+                    // Move back to start and skip whole roomDataSize block to get ready for next room
+                    levelReader.BaseStream.Seek(startPos, SeekOrigin.Begin);
+                    levelReader.BaseStream.Seek(roomDataSize, SeekOrigin.Current);
+
+                    continue;
+                }
+
+                // Separator (0xCDCDCDCD)
+                levelReader.ReadUInt32();
+
+                // Number of quads and triangles in the room
+                var numQuads = levelReader.ReadUInt32();
+                var numTriangles = levelReader.ReadUInt32();
+                if (numQuads == 0xCDCDCDCD || numTriangles == 0xCDCDCDCD)
+                {
+                    // --- SKIP TO NEXT ROOM --- //
+                    // Move back to start and skip whole roomDataSize block to get ready for next room
+                    levelReader.BaseStream.Seek(startPos, SeekOrigin.Begin);
+                    levelReader.BaseStream.Seek(roomDataSize, SeekOrigin.Current);
+
+                    continue;
+                }
+
+                // Pointer to lights (tr5_room_data.Lights)
+                levelReader.ReadUInt32();
+
+                // Size of light block in bytes
+                var lightSize = levelReader.ReadUInt32();
+
+                // Duplicate of numLights (always the same)
+                var numLights2 = levelReader.ReadUInt32();
+
+                // Number of fog bulbs
+                int numFogBulbs = (int)levelReader.ReadUInt32();
+
+                // RoomYTop and RoomYBottom again?
+                levelReader.ReadUInt32();
+                levelReader.ReadUInt32();
+
+                // Number of room layers (volumes)
+                var numLayers = levelReader.ReadUInt32();
+
+                // Layer offset
+                levelReader.ReadUInt32();
+
+                // Vertices offset
+                levelReader.ReadUInt32();
+
+                // PolyOffset
+                levelReader.ReadUInt32();
+
+                // PolyOffset2 (should be same as PolyOffset)
+                levelReader.ReadUInt32();
+
+                // Number of room vertices
+                var numVertices = levelReader.ReadUInt32();
+
+                // Separator[4] (0xCDCDCDCD each)
+                levelReader.ReadUInt32();
+                levelReader.ReadUInt32();
+                levelReader.ReadUInt32();
+                levelReader.ReadUInt32();
+
+                // --- ROOM DATA FIELDS --- //
+
+                // Read light data (88 bytes * numLights)
+                levelReader.ReadBytes(88 * numLights);
+
+                // Read fog bulb data (each 16 bytes)
+                levelReader.ReadBytes(36 * numFogBulbs);
+
+                // Read sectors (8 bytes each = sizeof(tr_room_sector))
+                levelReader.ReadBytes(8 * numXsectors * numZsectors);
+
+                // Read portals
+                var numPortals = levelReader.ReadUInt16(); // Number of portals
+                levelReader.ReadBytes(32 * numPortals); // Read portal data (each 32 bytes)
+
+                // Read separator (0xCDCD)
+                var ets = levelReader.ReadUInt16();
+                if (ets != 0xCDCD)
+                    throw new FileFormatException("Invalid separator after portals: " + ets.ToString("X"));
+
+                // Read static mesh list (each = 20 bytes)
+                levelReader.ReadBytes(20 * numStatics);
+
+                // Read layers (each = 56 bytes)
+                levelReader.ReadBytes(56 * (int)numLayers);
+
+                // Read faces:
+                // - Quads are tr_face4 (20 bytes each)
+                // - Triangles are tr_face3 (16 bytes each)
+                int faceDataSize = (int)(numQuads * 20 + numTriangles * 16);
+
+                for (var j = 0; j < numQuads; j++)
+                {
+                    cancellationToken?.ThrowIfCancellationRequested();
+                
+                    levelReader.ReadBytes(8); // Vertices
+                    _rectTexIndices.Add(levelReader.ReadUInt16()); // Texture
+                    levelReader.ReadUInt16(); // Zero padding
+                }
+                
+                for (var j = 0; j < numTriangles; j++)
+                {
+                    cancellationToken?.ThrowIfCancellationRequested();
+                
+                    levelReader.ReadBytes(6); // Vertices
+                    _triagTexIndices.Add(levelReader.ReadUInt16()); // Texture
+                    levelReader.ReadUInt16(); // Zero padding
+                }
+
+                // --- SKIP TO NEXT ROOM --- //
+                // Move back to start and skip whole roomDataSize block to get ready for next room
+                levelReader.BaseStream.Seek(startPos, SeekOrigin.Begin);
+                levelReader.BaseStream.Seek(roomDataSize, SeekOrigin.Current);
             }
         }
 

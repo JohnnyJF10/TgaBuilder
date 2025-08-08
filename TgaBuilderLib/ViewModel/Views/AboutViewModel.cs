@@ -15,6 +15,9 @@ namespace TgaBuilderLib.ViewModel.Views
         public string Subtitle
             => "Texture Sets Building Tool";
 
+        public string DotNetInfo
+            => $".Net {System.Environment.Version.Major}.{System.Environment.Version.Minor} Version tool";
+
         public string AboutText 
             => "TgaBuilder is a Texture Sets Building Tool which is intended to facilitate the process of " +
             "texture panel creation used for TRLE. " +

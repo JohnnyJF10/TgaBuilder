@@ -17,17 +17,29 @@ namespace TgaBuilderLib.BitmapOperations
             int stride = bitmap.BackBufferStride;
             IntPtr pBackBuffer = bitmap.BackBuffer;
 
+            byte b, g, r, a;
+
             unsafe
             {
                 byte* pPixel = (byte*)pBackBuffer.ToPointer() + y * stride + x * bytesPerPixel;
 
-                byte b = pPixel[2];
-                byte g = pPixel[1];
-                byte r = pPixel[0];
-                byte a = (bytesPerPixel >= 4) ? pPixel[3] : (byte)255;
-
-                return Color.FromArgb(a, r, g, b);
+                if (bitmap.Format.BitsPerPixel == 32)
+                {
+                    b = pPixel[0];
+                    g = pPixel[1];
+                    r = pPixel[2];
+                    a = pPixel[3];
+                }
+                else
+                {
+                    r = pPixel[0];
+                    g = pPixel[1];
+                    b = pPixel[2];
+                    a = 255; // No alpha channel in 24-bit format
+                }
             }
+
+            return Color.FromArgb(a, r, g, b);
         }
     }
 }

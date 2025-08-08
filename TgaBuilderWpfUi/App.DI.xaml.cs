@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Pfim;
 using System.Buffers;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -225,15 +226,6 @@ namespace TgaBuilderWpfUi
 
         private void AddTabVMsToProvider(IServiceCollection services)
         {
-            services.AddSingleton(sp => new AlphaTabViewModel(
-                bitmapOperations:   sp.GetRequiredService<IBitmapOperations>(),
-                eyeDropper:         sp.GetRequiredService<IEyeDropper>(),
-
-                selection:          sp.GetRequiredService<SelectionViewModel>(),
-                source:             sp.GetRequiredService<SourceTexturePanelViewModel>(),
-
-                initcolor:          sp.GetRequiredService<Color>()));
-
             services.AddSingleton(sp => new SizeTabViewModel(
                 messageService: sp.GetRequiredService<IMessageService>(),
                 destination:    sp.GetRequiredService<TargetTexturePanelViewModel>()));
@@ -244,9 +236,18 @@ namespace TgaBuilderWpfUi
             services.AddSingleton(sp => new EditTabViewModel(
                 destination: sp.GetRequiredService<TargetTexturePanelViewModel>()));
 
-            services.AddSingleton(sp => new FormatTabViewModel(
-                messageBoxService: sp.GetRequiredService<IMessageBoxService>(),
-                target:            sp.GetRequiredService<TargetTexturePanelViewModel>()));
+            services.AddTransient(sp => new FormatTabViewModel(
+                eyeDropper: sp.GetRequiredService<IEyeDropper>(),
+
+                selection: sp.GetRequiredService<SelectionViewModel>(),
+                panel: sp.GetRequiredService<SourceTexturePanelViewModel>()));
+
+            services.AddTransient(sp => new FormatTabViewModel(
+                eyeDropper: sp.GetRequiredService<IEyeDropper>(),
+
+                selection: sp.GetRequiredService<SelectionViewModel>(),
+                panel: sp.GetRequiredService<TargetTexturePanelViewModel>(),
+                messageBoxService: sp.GetRequiredService<IMessageBoxService>()));
 
             services.AddTransient(sp => new ViewTabViewModel(
                 visualPanelSize: sp.GetServices<PanelVisualSizeViewModel>()
@@ -277,7 +278,6 @@ namespace TgaBuilderWpfUi
 
                 messageService:         sp.GetRequiredService<IMessageService>(),
                 undoRedoManager:        sp.GetRequiredService<IUndoRedoManager>(),
-                logger:                 sp.GetRequiredService<ILogger>(),
 
                 source:                 sp.GetRequiredService<SourceTexturePanelViewModel>(),
                 destination:            sp.GetRequiredService<TargetTexturePanelViewModel>(),
@@ -289,10 +289,15 @@ namespace TgaBuilderWpfUi
                 destinationIO:          sp.GetRequiredService<TargetIOViewModel>(),
 
                 placing:                sp.GetRequiredService<PlacingTabViewModel>(),
-                alpha:               sp.GetRequiredService<AlphaTabViewModel>(),
                 edits:                  sp.GetRequiredService<EditTabViewModel>(),
                 size:                   sp.GetRequiredService<SizeTabViewModel>(),
-                format:                 sp.GetRequiredService<FormatTabViewModel>(),
+
+                sourceFormat:           sp.GetServices<FormatTabViewModel>()
+                                            .ElementAt((int)PresenterType.Source),
+                targetFormat:           sp.GetServices<FormatTabViewModel>()
+                                            .ElementAt((int)PresenterType.Target),
+
+
                 sourceViewTab:          sp.GetServices<ViewTabViewModel>()
                                             .ElementAt((int)PresenterType.Source),
                 destinationViewTab:     sp.GetServices<ViewTabViewModel>()

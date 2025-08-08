@@ -11,23 +11,22 @@ namespace TgaBuilderLib.BitmapOperations
 
         public int PlacedSize { get; set; }
 
-        private (byte tr, byte tg, byte tb) _transparentColor = (255, 0, 255);
-
         public void FillRectBitmap(
             WriteableBitmap source, 
             WriteableBitmap target,
             (int X, int Y) pos, 
             byte[] undoPixels, 
             byte[] redoPixels,
+            double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default)
         {
             if (source.Format != PixelFormats.Rgb24 && source.Format != PixelFormats.Bgra32)
                 throw new ArgumentException("Source must be in Rgb24 or Bgra32 format.");
 
             if (target.Format == PixelFormats.Rgb24)
-                FillRectBitmap24(source, target, pos, undoPixels, redoPixels, placingMode);
+                FillRectBitmap24(source, target, pos, undoPixels, redoPixels, opacity, placingMode);
             else if (target.Format == PixelFormats.Bgra32)
-                FillRectBitmap32(source, target, pos, undoPixels, redoPixels, placingMode);
+                FillRectBitmap32(source, target, pos, undoPixels, redoPixels, opacity, placingMode);
             else
                 throw new ArgumentException("Target must be in Rgb24 or Bgra32 format.");
 
@@ -40,6 +39,7 @@ namespace TgaBuilderLib.BitmapOperations
             (int X, int Y) pos,
             byte[] undoPixels,
             byte[] redoPixels,
+            double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default)
         {
             int sWidth = source.PixelWidth;
@@ -116,6 +116,9 @@ namespace TgaBuilderLib.BitmapOperations
                                 r = srcLine[2];
                                 a = srcLine[3];
                             }
+
+                            a = (byte)(a * opacity);
+
                             undoLine[0] = tgtLine[0];
                             undoLine[1] = tgtLine[1];
                             undoLine[2] = tgtLine[2];
@@ -127,19 +130,19 @@ namespace TgaBuilderLib.BitmapOperations
                                 swapLine[2] = tgtLine[2];
                             }
 
-                            if ((srcBpp == 3 && (!OverlayTransparent || (r, g, b) != _transparentColor)) || (srcBpp > 3 && a == 255))
+                            if (a == 255 && (!OverlayTransparent || (r, g, b) != (255, 0, 255)))
                             {
                                 tgtLine[0] = r;
                                 tgtLine[1] = g;
                                 tgtLine[2] = b;
                             }
-                            else if (a == 0 && !OverlayTransparent)
+                            else if ((a == 0 && !OverlayTransparent) || (srcBpp == 3 && ((r, g, b) == (255, 0, 255) && !OverlayTransparent)))
                             {
-                                tgtLine[0] = _transparentColor.tr;
-                                tgtLine[1] = _transparentColor.tg;
-                                tgtLine[2] = _transparentColor.tb;
+                                tgtLine[0] = 255;
+                                tgtLine[1] = 0;
+                                tgtLine[2] = 255;
                             }
-                            else if (a < 255)
+                            else if (a < 255 && (srcBpp > 3 || (srcBpp == 3 && ((r, g, b) != (255, 0, 255)))))
                             {
                                 tgtLine[0] = (byte)((tgtLine[0] * (255 - a) + r * a) / 255);
                                 tgtLine[1] = (byte)((tgtLine[1] * (255 - a) + g * a) / 255);
@@ -174,6 +177,7 @@ namespace TgaBuilderLib.BitmapOperations
             (int X, int Y) pos,
             byte[] undoPixels,
             byte[] redoPixels,
+            double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default)
         {
             int sWidth = source.PixelWidth;
@@ -250,6 +254,9 @@ namespace TgaBuilderLib.BitmapOperations
                                 r = srcLine[2];
                                 a = srcLine[3];
                             }
+
+                            a = (byte)(a * opacity);
+
                             undoLine[0] = tgtLine[0];
                             undoLine[1] = tgtLine[1];
                             undoLine[2] = tgtLine[2];
@@ -263,26 +270,25 @@ namespace TgaBuilderLib.BitmapOperations
                                 swapLine[3] = tgtLine[3];
                             }
 
-                            if ((srcBpp == 3 && ((r, g, b) != _transparentColor)) || (srcBpp > 3 && !OverlayTransparent))
+                            if (!OverlayTransparent && (srcBpp > 3 || (srcBpp == 3 && ((r, g, b) != (255, 0, 255)))))
                             {
                                 tgtLine[0] = b;
                                 tgtLine[1] = g;
                                 tgtLine[2] = r;
                                 tgtLine[3] = a;
                             }
-                            else if (srcBpp == 3 && (r, g, b) == _transparentColor && !OverlayTransparent)
+                            else if ((srcBpp > 3 && a == 0 && !OverlayTransparent) || (srcBpp == 3 && ((r, g, b) == (255, 0, 255) && !OverlayTransparent)) )
                             {
                                 tgtLine[0] = 0;
                                 tgtLine[1] = 0;
                                 tgtLine[2] = 0;
                                 tgtLine[3] = 0;
                             }
-                            else if (srcBpp > 3 && OverlayTransparent)
+                            else if (srcBpp > 3 || (srcBpp == 3 && ((r, g, b) != (255, 0, 255))))
                             {
                                 tgtLine[0] = (byte)((tgtLine[0] * (255 - a) + b * a) / 255);
                                 tgtLine[1] = (byte)((tgtLine[1] * (255 - a) + g * a) / 255);
                                 tgtLine[2] = (byte)((tgtLine[2] * (255 - a) + r * a) / 255);
-                                tgtLine[3] = (byte)((tgtLine[3] * (255 - a) + a * a) / 255);
                             }
 
                             redoLine[0] = tgtLine[0];

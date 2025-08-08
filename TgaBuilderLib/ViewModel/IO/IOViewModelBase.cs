@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
@@ -12,7 +13,9 @@ using TgaBuilderLib.Utils;
 
 namespace TgaBuilderLib.ViewModel
 {
-    public abstract class IOViewModelBase(
+    public abstract class IOViewModelBase : ViewModelBase
+    {
+        public IOViewModelBase(
             Func<ViewIndex, IView> getViewCallback,
 
             IFileService fileService,
@@ -20,17 +23,26 @@ namespace TgaBuilderLib.ViewModel
             IImageFileManager imageManager,
             ILogger logger,
             IUsageData usageData,
-        
-            TexturePanelViewModelBase panel) : ViewModelBase
-    {
-        protected readonly Func<ViewIndex, IView> _getViewCallback = getViewCallback;
-        protected readonly IFileService _fileService = fileService;
-        protected readonly IMessageService _messageService = messageService;
-        protected readonly IImageFileManager _imageManager = imageManager;
-        protected readonly ILogger _logger = logger;
-        protected readonly IUsageData _usageData = usageData;
 
-        protected TexturePanelViewModelBase _panel = panel;
+            TexturePanelViewModelBase panel)
+        {
+            _getViewCallback = getViewCallback;
+            _fileService = fileService;
+            _messageService = messageService;
+            _imageManager = imageManager;
+            _logger = logger;
+            _usageData = usageData;
+            _panel = panel;
+        }
+
+        protected readonly Func<ViewIndex, IView> _getViewCallback;
+        protected readonly IFileService _fileService;
+        protected readonly IMessageService _messageService;
+        protected readonly IImageFileManager _imageManager;
+        protected readonly ILogger _logger;
+        protected readonly IUsageData _usageData;
+
+        protected TexturePanelViewModelBase _panel;
 
         protected CancellationTokenSource? _cancellationTokenSource;
         protected Task? _ioTask;

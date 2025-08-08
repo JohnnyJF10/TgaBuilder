@@ -9,12 +9,18 @@ using System.Windows.Media.Imaging;
 
 namespace TgaBuilderLib.Level
 {
-    public partial class TenLevel(
-        string fileName,
-        int trTexturePanelHorPagesNum = 2) : LevelBase
+    public partial class TenLevel : LevelBase
     {
-        private readonly string _fileName = fileName;
-        private int _trTexturePanelHorPagesNum = trTexturePanelHorPagesNum;
+        public TenLevel(
+        string fileName,
+        int trTexturePanelHorPagesNum = 2)
+        {
+            _fileName = fileName;
+            _trTexturePanelHorPagesNum = trTexturePanelHorPagesNum;
+        }
+
+        private readonly string _fileName;
+        private int _trTexturePanelHorPagesNum;
 
         private List<byte[]> _texPagesList = new();
         private List<(int width, int height, int size)> _texDimsList = new();

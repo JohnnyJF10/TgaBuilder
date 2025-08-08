@@ -101,15 +101,12 @@
     <h2 id="usage">Usage</h2>
 
     <h3 id="title-bar">Title Bar</h3>
-
-    <p><img src="/TgaBuilder/Screenshots/TitleBar.png" alt="TitleBar" /></p>
+    <p><img src="Screenshots/TitleBar.png" alt="TitleBar" /></p>
 
     <h4 id="source-loading">Source Loading</h4>
-
     <ul>
       <li>Open image files as source texture panel<br />
-        <em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG, PSD</strong> (<code
-          class="language-plaintext highlighter-rouge">Ctrl + E</code>)
+        <em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG, PSD</strong> (<code>Ctrl + E</code>)
         <ul>
           <li>… or simply <strong>drop</strong> a supported image file on source panel.</li>
         </ul>
@@ -118,46 +115,38 @@
       <li>Reload the current file in case of changes to load settings (Import Tab) or file changes</li>
       <li>Open previous file in current folder</li>
       <li>Open next file in current folder</li>
-
     </ul>
 
     <h4 id="undo--redo">Undo / Redo</h4>
-
     <ul>
-      <li>Undo: <code class="language-plaintext highlighter-rouge">Ctrl + Z</code></li>
-      <li>Redo: <code class="language-plaintext highlighter-rouge">Ctrl + Y</code></li>
+      <li>Undo: <code>Ctrl + Z</code></li>
+      <li>Redo: <code>Ctrl + Y</code></li>
     </ul>
 
     <h4 id="destination-loading--saving">Destination Loading / Saving</h4>
-
     <ul>
-      <li>Create a new texture panel: <code class="language-plaintext highlighter-rouge">Ctrl + N</code></li>
+      <li>Create a new texture panel: <code>Ctrl + N</code></li>
       <li>Open image files as destination texture panel<br />
-        <em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG, PSD</strong> (<code
-          class="language-plaintext highlighter-rouge">Ctrl + D</code>)
+        <em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG, PSD</strong> (<code>Ctrl + D</code>)
         <ul>
           <li>… or simply <strong>drop</strong> a supported image file on destination panel.</li>
         </ul>
       </li>
       <li>Reopen recently used destination image files</li>
       <li>Save the destination texture<br />
-        <em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG</strong> (<code
-          class="language-plaintext highlighter-rouge">Ctrl + S</code>)
+        <em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG</strong> (<code>Ctrl + S</code>)
       </li>
       <li>Save to a specified file<br />
-        <em>Formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG</strong> (<code
-          class="language-plaintext highlighter-rouge">Ctrl + Shift + S</code>)
+        <em>Formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG</strong> (<code>Ctrl + Shift + S</code>)
       </li>
     </ul>
 
     <h3 id="source-panel-left">Source Panel (Left)</h3>
-
     <ul>
       <li><strong>Left click</strong> a tile: copy into selection</li>
       <li><strong>Left click + drag</strong>: copy area into selection</li>
       <li><strong>Right click</strong> a tile: preview UV rotate (river rotate)</li>
-      <li><strong>Right click + drag</strong>: preview range-based animation of <code
-          class="language-plaintext highlighter-rouge">AnimRange</code></li>
+      <li><strong>Right click + drag</strong>: preview range-based animation of <code>AnimRange</code></li>
       <li><strong>Left click + Alt + drag</strong>: copy ignoring grid</li>
       <li><strong>Left click + Ctrl + drag</strong>: move panel</li>
       <li><strong>Mouse wheel</strong>: scroll vertically</li>
@@ -167,7 +156,6 @@
     <h3 id="destination-panel-rigth">Destination Panel (Rigth)</h3>
 
     <h4 id="picking-mode">Picking Mode</h4>
-
     <ul>
       <li><strong>Left click</strong>: copy into selection or apply transformation</li>
       <li><strong>Left click + drag</strong>: copy area into selection</li>
@@ -176,67 +164,59 @@
     </ul>
 
     <h4 id="placing-mode">Placing Mode</h4>
-
     <ul>
       <li><strong>Left click</strong>: place selected tile and return to picking</li>
       <li><strong>Right click</strong>: return to picking without placing</li>
     </ul>
 
     <h4 id="general-controls">General Controls</h4>
-
     <ul>
       <li><strong>Left click + Ctrl + drag</strong>: move panel</li>
       <li><strong>Mouse wheel</strong>: scroll vertically</li>
       <li><strong>Mouse wheel + Ctrl</strong>: zoom</li>
+	  <li><strong>Mouse wheel + Shift</strong>: change picker size</li>
     </ul>
 
     <h3 id="selection-area">Selection Area</h3>
-
-    <p><img src="/TgaBuilder/Screenshots/Selection.png" alt="SelectionArea" /></p>
+    <p><img src="Screenshots/Selection.png" alt="SelectionArea" /></p>
     <ul>
+      <li>Buttons to copy entire contents from Source to Destination panels or vice versa</li>
       <li>Fill selection with chosen color</li>
-      <li>Copy selection to clipboard (<code class="language-plaintext highlighter-rouge">Ctrl + C</code>)</li>
-      <li>Paste clipboard into selection (<code class="language-plaintext highlighter-rouge">Ctrl + V</code>)</li>
+      <li>Copy selection to clipboard (<code>Ctrl + C</code>)</li>
+      <li>Paste clipboard into selection (<code>Ctrl + V</code>)</li>
       <li>Auto-copy new selections to clipboard</li>
       <li>Auto-paste clipboard into selection when it has new image data</li>
     </ul>
 
-    <h3 id="animationarea">AnimationArea</h3>
-
-    <p><img src="/TgaBuilder/Screenshots/Animation.png" alt="Animation Area" /></p>
+    <h3 id="animationarea">Animation Area</h3>
+    <p><img src="Screenshots/Animation.png" alt="Animation Area" /></p>
     <ul>
       <li>Set animation speed</li>
       <li>Start / stop animation</li>
       <li>Close animation preview</li>
     </ul>
 
-    <h3 id="import-tab-source-panel">Import Tab (Source Panel)</h3>
-
-    <p><img src="/TgaBuilder/Screenshots/TabImport.png" alt="Import Tab" /></p>
-
+    <h3 id="import-tab">Import Tab (Source Panel)</h3>
+    <p><img src="Screenshots/TabImport.png" alt="Import Tab" /></p>
     <p>From left to rigth:</p>
     <ul>
       <li>Import atlas from Classic TR levels<br />
-        <em>Supports:</em> <strong>TR1–TRC, TRLE, TRNG, partially TEN (v1.7+)</strong> (<code
-          class="language-plaintext highlighter-rouge">Ctrl + Q</code>)
+        <em>Supports:</em> <strong>TR1–TRC, TRLE, TRNG, TEN)</strong> (<code>Ctrl + Q</code>)
       </li>
-      <li>Enable remapping for imports (removes padding in TE-built atlases)
-        <img src="/TgaBuilder/Screenshots/Repacking.png" alt="Repacking" />
-      </li>
-      <li>Set horizontal page count (1, 2, 4, 8, 16 pages)
-        <img src="/TgaBuilder/Screenshots/PageSizeImport.png" alt="PageSizeImport" />
-      </li>
-      <li>Open Batch Loader (<code class="language-plaintext highlighter-rouge">Ctrl + W</code>)</li>
+      <li>Enable remapping for imports (removes padding in TE-built atlases)</li>
     </ul>
-
-    <p>Please use Imports carefully and conscientiously when building own custom levels.
-      Specifically, clarify with the creator whether you are authorised to use custom assets.
-      If in doubt, use assets that are guaranteed to be acceptable for use in your own custom levels instead.
-      Please also note that this tool is licensed under the MIT licence.</p>
+    <p><img src="Screenshots/Repacking.png" alt="Repacking" /></p>
+    <ul>
+      <li>Set horizontal page count (1, 2, 4, 8, 16 pages)</li>
+    </ul>
+    <p><img src="Screenshots/PageSizeImport.png" alt="PageSizeImport" /></p>
+    <ul>
+      <li>Open Batch Loader (<code>Ctrl + W</code>)</li>
+    </ul>
+    <p>Please use Imports carefully and conscientiously when building own custom levels…</p>
 
     <h3 id="batch-file-loader">Batch File Loader</h3>
-
-    <p><img src="/TgaBuilder/Screenshots/BatchLoader.png" alt="Batch Loader" /></p>
+    <p><img src="Screenshots/BatchLoader.png" alt="Batch Loader" /></p>
     <ul>
       <li>Import multiple image files from folder<br />
         <em>Supported formats:</em> <strong>TGA, DDS, PNG, BMP, JPG, JPEG</strong>
@@ -255,86 +235,60 @@
       <li>Define square resize size for textures</li>
     </ul>
 
-    <h3 id="grid-tab-source-panel">Grid Tab (Source Panel)</h3>
-
-    <p><img src="/TgaBuilder/Screenshots/TabGrid.png" alt="Grid Tab" /></p>
-
-    <p>From left to rigth:</p>
-    <ul>
-      <li>Toggle grid on/off</li>
-      <li>Change layout</li>
-      <li>Set picker size: <strong>8, 16, 32, 64, 128, 256 px</strong></li>
-    </ul>
-
-    <h3 id="offset-tab-source-panel">Offset Tab (Source Panel)</h3>
-
-    <p><img src="/TgaBuilder/Screenshots/TabOffset.png" alt="Offset Tab" /></p>
-
-    <p>From left to rigth:</p>
+    <h3 id="offset-tab">Offset Tab (Source Panel)</h3>
+    <p><img src="Screenshots/TabOffset.png" alt="Offset Tab" /></p>
     <ul>
       <li>Set <strong>X offset</strong></li>
       <li>Set <strong>Y offset</strong></li>
       <li>Reset offset</li>
+      <li>Toggle grid on/off</li>
+      <li>Change layout</li>
     </ul>
 
-    <h3 id="alpha-tab-source-panel">Alpha Tab (Source Panel)</h3>
-
-    <p><img src="/TgaBuilder/Screenshots/TabAlpha.png" alt="Alpha Tab" /></p>
-
-    <p>From left to rigth:</p>
+    <h3 id="format-tab">Format Tab (Source and Destination Panel)</h3>
+    <p>This tab allows you to modify the format of the destination texture panel…</p>
+    <p><img src="Screenshots/TabFormat.png" alt="Format Tab" /></p>
     <ul>
-      <li>Restore original image</li>
-      <li>Replace selected color with <strong>magenta</strong></li>
-      <li>Use eyedropper to set color to replace</li>
-      <li>Auto-apply magenta replacement for new selections</li>
+      <li>BPP toggle</li>
+      <li>Eyedropper to set color to replace</li>
+      <li>Selected color to replace</li>
+      <li>Replace selected color with <strong>magenta</strong> or <strong>transparency</strong></li>
+      <li>Auto-apply magenta or transparency replacement for new selections</li>
     </ul>
+    <p><img src="Screenshots/Format.png" alt="Format" /></p>
 
-    <h3 id="view-tab-source-and-destination-panel">View Tab (Source and Destination Panel)</h3>
-
-    <p><img src="/TgaBuilder/Screenshots/TabView.png" alt="View Tab" /></p>
-
-    <p>From left to rigth:</p>
+    <h3 id="view-tab">View Tab (Source and Destination Panel)</h3>
+    <p><img src="Screenshots/TabView.png" alt="View Tab" /></p>
     <ul>
       <li>Fit panel <strong>width</strong> to viewport</li>
       <li>Fit panel <strong>height</strong> to viewport</li>
       <li>Set zoom to <strong>100%</strong></li>
     </ul>
 
-    <h3 id="placing-tab-destination-panel">Placing Tab (Destination Panel)</h3>
-
-    <p>From left to rigth:</p>
-
-    <p><img src="/TgaBuilder/Screenshots/TabPlacing.png" alt="Placing Tab" /></p>
-
-    <p>From left to rigth:</p>
+    <h3 id="placing-tab">Placing Tab (Destination Panel)</h3>
+    <p><img src="Screenshots/TabPlacing.png" alt="Placing Tab" /></p>
     <ul>
-      <li>Set target picker size: <strong>8, 16, 32, 64, 128, 256 px</strong></li>
-      <li>Enable transparent overlay (do not draw magenta/alpha 0 to destination)
-        <img src="/TgaBuilder/Screenshots/OverlayTransparent.png" alt="TransparentOverlay" />
-      </li>
-      <li>Enable <strong>Swap and Place</strong> mode (put replaced tile into selection)</li>
-      <li>Enable <strong>Resize to Picker</strong> mode (resize selection to destination picker size)</li>
+      <li>Enable <strong>Resize to Picker</strong> mode</li>
+      <li>Enable <strong>Swap and Place</strong> mode</li>
+      <li>Enable transparent overlay</li>
     </ul>
+    <p><img src="Screenshots/OverlayTransparent.png" alt="TransparentOverlay" /></p>
+    <ul>
+      <li>Set <strong>Opacity</strong> for placed tile</li>
+    </ul>
+    <p><img src="Screenshots/Opacity.png" alt="Opacity" /></p>
 
-    <h3 id="size-tab-destination-panel">Size Tab (Destination Panel)</h3>
-
-    <p>From left to rigth:</p>
-
-    <p><img src="/TgaBuilder/Screenshots/TabSize.png" alt="Size Tab" /></p>
+    <h3 id="size-tab">Size Tab (Destination Panel)</h3>
+    <p><img src="Screenshots/TabSize.png" alt="Size Tab" /></p>
     <ul>
       <li>Set destination panel <strong>height</strong> (in pages, max 128 pages)</li>
-      <li>Set destination panel <strong>width</strong> (in pages, possible values 1, 2, 4, 8 or 16 pages)</li>
-      <li>Enable texture <strong>rearranging during width changes</strong>
-        <img src="/TgaBuilder/Screenshots/ResizeSorted.png" alt="TextureRearanging" />
-      </li>
+      <li>Set destination panel <strong>width</strong> (1, 2, 4, 8 or 16 pages)</li>
+      <li>Enable texture <strong>rearranging during width changes</strong></li>
     </ul>
+    <p><img src="Screenshots/ResizeSorted.png" alt="Texture Rearranging" /></p>
 
-    <h3 id="mode-tab-destination-panel">Mode Tab (Destination Panel)</h3>
-
-    <p>Same functions as in TBuilder.
-      From left to rigth:</p>
-
-    <p><img src="/TgaBuilder/Screenshots/TabMode.png" alt="Mode Tab" /></p>
+    <h3 id="mode-tab">Mode Tab (Destination Panel)</h3>
+    <p><img src="Screenshots/TabMode.png" alt="Mode Tab" /></p>
     <ul>
       <li>Standard tile placing</li>
       <li>Rotate tile</li>
@@ -343,26 +297,6 @@
       <li><strong>Tile Rally mode</strong>: move one tile and shift all tiles inbetween</li>
       <li><strong>Swap Tile mode</strong>: swap two tiles</li>
     </ul>
-
-    <h3 id="format-tab-destination-panel">Format Tab (Destination Panel)</h3>
-
-    <p>This tab allows you to modify the format of the destination texture panel. TgaBuilder now fully supports the
-      opening, modification and writing of both <strong>24-bit</strong> and <strong>32-bit</strong> pixel formats.</p>
-
-    <p><img src="/TgaBuilder/Screenshots/TabFormat.png" alt="Format Tab" /></p>
-
-    <p>The tab setting will be set automatically depending on the input after loading. You can then set it manually if
-      you wish. If you select <strong>RGB 24 BPP</strong>, magenta will be used for transparent parts. If you select
-      <strong>BGRA 32 BPP</strong>, you will have a real alpha channel. Switching between the two settings will set the
-      pixel values appropriately (e.g. alpha = 0 areas will be converted to magenta areas, and so on).
-    </p>
-
-    <p><img src="/TgaBuilder/Screenshots/Format.png" alt="Format" /></p>
-
-    <p>Switching from <strong>BGRA 32 BPP</strong> to <strong>RGB 24 BPP</strong> will set the magenta colour correctly,
-      but since pixels with an alpha value other than <strong>0</strong> or <strong>255</strong> are not supported by
-      <strong>RGB 24 BPP</strong>, information will be lost, possibly making the switching step irreversible.
-    </p>
 
 
     <h3 id="keyboard-shortcuts">Keyboard Shortcuts</h3>

@@ -10,7 +10,7 @@ namespace TgaBuilderWpfUi.View
     {
         public ZoomPanel GetPanelFromImage(Image image)
         {
-            if ((_imagePanelDict ??= []).TryGetValue(image, out var panel))
+            if ((_imagePanelDict ??= new()).TryGetValue(image, out var panel))
                 return panel;
             else
             {

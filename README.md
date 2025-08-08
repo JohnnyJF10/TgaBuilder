@@ -94,10 +94,12 @@ Please note that, as a .net WPF tool, TgaBuilder has significantly higher system
 - **Left click + Ctrl + drag**: move panel
 - **Mouse wheel**: scroll vertically
 - **Mouse wheel + Ctrl**: zoom
+- **Mouse wheel + Shift**: change picker size
 
 ### Selection Area
 
 ![SelectionArea](Screenshots/Selection.png)
+- Buttons to copy entire contents from Source to Destination panels or vice versa
 - Fill selection with chosen color 
 - Copy selection to clipboard (`Ctrl + C`)
 - Paste clipboard into selection (`Ctrl + V`)
@@ -117,7 +119,7 @@ Please note that, as a .net WPF tool, TgaBuilder has significantly higher system
 
 From left to rigth:
 - Import atlas from Classic TR levels  
-  _Supports:_ **TR1–TRC, TRLE, TRNG, partially TEN (v1.7+)** (`Ctrl + Q`)
+  _Supports:_ **TR1–TRC, TRLE, TRNG, TEN** (`Ctrl + Q`)
 - Enable remapping for imports (removes padding in TE-built atlases)
 ![Repacking](Screenshots/Repacking.png)
 - Set horizontal page count (1, 2, 4, 8, 16 pages)
@@ -141,15 +143,6 @@ Please also note that this tool is licensed under the MIT licence.
   - **Number of Textures**
 - Define square resize size for textures
 
-### Grid Tab (Source Panel)
-
-![Grid Tab](Screenshots/TabGrid.png)
-
-From left to rigth:
-- Toggle grid on/off
-- Change layout
-- Set picker size: **8, 16, 32, 64, 128, 256 px**
-
 ### Offset Tab (Source Panel)
 
 ![Offset Tab](Screenshots/TabOffset.png)
@@ -158,16 +151,27 @@ From left to rigth:
 - Set **X offset**
 - Set **Y offset**
 - Reset offset
+- Toggle grid on/off
+- Change layout
 
-### Alpha Tab (Source Panel)
+### Format Tab (Source and Destination Panel)
 
-![Alpha Tab](Screenshots/TabAlpha.png)
+This tab allows you to modify the format of the destination texture panel. TgaBuilder now fully supports the opening, modification and writing of both **24-bit** and **32-bit** pixel formats.
+
+![Format Tab](Screenshots/TabFormat.png)
 
 From left to rigth:
-- Restore original image
-- Replace selected color with **magenta**
-- Use eyedropper to set color to replace
-- Auto-apply magenta replacement for new selections
+- BPP toggle
+- Eyedropper to set color to replace
+- Selected color to replace
+- Replace selected color with **magenta** or **transparency**
+- Auto-apply magenta or transparency replacement for new selections
+
+The BPP toggle will be set automatically depending on the input after loading. You can then set it manually if you wish. If you select **RGB 24 BPP**, magenta will be used for transparent parts. If you select **BGRA 32 BPP**, you will have a real alpha channel. Switching between the two settings will set the pixel values appropriately (e.g. alpha = 0 areas will be converted to magenta areas, and so on).
+
+![Format](Screenshots/Format.png)
+
+Switching from **BGRA 32 BPP** to **RGB 24 BPP** will set the magenta colour correctly, but since pixels with an alpha value other than **0** or **255** are not supported by **RGB 24 BPP**, information will be lost, possibly making the switching step irreversible.
 
 ### View Tab (Source and Destination Panel)
 
@@ -185,11 +189,13 @@ From left to rigth:
 ![Placing Tab](Screenshots/TabPlacing.png)
 
 From left to rigth:
-- Set target picker size: **8, 16, 32, 64, 128, 256 px**
+- Enable **Resize to Picker** mode (resize selection to destination picker size)
+- Enable **Swap and Place** mode (put replaced tile into selection)
 - Enable transparent overlay (do not draw magenta/alpha 0 to destination)
 ![TransparentOverlay](Screenshots/OverlayTransparent.png)
-- Enable **Swap and Place** mode (put replaced tile into selection)
-- Enable **Resize to Picker** mode (resize selection to destination picker size)
+- Set **Opacity** for placed tile
+![Opacity](Screenshots/Opacity.png)
+
 
 ### Size Tab (Destination Panel)
 
@@ -213,19 +219,6 @@ From left to rigth:
 - Mirror tile **vertically**
 - **Tile Rally mode**: move one tile and shift all tiles inbetween
 - **Swap Tile mode**: swap two tiles
-
-### Format Tab (Destination Panel)
-
-This tab allows you to modify the format of the destination texture panel. TgaBuilder now fully supports the opening, modification and writing of both **24-bit** and **32-bit** pixel formats.
-
-![Format Tab](Screenshots/TabFormat.png)
-
-The tab setting will be set automatically depending on the input after loading. You can then set it manually if you wish. If you select **RGB 24 BPP**, magenta will be used for transparent parts. If you select **BGRA 32 BPP**, you will have a real alpha channel. Switching between the two settings will set the pixel values appropriately (e.g. alpha = 0 areas will be converted to magenta areas, and so on).
-
-
-![Format](Screenshots/Format.png)
-
-Switching from **BGRA 32 BPP** to **RGB 24 BPP** will set the magenta colour correctly, but since pixels with an alpha value other than **0** or **255** are not supported by **RGB 24 BPP**, information will be lost, possibly making the switching step irreversible.
 
 ### Keyboard Shortcuts
 | Key Combination    | Description                                               |

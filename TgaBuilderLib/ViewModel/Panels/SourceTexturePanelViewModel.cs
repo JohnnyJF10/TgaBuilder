@@ -50,22 +50,17 @@ namespace TgaBuilderLib.ViewModel
 
         public VisualGridViewModel VisualGrid { get; set; }
 
-        public override string PanelStatement
-            => $"{Presenter.PixelWidth} x {Presenter.PixelHeight} px, {Presenter.Format.BitsPerPixel} bpp";
+        public override string PanelInfo
+            => $"{Presenter.PixelWidth} x {Presenter.PixelHeight}px, {Presenter.Format.BitsPerPixel}bpp";
+
+        public override string PanelHelp
+            => $"Source Panel: Left: Select, Right: Animate, Alt: Free selecting, Double Left: Move Grid";
 
         public override double Zoom
         {
             get => _zoom;
             set => SetZoom(value);
         }
-
-        public int SelectedPickerSize
-        {
-            get => Picker.Size;
-            set => SetSelectedPickerSize(value);
-        }
-
-        internal bool ReplaceColorEnabled { get; set; }
 
         internal override bool CanScroll 
             => IsDragging || IsRightDragging || _eyeDropper.IsActive;
@@ -97,7 +92,6 @@ namespace TgaBuilderLib.ViewModel
 
             RefreshPresenter();
             OnPresenterChanged();
-            OnPropertyChanged(nameof(PanelStatement));
             Debug.WriteLine($"Presenter set to {bitmap.PixelWidth}x{bitmap.PixelHeight} pixels.");
         }
 
@@ -111,7 +105,6 @@ namespace TgaBuilderLib.ViewModel
             _zoom = zoom;
 
             ThicknessUpdate(zoom);
-            OnPropertyChanged(nameof(Zoom));
         }
 
         public override void MouseEnter() 
@@ -122,55 +115,58 @@ namespace TgaBuilderLib.ViewModel
 
         public override void MouseLeave() => TerminateAllUserActions();
 
-        public override void MouseMove(int x, int y)
+        public override void MouseMove()
         {
-            if (VisualGrid.OffsetX > 0)
-                x = Math.Clamp(x, VisualGrid.OffsetX, Presenter.PixelWidth - 2 * VisualGrid.CellSize + VisualGrid.OffsetX);
-            if (VisualGrid.OffsetY > 0)
-                y = Math.Clamp(y, VisualGrid.OffsetY, Presenter.PixelHeight - 2 * VisualGrid.CellSize + VisualGrid.OffsetY);
+            int x = VisualGrid.OffsetX > 0
+                ? Math.Clamp(XPointer, VisualGrid.OffsetX, Presenter.PixelWidth - 2 * VisualGrid.CellSize + VisualGrid.OffsetX) 
+                : XPointer;
+
+            int y = VisualGrid.OffsetY > 0
+                ? Math.Clamp(YPointer, VisualGrid.OffsetY, Presenter.PixelHeight - 2 * VisualGrid.CellSize + VisualGrid.OffsetY)
+                : YPointer;
 
             Picker.IsVisible = true;
             Picker.X = (x - VisualGrid.OffsetX & ~(Picker.Size - 1)) + VisualGrid.OffsetX;
             Picker.Y = (y - VisualGrid.OffsetY & ~(Picker.Size - 1)) + VisualGrid.OffsetY;
         }
 
-        public override void AltMove(int x, int y)
+        public override void AltMove()
         {
             IsGridlessMode = true;
             Picker.IsVisible = true;
-            Picker.X = x;
-            Picker.Y = y;
+            Picker.X = XPointer;
+            Picker.Y = YPointer;
         }
 
-        public override void Drag(int x, int y)
+        public override void Drag()
         {
-            int xGrid = ((x - VisualGrid.OffsetX) & ~(Picker.Size - 1)) + VisualGrid.OffsetX;
-            int yGrid = ((y - VisualGrid.OffsetY) & ~(Picker.Size - 1)) + VisualGrid.OffsetY;
+            _xGrid = ((XPointer - VisualGrid.OffsetX) & ~(Picker.Size - 1)) + VisualGrid.OffsetX;
+            _yGrid = ((YPointer - VisualGrid.OffsetY) & ~(Picker.Size - 1)) + VisualGrid.OffsetY;
 
             IsDragging = true;
             Picker.IsVisible = false;
             SelectionShape.IsVisible = true;
 
             if (VisualGrid.OffsetX == 0)
-                SetSelectionHorizontal(xGrid);
+                SetSelectionHorizontal();
             else
-                SetSelectionSizeWithOffsetHor(xGrid);
+                SetSelectionSizeWithOffsetHor();
 
             if (VisualGrid.OffsetY == 0)
-                SetSelectionVertical(yGrid);
+                SetSelectionVertical();
             else
-                SetSelectionSizeWithOffsetVer(yGrid);
+                SetSelectionSizeWithOffsetVer();
         }
 
-        public override void AltDrag(int x, int y)
+        public override void AltDrag()
         {
             IsDragging = true;
 
             SelectionShape.IsVisible = true;
-            SetSelectionSizeGridless(x, y);
+            SetSelectionSizeGridless();
         }
 
-        public override void DoubleDrag(int x, int y)
+        public override void DoubleDrag()
         {
             if (Picker.Size >= Presenter.PixelHeight || Picker.Size >= Presenter.PixelWidth)
                 return;
@@ -192,8 +188,8 @@ namespace TgaBuilderLib.ViewModel
             Picker.IsVisible = false;
 
             VisualGrid.IsVisible = true;
-            VisualGrid.OffsetX = x % VisualGrid.CellSize;
-            VisualGrid.OffsetY = y % VisualGrid.CellSize;
+            VisualGrid.OffsetX = XPointer % VisualGrid.CellSize;
+            VisualGrid.OffsetY = YPointer % VisualGrid.CellSize;
         }
 
         public override void DragEnd()
@@ -216,51 +212,42 @@ namespace TgaBuilderLib.ViewModel
         public override void DoubleDragEnd()
         {
             _isGridDragging = false;
+            IsDragging = false;
             VisualGrid.IsVisible = false;
         }
 
-        public override void RightDrag(int x, int y) => ManageAnimSelectShape(x, y);
+        public override void RightDrag() => ManageAnimSelectShape();
 
         public override void RightDragEnd() => SetupAnimation();
 
-        internal override void SetSelection()
-        {
-            if (ReplaceColorEnabled)
-                Selection.Presenter = _bitmapOperations.CropBitmap(
-                    source:         Presenter,
-                    rectangle:      new Int32Rect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height),
-                    replacedColor:  _eyeDropper.Color,
-                    newColor:       Color.FromRgb(255, 0, 255));
-            else
-                Selection.Presenter = _bitmapOperations.CropBitmap(
-                    source:     Presenter, 
-                    rectangle:  new Int32Rect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height));
-            Selection.IsPlacing = true;
-        }
+        public override void ReplaceColor() => ReplaceColorBase();
 
-        public void SetSelectedPickerSize(int value)
+        public override void ConvertToBgra32() => ConvertToBgra32Base();
+
+        public override void ConvertToRgb24() => ConvertToRgb24Base();
+
+        internal override void SetSelection() => SetSelectionBase();
+
+        internal override void SetSelectedPickerSize(int size)
         {
-            if (value == Picker.Size)
+            if (size == Picker.Size)
                 return;
 
             if ((VisualGrid.OffsetX > 0 || VisualGrid.OffsetY > 0)
-                && (NextHigherPowerOfTwo(value) >= Presenter.PixelWidth || NextHigherPowerOfTwo(value) >= Presenter.PixelHeight))
+                && (NextHigherPowerOfTwo(size) >= Presenter.PixelWidth || NextHigherPowerOfTwo(size) >= Presenter.PixelHeight))
                 return;
 
-            Picker.Size = value;
+            Picker.Size = size;
+            Picker.X = (XPointer - VisualGrid.OffsetX & ~(Picker.Size - 1)) + VisualGrid.OffsetX;
+            Picker.Y = (YPointer - VisualGrid.OffsetY & ~(Picker.Size - 1)) + VisualGrid.OffsetY;
+
 
             VisualGrid.CellSize = Picker.Size;
 
-            OnCallerPropertyChanged();
+            OnPropertyChanged(nameof(SelectedPickerSize));
         }
 
 
-        public void PresenterColorReplace()
-        {
-            if (Presenter == null) return;
-            var res = _bitmapOperations.ReplaceColor(Presenter, _eyeDropper.Color, Color.FromRgb(255, 0, 255));
-            SetPresenter(res);
-        }
 
         private void ThicknessUpdate(double value)
         {
@@ -270,61 +257,47 @@ namespace TgaBuilderLib.ViewModel
             VisualGrid.StrokeThickness = 2 / value;
         }
 
-        private bool SelectionOutOfBounds(int x, int y)
-            => VisualGrid.OffsetX > 0 && 
-            (x < VisualGrid.OffsetX || x >= Presenter.PixelWidth - VisualGrid.CellSize + VisualGrid.OffsetX) ||
-            VisualGrid.OffsetY > 0 && 
-            (y < VisualGrid.OffsetY || y >= Presenter.PixelHeight - VisualGrid.CellSize + VisualGrid.OffsetY);
-
-        private bool SelectionOutOfBoundsX(int x)
-            => VisualGrid.OffsetX > 0 &&
-            (x < VisualGrid.OffsetX || x >= Presenter.PixelWidth - VisualGrid.CellSize + VisualGrid.OffsetX);
-
-        private bool SelectionOutOfBoundsY(int y)
-            => VisualGrid.OffsetY > 0 &&
-            (y < VisualGrid.OffsetY || y >= Presenter.PixelHeight - VisualGrid.CellSize + VisualGrid.OffsetY);
-
-        private void SetSelectionSizeGridless(int x, int y)
+        private void SetSelectionSizeGridless()
         {
-            SelectionShape.Width = x - Picker.X > 0
-                ? x - Picker.X
-                : Picker.X - x;
-            SelectionShape.X = (x - Picker.X > 0)
+            SelectionShape.Width = XPointer - Picker.X > 0
+                ? XPointer - Picker.X
+                : Picker.X - XPointer;
+            SelectionShape.X = (XPointer - Picker.X > 0)
                 ? Picker.X
                 : Picker.X - SelectionShape.Width;
 
-            SelectionShape.Height = y - Picker.Y > 0
-                ? y - Picker.Y
-                : Picker.Y - y;
-            SelectionShape.Y = (y - Picker.Y > 0)
+            SelectionShape.Height = YPointer - Picker.Y > 0
+                ? YPointer - Picker.Y
+                : Picker.Y - YPointer;
+            SelectionShape.Y = (YPointer - Picker.Y > 0)
                 ? Picker.Y
                 : Picker.Y - SelectionShape.Height;
         }
 
-        private void SetSelectionSizeWithOffsetHor(int x)
+        private void SetSelectionSizeWithOffsetHor()
         {
-            SelectionShape.Width = x - Picker.X > 0
-                ? Math.Clamp(Picker.Size + x - Picker.X, 
+            SelectionShape.Width = _xGrid > Picker.X
+                ? Math.Clamp(Picker.Size + _xGrid - Picker.X, 
                 0, Presenter.PixelWidth - Picker.X - Picker.Size + VisualGrid.OffsetX)
-                : Math.Clamp(Picker.Size + Picker.X - x, 
+                : Math.Clamp(Picker.Size + Picker.X - _xGrid, 
                 0, Picker.X - VisualGrid.OffsetX + Picker.Size);
 
-            SelectionShape.X = (x - Picker.X > 0)
+            SelectionShape.X = _xGrid > Picker.X
                 ? Math.Clamp(Picker.X, 
                 VisualGrid.OffsetX, Presenter.PixelWidth - 2 * Picker.Size + VisualGrid.OffsetX)
                 : Math.Clamp(Picker.Size + Picker.X - SelectionShape.Width, 
                 VisualGrid.OffsetX, Presenter.PixelWidth - 2 * Picker.Size + VisualGrid.OffsetX);
         }
 
-        private void SetSelectionSizeWithOffsetVer(int y)
+        private void SetSelectionSizeWithOffsetVer()
         {
-            SelectionShape.Height = y - Picker.Y > 0
-                ? Math.Clamp(Picker.Size + y - Picker.Y,
+            SelectionShape.Height = _yGrid > Picker.Y
+                ? Math.Clamp(Picker.Size + _yGrid - Picker.Y,
                 0, Presenter.PixelHeight - Picker.Y - Picker.Size + VisualGrid.OffsetY)
-                : Math.Clamp(Picker.Size + Picker.Y - y,
+                : Math.Clamp(Picker.Size + Picker.Y - _yGrid,
                 0, Picker.Y - VisualGrid.OffsetY + Picker.Size);
 
-            SelectionShape.Y = (y - Picker.Y > 0)
+            SelectionShape.Y = _yGrid > Picker.Y
                 ? Math.Clamp(Picker.Y,
                 VisualGrid.OffsetY, Presenter.PixelHeight - 2 * Picker.Size + VisualGrid.OffsetY)
                 : Math.Clamp(Picker.Size + Picker.Y - SelectionShape.Height,

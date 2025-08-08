@@ -30,10 +30,10 @@ namespace TgaBuilderLib.BitmapOperations
             colorBytes = format switch
             {
                 PixelFormat f when f == PixelFormats.Rgb24 
-                    => [ColorToFill.R, ColorToFill.G, ColorToFill.B],
+                    => new byte[] {ColorToFill.R, ColorToFill.G, ColorToFill.B },
 
                 PixelFormat f when f == PixelFormats.Bgra32
-                    => [ColorToFill.B, ColorToFill.G, ColorToFill.R, ColorToFill.A],
+                    => new byte[] { ColorToFill.B, ColorToFill.G, ColorToFill.R, ColorToFill.A },
 
                 _ => throw new NotSupportedException($"Unsupported pixel format: {format}"),
             };

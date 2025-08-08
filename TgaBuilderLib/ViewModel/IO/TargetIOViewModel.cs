@@ -111,6 +111,7 @@ namespace TgaBuilderLib.ViewModel
             _panel.RefreshPresenter();
 
             _lastFilePath = string.Empty;
+            OnPropertyChanged(nameof(LastFileName));
 
             _undoRedoManager.ClearAllNewFile();
         }
@@ -263,6 +264,8 @@ namespace TgaBuilderLib.ViewModel
             }
 
             _lastFilePath = fileName;
+            OnPropertyChanged(nameof(LastFileName));
+
             _usageData.AddRecentOutputFile(fileName);
 
             _undoRedoManager.TakeStatusSnapshot();

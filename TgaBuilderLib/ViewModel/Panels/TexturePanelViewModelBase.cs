@@ -52,6 +52,9 @@ namespace TgaBuilderLib.ViewModel
 
         protected WriteableBitmap _presenter;
 
+        protected int _xGrid;
+        protected int _yGrid;
+
         public bool IsDragging { get; set; }
         public bool IsRightDragging { get; set; }
 
@@ -68,11 +71,23 @@ namespace TgaBuilderLib.ViewModel
         }
         public Color AlphaColor { get; set; } = Colors.Magenta;
 
+        internal bool ReplaceColorEnabled { get; set; }
+
 
         public event EventHandler? PresenterChanged;
 
+        public string PixelInfo => $"{XPointer}, {YPointer}px";
 
-        public abstract string PanelStatement { get; }
+        public string TileInfo => SelectionShape.IsVisible 
+            ? $"{SelectionShape.Width / Picker.Size}, {SelectionShape.Height / Picker.Size}"
+            : $"{Picker.X / Picker.Size + 1}, {Picker.Y / Picker.Size + 1}";
+
+
+        public abstract string PanelInfo { get; }
+        public abstract string PanelHelp { get; }
+
+
+
         public abstract double Zoom { get; set; }
 
         internal abstract bool CanScroll { get; }
@@ -83,24 +98,34 @@ namespace TgaBuilderLib.ViewModel
         public abstract void MouseEnter();
         public abstract void MouseLeave();
 
-        public abstract void MouseMove(int x, int y);
-        public abstract void Drag(int x, int y);
+        public abstract void MouseMove();
+        public abstract void Drag();
         public abstract void DragEnd();
 
-        public abstract void RightDrag(int x, int y);
+        public abstract void RightDrag();
         public abstract void RightDragEnd();
 
-        public abstract void DoubleDrag(int x, int y);
+        public abstract void DoubleDrag();
         public abstract void DoubleDragEnd();
 
-        public abstract void AltMove(int x, int y);
-        public abstract void AltDrag(int x, int y);
+        public abstract void AltMove();
+        public abstract void AltDrag();
 
         internal abstract void SetSelection();
 
-        public void EyedropperMove(int x, int y)
+        public abstract void ConvertToBgra32();
+        public abstract void ConvertToRgb24();
+        public abstract void ReplaceColor();
+
+        internal abstract void SetSelectedPickerSize(int size);
+
+
+        public int XPointer { get; set; }
+        public int YPointer { get; set; }
+
+        public void EyedropperMove()
         {
-            _eyeDropper.Color = _bitmapOperations.GetPixelBrush(_presenter, x, y);
+            _eyeDropper.Color = _bitmapOperations.GetPixelBrush(_presenter, XPointer, YPointer);
         }
 
         public void EyedropperEnd()
@@ -109,10 +134,17 @@ namespace TgaBuilderLib.ViewModel
             AlphaColor = _eyeDropper.Color;
         }
 
-        public void ManageAnimSelectShape(int x, int y)
+        public int SelectedPickerSize
         {
-            int xGrid = x & ~(Picker.Size - 1);
-            int yGrid = y & ~(Picker.Size - 1);
+            get => Picker.Size;
+            set => SetSelectedPickerSize(value);
+        }
+
+
+        public void ManageAnimSelectShape()
+        {
+            int xGrid = XPointer & ~(Picker.Size - 1);
+            int yGrid = YPointer & ~(Picker.Size - 1);
 
             if (!IsRightDragging)
                 AnimSelectShape.SetInitialsCoordinates(xGrid, yGrid);
@@ -134,12 +166,26 @@ namespace TgaBuilderLib.ViewModel
                 spriteSheet: Presenter,
                 anchor1: (AnimSelectShape.InitialTexX, AnimSelectShape.InitialTexY),
                 anchor2: (AnimSelectShape.CurrentTexX, AnimSelectShape.CurrentTexY),
-                tileSize: Picker.Size
-                );
+                tileSize: Picker.Size);
         }
 
         protected void OnPresenterChanged()
             => PresenterChanged?.Invoke(this, EventArgs.Empty);
+
+        protected void SetSelectionBase()
+        {
+            if (ReplaceColorEnabled)
+                Selection.Presenter = _bitmapOperations.CropBitmap(
+                    source: Presenter,
+                    rectangle: new Int32Rect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height),
+                    replacedColor: _eyeDropper.Color,
+                    newColor: Presenter.Format.BitsPerPixel == 24 ? Color.FromRgb(255, 0, 255) : Color.FromArgb(0, 0, 0, 0));
+            else
+                Selection.Presenter = _bitmapOperations.CropBitmap(
+                    source: Presenter,
+                    rectangle: new Int32Rect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height));
+            Selection.IsPlacing = true;
+        }
 
         public void RefreshPresenter()
         {
@@ -148,24 +194,56 @@ namespace TgaBuilderLib.ViewModel
             Presenter.Unlock();
         }
 
-        protected void SetSelectionHorizontal(int x)
+        protected void SetSelectionHorizontal()
         {
-            SelectionShape.Width = x - Picker.X > 0
-                ? Picker.Size + x - Picker.X
-                : Picker.Size + Picker.X - x;
-            SelectionShape.X = (x - Picker.X > 0)
+            SelectionShape.Width = _xGrid > Picker.X
+                ? Picker.Size + _xGrid - Picker.X
+                : Picker.Size + Picker.X - _xGrid;
+            SelectionShape.X = _xGrid > Picker.X
                 ? Picker.X
                 : Picker.Size + Picker.X - SelectionShape.Width;
         }
 
-        protected void SetSelectionVertical(int y)
+        protected void SetSelectionVertical()
         {
-            SelectionShape.Height = y - Picker.Y > 0
-                ? Picker.Size + y - Picker.Y
-                : Picker.Size + Picker.Y - y;
-            SelectionShape.Y = (y - Picker.Y > 0)
+            SelectionShape.Height = _yGrid > Picker.Y
+                ? Picker.Size + _yGrid - Picker.Y
+                : Picker.Size + Picker.Y - _yGrid;
+            SelectionShape.Y = _yGrid > Picker.Y
                 ? Picker.Y
                 : Picker.Size + Picker.Y - SelectionShape.Height;
+        }
+
+        protected void ReplaceColorBase()
+        {
+            if (Presenter == null) return;
+            var res = _bitmapOperations.ReplaceColor(
+                source:         Presenter,
+                replacedColor:  _eyeDropper.Color,
+                newColor:       Presenter.Format.BitsPerPixel == 24 ? Color.FromRgb(255, 0, 255) : Color.FromArgb(0, 0, 0, 0));
+            SetPresenter(res);
+        }
+
+        protected void ConvertToBgra32Base()
+        {
+            if (Presenter.Format == PixelFormats.Bgra32)
+                return;
+
+            Presenter = _bitmapOperations.ConvertRGB24ToBGRA32(Presenter);
+
+            OnPropertyChanged(nameof(Presenter));
+            OnPropertyChanged(nameof(PanelHelp));
+        }
+
+        protected void ConvertToRgb24Base()
+        {
+            if (Presenter.Format == PixelFormats.Rgb24)
+                return;
+
+            Presenter = _bitmapOperations.ConvertBGRA32ToRGB24(Presenter);
+
+            OnPropertyChanged(nameof(Presenter));
+            OnPropertyChanged(nameof(PanelHelp));
         }
 
         protected void TerminateAllUserActions()

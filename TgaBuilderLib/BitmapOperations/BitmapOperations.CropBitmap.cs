@@ -57,13 +57,19 @@ namespace TgaBuilderLib.BitmapOperations
             int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
             int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
 
-            WriteableBitmap target = new WriteableBitmap(recWidth, recHeight, source.DpiX, source.DpiY, PixelFormats.Rgb24, null);
+            WriteableBitmap target = new WriteableBitmap(
+                pixelWidth:  recWidth,
+                pixelHeight: recHeight,
+                dpiX:        source.DpiX,
+                dpiY:        source.DpiY,
+                pixelFormat: source.Format,
+                palette:     null);
 
             source.Lock();
             target.Lock();
 
             byte r, g, b, a = 255;
-            int sourceBbp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
+            int bpp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
 
             unsafe
             {
@@ -72,42 +78,57 @@ namespace TgaBuilderLib.BitmapOperations
 
                 for (int y = 0; y < recHeight; y++)
                 {
-                    byte* srcRow = srcPtr + (y + rectY) * source.BackBufferStride + sourceBbp * rectX;
+                    byte* srcRow = srcPtr + (y + rectY) * source.BackBufferStride + bpp * rectX;
                     byte* resRow = resPtr + y * target.BackBufferStride;
 
                     for (int x = 0; x < recWidth; x++)
                     {
-                        if (source.Format == PixelFormats.Bgra32)
+                        if (bpp == 4)
                         {
                             b = srcRow[0];
                             g = srcRow[1];
                             r = srcRow[2];
                             a = srcRow[3];
+
+                            if (a == 0 || (replacedColor.R, replacedColor.G, replacedColor.B, replacedColor.A) == (r, g, b, a))
+                            {
+                                // Replace with new color  
+                                resRow[0] = newColor.B; // B  
+                                resRow[1] = newColor.G; // G  
+                                resRow[2] = newColor.R; // R  
+                                resRow[3] = newColor.A; // A  
+                            }
+                            else
+                            {
+                                resRow[0] = b; // B  
+                                resRow[1] = g; // G  
+                                resRow[2] = r; // R  
+                                resRow[3] = a; // A  
+                            }
                         }
                         else
                         {
                             r = srcRow[0];
                             g = srcRow[1];
                             b = srcRow[2];
+
+                            if (a == 0 || (replacedColor.R, replacedColor.G, replacedColor.B) == (r, g, b))
+                            {
+                                // Replace with new color  
+                                resRow[0] = newColor.R; // R  
+                                resRow[1] = newColor.G; // G  
+                                resRow[2] = newColor.B; // B  
+                            }
+                            else
+                            {
+                                resRow[0] = r; // R  
+                                resRow[1] = g; // G  
+                                resRow[2] = b; // B  
+                            }
                         }
 
-                        if (a == 0 ||
-                            (replacedColor.R == r && replacedColor.G == g && replacedColor.B == b))
-                        {
-                            // Replace with new color  
-                            resRow[0] = newColor.R; // R  
-                            resRow[1] = newColor.G; // G  
-                            resRow[2] = newColor.B; // B  
-                        }
-                        else
-                        {
-                            resRow[0] = r; // R  
-                            resRow[1] = g; // G  
-                            resRow[2] = b; // B  
-                        }
-
-                        srcRow += sourceBbp;
-                        resRow += 3; 
+                        srcRow += bpp;
+                        resRow += bpp; 
                     }
                 }
             }

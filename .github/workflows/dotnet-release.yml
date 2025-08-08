@@ -9,17 +9,20 @@ jobs:
 
     outputs:
       tag: ${{ steps.meta.outputs.tag }}
-      artifact-name: ${{ steps.meta.outputs.artifact_name }}
+      artifact-name-net6: ${{ steps.meta.outputs.artifact_name_net6 }}
+      artifact-name-net8: ${{ steps.meta.outputs.artifact_name_net8 }}
       last-commit-msg: ${{ steps.commit.outputs.message }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8
+      - name: Setup .NET SDKs
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       - name: Restore dependencies
         run: dotnet restore
@@ -33,9 +36,11 @@ jobs:
           $version = $csproj.Project.PropertyGroup.AssemblyVersion
           $shortVersion = ($version -split '\.')[0..2] -join '.'
           $tag = "v$shortVersion"
-          $artifactName = "${title}V${shortVersion}"
+          $artifactNameNet6 = "${title}-dotnet6-V${shortVersion}"
+          $artifactNameNet8 = "${title}-dotnet8-V${shortVersion}"
           echo "tag=$tag" >> $env:GITHUB_OUTPUT
-          echo "artifact_name=$artifactName" >> $env:GITHUB_OUTPUT
+          echo "artifact_name_net6=$artifactNameNet6" >> $env:GITHUB_OUTPUT
+          echo "artifact_name_net8=$artifactNameNet8" >> $env:GITHUB_OUTPUT
 
       - name: Get last commit message
         id: commit
@@ -44,56 +49,95 @@ jobs:
           $msg = git log -1 --pretty=format:"%s"
           echo "message=$msg" >> $env:GITHUB_OUTPUT
 
-      - name: Publish WPF project
+      # Build for .NET 8
+      - name: Publish .NET 8
         run: |
           dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
             -c Release `
             -f net8.0-windows `
             -r win-x64 `
             --self-contained false `
-            /p:PublishReadyToRun=true
+            /p:PublishReadyToRun=true `
+            -o publish/net8
 
-      - name: Remove .pdb files
+      - name: Remove .pdb files (.NET 8)
         run: |
-          $publishDir = "TgaBuilderWpfUi\bin\Release\net8.0-windows\win-x64\publish"
+          $publishDir = "publish/net8"
           if (Test-Path $publishDir) {
             Get-ChildItem $publishDir -Recurse -Filter *.pdb | Remove-Item -Force
           }
 
-      - name: Zip publish folder
+      - name: Zip .NET 8
         run: |
-          $zipName = "${{ steps.meta.outputs.artifact_name }}.zip"
-          Compress-Archive -Path TgaBuilderWpfUi/bin/Release/net8.0-windows/win-x64/publish/* -DestinationPath $zipName
+          $zipName = "${{ steps.meta.outputs.artifact_name_net8 }}.zip"
+          Compress-Archive -Path publish/net8/* -DestinationPath $zipName
 
-      - name: Upload ZIP as artifact
+      - name: Upload .NET 8 Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.meta.outputs.artifact_name }}
-          path: ${{ steps.meta.outputs.artifact_name }}.zip
+          name: ${{ steps.meta.outputs.artifact_name_net8 }}
+          path: ${{ steps.meta.outputs.artifact_name_net8 }}.zip
+
+      # Build for .NET 6
+      - name: Publish .NET 6
+        run: |
+          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
+            -c Release `
+            -f net6.0-windows `
+            -r win-x64 `
+            --self-contained false `
+            /p:PublishReadyToRun=true `
+            -o publish/net6
+
+      - name: Remove .pdb files (.NET 6)
+        run: |
+          $publishDir = "publish/net6"
+          if (Test-Path $publishDir) {
+            Get-ChildItem $publishDir -Recurse -Filter *.pdb | Remove-Item -Force
+          }
+
+      - name: Zip .NET 6
+        run: |
+          $zipName = "${{ steps.meta.outputs.artifact_name_net6 }}.zip"
+          Compress-Archive -Path publish/net6/* -DestinationPath $zipName
+
+      - name: Upload .NET 6 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name_net6 }}
+          path: ${{ steps.meta.outputs.artifact_name_net6 }}.zip
 
   release:
     needs: build
     runs-on: ubuntu-latest
-  
+
     permissions:
       contents: write
-  
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-  
-      - name: Download artifact
+
+      - name: Download .NET 8 Artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build.outputs.artifact-name }}
+          name: ${{ needs.build.outputs.artifact-name-net8 }}
           path: ./artifact
-  
-      - name: Create GitHub Release and upload asset
+
+      - name: Download .NET 6 Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name-net6 }}
+          path: ./artifact
+
+      - name: Create GitHub Release and upload assets
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.build.outputs.tag }}
           name: Release ${{ needs.build.outputs.tag }}
           body: ${{ needs.build.outputs.last-commit-msg }}
-          files: ./artifact/${{ needs.build.outputs.artifact-name }}.zip
+          files: |
+            ./artifact/${{ needs.build.outputs.artifact-name-net8 }}.zip
+            ./artifact/${{ needs.build.outputs.artifact-name-net6 }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

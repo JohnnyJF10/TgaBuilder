@@ -75,13 +75,15 @@ namespace TgaBuilderWpfUi.AttachedProperties
 
         private static void Image_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (Application.Current.MainWindow is MainWindow mainWindow)
+            if (sender is Image image && Application.Current.MainWindow is MainWindow mainWindow)
             {
+                bool isDestination = GetIsTargetPanel(image);
+
                 mainWindow.CurrentImage = null;
                 mainWindow.CurrentPanel = null;
                 ICommand LeavePanelCommand = GetLeavePanelCommand(mainWindow);
-                if (LeavePanelCommand is not null && LeavePanelCommand.CanExecute(null))
-                    LeavePanelCommand.Execute(null);
+                if (LeavePanelCommand is not null && LeavePanelCommand.CanExecute(isDestination))
+                    LeavePanelCommand.Execute(isDestination);
 
                 Mouse.OverrideCursor = null;
             }
@@ -130,6 +132,40 @@ namespace TgaBuilderWpfUi.AttachedProperties
         public static bool GetIsTargetPanel(UIElement element)
         {
             return (bool)element.GetValue(IsTargetPanelProperty);
+        }
+
+        public static readonly DependencyProperty ScrollCommandProperty =
+            DependencyProperty.RegisterAttached(
+                "ScrollCommand",
+                typeof(ICommand),
+                typeof(PanelMouseAP),
+                new PropertyMetadata(null));
+
+        public static void SetScrollCommand(UIElement element, ICommand value)
+        {
+            element.SetValue(ScrollCommandProperty, value);
+        }
+
+        public static ICommand GetScrollCommand(UIElement element)
+        {
+            return (ICommand)element.GetValue(ScrollCommandProperty);
+        }
+
+        public static readonly DependencyProperty WheelShiftCommandProperty =
+            DependencyProperty.RegisterAttached(
+                "WheelShiftCommand",
+                typeof(ICommand),
+                typeof(PanelMouseAP),
+                new PropertyMetadata(null));
+
+        public static void SetWheelShiftCommand(UIElement element, ICommand value)
+        {
+            element.SetValue(WheelShiftCommandProperty, value);
+        }
+
+        public static ICommand GetWheelShiftCommand(UIElement element)
+        {
+            return (ICommand)element.GetValue(WheelShiftCommandProperty);
         }
 
     }

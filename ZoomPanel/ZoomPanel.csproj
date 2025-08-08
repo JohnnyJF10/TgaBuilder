@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup Label="Baisc Project Information">
-    <TargetFramework>net8.0-windows</TargetFramework>
-	<Nullable>enable</Nullable>
+    <TargetFrameworks>net6.0-windows;net8.0-windows</TargetFrameworks>
+	  <Nullable>enable</Nullable>
     <RootNamespace>WPF.ZoomPanel</RootNamespace>
     <AssemblyName>WPF.ZoomPanel</AssemblyName>
     <UseWPF>true</UseWPF>

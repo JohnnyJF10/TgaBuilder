@@ -53,9 +53,6 @@ namespace TgaBuilderLib.ViewModel
         internal TargetMode mode = TargetMode.Default;
         internal PlacingMode placingMode = PlacingMode.Default;
 
-        private int _xGrid;
-        private int _yGrid;
-
         private (int x, int y) _tileToShiftPos;
         private bool _isPreviewVisible;
         private bool _resizeSelectionToPicker;
@@ -67,11 +64,19 @@ namespace TgaBuilderLib.ViewModel
         public SingleSelectionShapeViewModel OriginalPosShape { get; set; }
         public SingleSelectionShapeViewModel TargetPosShape { get; set; }
 
-        public override string PanelStatement 
-            => $"{Presenter.PixelWidth} x {Presenter.PixelHeight} px " +
+        public override string PanelInfo =>
+            $"{Presenter.PixelWidth} x {Presenter.PixelHeight}px " +
             $"({Presenter.PixelWidth / Picker.Size} x {Presenter.PixelHeight / Picker.Size} = " +
             $"{Presenter.PixelWidth / Picker.Size * Presenter.PixelHeight / Picker.Size} tiles), " +
-            $"{Presenter.Format.BitsPerPixel} bpp";
+            $"{Presenter.Format.BitsPerPixel}bpp";
+
+
+        public override string PanelHelp
+            => "Destination Panel: " + (Selection.IsPlacing 
+                ? "Left: Place, Right: Discard" 
+                : "Left: Select, Right: Animate");
+
+        public double Opacity { get; set; } = 1.0;
 
         public override double Zoom
         {
@@ -117,7 +122,6 @@ namespace TgaBuilderLib.ViewModel
 
             RefreshPresenter();
             OnPresenterChanged();
-            OnPropertyChanged(nameof(PanelStatement));
             Debug.WriteLine($"Presenter set to {bitmap.PixelWidth}x{bitmap.PixelHeight} pixels.");
         }
 
@@ -178,10 +182,10 @@ namespace TgaBuilderLib.ViewModel
             TargetPosShape.IsVisible = false;
         }
 
-        public override void MouseMove(int x, int y)
+        public override void MouseMove()
         {
-            Picker.X = x & ~(Picker.Size - 1);
-            Picker.Y = y & ~(Picker.Size - 1);
+            Picker.X = XPointer & ~(Picker.Size - 1);
+            Picker.Y = YPointer & ~(Picker.Size - 1);
 
             if (mode >= TargetMode.TileSwapping && Selection.IsPlacing)
             {
@@ -190,7 +194,7 @@ namespace TgaBuilderLib.ViewModel
             }
         }
 
-        public override void Drag(int x, int y)
+        public override void Drag()
         {
             if (mode != TargetMode.Default) return;
 
@@ -200,11 +204,11 @@ namespace TgaBuilderLib.ViewModel
             IsDragging = true;
             Picker.IsVisible = false;
 
-            _xGrid = x & ~(Picker.Size - 1);
-            _yGrid = y & ~(Picker.Size - 1);
+            _xGrid = XPointer & ~(Picker.Size - 1);
+            _yGrid = YPointer & ~(Picker.Size - 1);
 
-            SetSelectionHorizontal(_xGrid);
-            SetSelectionVertical(_yGrid);
+            SetSelectionHorizontal();
+            SetSelectionVertical();
         }
 
         public override void DragEnd()
@@ -254,7 +258,7 @@ namespace TgaBuilderLib.ViewModel
             }
         }
 
-        public override void RightDrag(int x, int y)
+        public override void RightDrag()
         {
             if (Selection.IsPlacing) 
             {
@@ -262,10 +266,10 @@ namespace TgaBuilderLib.ViewModel
                 IsPreviewVisible = false; 
             }
             else
-                ManageAnimSelectShape(x, y);
+                ManageAnimSelectShape();
 
-            Picker.X = x & ~(Picker.Size - 1);
-            Picker.Y = y & ~(Picker.Size - 1);
+            Picker.X = XPointer & ~(Picker.Size - 1);
+            Picker.Y = YPointer & ~(Picker.Size - 1);
         }
 
         public override void RightDragEnd()
@@ -276,13 +280,13 @@ namespace TgaBuilderLib.ViewModel
             EndPlacingStartPicking();
         }
 
-        public override void DoubleDrag(int x, int y) => Drag(x, y);
+        public override void DoubleDrag() => Drag();
 
         public override void DoubleDragEnd() => DragEnd();
 
-        public override void AltMove(int x, int y) => MouseMove(x, y);
+        public override void AltMove() => MouseMove();
 
-        public override void AltDrag(int x, int y) => Drag(x, y);
+        public override void AltDrag() => Drag();
 
         internal void Undo()
         {
@@ -298,19 +302,9 @@ namespace TgaBuilderLib.ViewModel
 
         internal override void SetSelection()
         {
-            Selection.Presenter = _bitmapOperations.CropBitmap(
-                source:     Presenter, 
-                rectangle:  new Int32Rect(
-                    x:      SelectionShape.X,
-                    y:      SelectionShape.Y,
-                    width:  SelectionShape.Width,
-                    height: SelectionShape.Height));
-
-            Selection.IsPlacing = true;
+            SetSelectionBase();
             EndPickingStartPlacing();
         }
-
-        internal void RefreshPanelStatement() => OnPropertyChanged(nameof(PanelStatement));
 
         private void EndPickingStartPlacing()
         {
@@ -384,6 +378,7 @@ namespace TgaBuilderLib.ViewModel
                     pos:            (Picker.X, Picker.Y),
                     undoPixels:     undoPixels,
                     redoPixels:     redoPixels,
+                    opacity:        Opacity,
                     placingMode:    placingMode);
 
                 _undoRedoManager.PushBitmapEditAction(
@@ -399,6 +394,7 @@ namespace TgaBuilderLib.ViewModel
                     source:         Selection.Presenter,
                     target:         Presenter,
                     pos:            (Picker.X, Picker.Y),
+                    opacity:        Opacity,
                     placingMode:    placingMode);
 
                 _undoRedoManager.ClearAllOutOfMemory();
@@ -429,8 +425,8 @@ namespace TgaBuilderLib.ViewModel
             if (height < oldHeight || width < oldWidth)
             {
                 int requiredBytes = height < oldHeight
-                    ? width * (oldHeight - height) * 3
-                    : (oldWidth - width) * height * 3;
+                    ? width * (oldHeight - height) * (Presenter.Format == PixelFormats.Rgb24 ? 3 : 4)
+                    : (oldWidth - width) * height * (Presenter.Format == PixelFormats.Rgb24 ? 3 : 4);
 
                 if (_undoRedoManager.TryBeginRenting(
                     totalSizeInBytes:   requiredBytes,
@@ -454,7 +450,7 @@ namespace TgaBuilderLib.ViewModel
                         newWidth:               width,
                         oldHeight:              oldHeight,
                         newHeight:              height,
-                        resizeLargerCallback:   UndoRedoEnlargeandFillPresenter,
+                        resizeLargerCallback:   UndoRedoEnlargeAndFillPresenter,
                         resizeSmallerCallback:  UndoRedoResizePresenter);
                 }
                 else
@@ -485,13 +481,15 @@ namespace TgaBuilderLib.ViewModel
             UpdatePanelAfterResize();
         }
 
-        private void UndoRedoEnlargeandFillPresenter(int width, int height, byte[] pixels)
+        private void UndoRedoEnlargeAndFillPresenter(int width, int height, byte[] pixels)
         {
             Int32Rect fillRect;
 
+            int bytePerPixel = Presenter.Format == PixelFormats.Rgb24 ? 3 : 4;
+
             if (height > Presenter.PixelHeight)
             {
-                if (pixels.Length < width * (height - Presenter.PixelHeight) * 3)
+                if (pixels.Length < width * (height - Presenter.PixelHeight) * bytePerPixel)
                     throw new ArgumentException(
                         "Pixels array length is too short for the expected size for the given bitmap dimensions.");
 
@@ -499,7 +497,7 @@ namespace TgaBuilderLib.ViewModel
             }
             else if (width > Presenter.PixelWidth)
             {
-                if (pixels.Length < (width - Presenter.PixelWidth) * height * 3)
+                if (pixels.Length < (width - Presenter.PixelWidth) * height * bytePerPixel)
                     throw new ArgumentException(
                         "Pixels array length is too short for the expected size for the given bitmap dimensions.");
 
@@ -523,7 +521,7 @@ namespace TgaBuilderLib.ViewModel
             UpdatePanelAfterResize();
         }
 
-        private void UndoRedoEnlargeandFillPresenter(int width, int height, Color color)
+        private void UndoRedoEnlargeandFillPresenter(int width, int height)
         {
             Int32Rect fillRect;
 
@@ -544,7 +542,7 @@ namespace TgaBuilderLib.ViewModel
             _bitmapOperations.FillRectColor(
                 bitmap:     Presenter,
                 rect:       fillRect,
-                fillColor:  color);
+                fillColor:  Color.FromArgb(0, 0, 0, 0));
 
             UpdatePanelAfterResize();
         }
@@ -593,7 +591,6 @@ namespace TgaBuilderLib.ViewModel
             SelectionShape.MaxY = Presenter.PixelHeight;
 
             RefreshPresenter();
-            OnPropertyChanged(nameof(PanelStatement));
         }
 
         private void RotateTile()
@@ -696,30 +693,35 @@ namespace TgaBuilderLib.ViewModel
                 (Picker.Size != Selection.Presenter.PixelWidth ||
                 Picker.Size != Selection.Presenter.PixelHeight);
 
-        public void ConvertToBgra32()
+        public override void ReplaceColor()
         {
-            if (Presenter.Format == PixelFormats.Bgra32)
-                return;
-
+            ReplaceColorBase();
             _undoRedoManager.ClearAllNewFile();
-
-            Presenter = _bitmapOperations.ConvertRGB24ToBGRA32(Presenter);
-
-            OnPropertyChanged(nameof(Presenter));
-            OnPropertyChanged(nameof(PanelStatement));
         }
 
-        public void ConvertToRgb24()
+        public override void ConvertToBgra32()
         {
-            if (Presenter.Format == PixelFormats.Rgb24)
+            ConvertToBgra32Base();
+            _undoRedoManager.ClearAllNewFile();
+        }
+
+        public override void ConvertToRgb24()
+        {
+            ConvertToRgb24Base();
+            _undoRedoManager.ClearAllNewFile();
+        }
+
+        internal override void SetSelectedPickerSize(int size)
+        {
+            if (size == Picker.Size)
                 return;
 
-            _undoRedoManager.ClearAllNewFile();
+            Picker.Size = size;
 
-            Presenter = _bitmapOperations.ConvertBGRA32ToRGB24(Presenter);
+            Picker.X = XPointer & ~(Picker.Size - 1);
+            Picker.Y = YPointer & ~(Picker.Size - 1);
 
-            OnPropertyChanged(nameof(Presenter));
-            OnPropertyChanged(nameof(PanelStatement));
+            OnPropertyChanged(nameof(SelectedPickerSize));
         }
 
         [Obsolete]
