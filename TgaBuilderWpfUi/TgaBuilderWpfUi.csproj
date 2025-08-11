@@ -9,14 +9,14 @@
     <AssemblyName>TgaBuilder</AssemblyName>
     <ApplicationIcon>Resources\TgaBuilder_icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
+    <AssemblyVersion>2.1.1.0</AssemblyVersion>
+    <FileVersion>2.1.1.0</FileVersion>
     <AssemblyTitle>TgaBuilder</AssemblyTitle>
     <Description>Texture Sets Building Tool for TRLE</Description>
     <Product>TgaBuilder</Product>
     <Copyright>Copyright © 2025 Jonas Nebel</Copyright>
     <Authors>Jonas Nebel</Authors>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>x64</Platforms>
     </PropertyGroup>
 
   <ItemGroup>

@@ -74,18 +74,18 @@ namespace TgaBuilderLib.Level
 
             for (int i = 0; i < height; i++)
             {
-                if (destinationIndex + height * 3 > TargetAtlas!.Length)
+                if (destinationIndex + height * IMPORT_BPP > TargetAtlas!.Length)
                     continue;
 
-                if (sourceIndex + height * 3 > page.Length)
+                if (sourceIndex + height * IMPORT_BPP > page.Length)
                     continue;
 
                 Array.Copy(
-                    sourceArray: page,
-                    sourceIndex: sourceIndex,
-                    destinationArray: TargetAtlas,
-                    destinationIndex: destinationIndex,
-                    length: width * IMPORT_BPP);
+                    sourceArray:        page,
+                    sourceIndex:        sourceIndex,
+                    destinationArray:   TargetAtlas,
+                    destinationIndex:   destinationIndex,
+                    length:             width * IMPORT_BPP);
 
                 destinationIndex += targetPanelWidth * IMPORT_BPP;
                 sourceIndex += pageInfo.width * IMPORT_BPP;

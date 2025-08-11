@@ -20,23 +20,37 @@ namespace TgaBuilderWpfUi
             BuildServicesDI(services);
             var provider = services.BuildServiceProvider();
 
-            var mainViewModel = provider.GetRequiredService<MainViewModel>();
+            MainViewModel mainViewModel = provider.GetRequiredService<MainViewModel>();
 
-            var mainWindow = provider.GetServices<IView>().ElementAt(0) as MainWindow;
+            MainWindow mainWindow = provider.GetServices<IView>().ElementAt(0) as MainWindow 
+                ?? throw new InvalidOperationException("MainWindow not found in DI container");
 
             ApplicationThemeManager.GetAppTheme();
             SystemThemeWatcher.Watch(mainWindow);
 
-            MainWindow.Loaded += (_, _) =>
+            mainWindow.Loaded += (_, _) =>
             {
                 _ = mainViewModel.SourceViewTab.DefferedFill();
                 _ = mainViewModel.DestinationViewTab.DefferedFill();
             };
 
-            MainWindow.Show();
+            mainWindow.ApplicationThemeButton.Click += (_, _) 
+                => ChangeTheme();
+
+            mainWindow.Show();
 
 
-            MainWindow.Closed += (_, _) => Shutdown();
+            mainWindow.Closed += (_, _) => Shutdown();
+        }
+
+        private void ChangeTheme()
+        {
+            var Theme = ApplicationThemeManager.GetAppTheme();
+
+            if (Theme == ApplicationTheme.Light)
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark);
+            else
+                ApplicationThemeManager.Apply(ApplicationTheme.Light);
         }
     }
 

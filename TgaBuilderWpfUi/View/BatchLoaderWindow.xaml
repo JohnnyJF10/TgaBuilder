@@ -10,6 +10,7 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib" 
     xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel" 
     xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
+    xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
@@ -28,6 +29,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/CheckerBrush.xaml"/>
+                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <sys:Boolean x:Key="True">True</sys:Boolean>
@@ -99,7 +102,7 @@
                 Content="First Texture Index:"
                 Margin="10, 10, 10, 0"
                 HorizontalAlignment="Left"/>
-            <ui:NumberBox 
+            <elements:MouseWheelNumberBox 
                 Margin="10, 0, 10, 10"
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding StartTexIndex, UpdateSourceTrigger=PropertyChanged}"
@@ -108,7 +111,7 @@
                 Content="Number of Textures:"
                 Margin="10, 10, 10, 0"
                 HorizontalAlignment="Left"/>
-            <ui:NumberBox 
+            <elements:MouseWheelNumberBox 
                 Margin="10, 0, 10, 10"
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding NumTextures, UpdateSourceTrigger=PropertyChanged}"
@@ -117,7 +120,7 @@
                 Content="Texture Size:"
                 Margin="10, 10, 10, 0"
                 HorizontalAlignment="Left"/>
-            <ui:NumberBox 
+            <elements:MouseWheelNumberBox 
                 Margin="10, 0, 10, 10"
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding TextureSize, UpdateSourceTrigger=PropertyChanged}"
@@ -127,7 +130,7 @@
                 Margin="10, 10, 10, 0"
                 HorizontalAlignment="Left"
                 />
-            <ui:NumberBox 
+            <elements:MouseWheelNumberBox 
                 Margin="10, 0, 10, 10"
                 Style="{StaticResource ModifiedUiNumberBoxStyle}"
                 Value="{Binding PanelWidth, UpdateSourceTrigger=PropertyChanged}"
@@ -158,9 +161,19 @@
             IsHitTestVisible="False"
             Margin="0,0,-10,-10"
             />
+        <Rectangle
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="5.1"
+            Fill="{StaticResource CheckerBrush}"
+            Width="{Binding ContentActualWidth}"
+            Height="{Binding ContentActualHeight}"
+            IsHitTestVisible="False"
+             />
         <elements:FileDropBorder
             Grid.Row="2"
             Grid.Column="1"
+            Margin="5"
             DropCommand="{Binding FileDropCommand}"
             >
             <ScrollViewer
@@ -170,13 +183,15 @@
                 <wpfzoompanel:ZoomPanel
                     BorderBrush="Transparent"
                     Background="Transparent"
-                    Margin="5"
+                    ViewportZoom="{Binding Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     ZoomAndPanInitialPosition="FitScreen"
+                    ap:SizeObserverAP.ObserveSize="True"
+                    ap:SizeObserverAP.ObservedWidth="{Binding ViewportWidth, Mode=OneWayToSource}"
+                    ap:SizeObserverAP.ObservedHeight="{Binding ViewportHeight, Mode=OneWayToSource}"
                     >
                     <Image
                         Source="{Binding Presenter}"
                         Stretch="None"
-                        Margin="10"
                         RenderOptions.BitmapScalingMode="NearestNeighbor"
                         />
                 </wpfzoompanel:ZoomPanel>
@@ -203,24 +218,49 @@
             BorderThickness="0,1,0,0"
             BorderBrush="Transparent"
             CornerRadius="0">
-            <StackPanel
-                Orientation="Horizontal"
-                HorizontalAlignment="Right"
+            <DockPanel
+                HorizontalAlignment="Stretch"
                 VerticalAlignment="Bottom">
+                <ui:SymbolIcon
+                    Symbol="ZoomOut24"
+                    DockPanel.Dock="Left"
+                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
+                    />
                 <ui:Button 
                     Content="Import"
+                    DockPanel.Dock="Right"
                     Margin="10"
                     HorizontalAlignment="Stretch"
                     Command="{Binding ImportCommand}"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
                 <ui:Button 
                     Content="Cancel"
+                    DockPanel.Dock="Right"
                     Margin="10"
                     HorizontalAlignment="Stretch"
                     Command="{Binding CancelCommand}"          
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
 
-            </StackPanel>
+                <ui:SymbolIcon
+                    Symbol="ZoomIn24"
+                    DockPanel.Dock="Right"
+                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
+                    Margin="0,0,30,0"
+                    />
+                <elements:MouseWheelSlider
+                    Style="{StaticResource MouseWheelSliderStyle}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    Margin="5,0"
+                    Minimum="0.1"
+                    Maximum="10"
+                    MinWidth="3"
+                    AutoToolTipPlacement="TopLeft"
+                    AutoToolTipPrecision="1"
+                    Value="{Binding Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
+                    />
+            </DockPanel>
         </Border>
         <ui:SnackbarPresenter 
             x:Name="MessageSnackbarPresenter"

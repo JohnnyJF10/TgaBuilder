@@ -11,7 +11,7 @@
 
 
 ![Overview](Screenshots/Overview.png)
-TgaBuilder is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .net 8, C# WPF by me. 
+TgaBuilder is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF by me. 
 
 If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It should cover most of the features TBuilder also has and introduces a few things more, most prominently:
 - Texture Panel Panning and Zooming
@@ -25,11 +25,17 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 
 
 ## Installation
-Download the latest release from [GitHub Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) and extract the files.
+Move over to [GitHub Releases](https://github.com/JohnnyJF10/TgaBuilder/releases). 
+
+For the latest releases there are two tool versions per release: The *.NET 6.0* version of the tool and the *.NET 8.0* version of the tool.
+- Download the ***.NET 6.0*** version of the tool (TgaBuilder-dotnet6), if you already have Tomb Editor Version 1.9 installed on your system and you do not wish to install another .NET runtime (as Tomb Editor Version 1.9 is using *.NET 6.0* runtime as well)
+- Download the ***.NET 8.0*** version of the tool (TgaBuilder-dotnet8), if you have the *.NET 8.0* runtime installed or do not mind to install it. This version has the slightly better performance.
+
+Extract the files and start *TgaBuilder.exe*.
 
 ### Requirements
 - Windows 10/11
-- .net 8 runtime installed
+- *.NET 6* or *.NET 8* runtime installed (with Tomb Editor Version 1.9, you have the *.NET 6* runtime already installed)
 
 Please note that, as a .net WPF tool, TgaBuilder has significantly higher system resource requirements, particularly for RAM, than TBuilder, which was written in Delphi. If you are still satisfied using TBuilder, please continue using it. TgaBuilder is not intended as a substitute for it.
 
@@ -243,7 +249,7 @@ From left to rigth:
 - The height is always a **multiple of 256 px**, the standard TR page width, to ensure divisibility by picker sizes.
 - Current supported destination texture panel widths: **256, 512, 1024, 2048, 4096 px** (corresponding to 1, 2, 4, 8, and 16 pages).
 - Current supported picker sizes: **8, 16, 32, 64, 128, 256 px**
-- Image files that do not meet these requirements will be **automatically expanded or cropped**.
+- Image files that do not meet these requirements will be **automatically expanded or cropped**. But you will always be able to open them.
 
 ## License
 This project is licensed under the MIT License.
@@ -271,7 +277,6 @@ If you want to contribute code, feel free to fork the repository and create a pu
 If you have any issues, please open a [GitHub Issue](https://github.com/JohnnyJF10/TgaBuilder/issues).  
 
 ## To Do List:
-- Optimize the memory management during Classic TR level Import
-- Support **32 bpp pixel formates** for the destination panel as well
+
 - Fix bugs
 - Migrate from WPF to Win UI 3 or Avalonia

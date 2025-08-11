@@ -3,6 +3,7 @@ using System.Diagnostics;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderWpfUi.Services;
+using Wpf.Ui.Appearance;
 using WPFZoomPanel;
 using Application = System.Windows.Application;
 using Cursor = System.Windows.Input.Cursor;

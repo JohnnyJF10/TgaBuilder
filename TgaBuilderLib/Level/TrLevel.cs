@@ -122,10 +122,10 @@ namespace TgaBuilderLib.Level
             TargetAtlas = _bytePool.Rent(_rawAtlas.Length);
 
             Buffer.BlockCopy(
-                src:        _rawAtlas, 
-                srcOffset:  0, 
-                dst:        TargetAtlas, 
-                dstOffset:  0, 
+                src:        _rawAtlas,
+                srcOffset:  0,
+                dst:        TargetAtlas,
+                dstOffset:  0,
                 count:      _rawAtlas.Length);
         }
 

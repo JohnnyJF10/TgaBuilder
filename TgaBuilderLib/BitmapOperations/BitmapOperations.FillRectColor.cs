@@ -11,7 +11,7 @@ namespace TgaBuilderLib.BitmapOperations
             if (bitmap == null)
                 throw new ArgumentNullException(nameof(bitmap));
 
-            Color ColorToFill = fillColor ?? Colors.Black;
+            Color ColorToFill = fillColor ?? Color.FromArgb(0,0,0,0);
 
             int x = Math.Max(0, rect.X);
             int y = Math.Max(0, rect.Y);

@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -66,6 +68,10 @@ namespace TgaBuilderLib.ViewModel
         private int _textureSize = 128;
         private int _panelWidth = 512;
         private bool _isDropHintVisible = true;
+        private BitmapScalingMode _bitmapScalingMode = BitmapScalingMode.NearestNeighbor;
+        private double _viewportWidth;
+        private double _viewportHeight;
+        private double _zoom = 1.0;
 
         private RelayCommand? _selectTRRFolderCommand;
         private RelayCommand<IView>? _importCommand;
@@ -79,7 +85,7 @@ namespace TgaBuilderLib.ViewModel
         public WriteableBitmap Presenter
         {
             get => _presenter;
-            set => SetProperty(ref _presenter, value, nameof(Presenter));
+            set => SetPresenter(value);
         }
 
         public int StartTexIndex
@@ -106,8 +112,6 @@ namespace TgaBuilderLib.ViewModel
             set => SetImportPanelWidth(value);
         }
 
-        private BitmapScalingMode _bitmapScalingMode = BitmapScalingMode.NearestNeighbor;
-
         public int ScalingModeIndex
         {
             get => (int)_bitmapScalingMode - 1;
@@ -119,6 +123,31 @@ namespace TgaBuilderLib.ViewModel
             get => _isDropHintVisible;
             set => SetProperty(ref _isDropHintVisible, value, nameof(IsDropHintVisible));
         }
+
+        public double ViewportWidth 
+        { 
+            get => _viewportWidth; 
+            set => SetViewportSize(value, _viewportHeight);
+        }
+
+        public double ViewportHeight 
+        { 
+            get => _viewportHeight; 
+            set => SetViewportSize(_viewportWidth, value);
+        }
+
+        public double Zoom
+        {
+            get => _zoom;
+            set => SetZoom(value);
+        }
+
+        public double ContentActualWidth
+            => Math.Min(Presenter.PixelWidth * Zoom, ViewportWidth);
+
+        public double ContentActualHeight
+            => Math.Min(Presenter.PixelHeight * Zoom, ViewportHeight);
+
 
         public ICommand SelectTRRFolderCommand
             => _selectTRRFolderCommand ??= new RelayCommand(() => SelectFolder());
@@ -133,7 +162,22 @@ namespace TgaBuilderLib.ViewModel
 
 
 
+        public void SetViewportSize(double width, double height)
+        {
+            if (width < 0 || height < 0)
+                return;
 
+            _viewportWidth = width;
+            _viewportHeight = height;
+
+            Debug.WriteLine($"Viewport size set to: {width}x{height}");
+
+            OnPropertyChanged(nameof(ViewportWidth));
+            OnPropertyChanged(nameof(ViewportHeight));
+
+            OnPropertyChanged(nameof(ContentActualWidth));
+            OnPropertyChanged(nameof(ContentActualHeight));
+        }
 
         public void SetStartTexIndex(int index)
         {
@@ -468,6 +512,8 @@ namespace TgaBuilderLib.ViewModel
                 _logger.LogError(ex);
                 throw;
             }
+
+            OnPropertyChanged(nameof(ContentActualHeight));
         }
 
         private bool TexPanelExceedsMaxDimensions()
@@ -559,6 +605,22 @@ namespace TgaBuilderLib.ViewModel
 
             OnPropertyChanged(nameof(ScalingModeIndex));
             _ = UpdatePresenterAsync();
+        }
+
+        private void SetZoom(double value)
+        {
+            SetProperty(ref _zoom, value, nameof(Zoom));
+
+            OnPropertyChanged(nameof(ContentActualWidth));
+            OnPropertyChanged(nameof(ContentActualHeight));
+        }
+
+        private void SetPresenter(WriteableBitmap value)
+        {
+            SetProperty(ref _presenter, value, nameof(Presenter));
+
+            OnPropertyChanged(nameof(ContentActualWidth));
+            OnPropertyChanged(nameof(ContentActualHeight));
         }
 
         private int CalculateNewPanelWidth(int proposedValue, int currentValue)

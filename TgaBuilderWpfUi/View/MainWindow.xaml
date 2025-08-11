@@ -330,7 +330,7 @@
                             Height="36"
                             Command="{Binding BatchLoaderCommand}"
                             ap:MouseOverInfoAP.InfoText="Open Batch Loader... (Ctrl + W)"/>
-                        <ui:NumberBox
+                        <elements:MouseWheelNumberBox
                             Style="{StaticResource ModifiedUiNumberBoxStyle}"
                             Icon="{ui:SymbolIcon ArrowAutoFitWidth24}"
                             Margin="5,0"
@@ -350,7 +350,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <ui:NumberBox
+                        <elements:MouseWheelNumberBox
                             Style="{StaticResource ModifiedUiNumberBoxStyle}"
                             HorizontalAlignment="Stretch"
                             Margin="0,0,2.5,0"
@@ -360,7 +360,7 @@
                             SpinButtonPlacementMode="Hidden"
                             ap:MouseOverInfoAP.InfoText="Set the offset of the source texture panel in X direction"
                             />
-                        <ui:NumberBox
+                        <elements:MouseWheelNumberBox
                             Style="{StaticResource ModifiedUiNumberBoxStyle}"
                             Margin="2.5,0,0,0"
                             Grid.Column="1"
@@ -700,7 +700,7 @@
                     Margin="0,3,10,0"
                     DockPanel.Dock="Left"
                     />
-                <ui:NumberBox
+                <elements:MouseWheelNumberBox
                     Style="{StaticResource MiniUiNumberBoxStyle}"
                     Icon="{ui:SymbolIcon FullScreenMaximize16}"
                     DataContext="{Binding Source}"
@@ -1331,7 +1331,7 @@
                     <pzp:ZoomPanel
                         x:Name="TargetPanel"
                         DataContext="{Binding DestinationViewTab}"
-                        ViewportZoom="{Binding   Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        ViewportZoom="{Binding Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         ContentOffsetX="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         ContentOffsetY="{Binding OffsetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         BorderBrush="Transparent"
@@ -1508,7 +1508,7 @@
                     Margin="0,3,10,0"
                     DockPanel.Dock="Left"
                     />
-                <ui:NumberBox
+                <elements:MouseWheelNumberBox
                     Style="{StaticResource MiniUiNumberBoxStyle}"
                     Icon="{ui:SymbolIcon FullScreenMaximize16}"
                     DataContext="{Binding Destination}"
@@ -1591,12 +1591,22 @@
 
             </StackPanel>
             <ui:Button
+                d:Foreground="Black"
                 DockPanel.Dock="Right"
                 Appearance="Transparent"
                 Icon="{ui:SymbolIcon Info16}"
                 BorderBrush="Transparent"
                 Background="Transparent"
                 Command="{Binding AboutCommand}"
+                />
+            <ui:Button
+                x:Name="ApplicationThemeButton"
+                d:Foreground="Black"
+                DockPanel.Dock="Right"
+                Appearance="Transparent"
+                Icon="{ui:SymbolIcon WeatherSunny16}"
+                BorderBrush="Transparent"
+                Background="Transparent"
                 />
             <TextBlock
                 FontWeight="DemiBold"
