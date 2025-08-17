@@ -4,6 +4,8 @@
 [Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [Github Page](https://johnnyjf10.github.io/TgaBuilder/)
 
 ![LatestReleaseBuildStatus](https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release.yml/badge.svg)
+![Github All Releases](https://img.shields.io/github/downloads/JohnnyJF10/TgaBuilder/total.svg)
+![CodeFactor Review](https://www.codefactor.io/Content/badges/AMinus.svg)
 
 ![Logo](Screenshots/TgaBuilder_logo.png)
 
