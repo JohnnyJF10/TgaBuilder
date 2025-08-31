@@ -14,11 +14,18 @@ namespace TgaBuilderLib.BitmapBytesIO
 {
     public partial class BitmapBytesIO : IBitmapBytesIO
     {
+        public BitmapBytesIO(
+            Func<int, int, int, WriteableBitmap> bitmapFactory)
+        {
+            _bitmapFactory = bitmapFactory;
+        }
+
         private const int MAX_SIZE = 32768;
         private const int TR_PAGE_SIZE = 256;
         private const int MAX_TARGET_WIDTH = 16 * TR_PAGE_SIZE;
 
         private readonly ArrayPool<byte> _bytesPool = ArrayPool<byte>.Shared;
+        private readonly Func<int, int, int, WriteableBitmap> _bitmapFactory;
 
         public ResultStatus ResultInfo { get; private set; } = ResultStatus.Success;
 
@@ -38,13 +45,10 @@ namespace TgaBuilderLib.BitmapBytesIO
             if (LoadedBytes == null)
                 throw new InvalidOperationException("No image data loaded.");
 
-            var wb = new WriteableBitmap(
-                pixelWidth: LoadedWidth,
-                pixelHeight: LoadedHeight,
-                dpiX: 96,
-                dpiY: 96,
-                pixelFormat: LoadedFormat,
-                palette: null);
+            var wb = GetNewBitmap(
+                width: LoadedWidth,
+                height: LoadedHeight,
+                bytesPerPixel: LoadedFormat.BitsPerPixel == 24 ? 3 : 4);
 
             wb.WritePixels(
                 sourceRect: new System.Windows.Int32Rect(0, 0, LoadedWidth, LoadedHeight),
@@ -124,5 +128,7 @@ namespace TgaBuilderLib.BitmapBytesIO
         private int RoundUpToNextMultiple(int number, int multiple)
             => multiple == 0 ? number : (number + multiple - 1) / multiple * multiple;
 
+        private WriteableBitmap GetNewBitmap(int width, int height, int bytesPerPixel)
+            => _bitmapFactory.Invoke(width, height, bytesPerPixel);
     }
 }

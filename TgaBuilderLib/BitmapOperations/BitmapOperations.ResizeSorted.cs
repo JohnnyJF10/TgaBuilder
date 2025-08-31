@@ -32,7 +32,10 @@ namespace TgaBuilderLib.BitmapOperations
             }
 
             // Create a new bitmap with the desired size
-            var newBitmap = new WriteableBitmap(newWidth, newHeight, oldBitmap.DpiX, oldBitmap.DpiY, oldBitmap.Format, null);
+            WriteableBitmap newBitmap = GetNewWriteableBitmap(
+                width:          newWidth,
+                height:         newHeight,
+                bytesPerPixel:  bytesPerPixel);
 
             int oldStride = oldBitmap.BackBufferStride;
             int newStride = newBitmap.BackBufferStride;

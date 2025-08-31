@@ -13,11 +13,12 @@ namespace TgaBuilderLib.BitmapOperations
             int height = rectangle.Height;
 
             if (width <= 0 || height <= 0)
-            {
                 throw new ArgumentException("Rectangle width and height must be greater than zero.");
-            }
 
-            var tempBitmap = new WriteableBitmap(height, width, bitmap.DpiX, bitmap.DpiY, bitmap.Format, null);
+            WriteableBitmap tempBitmap = GetNewWriteableBitmap(
+                width:          width, 
+                height:         height, 
+                bytesPerPixel:  bytesPerPixel);
 
             int bitmapStride = bitmap.BackBufferStride;
             int tempStride = tempBitmap.BackBufferStride;

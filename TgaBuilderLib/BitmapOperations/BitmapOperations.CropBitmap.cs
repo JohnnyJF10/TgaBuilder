@@ -15,7 +15,10 @@ namespace TgaBuilderLib.BitmapOperations
             int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
             int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
 
-            WriteableBitmap target = new WriteableBitmap(recWidth, recHeight, source.DpiX, source.DpiY, source.Format, null);
+            WriteableBitmap target = GetNewWriteableBitmap(
+                width:          recWidth,
+                height:         recHeight,
+                bytesPerPixel:  source.Format == PixelFormats.Bgra32 ? 4 : 3);
 
             int sourceStride = source.BackBufferStride;
             int targetStride = target.BackBufferStride;
@@ -46,6 +49,41 @@ namespace TgaBuilderLib.BitmapOperations
 
             return target;
         }
+        
+        public BitmapSource CropBitmapSource(BitmapSource source, Int32Rect rectangle, byte[]? pixelbuffer = null)
+        {
+            int bytesPerPixel = (source.Format.BitsPerPixel + 7) >> 3;
+        
+            int rectX = Math.Max(0, rectangle.X);
+            int rectY = Math.Max(0, rectangle.Y);
+            int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
+            int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
+        
+            if (recWidth <= 0 || recHeight <= 0)
+                throw new ArgumentException("The specified rectangle is out of the bounds of the source bitmap.");
+        
+            int stride = recWidth * bytesPerPixel;
+            
+            byte[] pixelData = pixelbuffer is not null && pixelbuffer.Length >= recHeight * stride
+                ? pixelbuffer
+                : new byte[recHeight * stride];
+
+            source.CopyPixels(
+                new Int32Rect(rectX, rectY, recWidth, recHeight),
+                pixelData,
+                stride,
+                0);
+        
+            return BitmapSource.Create(
+                recWidth,
+                recHeight,
+                source.DpiX,
+                source.DpiY,
+                source.Format,
+                source.Palette,
+                pixelData,
+                stride);
+        }
 
         public WriteableBitmap CropBitmap(WriteableBitmap source, Int32Rect rectangle, Color replacedColor, Color newColor)
         {
@@ -57,13 +95,10 @@ namespace TgaBuilderLib.BitmapOperations
             int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
             int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
 
-            WriteableBitmap target = new WriteableBitmap(
-                pixelWidth:  recWidth,
-                pixelHeight: recHeight,
-                dpiX:        source.DpiX,
-                dpiY:        source.DpiY,
-                pixelFormat: source.Format,
-                palette:     null);
+            WriteableBitmap target = GetNewWriteableBitmap(
+                width: recWidth,
+                height: recHeight,
+                bytesPerPixel: source.Format == PixelFormats.Bgra32 ? 4 : 3);
 
             source.Lock();
             target.Lock();
@@ -128,7 +163,7 @@ namespace TgaBuilderLib.BitmapOperations
                         }
 
                         srcRow += bpp;
-                        resRow += bpp; 
+                        resRow += bpp;
                     }
                 }
             }

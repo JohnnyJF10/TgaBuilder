@@ -16,13 +16,10 @@ namespace TgaBuilderLib.BitmapOperations
             int targetHeight,
             BitmapScalingMode scalingMode)
         {
-            var wb = new WriteableBitmap(
-                pixelWidth:     width, 
-                pixelHeight:    height, 
-                dpiX:           96, 
-                dpiY:           96, 
-                pixelFormat:    pixelFormat, 
-                palette:        null);
+            var wb = GetNewWriteableBitmap(
+                width:          width,
+                height:         height,
+                bytesPerPixel:  pixelFormat == PixelFormats.Bgra32 ? 4 : 3);
 
             wb.WritePixels(
                 sourceRect: new Int32Rect(0, 0, width, height), 

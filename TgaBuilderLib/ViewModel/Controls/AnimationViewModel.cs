@@ -12,7 +12,7 @@ namespace TgaBuilderLib.ViewModel
         {
             _bitmapOperations = bitmapOperations;
         }
-        private readonly SemaphoreSlim _animationSemaphore = new SemaphoreSlim(1, 1);
+    
         private CancellationTokenSource? _cancellationTokenSource;
 
         private Task? _animationTask;
@@ -172,13 +172,19 @@ namespace TgaBuilderLib.ViewModel
         {
             OffsetTop = 0;
 
+            if (_spriteSheet is null)
+                return;
+
+            byte[] pixelBuffer = new byte[_frameRects[0].Width * _frameRects[0].Height * (_spriteSheet.Format.BitsPerPixel / 8)];
+
             while (!token.IsCancellationRequested)
             {
                 foreach (var rect in _frameRects)
                 {
                     if (token.IsCancellationRequested) break;
 
-                    var frameBitmap = new CroppedBitmap(_spriteSheet, rect);
+                    //var frameBitmap = new CroppedBitmap(_spriteSheet, rect);
+                    var frameBitmap = _bitmapOperations.CropBitmapSource(_spriteSheet, rect, pixelBuffer);
                     Presenter = frameBitmap;
 
                     await Task.Delay(_delayValAnimRange, token);
@@ -201,7 +207,9 @@ namespace TgaBuilderLib.ViewModel
                 pixelFormat: _spriteSheet.Format,
                 palette: null);
             
-            WriteableBitmap scrollTex = new(new CroppedBitmap(_spriteSheet, rect));
+            WriteableBitmap scrollTex = _bitmapOperations.CropBitmap(
+                source:     new WriteableBitmap(_spriteSheet),
+                rectangle:  rect);
 
             _bitmapOperations.FillRectBitmapNoConvert(
                 source: scrollTex, 

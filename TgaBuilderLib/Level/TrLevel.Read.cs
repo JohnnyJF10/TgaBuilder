@@ -58,11 +58,6 @@ namespace TgaBuilderLib.Level
                 if (Version == TrVersion.TR4 && fileName.ToLower().Trim().EndsWith(".trc"))
                     Version = TrVersion.TRC;
 
-                // Check for NG header
-                _isNg = false;
-                if (Version == TrVersion.TR4)
-                    CheckForNgHeader(reader);
-
                 if (Version == TrVersion.TR1)
                 {
                     // Read 8bit atlas for TR1, palette is at the end of the file
@@ -881,16 +876,6 @@ namespace TgaBuilderLib.Level
 
 
         // --- NG Handling ---
-
-        private void CheckForNgHeader(BinaryReader reader)
-        {
-            var offset = reader.BaseStream.Position;
-            reader.BaseStream.Seek(reader.BaseStream.Length - 8, SeekOrigin.Begin);
-            var ngBuffer = reader.ReadBytes(4);
-            if (ngBuffer[0] == 0x4E && ngBuffer[1] == 0x47 && ngBuffer[2] == 0x4C && ngBuffer[3] == 0x45)
-                _isNg = true;
-            reader.BaseStream.Seek(offset, SeekOrigin.Begin);
-        }
 
         private string NgGetDecryptedLevelName(string fileName)
         {

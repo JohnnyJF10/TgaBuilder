@@ -51,7 +51,8 @@ namespace TgaBuilderLib.FileHandling
             if (!Enum.TryParse(typeof(FileTypes), extension, true, out var fileTypeObj))
                 throw new NotSupportedException($"Filetype '{extension}' is not supported.");
 
-            var fileType = (FileTypes)fileTypeObj;
+            if (fileTypeObj is not FileTypes fileType)
+                throw new NotSupportedException($"Filetype '{extension}' is not supported.");
 
             switch (fileType)
             {

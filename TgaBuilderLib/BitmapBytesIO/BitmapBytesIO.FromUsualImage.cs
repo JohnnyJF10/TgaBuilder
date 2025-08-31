@@ -24,11 +24,9 @@ namespace TgaBuilderLib.BitmapBytesIO
             bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
             bitmapImage.EndInit();
             bitmapImage.Freeze();
-
-            LoadedFormat = bitmapImage.Format.BitsPerPixel == 32
-                ? PixelFormats.Bgra32
-                : PixelFormats.Rgb24;
-            ValidateImageInput(filePath, LoadedFormat);
+            
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("The specified file does not exist.", filePath);
 
             int originalWidth = bitmapImage.PixelWidth;
             int originalHeight = bitmapImage.PixelHeight;

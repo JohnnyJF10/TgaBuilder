@@ -28,7 +28,6 @@ namespace TgaBuilderLib.Level
         private bool _useTrTextureRepacking;
         private readonly ITrngDecrypter? _trngDecrypter;
 
-        private bool _isNg;
         private long _textureInfosStreamPosition;
 
         private List<ushort> _rectTexIndices = new();

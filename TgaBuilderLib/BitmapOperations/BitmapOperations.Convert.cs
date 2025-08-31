@@ -19,13 +19,10 @@ namespace TgaBuilderLib.BitmapOperations
                 throw new ArgumentException("Source bitmap must be in RGB24 format.", nameof(sourceBitmap));
 
             // Create a new WriteableBitmap with BGRA32 format
-            var targetBitmap = new WriteableBitmap(
-                sourceBitmap.PixelWidth,
-                sourceBitmap.PixelHeight,
-                sourceBitmap.DpiX,
-                sourceBitmap.DpiY,
-                System.Windows.Media.PixelFormats.Bgra32,
-                null);
+            var targetBitmap = GetNewWriteableBitmap(
+                width:          sourceBitmap.PixelWidth,
+                height:         sourceBitmap.PixelHeight,
+                bytesPerPixel:  32);
 
             // Lock the source and target bitmaps for writing
             sourceBitmap.Lock();
@@ -76,14 +73,13 @@ namespace TgaBuilderLib.BitmapOperations
                 throw new ArgumentNullException(nameof(sourceBitmap), "Source bitmap cannot be null.");
             if (sourceBitmap.Format.BitsPerPixel != 32)
                 throw new ArgumentException("Source bitmap must be in BGRA32 format.", nameof(sourceBitmap));
+            
             // Create a new WriteableBitmap with RGB24 format
-            var targetBitmap = new WriteableBitmap(
-                sourceBitmap.PixelWidth,
-                sourceBitmap.PixelHeight,
-                sourceBitmap.DpiX,
-                sourceBitmap.DpiY,
-                System.Windows.Media.PixelFormats.Rgb24,
-                null);
+            var targetBitmap = GetNewWriteableBitmap(
+                width:          sourceBitmap.PixelWidth,
+                height:         sourceBitmap.PixelHeight,
+                bytesPerPixel:  24);
+
             // Lock the source and target bitmaps for writing
             sourceBitmap.Lock();
             targetBitmap.Lock();

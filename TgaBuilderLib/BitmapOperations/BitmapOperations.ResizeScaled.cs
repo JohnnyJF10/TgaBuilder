@@ -74,14 +74,15 @@ namespace TgaBuilderLib.BitmapOperations
             }
 
             // Output fotmat remains the same as source
-            var targetBitmap = new WriteableBitmap(
-                targetWidth,
-                targetHeight,
-                96, 96,
-                format,
-                null);
+            WriteableBitmap targetBitmap = GetNewWriteableBitmap(
+                width:          targetWidth,
+                height:         targetHeight,
+                bytesPerPixel:  format == PixelFormats.Bgra32 ? 4 : 3);
 
-            targetBitmap.WritePixels(new Int32Rect(0, 0, targetWidth, targetHeight), targetPixels, targetStride, 0);
+            targetBitmap.WritePixels(new Int32Rect(0, 0, targetWidth, targetHeight),
+                pixels: targetPixels,
+                stride: targetStride,
+                offset: 0);
 
             return targetBitmap;
         }

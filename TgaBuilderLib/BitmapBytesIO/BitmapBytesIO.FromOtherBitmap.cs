@@ -22,13 +22,10 @@ namespace TgaBuilderLib.BitmapBytesIO
             int height = source.PixelHeight;
             int targetWidth = EstimateTargetWidth(sourceWidth);
 
-            WriteableBitmap target = new WriteableBitmap(
-                pixelWidth:     targetWidth,
-                pixelHeight:    height,
-                dpiX:           source.DpiX,
-                dpiY:           source.DpiY,
-                pixelFormat:    source.Format,
-                palette:        null);
+            WriteableBitmap target = GetNewBitmap(
+                width: targetWidth,
+                height: height,
+                bytesPerPixel: isSourceBgra32 ? 4 : 3);
 
             source.Lock();
             target.Lock();

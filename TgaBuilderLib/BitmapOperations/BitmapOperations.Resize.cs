@@ -10,7 +10,11 @@ namespace TgaBuilderLib.BitmapOperations
             int bytesPerPixel = (sourceBitmap.Format.BitsPerPixel + 7) >> 3;
 
             // Create a new bitmap with the desired size
-            var resizedBitmap = new WriteableBitmap(newWidth, newHeight, sourceBitmap.DpiX, sourceBitmap.DpiY, sourceBitmap.Format, null);
+
+            WriteableBitmap resizedBitmap = GetNewWriteableBitmap(
+                width:          newWidth, 
+                height:         newHeight, 
+                bytesPerPixel:  bytesPerPixel);
 
             int sourceStride = sourceBitmap.BackBufferStride;
             int resizedStride = resizedBitmap.BackBufferStride;
@@ -89,8 +93,10 @@ namespace TgaBuilderLib.BitmapOperations
             if (newWidth > sourceBitmap.PixelWidth)
                 return Resize(sourceBitmap, newWidth, sourceBitmap.PixelHeight);
 
-            var resizedBitmap = new WriteableBitmap(newWidth, sourceBitmap.PixelHeight,
-                sourceBitmap.DpiX, sourceBitmap.DpiY, sourceBitmap.Format, null);
+            WriteableBitmap resizedBitmap = GetNewWriteableBitmap(
+                width: newWidth,
+                height: sourceBitmap.PixelHeight,
+                bytesPerPixel: bytesPerPixel);
 
             sourceBitmap.Lock();
             resizedBitmap.Lock();
@@ -153,8 +159,10 @@ namespace TgaBuilderLib.BitmapOperations
             if (newHeight > sourceBitmap.PixelHeight)
                 return Resize(sourceBitmap, sourceBitmap.PixelWidth, newHeight);
 
-            var resizedBitmap = new WriteableBitmap(sourceBitmap.PixelWidth, newHeight,
-                sourceBitmap.DpiX, sourceBitmap.DpiY, sourceBitmap.Format, null);
+            WriteableBitmap resizedBitmap = GetNewWriteableBitmap(
+                width: sourceBitmap.PixelWidth,
+                height: newHeight,
+                bytesPerPixel: bytesPerPixel);
 
             sourceBitmap.Lock();
             resizedBitmap.Lock();

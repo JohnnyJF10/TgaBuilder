@@ -42,6 +42,11 @@ namespace TgaBuilderLib.BitmapOperations
             Color replacedColor,
             Color newColor);
 
+        BitmapSource CropBitmapSource(
+            BitmapSource source,
+            Int32Rect rectangle,
+            byte[]? pixelbuffer = null);
+
 
         // Scale / Change Size
         WriteableBitmap Resize(

@@ -29,19 +29,17 @@ namespace TgaBuilderLib.BitmapOperations
             int sourceStride = width * 3;
             int targetStride = width * 3;
 
-            var result = new WriteableBitmap(
-                pixelWidth:     width,
-                pixelHeight:    height,
-                dpiX:           source.DpiX,
-                dpiY:           source.DpiY,
-                pixelFormat:    source.Format,
-                palette:        null);
+            int sourceBbp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
+
+            WriteableBitmap result = GetNewWriteableBitmap(
+                width:          width,
+                height:         height,
+                bytesPerPixel:  sourceBbp);
 
             source.Lock();
             result.Lock();
 
             byte r, g, b, a = 255;
-            int sourceBbp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
 
             unsafe
             {
@@ -94,20 +92,18 @@ namespace TgaBuilderLib.BitmapOperations
             int sourceStride = width * 3;
             int targetStride = width * 3;
 
-            var result = new WriteableBitmap(
-                pixelWidth: width,
-                pixelHeight: height,
-                dpiX: source.DpiX,
-                dpiY: source.DpiY,
-                pixelFormat: source.Format,
-                palette: null);
+            int sourceBbp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
+
+            WriteableBitmap result = GetNewWriteableBitmap(
+                width: width,
+                height: height,
+                bytesPerPixel: sourceBbp);
 
             source.Lock();
             result.Lock();
 
             byte r, g, b, a = 255;
-            int sourceBbp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
-
+            
             unsafe
             {
                 byte* srcPtr = (byte*)source.BackBuffer;
