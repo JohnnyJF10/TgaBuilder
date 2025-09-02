@@ -25,7 +25,7 @@ namespace TgaBuilderWpfUi.Wrappers
         {
             _bitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
     
-            // Bitmap sperren
+            // Lock bitmap
             _bitmap.Lock();
     
             BackBuffer = _bitmap.BackBuffer;
@@ -38,7 +38,7 @@ namespace TgaBuilderWpfUi.Wrappers
         {
             if (_disposed) return;
     
-            // Änderungen bekanntgeben und freigeben
+            // Mark changes and unlock
             _bitmap.AddDirtyRect(new Int32Rect(0, 0, Width, Height));
             _bitmap.Unlock();
     
