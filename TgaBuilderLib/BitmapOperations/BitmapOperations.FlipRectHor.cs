@@ -18,7 +18,10 @@ namespace TgaBuilderLib.BitmapOperations
             }
 
             // Create a temporary bitmap to hold the flipped image
-            var tempBitmap = new WriteableBitmap(width, height, bitmap.DpiX, bitmap.DpiY, bitmap.Format, null);
+            var tempBitmap = GetNewWriteableBitmap(
+                width:          width, 
+                height:         height, 
+                hasAlpha:       bytesPerPixel == 4);
 
             int bitmapStride = bitmap.BackBufferStride;
             int tempStride = tempBitmap.BackBufferStride;

@@ -10,14 +10,14 @@ namespace TgaBuilderLib.BitmapOperations
     public partial class BitmapOperations
     {
         public BitmapOperations(
-            Func<int, int, int, WriteableBitmap> bitmapFactory)
+            Func<int, int, bool, WriteableBitmap> bitmapFactory)
         {
             _bitmapFactory = bitmapFactory;
         }
 
-        private readonly Func<int, int, int, WriteableBitmap> _bitmapFactory;
+        private readonly Func<int, int, bool, WriteableBitmap> _bitmapFactory;
 
-        private WriteableBitmap GetNewWriteableBitmap(int width, int height, int bytesPerPixel)
-            => _bitmapFactory.Invoke(width, height, bytesPerPixel);
+        private WriteableBitmap GetNewWriteableBitmap(int width, int height, bool hasAlpha)
+            => _bitmapFactory.Invoke(width, height, hasAlpha);
     }
 }

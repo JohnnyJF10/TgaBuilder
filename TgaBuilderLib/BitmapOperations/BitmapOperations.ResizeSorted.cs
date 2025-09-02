@@ -35,7 +35,7 @@ namespace TgaBuilderLib.BitmapOperations
             WriteableBitmap newBitmap = GetNewWriteableBitmap(
                 width:          newWidth,
                 height:         newHeight,
-                bytesPerPixel:  bytesPerPixel);
+                hasAlpha:       bytesPerPixel == 4);
 
             int oldStride = oldBitmap.BackBufferStride;
             int newStride = newBitmap.BackBufferStride;

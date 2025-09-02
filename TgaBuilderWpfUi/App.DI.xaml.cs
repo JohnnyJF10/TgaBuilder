@@ -97,15 +97,13 @@ namespace TgaBuilderWpfUi
 
         private void AddBitmapFactoryProvider(IServiceCollection services)
         {
-            services.AddSingleton<Func<int, int, int, WriteableBitmap>>(sp =>
-                (width, height, bytesPerPixel) => new WriteableBitmap(
+            services.AddSingleton<Func<int, int, bool, WriteableBitmap>>(sp =>
+                (width, height, hasAlpha) => new WriteableBitmap(
                     pixelWidth: width,
                     pixelHeight: height,
                     dpiX: APP_DEFAULT_DPI,
                     dpiY: APP_DEFAULT_DPI,
-                    pixelFormat: bytesPerPixel == 3 ? PixelFormats.Bgr24
-                                  : bytesPerPixel == 4 ? PixelFormats.Bgra32
-                                  : throw new NotSupportedException("Only 3 (BGR) or 4 (BGRA) bytes per pixel are supported."),
+                    pixelFormat: hasAlpha ? PixelFormats.Bgra32 : PixelFormats.Rgb24,
                     palette: null));
         }
 
@@ -150,7 +148,7 @@ namespace TgaBuilderWpfUi
                 logger: sp.GetRequiredService<ILogger>(),
                 messageService: sp.GetRequiredService<IMessageService>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
-                presenter: GetBitmapFromFactory(sp, SELECTION_SIZE_INIT, SELECTION_SIZE_INIT, BYTES_PER_PIXEL_4)));
+                presenter: GetBitmapFromFactory(sp, SELECTION_SIZE_INIT, SELECTION_SIZE_INIT, true)));
 
             services.AddSingleton(sp => new SourceIOViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),
@@ -180,7 +178,7 @@ namespace TgaBuilderWpfUi
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 eyeDropper: sp.GetRequiredService<IEyeDropper>(),
 
-                presenter: GetBitmapFromFactory(sp, PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, BYTES_PER_PIXEL_4),
+                presenter: GetBitmapFromFactory(sp, PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true),
 
                 SelectionVM: sp.GetRequiredService<SelectionViewModel>(),
                 AnimationVM: sp.GetRequiredService<AnimationViewModel>(),
@@ -196,7 +194,7 @@ namespace TgaBuilderWpfUi
                 eyeDropper: sp.GetRequiredService<IEyeDropper>(),
                 undoRedoManager: sp.GetRequiredService<IUndoRedoManager>(),
 
-                presenter: GetBitmapFromFactory(sp, PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, BYTES_PER_PIXEL_4),
+                presenter: GetBitmapFromFactory(sp, PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true),
 
                 SelectionVM: sp.GetRequiredService<SelectionViewModel>(),
                 AnimationVM: sp.GetRequiredService<AnimationViewModel>(),
@@ -308,11 +306,11 @@ namespace TgaBuilderWpfUi
                     viewModel: sp.GetRequiredService<AboutViewModel>()));
         }
 
-        private WriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, int bpp)
+        private WriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)
             => serviceProvider
-                .GetRequiredService<Func<int, int, int, WriteableBitmap>>()
-                .Invoke(width, height, bpp);
-            
+                .GetRequiredService<Func<int, int, bool, WriteableBitmap>>()
+                .Invoke(width, height, hasAlpha);
+
     }
 }
 

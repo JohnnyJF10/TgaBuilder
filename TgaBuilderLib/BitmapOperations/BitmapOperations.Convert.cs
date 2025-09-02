@@ -22,7 +22,7 @@ namespace TgaBuilderLib.BitmapOperations
             var targetBitmap = GetNewWriteableBitmap(
                 width:          sourceBitmap.PixelWidth,
                 height:         sourceBitmap.PixelHeight,
-                bytesPerPixel:  32);
+                hasAlpha:       true);
 
             // Lock the source and target bitmaps for writing
             sourceBitmap.Lock();
@@ -78,7 +78,7 @@ namespace TgaBuilderLib.BitmapOperations
             var targetBitmap = GetNewWriteableBitmap(
                 width:          sourceBitmap.PixelWidth,
                 height:         sourceBitmap.PixelHeight,
-                bytesPerPixel:  24);
+                hasAlpha:       false);
 
             // Lock the source and target bitmaps for writing
             sourceBitmap.Lock();

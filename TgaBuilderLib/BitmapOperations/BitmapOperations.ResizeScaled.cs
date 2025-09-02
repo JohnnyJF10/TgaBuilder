@@ -77,7 +77,7 @@ namespace TgaBuilderLib.BitmapOperations
             WriteableBitmap targetBitmap = GetNewWriteableBitmap(
                 width:          targetWidth,
                 height:         targetHeight,
-                bytesPerPixel:  format == PixelFormats.Bgra32 ? 4 : 3);
+                hasAlpha:       format == PixelFormats.Bgra32);
 
             targetBitmap.WritePixels(new Int32Rect(0, 0, targetWidth, targetHeight),
                 pixels: targetPixels,

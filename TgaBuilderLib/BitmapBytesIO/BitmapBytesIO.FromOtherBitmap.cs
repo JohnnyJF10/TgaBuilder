@@ -25,7 +25,7 @@ namespace TgaBuilderLib.BitmapBytesIO
             WriteableBitmap target = GetNewBitmap(
                 width: targetWidth,
                 height: height,
-                bytesPerPixel: isSourceBgra32 ? 4 : 3);
+                hasAlpha: isSourceBgra32);
 
             source.Lock();
             target.Lock();

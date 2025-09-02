@@ -1,4 +1,4 @@
-public struct PixelRect
+public struct IntRect
 {
     public int X { get; set; }
     public int Y { get; set; }

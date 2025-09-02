@@ -18,7 +18,7 @@ namespace TgaBuilderLib.BitmapOperations
             WriteableBitmap target = GetNewWriteableBitmap(
                 width:          recWidth,
                 height:         recHeight,
-                bytesPerPixel:  source.Format == PixelFormats.Bgra32 ? 4 : 3);
+                hasAlpha:       source.Format == PixelFormats.Bgra32);
 
             int sourceStride = source.BackBufferStride;
             int targetStride = target.BackBufferStride;
@@ -63,7 +63,7 @@ namespace TgaBuilderLib.BitmapOperations
                 throw new ArgumentException("The specified rectangle is out of the bounds of the source bitmap.");
         
             int stride = recWidth * bytesPerPixel;
-            
+
             byte[] pixelData = pixelbuffer is not null && pixelbuffer.Length >= recHeight * stride
                 ? pixelbuffer
                 : new byte[recHeight * stride];
@@ -98,7 +98,7 @@ namespace TgaBuilderLib.BitmapOperations
             WriteableBitmap target = GetNewWriteableBitmap(
                 width: recWidth,
                 height: recHeight,
-                bytesPerPixel: source.Format == PixelFormats.Bgra32 ? 4 : 3);
+                hasAlpha: source.Format == PixelFormats.Bgra32);
 
             source.Lock();
             target.Lock();

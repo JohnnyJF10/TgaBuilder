@@ -29,12 +29,10 @@ namespace TgaBuilderLib.BitmapOperations
             int sourceStride = width * 3;
             int targetStride = width * 3;
 
-            int sourceBbp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
-
             WriteableBitmap result = GetNewWriteableBitmap(
                 width:          width,
                 height:         height,
-                bytesPerPixel:  sourceBbp);
+                hasAlpha:       source.Format == PixelFormats.Bgra32);
 
             source.Lock();
             result.Lock();
@@ -92,12 +90,10 @@ namespace TgaBuilderLib.BitmapOperations
             int sourceStride = width * 3;
             int targetStride = width * 3;
 
-            int sourceBbp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
-
             WriteableBitmap result = GetNewWriteableBitmap(
                 width: width,
                 height: height,
-                bytesPerPixel: sourceBbp);
+                hasAlpha: source.Format == PixelFormats.Bgra32);
 
             source.Lock();
             result.Lock();

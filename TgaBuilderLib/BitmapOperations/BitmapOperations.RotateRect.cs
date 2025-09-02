@@ -18,7 +18,7 @@ namespace TgaBuilderLib.BitmapOperations
             WriteableBitmap tempBitmap = GetNewWriteableBitmap(
                 width:          width, 
                 height:         height, 
-                bytesPerPixel:  bytesPerPixel);
+                hasAlpha:       bytesPerPixel == 4);
 
             int bitmapStride = bitmap.BackBufferStride;
             int tempStride = tempBitmap.BackBufferStride;

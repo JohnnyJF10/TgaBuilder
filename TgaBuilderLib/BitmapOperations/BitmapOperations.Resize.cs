@@ -14,7 +14,7 @@ namespace TgaBuilderLib.BitmapOperations
             WriteableBitmap resizedBitmap = GetNewWriteableBitmap(
                 width:          newWidth, 
                 height:         newHeight, 
-                bytesPerPixel:  bytesPerPixel);
+                hasAlpha:       bytesPerPixel == 4);
 
             int sourceStride = sourceBitmap.BackBufferStride;
             int resizedStride = resizedBitmap.BackBufferStride;
@@ -96,7 +96,7 @@ namespace TgaBuilderLib.BitmapOperations
             WriteableBitmap resizedBitmap = GetNewWriteableBitmap(
                 width: newWidth,
                 height: sourceBitmap.PixelHeight,
-                bytesPerPixel: bytesPerPixel);
+                hasAlpha: bytesPerPixel == 4);
 
             sourceBitmap.Lock();
             resizedBitmap.Lock();
@@ -162,7 +162,7 @@ namespace TgaBuilderLib.BitmapOperations
             WriteableBitmap resizedBitmap = GetNewWriteableBitmap(
                 width: sourceBitmap.PixelWidth,
                 height: newHeight,
-                bytesPerPixel: bytesPerPixel);
+                hasAlpha: bytesPerPixel == 4);
 
             sourceBitmap.Lock();
             resizedBitmap.Lock();

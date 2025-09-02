@@ -19,7 +19,7 @@ namespace TgaBuilderLib.BitmapOperations
             var wb = GetNewWriteableBitmap(
                 width:          width,
                 height:         height,
-                bytesPerPixel:  pixelFormat == PixelFormats.Bgra32 ? 4 : 3);
+                hasAlpha:       pixelFormat == PixelFormats.Bgra32);
 
             wb.WritePixels(
                 sourceRect: new Int32Rect(0, 0, width, height), 

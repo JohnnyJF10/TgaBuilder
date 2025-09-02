@@ -15,7 +15,7 @@ namespace TgaBuilderLib.BitmapBytesIO
         int LoadedHeight { get; }
 
         int LoadedStride { get; }
-        PixelFormat LoadedFormat { get; }
+        bool LoadedHasAlpha { get; }
 
         int ActualDataLength { get; }
 
