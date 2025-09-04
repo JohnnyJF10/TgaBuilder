@@ -1,10 +1,5 @@
-﻿using System;
-using System.Buffers;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using System.Buffers;
+
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.Level

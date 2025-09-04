@@ -1,16 +1,17 @@
 ﻿using System.Buffers;
-using System.Windows;
+
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.UndoRedo
 {
     public class BitmapEditAction : IUndoableAction
     {
         public BitmapEditAction(
-            Int32Rect region,
+            PixelRect region,
             byte[] oldPixels,
             byte[] newPixels,
             ArrayPool<byte> byteArrayPool,
-            Action<Int32Rect, byte[]> placingCallback,
+            Action<PixelRect, byte[]> placingCallback,
             bool ownsMemory = true)
         {
             Region = region;
@@ -22,13 +23,13 @@ namespace TgaBuilderLib.UndoRedo
         }
 
 
-        public Int32Rect Region { get; }
+        public PixelRect Region { get; }
         public byte[] OldPixels { get; private set; }
         public byte[] NewPixels { get; private set; }
 
         private readonly bool ownsMemory;
 
-        private  Action<Int32Rect, byte[]> _placingCallback;
+        private  Action<PixelRect, byte[]> _placingCallback;
         private  Action<byte[]> _returnArrayCallback;
 
         public long SizeInBytes => (OldPixels?.Length ?? 0) + (NewPixels?.Length ?? 0);

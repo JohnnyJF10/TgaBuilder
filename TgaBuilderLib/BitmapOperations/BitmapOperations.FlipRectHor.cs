@@ -1,13 +1,12 @@
-﻿using System.Windows;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public void FlipRectHor(WriteableBitmap bitmap, Int32Rect rectangle)
+        public void FlipRectHor(IWriteableBitmap bitmap, PixelRect rectangle)
         {
-            int bytesPerPixel = (bitmap.Format.BitsPerPixel + 7) >> 3;
+            int bytesPerPixel = bitmap.HasAlpha ? 4 : 3;
 
             int width = rectangle.Width;
             int height = rectangle.Height;
@@ -18,7 +17,7 @@ namespace TgaBuilderLib.BitmapOperations
             }
 
             // Create a temporary bitmap to hold the flipped image
-            var tempBitmap = GetNewWriteableBitmap(
+            var tempBitmap = _mediaFactory.CreateEmptyBitmap(
                 width:          width, 
                 height:         height, 
                 hasAlpha:       bytesPerPixel == 4);

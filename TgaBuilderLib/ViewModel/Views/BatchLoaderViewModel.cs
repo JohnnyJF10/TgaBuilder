@@ -1,13 +1,11 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.Utils;
@@ -17,14 +15,18 @@ namespace TgaBuilderLib.ViewModel
     public class BatchLoaderViewModel : ViewModelBase
     {
         public BatchLoaderViewModel(
+            IMediaFactory mediaFactory,
             IFileService fileService,
             IMessageService messageService,
 
             IUsageData usageData,
             IAsyncFileLoader asyncFileLoader, 
             IBitmapOperations bitmapOperations,
-            ILogger logger)
+            ILogger logger,
+
+            IWriteableBitmap presenter)   
         {
+            _mediaFactory = mediaFactory;
             _fileService = fileService;
             _messageService = messageService;
 
@@ -33,12 +35,14 @@ namespace TgaBuilderLib.ViewModel
             _logger = logger;
 
             _bitmapOperations = bitmapOperations;
+            _presenter = presenter;
         }
 
         private const int TEX_MIN_SIZE = 64;
         private const int TEX_MAX_SIZE = 512;
         private const int MAX_PIXEL_HEIGHT = 32768;
 
+        private readonly IMediaFactory _mediaFactory;
         private readonly IAsyncFileLoader _asyncFileLoader;
         private readonly IBitmapOperations _bitmapOperations;
         private readonly ILogger _logger;
@@ -54,13 +58,7 @@ namespace TgaBuilderLib.ViewModel
         private CancellationTokenSource _updateTaskCts = new();
         private readonly object _updateTaskLock = new();
 
-        private WriteableBitmap _presenter = new(
-            pixelWidth:     512,
-            pixelHeight:    1536,
-            dpiX:           96,
-            dpiY:           96,
-            pixelFormat:    PixelFormats.Bgra32,
-            palette:        null);
+        private IWriteableBitmap _presenter;
 
         private string _selectedFolderPath = string.Empty;
         private int _startTexIndex = 0;
@@ -82,7 +80,7 @@ namespace TgaBuilderLib.ViewModel
 
         public IEnumerable<string> RecentBatchLoaderFolders => _usageData.RecentBatchLoaderFolders;
 
-        public WriteableBitmap Presenter
+        public IWriteableBitmap Presenter
         {
             get => _presenter;
             set => SetPresenter(value);
@@ -274,13 +272,10 @@ namespace TgaBuilderLib.ViewModel
 
             int stride = PanelWidth * 4;
 
-            WriteableBitmap paddedBitmap = new WriteableBitmap(
-                pixelWidth: PanelWidth,
-                pixelHeight: paddedHeight,
-                dpiX: 96,
-                dpiY: 96,
-                pixelFormat: PixelFormats.Bgra32,
-                palette: null);
+            IWriteableBitmap paddedBitmap = _mediaFactory.CreateEmptyBitmap(
+                width:       PanelWidth,
+                height:     paddedHeight,
+                hasAlpha:   true);
 
             byte[] blackPixels = new byte[paddedHeight * stride];
             for (int i = 0; i < blackPixels.Length; i += 4)
@@ -292,15 +287,15 @@ namespace TgaBuilderLib.ViewModel
             }
 
             paddedBitmap.WritePixels(
-                sourceRect: new Int32Rect(0, 0, PanelWidth, paddedHeight),
+                rect: new PixelRect(0, 0, PanelWidth, paddedHeight),
                 pixels:     blackPixels, 
                 stride:     stride, 
                 offset:     0);
 
             // Copy original pixels to the top of the padded bitmap
-            CroppedBitmap croppedSource = new CroppedBitmap(
+            var croppedSource = _bitmapOperations.CropBitmap(
                 source:     Presenter, 
-                sourceRect: new Int32Rect(0, 0, PanelWidth, Presenter.PixelHeight));
+                rectangle:  new PixelRect(0, 0, PanelWidth, Presenter.PixelHeight));
 
             int srcStride = PanelWidth * 4;
             byte[] srcPixels = new byte[Presenter.PixelHeight * srcStride];
@@ -311,7 +306,7 @@ namespace TgaBuilderLib.ViewModel
                 offset: 0);
 
             paddedBitmap.WritePixels(
-                sourceRect: new Int32Rect(0, 0, PanelWidth, Presenter.PixelHeight),
+                rect: new PixelRect(0, 0, PanelWidth, Presenter.PixelHeight),
                 pixels:     srcPixels, 
                 stride:     srcStride, 
                 offset:     0);
@@ -323,7 +318,8 @@ namespace TgaBuilderLib.ViewModel
         {
             int successCount = 0;
             byte[] data;
-            WriteableBitmap loadedBitmap;
+            IReadableBitmap createdBitmap;
+            IWriteableBitmap loadedBitmap;
             bool allFilesLoadedSuccessfully = true;
 
             if (TexPanelExceedsMaxDimensions())
@@ -363,16 +359,17 @@ namespace TgaBuilderLib.ViewModel
                             function: () => _asyncFileLoader.LoadCore(file),
                             cancellationToken: token);
 
-                    loadedBitmap = _bitmapOperations.CreateBitmapAndResize(
-                        data:           data,
-                        width:          _asyncFileLoader.LoadedWidth,
-                        height:         _asyncFileLoader.LoadedHeight,
-                        stride:         _asyncFileLoader.LoadedStride,
-                        pixelFormat:    _asyncFileLoader.LoadedPixelFormat,
-                        targetWidth:    _textureSize, 
-                        targetHeight:   _textureSize, 
-                        scalingMode:    _bitmapScalingMode);
+                        createdBitmap = _mediaFactory.CreateBitmapFromRaw(
+                            pixelWidth:     _asyncFileLoader.LoadedWidth,
+                            pixelHeight:    _asyncFileLoader.LoadedHeight,
+                            hasAlpha:       _asyncFileLoader.LoadedHasAlpha,
+                            pixels:         data,
+                            stride:         _asyncFileLoader.LoadedStride);
 
+                        loadedBitmap = _mediaFactory.CreateRescaledBitmap(
+                            source:     _mediaFactory.CloneBitmap(createdBitmap),
+                            newWidth:   _textureSize, 
+                            newHeight:  _textureSize);
                     }
                     catch (OperationCanceledException) 
                     {
@@ -416,7 +413,8 @@ namespace TgaBuilderLib.ViewModel
         {
             int successCount = oldNum;
             byte[] data;
-            WriteableBitmap loadedBitmap;
+            IReadableBitmap createdBitmap;
+            IWriteableBitmap loadedBitmap;
 
             if (TexPanelExceedsMaxDimensions())
                 return;
@@ -456,16 +454,17 @@ namespace TgaBuilderLib.ViewModel
                                 function:          () => _asyncFileLoader.LoadCore(file),
                                 cancellationToken: token);
 
+                            createdBitmap = _mediaFactory.CreateBitmapFromRaw(
+                                pixelWidth: _asyncFileLoader.LoadedWidth,
+                                pixelHeight: _asyncFileLoader.LoadedHeight,
+                                hasAlpha: _asyncFileLoader.LoadedHasAlpha,
+                                pixels: data,
+                                stride: _asyncFileLoader.LoadedStride);
 
-                        loadedBitmap = _bitmapOperations.CreateBitmapAndResize(
-                            data:           data,
-                            width:          _asyncFileLoader.LoadedWidth,
-                            height:         _asyncFileLoader.LoadedHeight,
-                            stride:         _asyncFileLoader.LoadedStride,
-                            pixelFormat:    _asyncFileLoader.LoadedPixelFormat,
-                            targetWidth:    _textureSize,
-                            targetHeight:   _textureSize,
-                            scalingMode:    _bitmapScalingMode);
+                            loadedBitmap = _mediaFactory.CreateRescaledBitmap(
+                                source: _mediaFactory.CloneBitmap(createdBitmap),
+                                newWidth: _textureSize,
+                                newHeight: _textureSize);
 
                         }
                         catch (OperationCanceledException) 
@@ -502,7 +501,7 @@ namespace TgaBuilderLib.ViewModel
                         int x = (i % texPerRow) * _textureSize;
                         int y = (i / texPerRow) * _textureSize;
 
-                        _bitmapOperations.FillRectColor(Presenter, new Int32Rect(x, y, _textureSize, _textureSize));
+                        _bitmapOperations.FillRectColor(Presenter, new PixelRect(x, y, _textureSize, _textureSize));
                     }
                 }
             }
@@ -615,7 +614,7 @@ namespace TgaBuilderLib.ViewModel
             OnPropertyChanged(nameof(ContentActualHeight));
         }
 
-        private void SetPresenter(WriteableBitmap value)
+        private void SetPresenter(IWriteableBitmap value)
         {
             SetProperty(ref _presenter, value, nameof(Presenter));
 

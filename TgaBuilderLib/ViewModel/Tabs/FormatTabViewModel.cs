@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-using TgaBuilderLib.BitmapOperations;
+﻿using System.Windows.Input;
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.Utils;
@@ -29,8 +22,8 @@ namespace TgaBuilderLib.ViewModel
             _panel = panel;
 
             _eyeDropper = eyeDropper;
-            _brushSource = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)); // Default black
-            _brushTarget = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)); // Default black
+            _colorSource = new Color(0, 0, 0, 0); // Default black
+            _colorTarget = new Color(0, 0, 0, 0); // Default black
 
             _panel.PresenterChanged += (_, _) => OnFormatBooleanPropertiesChanged();
         }
@@ -43,22 +36,22 @@ namespace TgaBuilderLib.ViewModel
 
         // Commands
         private RelayCommand? _eyedropperCommand;
-        private RelayCommand<SolidColorBrush>? _selectionMonoColorFillCommand;
+        private RelayCommand<Color>? _selectionMonoColorFillCommand;
         private RelayCommand? _replaceSourceColorCommand;
 
         // Brushes
-        private SolidColorBrush _brushSource;
-        public SolidColorBrush BrushSource
+        private Color _colorSource;
+        public Color ColorSource
         {
-            get => _brushSource;
-            set => SetProperty(ref _brushSource, value, nameof(BrushSource));
+            get => _colorSource;
+            set => SetProperty(ref _colorSource, value, nameof(ColorSource));
         }
 
-        private SolidColorBrush _brushTarget;
-        public SolidColorBrush BrushTarget
+        private Color _colorTarget;
+        public Color ColorTarget
         {
-            get => _brushTarget;
-            set => SetProperty(ref _brushTarget, value, nameof(BrushTarget));
+            get => _colorTarget;
+            set => SetProperty(ref _colorTarget, value, nameof(ColorTarget));
         }
 
         // Eyedropper mode
@@ -73,7 +66,7 @@ namespace TgaBuilderLib.ViewModel
             ??= new RelayCommand(StartColorPicking);
 
         public ICommand SelectionMonoColorFillCommand => _selectionMonoColorFillCommand
-            ??= new RelayCommand<SolidColorBrush>(SelectionMonoColorFill);
+            ??= new RelayCommand<Color>(SelectionMonoColorFill);
 
         public ICommand ReplaceSourceColorCommand => _replaceSourceColorCommand
             ??= new RelayCommand(ReplaceColor);
@@ -106,7 +99,7 @@ namespace TgaBuilderLib.ViewModel
         // Format management
         public bool IsBgra32
         {
-            get => _panel.Presenter.Format == PixelFormats.Bgra32;
+            get => _panel.Presenter.HasAlpha;
             set => SetIsBgra32(value);
         }
 
@@ -114,7 +107,7 @@ namespace TgaBuilderLib.ViewModel
 
         private void SetIsBgra32(bool value)
         {
-            if ((_panel.Presenter.Format == PixelFormats.Bgra32) == value)
+            if ((_panel.Presenter.HasAlpha) == value)
                 return;
 
             if (value)
@@ -153,20 +146,20 @@ namespace TgaBuilderLib.ViewModel
 
         internal void DoColorPicking()
         {
-            BrushSource = new SolidColorBrush(_eyeDropper.Color);
+            ColorSource = _eyeDropper.Color;
         }
 
         internal void EndColorPicking()
         {
             _eyeDropper.IsActive = false;
-            _eyeDropper.Color = BrushSource.Color;
+            _eyeDropper.Color = ColorSource;
             IsEyedropperMode = false;
 
             _panel.EyedropperEnd();
         }
 
-        internal void SelectionMonoColorFill(SolidColorBrush brush)
-            => _selection.FillSelection(_panel.Presenter, brush.Color);
+        internal void SelectionMonoColorFill(Color color)
+            => _selection.FillSelection(_panel.Presenter, color);
 
     }
 }

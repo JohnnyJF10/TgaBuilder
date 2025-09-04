@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Commands;
 using TgaBuilderLib.ViewModel;
+using TgaBuilderWpfUi.Services;
 using TgaBuilderWpfUi.View;
 using Wpf.Ui.Appearance;
 using Application = System.Windows.Application;
@@ -15,6 +17,8 @@ namespace TgaBuilderWpfUi
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            CommandManagerProxy.Initialize(new CommandManagerService());
 
             var services = new ServiceCollection();
             BuildServicesDI(services);

@@ -1,4 +1,4 @@
-﻿using System.Windows.Media;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Utils
 {

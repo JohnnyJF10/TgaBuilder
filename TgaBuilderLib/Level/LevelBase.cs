@@ -1,15 +1,8 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-using System;
+
 using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Level
 {
@@ -22,6 +15,7 @@ namespace TgaBuilderLib.Level
         protected const int IMPORT_BPP = 4;
 
         protected readonly ArrayPool<byte> _bytePool = ArrayPool<byte>.Shared;
+        protected readonly IMediaFactory _mediaFactory;
 
         protected int targetPanelWidth;
         protected int targetPanelHeight;
@@ -138,11 +132,11 @@ namespace TgaBuilderLib.Level
             return new InflaterInputStream(limitedStream);
         }
 
-        public WriteableBitmap GetResultBitmap()
+        public IWriteableBitmap GetResultBitmap()
         {
             if (TargetAtlas == null)
                 throw new ArgumentNullException(nameof(TargetAtlas), "TargetAtlas byte array cannot be null.");
-            int bitsPerPixel = PixelFormats.Bgra32.BitsPerPixel;
+            int bitsPerPixel = 32;
             int stride = (targetPanelWidth * bitsPerPixel + 7) / 8;
             int actualHeight = Math.Min(targetPanelHeight, ATLAS_MAX_HEIGHT);
             int expectedSize = stride * targetPanelHeight;
@@ -154,23 +148,26 @@ namespace TgaBuilderLib.Level
             if (targetPanelHeight > ATLAS_MAX_HEIGHT)
                 BitmapSpaceSufficient = false;
 
-            // WriteableBitmap with capped height
-            WriteableBitmap writeableBitmap = new WriteableBitmap(targetPanelWidth, actualHeight, 96, 96, PixelFormats.Bgra32, null);
+            // IWriteableBitmap with capped height
+            IWriteableBitmap IWriteableBitmap = _mediaFactory.CreateEmptyBitmap(
+                width:      targetPanelWidth,
+                height:     actualHeight,
+                hasAlpha:   true);
 
-            writeableBitmap.Lock();
+            IWriteableBitmap.Lock();
 
             // Only visible area
-            IntPtr backBuffer = writeableBitmap.BackBuffer;
+            IntPtr backBuffer = IWriteableBitmap.BackBuffer;
             Marshal.Copy(
                 source: TargetAtlas, 
                 startIndex:     0, 
                 destination:    backBuffer, 
                 length:         croppedSize);
 
-            writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, targetPanelWidth, actualHeight));
-            writeableBitmap.Unlock();
+            IWriteableBitmap.AddDirtyRect(new PixelRect(0, 0, targetPanelWidth, actualHeight));
+            IWriteableBitmap.Unlock();
 
-            return writeableBitmap;
+            return IWriteableBitmap;
         }
 
 

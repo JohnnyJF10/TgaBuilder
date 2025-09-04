@@ -1,24 +1,22 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public WriteableBitmap CropBitmap(WriteableBitmap source, Int32Rect rectangle)
+        public IWriteableBitmap CropBitmap(IWriteableBitmap source, PixelRect rectangle)
         {
-            int bytesPerPixel = (source.Format.BitsPerPixel + 7) >> 3;
+            int bytesPerPixel = source.HasAlpha ? 4 : 3;
 
             int rectX = Math.Max(0, rectangle.X);
             int rectY = Math.Max(0, rectangle.Y);
             int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
             int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
 
-            WriteableBitmap target = GetNewWriteableBitmap(
+            IWriteableBitmap target = _mediaFactory.CreateEmptyBitmap(
                 width:          recWidth,
                 height:         recHeight,
-                hasAlpha:       source.Format == PixelFormats.Bgra32);
+                hasAlpha:       source.HasAlpha);
 
             int sourceStride = source.BackBufferStride;
             int targetStride = target.BackBufferStride;
@@ -43,17 +41,17 @@ namespace TgaBuilderLib.BitmapOperations
                     sourcePtr += strideDelta;
                 }
             }
-            target.AddDirtyRect(new Int32Rect(0, 0, recWidth, recHeight));
+            target.AddDirtyRect(new PixelRect(0, 0, recWidth, recHeight));
             source.Unlock();
             target.Unlock();
 
             return target;
         }
         
-        public BitmapSource CropBitmapSource(BitmapSource source, Int32Rect rectangle, byte[]? pixelbuffer = null)
+        public IReadableBitmap CropIReadableBitmap(IReadableBitmap source, PixelRect rectangle, byte[]? pixelbuffer = null)
         {
-            int bytesPerPixel = (source.Format.BitsPerPixel + 7) >> 3;
-        
+            int bytesPerPixel = source.HasAlpha ? 4 : 3;
+
             int rectX = Math.Max(0, rectangle.X);
             int rectY = Math.Max(0, rectangle.Y);
             int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
@@ -69,42 +67,36 @@ namespace TgaBuilderLib.BitmapOperations
                 : new byte[recHeight * stride];
 
             source.CopyPixels(
-                new Int32Rect(rectX, rectY, recWidth, recHeight),
+                new PixelRect(rectX, rectY, recWidth, recHeight),
                 pixelData,
                 stride,
                 0);
         
-            return BitmapSource.Create(
+            return _mediaFactory.CreateBitmapFromRaw(
                 recWidth,
                 recHeight,
-                source.DpiX,
-                source.DpiY,
-                source.Format,
-                source.Palette,
+                source.HasAlpha,
                 pixelData,
                 stride);
         }
 
-        public WriteableBitmap CropBitmap(WriteableBitmap source, Int32Rect rectangle, Color replacedColor, Color newColor)
+        public IWriteableBitmap CropBitmap(IWriteableBitmap source, PixelRect rectangle, Color replacedColor, Color newColor)
         {
-            if (source.Format != PixelFormats.Rgb24 && source.Format != PixelFormats.Bgra32)
-                throw new ArgumentException("Unsupported pixel format. Only Rgb24 and Bgra32 are supported.");
-
             int rectX = Math.Max(0, rectangle.X);
             int rectY = Math.Max(0, rectangle.Y);
             int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
             int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
 
-            WriteableBitmap target = GetNewWriteableBitmap(
+            IWriteableBitmap target = _mediaFactory.CreateEmptyBitmap(
                 width: recWidth,
                 height: recHeight,
-                hasAlpha: source.Format == PixelFormats.Bgra32);
+                hasAlpha: source.HasAlpha);
 
             source.Lock();
             target.Lock();
 
             byte r, g, b, a = 255;
-            int bpp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
+            int bpp = source.HasAlpha ? 3 : 4;
 
             unsafe
             {
@@ -128,10 +120,10 @@ namespace TgaBuilderLib.BitmapOperations
                             if (a == 0 || (replacedColor.R, replacedColor.G, replacedColor.B, replacedColor.A) == (r, g, b, a))
                             {
                                 // Replace with new color  
-                                resRow[0] = newColor.B; // B  
-                                resRow[1] = newColor.G; // G  
-                                resRow[2] = newColor.R; // R  
-                                resRow[3] = newColor.A; // A  
+                                resRow[0] = newColor.B;        // B  
+                                resRow[1] = newColor.G;        // G  
+                                resRow[2] = newColor.R;        // R  
+                                resRow[3] = newColor.A ?? 255; // A  
                             }
                             else
                             {
@@ -168,7 +160,7 @@ namespace TgaBuilderLib.BitmapOperations
                 }
             }
 
-            target.AddDirtyRect(new Int32Rect(0, 0, recWidth, recHeight));
+            target.AddDirtyRect(new PixelRect(0, 0, recWidth, recHeight));
             source.Unlock();
             target.Unlock();
 

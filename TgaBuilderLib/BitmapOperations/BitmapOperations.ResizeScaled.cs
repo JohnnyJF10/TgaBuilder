@@ -1,26 +1,22 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public WriteableBitmap ResizeScaled(WriteableBitmap source, int targetWidth, int targetHeight = -1)
+        public IWriteableBitmap ResizeScaled(IWriteableBitmap source, int targetWidth, int targetHeight = -1)
         {
             if (targetHeight == -1)
                 targetHeight = targetWidth;
 
-            PixelFormat format = source.Format;
-
-            if (format != PixelFormats.Bgr24 && format != PixelFormats.Rgb24 && format != PixelFormats.Bgra32)
-                throw new NotSupportedException("Only Bgr24, Rgb24 and Bgra32 formats are supported.");
+            //PixelFormat format = source.Format;
 
             int sourceWidth = source.PixelWidth;
             int sourceHeight = source.PixelHeight;
 
-            int sourceBytesPerPixel = format.BitsPerPixel / 8;
-            int targetBytesPerPixel = (format == PixelFormats.Bgra32) ? 4 : 3; 
+            int sourceBytesPerPixel = source.HasAlpha ? 4 : 3;
+            int targetBytesPerPixel = sourceBytesPerPixel;
 
             int sourceStride = (sourceWidth * sourceBytesPerPixel + 3) & ~3; 
             int targetStride = (targetWidth * targetBytesPerPixel + 3) & ~3;
@@ -49,7 +45,7 @@ namespace TgaBuilderLib.BitmapOperations
                             int srcX = x * sourceWidth / targetWidth;
                             byte* srcPixel = srcRow + srcX * sourceBytesPerPixel;
 
-                            if (format == PixelFormats.Bgra32)
+                            if (source.HasAlpha)
                             {
                                 // Copy Bgra32 Pixel
                                 dstRow[0] = srcPixel[0]; // B
@@ -74,12 +70,12 @@ namespace TgaBuilderLib.BitmapOperations
             }
 
             // Output fotmat remains the same as source
-            WriteableBitmap targetBitmap = GetNewWriteableBitmap(
+            IWriteableBitmap targetBitmap = _mediaFactory.CreateEmptyBitmap(
                 width:          targetWidth,
                 height:         targetHeight,
-                hasAlpha:       format == PixelFormats.Bgra32);
+                hasAlpha:       source.HasAlpha);
 
-            targetBitmap.WritePixels(new Int32Rect(0, 0, targetWidth, targetHeight),
+            targetBitmap.WritePixels(new PixelRect(0, 0, targetWidth, targetHeight),
                 pixels: targetPixels,
                 stride: targetStride,
                 offset: 0);

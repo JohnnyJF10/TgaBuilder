@@ -71,7 +71,10 @@ namespace TgaBuilderWpfUi.View
 
             if (CurrentPanel != null &&
                 PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand)
-                scrollCommand.Execute(e.GetPosition(CurrentPanel));
+            { 
+                Point pos = e.GetPosition(CurrentPanel);
+                scrollCommand.Execute((pos.X, pos.Y));
+            }
 
             if (PanelMouseAP.GetPanelMouseCommand(window) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((x, y, isDestination, MouseAction.Move, _modifier));

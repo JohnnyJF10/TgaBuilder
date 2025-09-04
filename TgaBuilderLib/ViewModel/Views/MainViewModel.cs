@@ -1,11 +1,5 @@
-﻿using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Windows;
+﻿
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
@@ -25,6 +19,7 @@ namespace TgaBuilderLib.ViewModel
             Func<ViewIndex, IView> getViewCallback,
             IMessageService messageService,
             IUndoRedoManager undoRedoManager,
+            IDispatcherService dispatcherService,
 
             SourceTexturePanelViewModel source,
             TargetTexturePanelViewModel destination,
@@ -48,11 +43,9 @@ namespace TgaBuilderLib.ViewModel
             IUsageData? usageData = null)
         {
             _getViewCallback = getViewCallback;
-
             _messageService = messageService;
-
             _undoRedoManager = undoRedoManager;
-
+            _dispatcherService = dispatcherService;
 
             Source = source;
             Destination = destination;
@@ -84,10 +77,9 @@ namespace TgaBuilderLib.ViewModel
         }
 
         private readonly Func<ViewIndex, IView> _getViewCallback;
-
         private readonly IMessageService _messageService;
-
         private readonly IUndoRedoManager _undoRedoManager;
+        private readonly IDispatcherService _dispatcherService;
 
         private FormatTabViewModel? _currnetlyEyedroppingTab;
 
@@ -394,14 +386,14 @@ namespace TgaBuilderLib.ViewModel
             {
                 Destination.MouseLeave();
                 PanelInfo = $"{Destination.Presenter.PixelWidth} x {Destination.Presenter.PixelHeight}px, " +
-                            $"{Destination.Presenter.Format.BitsPerPixel} bpp";
+                            $"{(Destination.Presenter.HasAlpha ? 32 : 24)} bpp";
                 PanelHelp = $"Destination Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
             }
             else
             {
                 Source.MouseLeave();
                 PanelInfo = $"{Source.Presenter.PixelWidth} x {Source.Presenter.PixelHeight}px, " +
-                            $"{Source.Presenter.Format.BitsPerPixel} bpp";
+                            $"{(Source.Presenter.HasAlpha ? 32 : 24)} bpp";
                 PanelHelp = $"Source Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
             }
 
@@ -433,7 +425,7 @@ namespace TgaBuilderLib.ViewModel
             await Task.Delay(1000);
 
             if (usageData.WasLoadingUnsuccessful)
-                Application.Current.Dispatcher.Invoke(() =>
+                _dispatcherService.Invoke(() =>
                     _messageService.SendMessage(MessageType.UsageDataLoadError));
         }
     }

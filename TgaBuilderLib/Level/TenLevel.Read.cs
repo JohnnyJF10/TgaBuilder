@@ -1,12 +1,4 @@
-﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-using System;
-using System.Buffers;
-using System.Diagnostics;
-using System.IO;
-using System.Net.Security;
-using System.Text;
-using System.Threading;
-using TgaBuilderLib.Utils;
+﻿using System.Text;
 
 namespace TgaBuilderLib.Level
 {

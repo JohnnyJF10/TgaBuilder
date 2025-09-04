@@ -1,41 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-
         public void FillRectBitmapUnmonitored(
-            WriteableBitmap source,
-            WriteableBitmap target,
+            IWriteableBitmap source,
+            IWriteableBitmap target,
             (int X, int Y) pos,
             double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default)
         {
-            if (source.Format != PixelFormats.Rgb24 && source.Format != PixelFormats.Bgra32)
-                throw new ArgumentException("Source must be in Rgb24 or Bgra32 format.");
-
-            if (target.Format == PixelFormats.Rgb24)
-                FillRectBitmap24Unmonitored(source, target, pos, opacity, placingMode);
-            else if (target.Format == PixelFormats.Bgra32)
+            if (target.HasAlpha)
                 FillRectBitmap32Unmonitored(source, target, pos, opacity, placingMode);
             else
-                throw new ArgumentException("Target must be PixelFormats.Rgb24 or PixelFormats.Bgra32.");
-
-
+                FillRectBitmap24Unmonitored(source, target, pos, opacity, placingMode);
         }
 
         private void FillRectBitmap24Unmonitored(
-            WriteableBitmap source,
-            WriteableBitmap target,
+            IWriteableBitmap source,
+            IWriteableBitmap target,
             (int X, int Y) pos,
             double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default)
@@ -77,7 +62,7 @@ namespace TgaBuilderLib.BitmapOperations
 
                 int srcStride = source.BackBufferStride;
                 int tgtStride = target.BackBufferStride;
-                int srcBpp = (source.Format.BitsPerPixel + 7) / 8;
+                int srcBpp = source.HasAlpha ? 4 : 3;
 
                 for (int y = 0; y < sHeight; y++)
                 {
@@ -89,7 +74,7 @@ namespace TgaBuilderLib.BitmapOperations
                     {
                         byte r = 0, g = 0, b = 0, a = 255;
 
-                        if (source.Format == PixelFormats.Rgb24)
+                        if (!source.HasAlpha)
                         {
                             r = srcLine[0];
                             g = srcLine[1];
@@ -138,8 +123,8 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            target.AddDirtyRect(new Int32Rect(posX, posY, sWidth, sHeight));
-            SwapBitmap?.AddDirtyRect(new Int32Rect(0, 0, sWidth, sHeight));
+            target.AddDirtyRect(new PixelRect(posX, posY, sWidth, sHeight));
+            SwapBitmap?.AddDirtyRect(new PixelRect(0, 0, sWidth, sHeight));
 
             SwapBitmap?.Unlock();
             target.Unlock();
@@ -147,8 +132,8 @@ namespace TgaBuilderLib.BitmapOperations
         }
 
         private void FillRectBitmap32Unmonitored(
-            WriteableBitmap source,
-            WriteableBitmap target,
+            IWriteableBitmap source,
+            IWriteableBitmap target,
             (int X, int Y) pos,
             double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default)
@@ -190,7 +175,7 @@ namespace TgaBuilderLib.BitmapOperations
 
                 int srcStride = source.BackBufferStride;
                 int tgtStride = target.BackBufferStride;
-                int srcBpp = (source.Format.BitsPerPixel + 7) / 8;
+                int srcBpp = source.HasAlpha ? 4 : 3;
 
                 for (int y = 0; y < sHeight; y++)
                 {
@@ -202,7 +187,7 @@ namespace TgaBuilderLib.BitmapOperations
                     {
                         byte r = 0, g = 0, b = 0, a = 255;
 
-                        if (source.Format == PixelFormats.Rgb24)
+                        if (!source.HasAlpha)
                         {
                             r = srcLine[0];
                             g = srcLine[1];
@@ -254,8 +239,8 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            target.AddDirtyRect(new Int32Rect(posX, posY, sWidth, sHeight));
-            SwapBitmap?.AddDirtyRect(new Int32Rect(0, 0, sWidth, sHeight));
+            target.AddDirtyRect(new PixelRect(posX, posY, sWidth, sHeight));
+            SwapBitmap?.AddDirtyRect(new PixelRect(0, 0, sWidth, sHeight));
 
             SwapBitmap?.Unlock();
             target.Unlock();

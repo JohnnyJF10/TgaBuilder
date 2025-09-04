@@ -21,12 +21,12 @@ namespace TgaBuilderLib.Commands
 
         public event EventHandler? CanExecuteChanged
         {
-            add => CommandManager.RequerySuggested += value!;
-            remove => CommandManager.RequerySuggested -= value!;
+            add => CommandManagerProxy.RequerySuggested += value!;
+            remove => CommandManagerProxy.RequerySuggested -= value!;
         }
 
         public void RaiseCanExecuteChanged() =>
-            CommandManager.InvalidateRequerySuggested();
+            CommandManagerProxy.InvalidateRequerySuggested();
     }
 
     public class RelayCommand<T> : ICommand
@@ -64,11 +64,11 @@ namespace TgaBuilderLib.Commands
 
         public event EventHandler? CanExecuteChanged
         {
-            add => CommandManager.RequerySuggested += value!;
-            remove => CommandManager.RequerySuggested -= value!;
+            add => CommandManagerProxy.RequerySuggested += value!;
+            remove => CommandManagerProxy.RequerySuggested -= value!;
         }
 
         public void RaiseCanExecuteChanged() =>
-            CommandManager.InvalidateRequerySuggested();
+            CommandManagerProxy.InvalidateRequerySuggested();
     }
 }

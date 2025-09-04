@@ -5,8 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 
@@ -15,9 +14,9 @@ namespace TgaBuilderLib.BitmapBytesIO
     public partial class BitmapBytesIO : IBitmapBytesIO
     {
         public BitmapBytesIO(
-            Func<int, int, bool, WriteableBitmap> bitmapFactory)
+            IMediaFactory mediaFactory)
         {
-            _bitmapFactory = bitmapFactory;
+            _mediaFactory = mediaFactory ?? throw new ArgumentNullException(nameof(mediaFactory));
         }
 
         private const int MAX_SIZE = 32768;
@@ -25,7 +24,7 @@ namespace TgaBuilderLib.BitmapBytesIO
         private const int MAX_TARGET_WIDTH = 16 * TR_PAGE_SIZE;
 
         private readonly ArrayPool<byte> _bytesPool = ArrayPool<byte>.Shared;
-        private readonly Func<int, int, bool, WriteableBitmap> _bitmapFactory;
+        private readonly IMediaFactory _mediaFactory;
 
         public ResultStatus ResultInfo { get; private set; } = ResultStatus.Success;
 
@@ -40,21 +39,20 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         public int ActualDataLength { get; private set; }
 
-        public WriteableBitmap GetLoadedBitmap()
+        public IWriteableBitmap GetLoadedBitmap()
         {
             if (LoadedBytes == null)
                 throw new InvalidOperationException("No image data loaded.");
 
-            var wb = GetNewBitmap(
+            var wb = _mediaFactory.CreateEmptyBitmap(
                 width:      LoadedWidth,
                 height:     LoadedHeight,
                 hasAlpha:   LoadedHasAlpha);
 
             wb.WritePixels(
-                sourceRect: new System.Windows.Int32Rect(0, 0, LoadedWidth, LoadedHeight),
+                rect: new PixelRect(0, 0, LoadedWidth, LoadedHeight),
                 pixels: LoadedBytes,
-                stride: LoadedStride,
-                offset: 0);
+                stride: LoadedStride);
 
             return wb;
         }
@@ -119,8 +117,5 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         private int RoundUpToNextMultiple(int number, int multiple)
             => multiple == 0 ? number : (number + multiple - 1) / multiple * multiple;
-
-        private WriteableBitmap GetNewBitmap(int width, int height, bool hasAlpha)
-            => _bitmapFactory.Invoke(width, height, hasAlpha);
     }
 }

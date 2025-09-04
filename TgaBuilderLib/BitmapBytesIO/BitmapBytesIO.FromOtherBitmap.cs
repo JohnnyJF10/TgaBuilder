@@ -4,28 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {
     public partial class BitmapBytesIO
     {
-        public WriteableBitmap FromOtherBitmap(WriteableBitmap source)
+        public IWriteableBitmap FromOtherBitmap(IWriteableBitmap source)
         {
-            if (source.Format != PixelFormats.Bgra32 && source.Format != PixelFormats.Rgb24)
-                throw new ArgumentException("Source must be in Bgra32 or Rgb24 format");
-
-            bool isSourceBgra32 = source.Format == PixelFormats.Bgra32;
-
             int sourceWidth = source.PixelWidth;
             int height = source.PixelHeight;
             int targetWidth = EstimateTargetWidth(sourceWidth);
 
-            WriteableBitmap target = GetNewBitmap(
+            IWriteableBitmap target = _mediaFactory.CreateEmptyBitmap(
                 width: targetWidth,
                 height: height,
-                hasAlpha: isSourceBgra32);
+                hasAlpha: source.HasAlpha);
 
             source.Lock();
             target.Lock();
@@ -55,7 +49,7 @@ namespace TgaBuilderLib.BitmapBytesIO
 
             }
 
-            target.AddDirtyRect(new Int32Rect(0, 0, targetWidth, height));
+            target.AddDirtyRect(new PixelRect(0, 0, targetWidth, height));
             source.Unlock();
             target.Unlock();
 

@@ -1,38 +1,26 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public WriteableBitmap ReplaceColor(WriteableBitmap source, Color replacedColor, Color newColor)
-        {
-            if (source.Format == PixelFormats.Bgra32)
-            {
-                return ReplaceColor32(source, replacedColor, newColor);
-            }
-            else if (source.Format == PixelFormats.Rgb24)
-            {
-                return ReplaceColor24(source, replacedColor, newColor);
-            }
-            else
-            {
-                throw new ArgumentException("Unsupported pixel format. Only Bgra32 and Rgb24 are supported.");
-            }
-        }
+        public IWriteableBitmap ReplaceColor(IWriteableBitmap source, Color replacedColor, Color newColor)
+            => source.HasAlpha 
+            ? ReplaceColor32(source, replacedColor, newColor) 
+            : ReplaceColor24(source, replacedColor, newColor);
+        
 
-        private WriteableBitmap ReplaceColor24(WriteableBitmap source, Color replacedColor, Color newColor)
+        private IWriteableBitmap ReplaceColor24(IWriteableBitmap source, Color replacedColor, Color newColor)
         {
             int width = source.PixelWidth;
             int height = source.PixelHeight;
             int sourceStride = width * 3;
             int targetStride = width * 3;
 
-            WriteableBitmap result = GetNewWriteableBitmap(
+            IWriteableBitmap result = _mediaFactory.CreateEmptyBitmap(
                 width:          width,
                 height:         height,
-                hasAlpha:       source.Format == PixelFormats.Bgra32);
+                hasAlpha:       false);
 
             source.Lock();
             result.Lock();
@@ -75,7 +63,7 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            result.AddDirtyRect(new Int32Rect(0, 0, width, height));
+            result.AddDirtyRect(new PixelRect(0, 0, width, height));
 
             source.Unlock();
             result.Unlock();
@@ -83,17 +71,17 @@ namespace TgaBuilderLib.BitmapOperations
             return result;
         }
 
-        private WriteableBitmap ReplaceColor32(WriteableBitmap source, Color replacedColor, Color newColor)
+        private IWriteableBitmap ReplaceColor32(IWriteableBitmap source, Color replacedColor, Color newColor)
         {
             int width = source.PixelWidth;
             int height = source.PixelHeight;
             int sourceStride = width * 3;
             int targetStride = width * 3;
 
-            WriteableBitmap result = GetNewWriteableBitmap(
+            IWriteableBitmap result = _mediaFactory.CreateEmptyBitmap(
                 width: width,
                 height: height,
-                hasAlpha: source.Format == PixelFormats.Bgra32);
+                hasAlpha: true);
 
             source.Lock();
             result.Lock();
@@ -121,10 +109,10 @@ namespace TgaBuilderLib.BitmapOperations
                             (replacedColor.R == r && replacedColor.G == g && replacedColor.B == b))
                         {
                             // Replace with new color  
-                            resRow[0] = newColor.B; // B 
-                            resRow[1] = newColor.G; // G  
-                            resRow[2] = newColor.R; // R  
-                            resRow[3] = newColor.A; // A
+                            resRow[0] = newColor.B;        // B 
+                            resRow[1] = newColor.G;        // G  
+                            resRow[2] = newColor.R;        // R  
+                            resRow[3] = newColor.A ?? 255; // A
                         }
                         else
                         {
@@ -139,7 +127,7 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            result.AddDirtyRect(new Int32Rect(0, 0, width, height));
+            result.AddDirtyRect(new PixelRect(0, 0, width, height));
 
             source.Unlock();
             result.Unlock();

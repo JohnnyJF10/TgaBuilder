@@ -5,78 +5,67 @@ using System.Windows.Media;
 
 using TgaBuilderLib.Abstraction;
 using System.IO;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderWpfUi.Wrappers
 {
 
-    public class WriteableBitmapWrapper : IWriteableBitmap
+    public class WriteableBitmapWrapper : BitmapSourceWrapper, IWriteableBitmap
     {
-        public WriteableBitmapWrapper(WriteableBitmap bitmap)
+        private readonly WriteableBitmap _innerWriteableBitmap;
+
+        public WriteableBitmapWrapper(BitmapSource bitmap) : base(bitmap)
         {
-            _inner = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
+            if (bitmap is WriteableBitmap writeableBitmap)
+                _innerWriteableBitmap = writeableBitmap;
+            else if (bitmap is BitmapSource source)
+                _innerWriteableBitmap = new WriteableBitmap(source);
+            else
+                throw new ArgumentException("Bitmap is not a WriteableBitmap or BitmapSource", nameof(bitmap));
         }
-        private readonly WriteableBitmap _inner;
 
-        public int PixelWidth => _inner.PixelWidth;
-    
-        public int PixelHeight => _inner.PixelHeight;
-    
-        public bool HasAlpha => _inner.Format == PixelFormats.Bgra32 || _inner.Format == PixelFormats.Pbgra32;
-    
-        public int Size => _inner.PixelWidth * _inner.PixelHeight * (_inner.Format.BitsPerPixel / 8);
+        internal WriteableBitmap InnerWriteableBitmap => _innerWriteableBitmap;
 
-        internal WriteableBitmap Inner => _inner;
+        public IntPtr BackBuffer => InnerWriteableBitmap.BackBuffer;
 
-        public void AddDirtyRect(IntRect dirtyRect)
+        public int BackBufferStride => InnerWriteableBitmap.BackBufferStride;
+
+        public void AddDirtyRect(PixelRect dirtyRect)
         {
             var rect = new Int32Rect(dirtyRect.X, dirtyRect.Y, dirtyRect.Width, dirtyRect.Height);
-            _inner.AddDirtyRect(rect);
-        }
-
-        public void CopyPixels(IntRect sourceRect, Array pixels, int stride, int offset)
-        {
-            var rect = new Int32Rect(sourceRect.X, sourceRect.Y, sourceRect.Width, sourceRect.Height);
-            _inner.CopyPixels(rect, pixels, stride, offset);
-        }
-
-        public void CopyPixels(Array pixels, int stride, int offset)
-        {
-            _inner.CopyPixels(pixels, stride, offset);
+            _innerWriteableBitmap.AddDirtyRect(rect);
         }
 
         public void Freeze()
         {
-            _inner.Freeze();
+            _innerWriteableBitmap.Freeze();
         }
 
         public IBitmapLocker GetLocker()
         {
-            return new BitmapLocker(_inner);
+            return new BitmapLocker(_innerWriteableBitmap);
         }
 
         public void Lock()
         {
-            _inner.Lock();
-        }
-
-        public void Save(Stream stream)
-        {
-            var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(_inner));
-            encoder.Save(stream);
-        }
-
-        public void Save(string filePath)
-        {
-            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-            {
-                Save(fs);
-            }
+            _innerWriteableBitmap.Lock();
         }
 
         public void Unlock()
         {
-            _inner.Unlock();
+            _innerWriteableBitmap.Unlock();
+        }
+
+        public void WritePixels(PixelRect rect, IntPtr pixels, int stride, int offset = 0)
+        {
+            var intRect = new Int32Rect(rect.X, rect.Y, rect.Width, rect.Height);
+            _innerWriteableBitmap.WritePixels(intRect, pixels, stride, offset);
+        }
+
+        public void WritePixels(PixelRect rect, Array pixels, int stride, int offset = 0)
+        {
+            var intRect = new Int32Rect(rect.X, rect.Y, rect.Width, rect.Height);
+            _innerWriteableBitmap.WritePixels(intRect, pixels, stride, offset);
         }
     }
 }

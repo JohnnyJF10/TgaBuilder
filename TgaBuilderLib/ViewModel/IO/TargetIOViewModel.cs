@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
@@ -23,6 +13,8 @@ namespace TgaBuilderLib.ViewModel
     {
         public TargetIOViewModel(
             Func<ViewIndex, IView> getViewCallback,
+            IMediaFactory mediaFactory,
+            IDispatcherService dispatcherService,
             IFileService fileService,
             IMessageService messageService,
             IMessageBoxService messageBoxService,
@@ -31,8 +23,9 @@ namespace TgaBuilderLib.ViewModel
             IUndoRedoManager undoRedoManager,
             IUsageData usageData,
             TexturePanelViewModelBase panel)
-            : base(getViewCallback, fileService, messageService, imageManager, logger, usageData, panel)
+            : base(getViewCallback, fileService, messageService, imageManager, logger, usageData, dispatcherService, panel)
         {
+            _mediaFactory = mediaFactory;
             _messageBoxService = messageBoxService;
             _undoRedoManager = undoRedoManager;
         }
@@ -51,10 +44,11 @@ namespace TgaBuilderLib.ViewModel
             or DirectoryNotFoundException
             or ArgumentException
             or ArgumentNullException
-            or FileFormatException
+            or FormatException
             or NotSupportedException
             or InvalidOperationException;
 
+        private readonly IMediaFactory _mediaFactory;
         private readonly IUndoRedoManager _undoRedoManager;
         private readonly IMessageBoxService _messageBoxService;
 
@@ -89,7 +83,7 @@ namespace TgaBuilderLib.ViewModel
 
         public void SaveCurrent() => SetupSaveTask(_lastFilePath);
 
-        public async Task CopyEntire(WriteableBitmap bitmap)
+        public async Task CopyEntire(IWriteableBitmap bitmap)
         {
             if (_undoRedoManager.IsTargetDirty())
             {
@@ -134,13 +128,10 @@ namespace TgaBuilderLib.ViewModel
                 }
             }
 
-            _panel.Presenter = new WriteableBitmap(
-                pixelWidth: 256,
-                pixelHeight: 1536,
-                dpiX: 96,
-                dpiY: 96,
-                pixelFormat: PixelFormats.Bgra32,
-                palette: null);
+            _panel.Presenter = _mediaFactory.CreateEmptyBitmap(
+                width: 256,
+                height: 1536,
+                hasAlpha: true);
 
             _lastFilePath = "";
             OnPropertyChanged(nameof(LastFileName));
@@ -222,7 +213,7 @@ namespace TgaBuilderLib.ViewModel
                 ResultStatus.BitmapAreaNotSufficient => MessageType.DestinationOpenSuccessButIncomplete,
                 _ => MessageType.UnknownError
             };
-            Application.Current.Dispatcher.Invoke(() => _messageService.SendMessage(resMessage));
+            _dispatcherService.Invoke(() => _messageService.SendMessage(resMessage));
         }
 
         private async Task<bool> Save(string? fileName = null)

@@ -1,11 +1,8 @@
 ﻿using System.Diagnostics;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Enums;
-using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
 using TgaBuilderLib.ViewModel.Elements;
@@ -15,12 +12,13 @@ namespace TgaBuilderLib.ViewModel
     public class TargetTexturePanelViewModel : TexturePanelViewModelBase
     {
         public TargetTexturePanelViewModel(
+            IMediaFactory mediaFactory,
             ICursorSetter cursorSetter,
             IBitmapOperations bitmapOperations,
             IUndoRedoManager undoRedoManager,
             IEyeDropper eyeDropper,
 
-            WriteableBitmap presenter,
+            IWriteableBitmap presenter,
 
             SelectionViewModel SelectionVM,
             AnimationViewModel AnimationVM,
@@ -44,11 +42,14 @@ namespace TgaBuilderLib.ViewModel
                 animSelectShapeVM:    animSelectShapeVM,
                 selectionShapeVM:     selectionShapeVM)
         {
+            _mediaFactory = mediaFactory;
             _undoRedoManager = undoRedoManager;
 
             OriginalPosShape = originalPosShapeVM;
             TargetPosShape =   targetPosShapeVM;
         }
+
+        private readonly IMediaFactory _mediaFactory;
 
         internal TargetMode mode = TargetMode.Default;
         internal PlacingMode placingMode = PlacingMode.Default;
@@ -68,7 +69,7 @@ namespace TgaBuilderLib.ViewModel
             $"{Presenter.PixelWidth} x {Presenter.PixelHeight}px " +
             $"({Presenter.PixelWidth / Picker.Size} x {Presenter.PixelHeight / Picker.Size} = " +
             $"{Presenter.PixelWidth / Picker.Size * Presenter.PixelHeight / Picker.Size} tiles), " +
-            $"{Presenter.Format.BitsPerPixel}bpp";
+            $"{(Presenter.HasAlpha ? 32 : 24)}bpp";
 
 
         public override string PanelHelp
@@ -102,7 +103,7 @@ namespace TgaBuilderLib.ViewModel
 
 
 
-        public override void SetPresenter(WriteableBitmap bitmap)
+        public override void SetPresenter(IWriteableBitmap bitmap)
         {
             int expectedWidth = (int)Math.Ceiling(bitmap.PixelWidth / 256.0) * 256;
             int expectedHeight = (int)Math.Ceiling(bitmap.PixelHeight / 256.0) * 256;
@@ -354,16 +355,13 @@ namespace TgaBuilderLib.ViewModel
                 SelectionHeight = Presenter.PixelHeight - Picker.Y;
 
             int finalByteSize = SelectionWidth * SelectionHeight
-                * (Presenter.Format == PixelFormats.Rgb24 ? 3 : 4);
+                * (Presenter.HasAlpha ? 4 : 3);
 
             if ((placingMode & PlacingMode.PlaceAndSwap) == PlacingMode.PlaceAndSwap)
-                _bitmapOperations.SwapBitmap = new WriteableBitmap(
-                    pixelWidth:     SelectionWidth,
-                    pixelHeight:    SelectionHeight,
-                    dpiX:           96,
-                    dpiY:           96,
-                    pixelFormat:    Presenter.Format,
-                    palette:        null);
+                _bitmapOperations.SwapBitmap = _mediaFactory.CreateEmptyBitmap(
+                    width:     SelectionWidth,
+                    height:    SelectionHeight,
+                    hasAlpha:  Presenter.HasAlpha);
             else
                 _bitmapOperations.SwapBitmap = null;
 
@@ -382,7 +380,7 @@ namespace TgaBuilderLib.ViewModel
                     placingMode:    placingMode);
 
                 _undoRedoManager.PushBitmapEditAction(
-                    region: new Int32Rect(Picker.X, Picker.Y, 
+                    region: new PixelRect(Picker.X, Picker.Y, 
                         SelectionWidth, SelectionHeight),
                     oldPixels:          undoPixels,
                     newPixels:          redoPixels,
@@ -407,7 +405,7 @@ namespace TgaBuilderLib.ViewModel
                 EndPlacingStartPicking();
         }
 
-        private void UndoRedoPlacing(Int32Rect rect, byte[] pixels)
+        private void UndoRedoPlacing(PixelRect rect, byte[] pixels)
         {
             _bitmapOperations.FillRectArray(
                 bitmap: Presenter,
@@ -425,8 +423,8 @@ namespace TgaBuilderLib.ViewModel
             if (height < oldHeight || width < oldWidth)
             {
                 int requiredBytes = height < oldHeight
-                    ? width * (oldHeight - height) * (Presenter.Format == PixelFormats.Rgb24 ? 3 : 4)
-                    : (oldWidth - width) * height * (Presenter.Format == PixelFormats.Rgb24 ? 3 : 4);
+                    ? width * (oldHeight - height) * (Presenter.HasAlpha ? 4 : 3)
+                    : (oldWidth - width) * height * (Presenter.HasAlpha ? 4 : 3);
 
                 if (_undoRedoManager.TryBeginRenting(
                     totalSizeInBytes:   requiredBytes,
@@ -483,9 +481,9 @@ namespace TgaBuilderLib.ViewModel
 
         private void UndoRedoEnlargeAndFillPresenter(int width, int height, byte[] pixels)
         {
-            Int32Rect fillRect;
+            PixelRect fillRect;
 
-            int bytePerPixel = Presenter.Format == PixelFormats.Rgb24 ? 3 : 4;
+            int bytePerPixel = Presenter.HasAlpha ? 4 : 3;
 
             if (height > Presenter.PixelHeight)
             {
@@ -493,7 +491,7 @@ namespace TgaBuilderLib.ViewModel
                     throw new ArgumentException(
                         "Pixels array length is too short for the expected size for the given bitmap dimensions.");
 
-                fillRect = new Int32Rect(0, Presenter.PixelHeight, width, height - Presenter.PixelHeight);
+                fillRect = new PixelRect(0, Presenter.PixelHeight, width, height - Presenter.PixelHeight);
             }
             else if (width > Presenter.PixelWidth)
             {
@@ -501,7 +499,7 @@ namespace TgaBuilderLib.ViewModel
                     throw new ArgumentException(
                         "Pixels array length is too short for the expected size for the given bitmap dimensions.");
 
-                fillRect = new Int32Rect(Presenter.PixelWidth, 0, width - Presenter.PixelWidth, height);
+                fillRect = new PixelRect(Presenter.PixelWidth, 0, width - Presenter.PixelWidth, height);
             }
             else
                 throw new ArgumentException(
@@ -523,12 +521,12 @@ namespace TgaBuilderLib.ViewModel
 
         private void UndoRedoEnlargeandFillPresenter(int width, int height)
         {
-            Int32Rect fillRect;
+            PixelRect fillRect;
 
             if (height > Presenter.PixelHeight)
-                fillRect = new Int32Rect(0, Presenter.PixelHeight, width, height - Presenter.PixelHeight);
+                fillRect = new PixelRect(0, Presenter.PixelHeight, width, height - Presenter.PixelHeight);
             else if (width > Presenter.PixelWidth)
-                fillRect = new Int32Rect(Presenter.PixelWidth, 0, width - Presenter.PixelWidth, height);
+                fillRect = new PixelRect(Presenter.PixelWidth, 0, width - Presenter.PixelWidth, height);
             else
                 throw new ArgumentException(
                     "Either one of the arguments must be greater than the current dimensions of the bitmap.");
@@ -542,7 +540,7 @@ namespace TgaBuilderLib.ViewModel
             _bitmapOperations.FillRectColor(
                 bitmap:     Presenter,
                 rect:       fillRect,
-                fillColor:  Color.FromArgb(0, 0, 0, 0));
+                fillColor:  new(0, 0, 0, 0));
 
             UpdatePanelAfterResize();
         }
@@ -595,7 +593,7 @@ namespace TgaBuilderLib.ViewModel
 
         private void RotateTile()
         {
-            Int32Rect rect = new Int32Rect(Picker.X, Picker.Y, Picker.Size, Picker.Size);
+            PixelRect rect = new PixelRect(Picker.X, Picker.Y, Picker.Size, Picker.Size);
             _bitmapOperations.RotateRec(Presenter, rect);
 
             _undoRedoManager.PushRegionRotateAction(
@@ -603,14 +601,14 @@ namespace TgaBuilderLib.ViewModel
                 rotatingCallback: RotateUndoRedo);
         }
 
-        private void RotateUndoRedo(Int32Rect rect, bool counterclockwise)
+        private void RotateUndoRedo(PixelRect rect, bool counterclockwise)
         {
             _bitmapOperations.RotateRec(Presenter, rect, counterclockwise);
         }
 
         private void FlipTileHorizontal()
         {
-            var rect = new Int32Rect(Picker.X, Picker.Y, Picker.Size, Picker.Size);
+            var rect = new PixelRect(Picker.X, Picker.Y, Picker.Size, Picker.Size);
             _bitmapOperations.FlipRectHor(Presenter, rect);
 
             _undoRedoManager.PushRegionFlipAction(
@@ -618,14 +616,14 @@ namespace TgaBuilderLib.ViewModel
                 flippingCallback:   FlipHorizontalUndoRedo);
         }
 
-        private void FlipHorizontalUndoRedo(Int32Rect rect)
+        private void FlipHorizontalUndoRedo(PixelRect rect)
         {
             _bitmapOperations.FlipRectHor(Presenter, rect);
         }
 
         private void FlipTileVertical()
         {
-            Int32Rect rect = new Int32Rect(Picker.X, Picker.Y, Picker.Size, Picker.Size);
+            PixelRect rect = new PixelRect(Picker.X, Picker.Y, Picker.Size, Picker.Size);
             _bitmapOperations.FlipRectVert(Presenter, rect);
 
             _undoRedoManager.PushRegionFlipAction(
@@ -633,7 +631,7 @@ namespace TgaBuilderLib.ViewModel
                 flippingCallback:   FlipVerticalUndoRedo);
         }
 
-        private void FlipVerticalUndoRedo(Int32Rect rect)
+        private void FlipVerticalUndoRedo(PixelRect rect)
         {
             _bitmapOperations.FlipRectVert(Presenter, rect);
         }
@@ -725,14 +723,14 @@ namespace TgaBuilderLib.ViewModel
         }
 
         [Obsolete]
-        private byte[] GetByteArrayFromWriteableBitmap(WriteableBitmap writeableBitmap)
+        private byte[] GetByteArrayFromIWriteableBitmap(IWriteableBitmap wb)
         {
-            int width = writeableBitmap.PixelWidth;
-            int height = writeableBitmap.PixelHeight;
-            int stride = width * (writeableBitmap.Format.BitsPerPixel / 8);
+            int width = wb.PixelWidth;
+            int height = wb.PixelHeight;
+            int stride = width * (wb.HasAlpha ? 4 : 3);
             byte[] pixelData = new byte[height * stride];
 
-            writeableBitmap.CopyPixels(pixelData, stride, 0);
+            wb.CopyPixels(pixelData, stride, 0);
 
             return pixelData;
         }

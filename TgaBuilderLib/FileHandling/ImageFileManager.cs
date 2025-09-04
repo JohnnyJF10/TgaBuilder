@@ -1,11 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using Pfim;
-using System.Buffers;
-using System.Drawing.PSD;
-using System.IO;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapBytesIO;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.Level;
@@ -105,7 +98,7 @@ namespace TgaBuilderLib.FileHandling
                 }
         }
 
-        public void SaveImageFile(string fileName, BitmapSource bitmap)
+        public void SaveImageFile(string fileName, IReadableBitmap bitmap)
         {
             if (bitmap == null)
                 throw new ArgumentNullException(nameof(bitmap), "Bitmap cannot be null.");
@@ -148,12 +141,12 @@ namespace TgaBuilderLib.FileHandling
         }
 
 
-        public WriteableBitmap GetDestinationConfirmBitmap(WriteableBitmap inputBitmap)
+        public IWriteableBitmap GetDestinationConfirmBitmap(IWriteableBitmap inputBitmap)
             => _bitmapIO.FromOtherBitmap(inputBitmap);
 
-        public WriteableBitmap GetLoadedBitmap()
+        public IWriteableBitmap GetLoadedBitmap()
         {
-            WriteableBitmap? wb = null;
+            IWriteableBitmap? wb = null;
             if (_loadedLevel is not null)
             {
                 wb = _loadedLevel.GetResultBitmap();

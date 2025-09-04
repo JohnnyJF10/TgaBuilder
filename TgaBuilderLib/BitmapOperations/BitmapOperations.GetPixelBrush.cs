@@ -1,11 +1,11 @@
-﻿using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public Color GetPixelBrush(WriteableBitmap bitmap, int x, int y)
+        public Color GetPixelBrush(IWriteableBitmap bitmap, int x, int y)
         {
             if (bitmap == null)
                 throw new ArgumentNullException(nameof(bitmap));
@@ -13,7 +13,7 @@ namespace TgaBuilderLib.BitmapOperations
             x = Math.Clamp(x, 0, bitmap.PixelWidth - 1);
             y = Math.Clamp(y, 0, bitmap.PixelHeight - 1);
 
-            int bytesPerPixel = (bitmap.Format.BitsPerPixel + 7) / 8;
+            int bytesPerPixel = bitmap.HasAlpha ? 4 : 3;
             int stride = bitmap.BackBufferStride;
             IntPtr pBackBuffer = bitmap.BackBuffer;
 
@@ -23,7 +23,7 @@ namespace TgaBuilderLib.BitmapOperations
             {
                 byte* pPixel = (byte*)pBackBuffer.ToPointer() + y * stride + x * bytesPerPixel;
 
-                if (bitmap.Format.BitsPerPixel == 32)
+                if (bitmap.HasAlpha)
                 {
                     b = pPixel[0];
                     g = pPixel[1];
@@ -39,7 +39,7 @@ namespace TgaBuilderLib.BitmapOperations
                 }
             }
 
-            return Color.FromArgb(a, r, g, b);
+            return new Color(a, r, g, b);
         }
     }
 }

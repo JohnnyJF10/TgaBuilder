@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
-    public partial class BitmapOperations
+    public partial class BitmapOperations : IBitmapOperations
     {
         public BitmapOperations(
-            Func<int, int, bool, WriteableBitmap> bitmapFactory)
+            IMediaFactory mediaFactory)
         {
-            _bitmapFactory = bitmapFactory;
+            _mediaFactory = mediaFactory;
         }
 
-        private readonly Func<int, int, bool, WriteableBitmap> _bitmapFactory;
-
-        private WriteableBitmap GetNewWriteableBitmap(int width, int height, bool hasAlpha)
-            => _bitmapFactory.Invoke(width, height, hasAlpha);
+        private readonly IMediaFactory _mediaFactory;
     }
 }

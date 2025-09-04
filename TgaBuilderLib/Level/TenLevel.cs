@@ -1,11 +1,5 @@
-﻿using System;
-using System.Buffers;
-using System.Drawing;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Level
 {
@@ -94,20 +88,15 @@ namespace TgaBuilderLib.Level
 
         private byte[] GetRentedPixelArrayFromPng(byte[] pngBytes, int width, int height, int size)
         {
-            var bitmapImage = new BitmapImage();
+            IWriteableBitmap wb;
             using (var ms = new MemoryStream(pngBytes, 0, size, writable: false, publiclyVisible: true))
             {
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
+                wb = _mediaFactory.LoadBitmap(ms);
             }
 
-            width = bitmapImage.PixelWidth;
-            height = bitmapImage.PixelHeight;
+            width = wb.PixelWidth;
+            height = wb.PixelHeight;
 
-            var wb = new WriteableBitmap(bitmapImage);
 
             int stride = width * 4; // BGRA32
             byte[] pixelData = new byte[height * stride];

@@ -1,15 +1,16 @@
-﻿using System.Windows.Media.Imaging;
+﻿
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public WriteableBitmap ResizeSorted(WriteableBitmap oldBitmap, int newWidth, int tileSize, int newHeight = -1)
+        public IWriteableBitmap ResizeSorted(IWriteableBitmap oldBitmap, int newWidth, int tileSize, int newHeight = -1)
         {
             const int PAGE_SIZE = 256;
             const int MAX_PIXEL_HEIGHT = 32768;
 
-            int bytesPerPixel = (oldBitmap.Format.BitsPerPixel + 7) >> 3;
+            int bytesPerPixel = oldBitmap.HasAlpha ? 4 : 3;
 
             int oldWidth = oldBitmap.PixelWidth;
             int oldHeight = oldBitmap.PixelHeight;
@@ -32,7 +33,7 @@ namespace TgaBuilderLib.BitmapOperations
             }
 
             // Create a new bitmap with the desired size
-            WriteableBitmap newBitmap = GetNewWriteableBitmap(
+            IWriteableBitmap newBitmap = _mediaFactory.CreateEmptyBitmap(
                 width:          newWidth,
                 height:         newHeight,
                 hasAlpha:       bytesPerPixel == 4);

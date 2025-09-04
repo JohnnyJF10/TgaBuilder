@@ -1,14 +1,25 @@
 using System.IO;
+using TgaBuilderLib.Enums;
 
-public interface IMediaFactory
+namespace TgaBuilderLib.Abstraction
 {
-    IWriteableBitmap CreateWriteableBitmap(int width, int height, bool HasAlpha);
+    public interface IMediaFactory
+    {
+        IWriteableBitmap CreateEmptyBitmap(int width, int height, bool hasAlpha);
+    
+        IWriteableBitmap CloneBitmap(IReadableBitmap source);
+    
+        IWriteableBitmap CreateRescaledBitmap(IWriteableBitmap source, int newWidth, int newHeight, BitmapScalingMode scalingMode = BitmapScalingMode.Linear);
 
-    IWriteableBitmap CreateWriteableBitmap(IReadableBitmap source);
+        IWriteableBitmap LoadBitmap(string filePath);
 
-    IWriteableBitmap CreateRescaledWriteableBitmap(IWriteableBitmap source, int newWidth, int newHeight);
+        IWriteableBitmap LoadBitmap(Stream stream);
 
-    IReadableBitmap LoadWriteableBitmap(string filePath);
 
-    IReadableBitmap LoadWriteableBitmap(Stream stream);
+        IReadableBitmap CreateBitmapFromRaw(int pixelWidth, int pixelHeight, bool hasAlpha, Array pixels, int stride);
+
+        IReadableBitmap LoadReadableBitmap(string filePath);
+    
+        IReadableBitmap LoadReadableBitmap(Stream stream);
+    }
 }

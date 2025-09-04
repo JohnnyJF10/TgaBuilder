@@ -5,8 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapBytesIO
@@ -21,19 +20,9 @@ namespace TgaBuilderLib.BitmapBytesIO
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("The specified file does not exist.", filePath);
 
-            BitmapImage bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri(filePath);
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.EndInit();
-            bitmapImage.Freeze();
+            IReadableBitmap sourceBitmap = _mediaFactory.LoadReadableBitmap(filePath);
 
-            BitmapSource sourceBitmap = bitmapImage;
-
-            if (sourceBitmap.Format != PixelFormats.Bgra32 && sourceBitmap.Format != PixelFormats.Rgb24)
-                throw new NotSupportedException($"Unsupported bitmap format: {sourceBitmap.Format}");
-
-            LoadedHasAlpha = sourceBitmap.Format.BitsPerPixel == 32;
+            LoadedHasAlpha = sourceBitmap.HasAlpha;
 
             int originalWidth = sourceBitmap.PixelWidth;
             int originalHeight = sourceBitmap.PixelHeight;

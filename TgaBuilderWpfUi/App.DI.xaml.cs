@@ -16,6 +16,7 @@ using TgaBuilderLib.ViewModel.Elements;
 using TgaBuilderLib.ViewModel.Views;
 using TgaBuilderWpfUi.Services;
 using TgaBuilderWpfUi.View;
+using TgaBuilderWpfUi.Wrappers;
 using Wpf.Ui.Controls;
 using Application = System.Windows.Application;
 using Color = System.Windows.Media.Color;
@@ -77,7 +78,8 @@ namespace TgaBuilderWpfUi
             services.AddSingleton<IAsyncFileLoader, AsyncFileLoader>();
             services.AddSingleton<IBitmapOperations, BitmapOperations>();
             services.AddSingleton<ILogger, Logger>();
-            services.AddSingleton<IEyeDropper, EyeDropper>();
+            services.AddSingleton<IEyeDropper, EyeDropper>(sp => new EyeDropper(
+                    new TgaBuilderLib.Abstraction.Color(255, 0, 255)));
 
             services.AddSingleton<IUsageData, UsageData>(_ => UsageData.Load());
             services.AddSingleton<IUndoRedoManager, UndoRedoManager>(sp => new UndoRedoManager(
@@ -87,12 +89,15 @@ namespace TgaBuilderWpfUi
 
         private void AddUIServicesToProvider(IServiceCollection services)
         {
+            services.AddSingleton<IMediaFactory, MediaFactory>();
+            services.AddSingleton<IClipboardService, ClipboardService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<ICursorSetter, CursorSetter>(sp => new CursorSetter(
                     new(Application.GetResourceStream(
                         new Uri("Resources/eyedropper.cur", UriKind.Relative)).Stream)));
             services.AddSingleton<IMessageService, MessageService>();
             services.AddSingleton<IMessageBoxService, MessageBoxService>();
+            services.AddSingleton<IDispatcherService, DispatcherService>();
         }
 
         private void AddBitmapFactoryProvider(IServiceCollection services)
@@ -112,8 +117,7 @@ namespace TgaBuilderWpfUi
             services.AddSingleton(typeof(Color), Color.FromArgb(255, 255, 0, 255));
 
             services.AddSingleton(sp => new EyeDropper(
-                color: sp.GetRequiredService<Color>()
-            ));
+                new TgaBuilderLib.Abstraction.Color(255, 0, 255)));
 
             services.AddSingleton(sp => new SingleSelectionShapeViewModel(
                 initSize: SELECTION_SIZE_INIT));
@@ -145,6 +149,8 @@ namespace TgaBuilderWpfUi
             services.AddSingleton<AnimationViewModel>();
 
             services.AddSingleton(sp => new SelectionViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                clipboardService: sp.GetRequiredService<IClipboardService>(),
                 logger: sp.GetRequiredService<ILogger>(),
                 messageService: sp.GetRequiredService<IMessageService>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
@@ -157,10 +163,12 @@ namespace TgaBuilderWpfUi
                 imageManager: sp.GetRequiredService<IImageFileManager>(),
                 logger: sp.GetRequiredService<ILogger>(),
                 usageData: sp.GetRequiredService<IUsageData>(),
+                dispatcherService: sp.GetRequiredService<IDispatcherService>(),
                 panel: sp.GetRequiredService<SourceTexturePanelViewModel>()));
 
             services.AddSingleton(sp => new TargetIOViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 fileService: sp.GetRequiredService<IFileService>(),
                 messageService: sp.GetRequiredService<IMessageService>(),
                 messageBoxService: sp.GetRequiredService<IMessageBoxService>(),
@@ -168,6 +176,7 @@ namespace TgaBuilderWpfUi
                 imageManager: sp.GetRequiredService<IImageFileManager>(),
                 logger: sp.GetRequiredService<ILogger>(),
                 usageData: sp.GetRequiredService<IUsageData>(),
+                dispatcherService: sp.GetRequiredService<IDispatcherService>(),
                 panel: sp.GetRequiredService<TargetTexturePanelViewModel>()));
         }
 
@@ -189,6 +198,7 @@ namespace TgaBuilderWpfUi
             ));
 
             services.AddSingleton(sp => new TargetTexturePanelViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 cursorSetter: sp.GetRequiredService<ICursorSetter>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 eyeDropper: sp.GetRequiredService<IEyeDropper>(),
@@ -249,19 +259,23 @@ namespace TgaBuilderWpfUi
             services.AddTransient<AboutViewModel>();
 
             services.AddTransient(sp => new BatchLoaderViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 fileService: sp.GetRequiredService<IFileService>(),
                 messageService: sp.GetRequiredService<IMessageService>(),
 
                 usageData: sp.GetRequiredService<IUsageData>(),
                 asyncFileLoader: sp.GetRequiredService<IAsyncFileLoader>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
-                logger: sp.GetRequiredService<ILogger>()));
+                logger: sp.GetRequiredService<ILogger>(),
+
+                presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),
 
                 messageService: sp.GetRequiredService<IMessageService>(),
                 undoRedoManager: sp.GetRequiredService<IUndoRedoManager>(),
+                dispatcherService: sp.GetRequiredService<IDispatcherService>(),
 
                 source: sp.GetRequiredService<SourceTexturePanelViewModel>(),
                 destination: sp.GetRequiredService<TargetTexturePanelViewModel>(),
@@ -306,10 +320,10 @@ namespace TgaBuilderWpfUi
                     viewModel: sp.GetRequiredService<AboutViewModel>()));
         }
 
-        private WriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)
-            => serviceProvider
+        private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)
+            => new WriteableBitmapWrapper(serviceProvider
                 .GetRequiredService<Func<int, int, bool, WriteableBitmap>>()
-                .Invoke(width, height, hasAlpha);
+                .Invoke(width, height, hasAlpha));
 
     }
 }

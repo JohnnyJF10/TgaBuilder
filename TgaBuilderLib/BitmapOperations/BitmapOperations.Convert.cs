@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public WriteableBitmap ConvertRGB24ToBGRA32(WriteableBitmap sourceBitmap)
+        public IWriteableBitmap ConvertRGB24ToBGRA32(IWriteableBitmap sourceBitmap)
         {
             if (sourceBitmap == null)
                 throw new ArgumentNullException(nameof(sourceBitmap), "Source bitmap cannot be null.");
 
-            if (sourceBitmap.Format.BitsPerPixel != 24)
+            if (sourceBitmap.HasAlpha)
                 throw new ArgumentException("Source bitmap must be in RGB24 format.", nameof(sourceBitmap));
 
-            // Create a new WriteableBitmap with BGRA32 format
-            var targetBitmap = GetNewWriteableBitmap(
+            // Create a new IWriteableBitmap with BGRA32 format
+            var targetBitmap = _mediaFactory.CreateEmptyBitmap(
                 width:          sourceBitmap.PixelWidth,
                 height:         sourceBitmap.PixelHeight,
                 hasAlpha:       true);
@@ -60,22 +54,22 @@ namespace TgaBuilderLib.BitmapOperations
             }
 
             // Update the target bitmap's back buffer
-            targetBitmap.AddDirtyRect(new Int32Rect(0, 0, targetBitmap.PixelWidth, targetBitmap.PixelHeight));
+            targetBitmap.AddDirtyRect(new PixelRect(0, 0, targetBitmap.PixelWidth, targetBitmap.PixelHeight));
             targetBitmap.Unlock();
             sourceBitmap.Unlock();
 
             return targetBitmap;
         }
 
-        public WriteableBitmap ConvertBGRA32ToRGB24(WriteableBitmap sourceBitmap)
+        public IWriteableBitmap ConvertBGRA32ToRGB24(IWriteableBitmap sourceBitmap)
         {
             if (sourceBitmap == null)
                 throw new ArgumentNullException(nameof(sourceBitmap), "Source bitmap cannot be null.");
-            if (sourceBitmap.Format.BitsPerPixel != 32)
+            if (!sourceBitmap.HasAlpha)
                 throw new ArgumentException("Source bitmap must be in BGRA32 format.", nameof(sourceBitmap));
             
-            // Create a new WriteableBitmap with RGB24 format
-            var targetBitmap = GetNewWriteableBitmap(
+            // Create a new IWriteableBitmap with RGB24 format
+            var targetBitmap = _mediaFactory.CreateEmptyBitmap(
                 width:          sourceBitmap.PixelWidth,
                 height:         sourceBitmap.PixelHeight,
                 hasAlpha:       false);
@@ -126,7 +120,7 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
                 // Update the target bitmap's back buffer
-                targetBitmap.AddDirtyRect(new Int32Rect(0, 0, targetBitmap.PixelWidth, targetBitmap.PixelHeight));
+                targetBitmap.AddDirtyRect(new PixelRect(0, 0, targetBitmap.PixelWidth, targetBitmap.PixelHeight));
                 targetBitmap.Unlock();
                 sourceBitmap.Unlock();
                 return targetBitmap;
