@@ -10,41 +10,6 @@ namespace TgaBuilderLib.BitmapOperations
 
         public int PlacedSize { get; set; }
 
-        private enum PixelAction
-        {
-            Copy,           // Direct copy
-            Transparent,    // Make transparent
-            Blend,          // Alpha blend
-            None            // Retain original
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private byte DoAlphaBlend(byte src, byte tgt, byte alpha)
-            => (byte)(((tgt * (255 - alpha)) + (src * alpha)) / 255);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private PixelAction DecidePixelAction(int alpha, bool srcHasAlpha, bool tgtHasAlpha, bool isMaskColor, bool overlayTransparent)
-        {
-            if (tgtHasAlpha
-                ? (!overlayTransparent && (srcHasAlpha || (!srcHasAlpha && !isMaskColor)))
-                : (alpha == 255 && (!overlayTransparent || !isMaskColor)))
-                return PixelAction.Copy;
-
-            
-            if (tgtHasAlpha
-                ? (!overlayTransparent && ((srcHasAlpha && alpha == 0) || (!srcHasAlpha && isMaskColor)))
-                : ((alpha == 0 && !overlayTransparent) || (srcHasAlpha && (isMaskColor && !overlayTransparent))))
-                return PixelAction.Transparent;
-
-            
-            if (tgtHasAlpha
-                ? (srcHasAlpha || (!srcHasAlpha && !isMaskColor))
-                : (alpha < 255 && (srcHasAlpha || (!srcHasAlpha && (!isMaskColor)))))
-                return PixelAction.Blend;
-            
-            return PixelAction.None;
-        }
-
         public void FillRectBitmap(
             IWriteableBitmap source, 
             IWriteableBitmap target,
@@ -102,7 +67,7 @@ namespace TgaBuilderLib.BitmapOperations
             if (sWidth <= 0 || sHeight <= 0) return;
 
             PixelAction action;
-            bool isMaskColor;
+            bool isTransparencyColor;
 
             source.Lock();
             target.Lock();
@@ -148,7 +113,7 @@ namespace TgaBuilderLib.BitmapOperations
                             }
 
                             a = (byte)(a * opacity);
-                            isMaskColor = (r, g, b) == (255, 0, 255);
+                            isTransparencyColor = (r, g, b) == (255, 0, 255);
 
                             undoLine[0] = tgtLine[0];
                             undoLine[1] = tgtLine[1];
@@ -162,11 +127,11 @@ namespace TgaBuilderLib.BitmapOperations
                             }
 
                             action = DecidePixelAction(
-                                alpha: a,
-                                srcHasAlpha: source.HasAlpha,
-                                tgtHasAlpha: false,
-                                isMaskColor: isMaskColor,
-                                overlayTransparent: OverlayTransparent);
+                                alpha:                  a,
+                                srcHasAlpha:            source.HasAlpha,
+                                tgtHasAlpha:            false,
+                                isTransparencyColor:    isTransparencyColor,
+                                overlayTransparent:     OverlayTransparent);
 
                             switch (action)
                             {
@@ -254,7 +219,7 @@ namespace TgaBuilderLib.BitmapOperations
             if (sWidth <= 0 || sHeight <= 0) return;
 
             PixelAction action;
-            bool isMaskColor;
+            bool isTransparencyColor;
 
             source.Lock();
             target.Lock();
@@ -300,7 +265,7 @@ namespace TgaBuilderLib.BitmapOperations
                             }
 
                             a = (byte)(a * opacity);
-                            isMaskColor = (r, g, b) == (255, 0, 255);
+                            isTransparencyColor = (r, g, b) == (255, 0, 255);
 
                             undoLine[0] = tgtLine[0];
                             undoLine[1] = tgtLine[1];
@@ -316,11 +281,11 @@ namespace TgaBuilderLib.BitmapOperations
                             }
 
                             action = DecidePixelAction(
-                                alpha:              a,
-                                srcHasAlpha:        source.HasAlpha,
-                                tgtHasAlpha:        true,
-                                isMaskColor:        isMaskColor,
-                                overlayTransparent: OverlayTransparent);
+                                alpha:                  a,
+                                srcHasAlpha:            source.HasAlpha,
+                                tgtHasAlpha:            true,
+                                isTransparencyColor:    isTransparencyColor,
+                                overlayTransparent:     OverlayTransparent);
 
                             switch (action)
                             {
