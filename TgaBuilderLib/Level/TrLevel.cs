@@ -1,5 +1,5 @@
 ﻿using System.Buffers;
-
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.Level
@@ -7,10 +7,11 @@ namespace TgaBuilderLib.Level
     public partial class TrLevel : LevelBase
     {
         public TrLevel(
-        string fileName,
-        int trTexturePanelHorPagesNum = 2,
-        bool useTrTextureRepacking = false,
-        ITrngDecrypter? trngDecrypter = null)
+            IMediaFactory mediaFactory,
+            string fileName,
+            int trTexturePanelHorPagesNum = 2,
+            bool useTrTextureRepacking = false,
+            ITrngDecrypter? trngDecrypter = null) : base(mediaFactory)
         {
             _fileName = fileName;
             _trTexturePanelHorPagesNum = trTexturePanelHorPagesNum;

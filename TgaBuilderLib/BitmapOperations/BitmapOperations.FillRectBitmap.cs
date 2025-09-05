@@ -1,4 +1,5 @@
-﻿using TgaBuilderLib.Abstraction;
+﻿using System.Runtime.CompilerServices;
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapOperations
@@ -8,6 +9,41 @@ namespace TgaBuilderLib.BitmapOperations
         public IWriteableBitmap? SwapBitmap { get; set; }
 
         public int PlacedSize { get; set; }
+
+        private enum PixelAction
+        {
+            Copy,           // Direct copy
+            Transparent,    // Make transparent
+            Blend,          // Alpha blend
+            None            // Retain original
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private byte DoAlphaBlend(byte src, byte tgt, byte alpha)
+            => (byte)(((tgt * (255 - alpha)) + (src * alpha)) / 255);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private PixelAction DecidePixelAction(int alpha, bool srcHasAlpha, bool tgtHasAlpha, bool isMaskColor, bool overlayTransparent)
+        {
+            if (tgtHasAlpha
+                ? (!overlayTransparent && (srcHasAlpha || (!srcHasAlpha && !isMaskColor)))
+                : (alpha == 255 && (!overlayTransparent || !isMaskColor)))
+                return PixelAction.Copy;
+
+            
+            if (tgtHasAlpha
+                ? (!overlayTransparent && ((srcHasAlpha && alpha == 0) || (!srcHasAlpha && isMaskColor)))
+                : ((alpha == 0 && !overlayTransparent) || (srcHasAlpha && (isMaskColor && !overlayTransparent))))
+                return PixelAction.Transparent;
+
+            
+            if (tgtHasAlpha
+                ? (srcHasAlpha || (!srcHasAlpha && !isMaskColor))
+                : (alpha < 255 && (srcHasAlpha || (!srcHasAlpha && (!isMaskColor)))))
+                return PixelAction.Blend;
+            
+            return PixelAction.None;
+        }
 
         public void FillRectBitmap(
             IWriteableBitmap source, 
@@ -21,7 +57,7 @@ namespace TgaBuilderLib.BitmapOperations
             if (target.HasAlpha)
                 FillRectBitmap32(source, target, pos, undoPixels, redoPixels, opacity, placingMode);
             else
-                FillRectBitmap32(source, target, pos, undoPixels, redoPixels, opacity, placingMode);
+                FillRectBitmap24(source, target, pos, undoPixels, redoPixels, opacity, placingMode);
         }
 
         private void FillRectBitmap24(
@@ -64,6 +100,9 @@ namespace TgaBuilderLib.BitmapOperations
                 throw new ArgumentException("SwapBitmap must be set when OverlayTransparent is used.");
 
             if (sWidth <= 0 || sHeight <= 0) return;
+
+            PixelAction action;
+            bool isMaskColor;
 
             source.Lock();
             target.Lock();
@@ -109,6 +148,7 @@ namespace TgaBuilderLib.BitmapOperations
                             }
 
                             a = (byte)(a * opacity);
+                            isMaskColor = (r, g, b) == (255, 0, 255);
 
                             undoLine[0] = tgtLine[0];
                             undoLine[1] = tgtLine[1];
@@ -121,23 +161,33 @@ namespace TgaBuilderLib.BitmapOperations
                                 swapLine[2] = tgtLine[2];
                             }
 
-                            if (a == 255 && (!OverlayTransparent || (r, g, b) != (255, 0, 255)))
+                            action = DecidePixelAction(
+                                alpha: a,
+                                srcHasAlpha: source.HasAlpha,
+                                tgtHasAlpha: false,
+                                isMaskColor: isMaskColor,
+                                overlayTransparent: OverlayTransparent);
+
+                            switch (action)
                             {
-                                tgtLine[0] = r;
-                                tgtLine[1] = g;
-                                tgtLine[2] = b;
-                            }
-                            else if ((a == 0 && !OverlayTransparent) || (srcBpp == 3 && ((r, g, b) == (255, 0, 255) && !OverlayTransparent)))
-                            {
-                                tgtLine[0] = 255;
-                                tgtLine[1] = 0;
-                                tgtLine[2] = 255;
-                            }
-                            else if (a < 255 && (srcBpp > 3 || (srcBpp == 3 && ((r, g, b) != (255, 0, 255)))))
-                            {
-                                tgtLine[0] = (byte)((tgtLine[0] * (255 - a) + r * a) / 255);
-                                tgtLine[1] = (byte)((tgtLine[1] * (255 - a) + g * a) / 255);
-                                tgtLine[2] = (byte)((tgtLine[2] * (255 - a) + b * a) / 255);
+                                case PixelAction.Copy:
+                                    tgtLine[0] = r;
+                                    tgtLine[1] = g;
+                                    tgtLine[2] = b;
+                                    break;
+                                case PixelAction.Transparent:
+                                    tgtLine[0] = 255;
+                                    tgtLine[1] = 0;
+                                    tgtLine[2] = 255;
+                                    break;
+                                case PixelAction.Blend:
+                                    tgtLine[0] = DoAlphaBlend(b, tgtLine[0], a);
+                                    tgtLine[1] = DoAlphaBlend(g, tgtLine[1], a);
+                                    tgtLine[2] = DoAlphaBlend(r, tgtLine[2], a);
+                                    break;
+                                case PixelAction.None:
+                                default:
+                                    break;
                             }
 
                             redoLine[0] = tgtLine[0];
@@ -203,6 +253,9 @@ namespace TgaBuilderLib.BitmapOperations
 
             if (sWidth <= 0 || sHeight <= 0) return;
 
+            PixelAction action;
+            bool isMaskColor;
+
             source.Lock();
             target.Lock();
             SwapBitmap?.Lock();
@@ -247,6 +300,7 @@ namespace TgaBuilderLib.BitmapOperations
                             }
 
                             a = (byte)(a * opacity);
+                            isMaskColor = (r, g, b) == (255, 0, 255);
 
                             undoLine[0] = tgtLine[0];
                             undoLine[1] = tgtLine[1];
@@ -261,25 +315,35 @@ namespace TgaBuilderLib.BitmapOperations
                                 swapLine[3] = tgtLine[3];
                             }
 
-                            if (!OverlayTransparent && (srcBpp > 3 || (srcBpp == 3 && ((r, g, b) != (255, 0, 255)))))
+                            action = DecidePixelAction(
+                                alpha:              a,
+                                srcHasAlpha:        source.HasAlpha,
+                                tgtHasAlpha:        true,
+                                isMaskColor:        isMaskColor,
+                                overlayTransparent: OverlayTransparent);
+
+                            switch (action)
                             {
-                                tgtLine[0] = b;
-                                tgtLine[1] = g;
-                                tgtLine[2] = r;
-                                tgtLine[3] = a;
-                            }
-                            else if ((srcBpp > 3 && a == 0 && !OverlayTransparent) || (srcBpp == 3 && ((r, g, b) == (255, 0, 255) && !OverlayTransparent)) )
-                            {
-                                tgtLine[0] = 0;
-                                tgtLine[1] = 0;
-                                tgtLine[2] = 0;
-                                tgtLine[3] = 0;
-                            }
-                            else if (srcBpp > 3 || (srcBpp == 3 && ((r, g, b) != (255, 0, 255))))
-                            {
-                                tgtLine[0] = (byte)((tgtLine[0] * (255 - a) + b * a) / 255);
-                                tgtLine[1] = (byte)((tgtLine[1] * (255 - a) + g * a) / 255);
-                                tgtLine[2] = (byte)((tgtLine[2] * (255 - a) + r * a) / 255);
+                                case PixelAction.Copy:
+                                    tgtLine[0] = b;
+                                    tgtLine[1] = g;
+                                    tgtLine[2] = r;
+                                    tgtLine[3] = a;
+                                    break;
+                                case PixelAction.Transparent:
+                                    tgtLine[0] = 0;
+                                    tgtLine[1] = 0;
+                                    tgtLine[2] = 0;
+                                    tgtLine[3] = 0;
+                                    break;
+                                case PixelAction.Blend:
+                                    tgtLine[0] = DoAlphaBlend(b, tgtLine[0], a);
+                                    tgtLine[1] = DoAlphaBlend(g, tgtLine[1], a);
+                                    tgtLine[2] = DoAlphaBlend(r, tgtLine[2], a);
+                                    break;
+                                case PixelAction.None:
+                                default:
+                                    break;
                             }
 
                             redoLine[0] = tgtLine[0];

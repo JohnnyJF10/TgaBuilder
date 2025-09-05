@@ -6,8 +6,9 @@ namespace TgaBuilderLib.Level
     public partial class TenLevel : LevelBase
     {
         public TenLevel(
-        string fileName,
-        int trTexturePanelHorPagesNum = 2)
+            IMediaFactory mediaFactory,
+            string fileName,
+            int trTexturePanelHorPagesNum = 2) : base(mediaFactory)
         {
             _fileName = fileName;
             _trTexturePanelHorPagesNum = trTexturePanelHorPagesNum;

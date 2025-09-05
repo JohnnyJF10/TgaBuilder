@@ -96,7 +96,7 @@ namespace TgaBuilderLib.BitmapOperations
             target.Lock();
 
             byte r, g, b, a = 255;
-            int bpp = source.HasAlpha ? 3 : 4;
+            int bpp = source.HasAlpha ? 4 : 3;
 
             unsafe
             {
@@ -110,7 +110,7 @@ namespace TgaBuilderLib.BitmapOperations
 
                     for (int x = 0; x < recWidth; x++)
                     {
-                        if (bpp == 4)
+                        if (source.HasAlpha)
                         {
                             b = srcRow[0];
                             g = srcRow[1];

@@ -8,6 +8,11 @@ namespace TgaBuilderLib.Level
 {
     public abstract class LevelBase
     {
+        public LevelBase(IMediaFactory mediaFactory)
+        {
+            _mediaFactory = mediaFactory;
+        }
+
         protected const int ORIGINAL_PAGE_SIZE = 256;
         protected const int MAX_SUPPORTED_TEX_SIZE = 512;
         protected const int ATLAS_MAX_HEIGHT = 32768;

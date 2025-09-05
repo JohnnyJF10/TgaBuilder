@@ -39,7 +39,7 @@ namespace TgaBuilderLib.BitmapOperations
                 }
             }
 
-            return new Color(a, r, g, b);
+            return new Color(r, g, b, a);
         }
     }
 }

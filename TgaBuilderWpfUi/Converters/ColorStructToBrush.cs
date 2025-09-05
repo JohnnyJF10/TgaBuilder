@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace TgaBuilderWpfUi.Converters
 {
-    internal class ColorStructToWpfColor : IValueConverter
+    internal class ColorStructToBrush : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         { 
@@ -17,38 +18,32 @@ namespace TgaBuilderWpfUi.Converters
             {
                 if (color.A.HasValue)
                 {
-                    return System.Windows.Media.Color.FromArgb(color.A.Value, color.R, color.G, color.B);
+                    return new SolidColorBrush(
+                        Color.FromArgb(color.A.Value, color.R, color.G, color.B));
                 }
                 else
                 {
-                    return System.Windows.Media.Color.FromRgb(color.R, color.G, color.B);
+                    return new SolidColorBrush(
+                        Color.FromRgb(color.R, color.G, color.B));
                 }
             }
             else
             {
                 Debug.WriteLine("ColorStructToWpfColor: Value is not of type Color. Returning Fallback color.");
 
-                return System.Windows.Media.Colors.Transparent;
+                return new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
             }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is System.Windows.Media.Color wpfColor)
+            if (value is SolidColorBrush brush)
             {
-                if (wpfColor.A < 255)
-                {
-                    return new TgaBuilderLib.Abstraction.Color(wpfColor.R, wpfColor.G, wpfColor.B, wpfColor.A);
-                }
-                else
-                {
-                    return new TgaBuilderLib.Abstraction.Color(wpfColor.R, wpfColor.G, wpfColor.B);
-                }
+                return new TgaBuilderLib.Abstraction.Color(brush.Color.A, brush.Color.R, brush.Color.G, brush.Color.B);
             }
             else
             {
-                Debug.WriteLine("ColorStructToWpfColor: Value is not of type System.Windows.Media.Color. Returning Fallback color.");
-
+                Debug.WriteLine("ColorStructToWpfColor: Value is not of type SolidColorBrush. Returning Fallback color.");
                 return new TgaBuilderLib.Abstraction.Color(0, 0, 0, 0);
             }
         }

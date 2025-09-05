@@ -84,7 +84,7 @@ namespace TgaBuilderWpfUi.Services
                 pixelHeight:    newHeight,
                 dpiX:           96,
                 dpiY:           96,
-                pixelFormat:    PixelFormats.Bgra32);
+                pixelFormat:    PixelFormats.Pbgra32);
 
             resized.Render(drawingVisual);
 

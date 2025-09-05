@@ -57,12 +57,19 @@ namespace TgaBuilderWpfUi
         {
             services.AddSingleton<Func<string, int, bool, LevelBase>>(sp =>
                 (fileName, trTexturePanelHorPagesNum, useTrTextureRepacking) =>
-                    new TrLevel(fileName, trTexturePanelHorPagesNum, useTrTextureRepacking,
-                        sp.GetRequiredService<ITrngDecrypter>()));
+                    new TrLevel(
+                        mediaFactory:               sp.GetRequiredService<IMediaFactory>(),
+                        fileName:                   fileName,
+                        trTexturePanelHorPagesNum:  trTexturePanelHorPagesNum,
+                        useTrTextureRepacking:      useTrTextureRepacking,
+                        trngDecrypter:              sp.GetRequiredService<ITrngDecrypter>()));
 
             services.AddSingleton<Func<string, int, LevelBase>>(sp =>
                 (fileName, trTexturePanelHorPagesNum) =>
-                    new TenLevel(fileName, trTexturePanelHorPagesNum));
+                    new TenLevel(
+                        mediaFactory:               sp.GetRequiredService<IMediaFactory>(),
+                        fileName:                   fileName,
+                        trTexturePanelHorPagesNum:  trTexturePanelHorPagesNum));
         }
 
         private void AddCoreServicesToProvider(IServiceCollection services)
@@ -79,7 +86,7 @@ namespace TgaBuilderWpfUi
             services.AddSingleton<IBitmapOperations, BitmapOperations>();
             services.AddSingleton<ILogger, Logger>();
             services.AddSingleton<IEyeDropper, EyeDropper>(sp => new EyeDropper(
-                    new TgaBuilderLib.Abstraction.Color(255, 0, 255)));
+                    new TgaBuilderLib.Abstraction.Color(0, 0, 0, 0)));
 
             services.AddSingleton<IUsageData, UsageData>(_ => UsageData.Load());
             services.AddSingleton<IUndoRedoManager, UndoRedoManager>(sp => new UndoRedoManager(
@@ -114,11 +121,6 @@ namespace TgaBuilderWpfUi
 
         private void AddElementVMsToProvider(IServiceCollection services)
         {
-            services.AddSingleton(typeof(Color), Color.FromArgb(255, 255, 0, 255));
-
-            services.AddSingleton(sp => new EyeDropper(
-                new TgaBuilderLib.Abstraction.Color(255, 0, 255)));
-
             services.AddSingleton(sp => new SingleSelectionShapeViewModel(
                 initSize: SELECTION_SIZE_INIT));
 
