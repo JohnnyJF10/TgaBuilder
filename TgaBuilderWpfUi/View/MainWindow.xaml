@@ -346,7 +346,7 @@
                     </DockPanel>
                 </TabItem>
                 <TabItem
-                    Header="Offset"
+                    Header="Grid"
                     Height="25"
                     Width="Auto">
                     <Grid
