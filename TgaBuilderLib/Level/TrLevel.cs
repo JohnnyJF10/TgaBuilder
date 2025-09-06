@@ -1,10 +1,5 @@
-﻿using System;
-using System.Buffers;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using System.Buffers;
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.Level
@@ -12,10 +7,11 @@ namespace TgaBuilderLib.Level
     public partial class TrLevel : LevelBase
     {
         public TrLevel(
-        string fileName,
-        int trTexturePanelHorPagesNum = 2,
-        bool useTrTextureRepacking = false,
-        ITrngDecrypter? trngDecrypter = null)
+            IMediaFactory mediaFactory,
+            string fileName,
+            int trTexturePanelHorPagesNum = 2,
+            bool useTrTextureRepacking = false,
+            ITrngDecrypter? trngDecrypter = null) : base(mediaFactory)
         {
             _fileName = fileName;
             _trTexturePanelHorPagesNum = trTexturePanelHorPagesNum;
@@ -28,7 +24,6 @@ namespace TgaBuilderLib.Level
         private bool _useTrTextureRepacking;
         private readonly ITrngDecrypter? _trngDecrypter;
 
-        private bool _isNg;
         private long _textureInfosStreamPosition;
 
         private List<ushort> _rectTexIndices = new();

@@ -1,21 +1,22 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public WriteableBitmap CropBitmap(WriteableBitmap source, Int32Rect rectangle)
+        public IWriteableBitmap CropBitmap(IWriteableBitmap source, PixelRect rectangle)
         {
-            int bytesPerPixel = (source.Format.BitsPerPixel + 7) >> 3;
+            int bytesPerPixel = source.HasAlpha ? 4 : 3;
 
             int rectX = Math.Max(0, rectangle.X);
             int rectY = Math.Max(0, rectangle.Y);
             int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
             int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
 
-            WriteableBitmap target = new WriteableBitmap(recWidth, recHeight, source.DpiX, source.DpiY, source.Format, null);
+            IWriteableBitmap target = _mediaFactory.CreateEmptyBitmap(
+                width:          recWidth,
+                height:         recHeight,
+                hasAlpha:       source.HasAlpha);
 
             int sourceStride = source.BackBufferStride;
             int targetStride = target.BackBufferStride;
@@ -40,36 +41,62 @@ namespace TgaBuilderLib.BitmapOperations
                     sourcePtr += strideDelta;
                 }
             }
-            target.AddDirtyRect(new Int32Rect(0, 0, recWidth, recHeight));
+            target.AddDirtyRect(new PixelRect(0, 0, recWidth, recHeight));
             source.Unlock();
             target.Unlock();
 
             return target;
         }
-
-        public WriteableBitmap CropBitmap(WriteableBitmap source, Int32Rect rectangle, Color replacedColor, Color newColor)
+        
+        public IReadableBitmap CropIReadableBitmap(IReadableBitmap source, PixelRect rectangle, byte[]? pixelbuffer = null)
         {
-            if (source.Format != PixelFormats.Rgb24 && source.Format != PixelFormats.Bgra32)
-                throw new ArgumentException("Unsupported pixel format. Only Rgb24 and Bgra32 are supported.");
+            int bytesPerPixel = source.HasAlpha ? 4 : 3;
 
             int rectX = Math.Max(0, rectangle.X);
             int rectY = Math.Max(0, rectangle.Y);
             int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
             int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
+        
+            if (recWidth <= 0 || recHeight <= 0)
+                throw new ArgumentException("The specified rectangle is out of the bounds of the source bitmap.");
+        
+            int stride = recWidth * bytesPerPixel;
 
-            WriteableBitmap target = new WriteableBitmap(
-                pixelWidth:  recWidth,
-                pixelHeight: recHeight,
-                dpiX:        source.DpiX,
-                dpiY:        source.DpiY,
-                pixelFormat: source.Format,
-                palette:     null);
+            byte[] pixelData = pixelbuffer is not null && pixelbuffer.Length >= recHeight * stride
+                ? pixelbuffer
+                : new byte[recHeight * stride];
+
+            source.CopyPixels(
+                new PixelRect(rectX, rectY, recWidth, recHeight),
+                pixelData,
+                stride,
+                0);
+        
+            return _mediaFactory.CreateBitmapFromRaw(
+                recWidth,
+                recHeight,
+                source.HasAlpha,
+                pixelData,
+                stride);
+        }
+
+        public IWriteableBitmap CropBitmap(IWriteableBitmap source, PixelRect rectangle, Color replacedColor, Color newColor)
+        {
+            int rectX = Math.Max(0, rectangle.X);
+            int rectY = Math.Max(0, rectangle.Y);
+            int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
+            int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
+
+            IWriteableBitmap target = _mediaFactory.CreateEmptyBitmap(
+                width: recWidth,
+                height: recHeight,
+                hasAlpha: source.HasAlpha);
 
             source.Lock();
             target.Lock();
 
             byte r, g, b, a = 255;
-            int bpp = source.Format == PixelFormats.Rgb24 ? 3 : 4;
+            int bpp = source.HasAlpha ? 4 : 3;
 
             unsafe
             {
@@ -83,7 +110,7 @@ namespace TgaBuilderLib.BitmapOperations
 
                     for (int x = 0; x < recWidth; x++)
                     {
-                        if (bpp == 4)
+                        if (source.HasAlpha)
                         {
                             b = srcRow[0];
                             g = srcRow[1];
@@ -93,10 +120,10 @@ namespace TgaBuilderLib.BitmapOperations
                             if (a == 0 || (replacedColor.R, replacedColor.G, replacedColor.B, replacedColor.A) == (r, g, b, a))
                             {
                                 // Replace with new color  
-                                resRow[0] = newColor.B; // B  
-                                resRow[1] = newColor.G; // G  
-                                resRow[2] = newColor.R; // R  
-                                resRow[3] = newColor.A; // A  
+                                resRow[0] = newColor.B;        // B  
+                                resRow[1] = newColor.G;        // G  
+                                resRow[2] = newColor.R;        // R  
+                                resRow[3] = newColor.A ?? 255; // A  
                             }
                             else
                             {
@@ -128,12 +155,12 @@ namespace TgaBuilderLib.BitmapOperations
                         }
 
                         srcRow += bpp;
-                        resRow += bpp; 
+                        resRow += bpp;
                     }
                 }
             }
 
-            target.AddDirtyRect(new Int32Rect(0, 0, recWidth, recHeight));
+            target.AddDirtyRect(new PixelRect(0, 0, recWidth, recHeight));
             source.Unlock();
             target.Unlock();
 

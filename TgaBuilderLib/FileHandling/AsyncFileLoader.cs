@@ -1,83 +1,30 @@
 ﻿using System.IO;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using System.Threading;
+using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.FileHandling
 {
     public class AsyncFileLoader : IAsyncFileLoader
     {
+        public AsyncFileLoader(
+            IMediaFactory mediaFactory)
+        {
+            _mediaFactory = mediaFactory;
+        }
+
+        private readonly IMediaFactory _mediaFactory;
+
         public int LoadedWidth { get; private set; }
         public int LoadedHeight { get; private set; }
-        public int LoadedStride => LoadedWidth * (LoadedPixelFormat.BitsPerPixel / 8);
-        public PixelFormat LoadedPixelFormat { get; private set; }
+        public int LoadedStride => LoadedWidth * (LoadedHasAlpha ? 4 : 3);
+        public bool LoadedHasAlpha { get; private set; }
 
         public HashSet<string> SupportedExtensions 
             => new(StringComparer.OrdinalIgnoreCase)
             {
                 ".dds", ".tga", ".png", ".jpg", ".jpeg", ".bmp"
             };
-
-        public async Task<WriteableBitmap> LoadAndResizeAsync(
-            string filePath,
-            int targetWidth,
-            int targetHeight,
-            BitmapScalingMode scalingMode)
-            => await Task.Run(() =>
-            {
-                string extension = Path.GetExtension(filePath).ToLowerInvariant();
-
-                WriteableBitmap sourceBitmap;
-
-                if (extension == ".dds" || extension == ".tga")
-                {
-                    using var image = Pfim.Pfimage.FromFile(filePath);
-
-                    PixelFormat pixelFormat = image.Format switch
-                    {
-                        Pfim.ImageFormat.Rgba32 => PixelFormats.Bgra32,
-                        Pfim.ImageFormat.Rgb24 => PixelFormats.Bgr24,
-                        _ => throw new NotSupportedException($"Image format {image.Format} is not supported.")
-                    };
-
-                    var wb = new WriteableBitmap(image.Width, image.Height, 96, 96, pixelFormat, null);
-                    wb.WritePixels(
-                        new Int32Rect(0, 0, image.Width, image.Height),
-                        image.Data,
-                        image.Stride,
-                        0
-                    );
-
-                    sourceBitmap = wb;
-                }
-                else
-                {
-                    // Use WPF decoder for BMP, PNG, JPG, JPEG etc.
-                    var bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new Uri(filePath);
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    bitmap.Freeze(); // for thread safety
-
-                    sourceBitmap = new WriteableBitmap(bitmap);
-                }
-
-                // Now resize it
-                var rect = new Rect(0, 0, targetWidth, targetHeight);
-                var drawingVisual = new DrawingVisual();
-
-                using (var dc = drawingVisual.RenderOpen())
-                {
-                    RenderOptions.SetBitmapScalingMode(drawingVisual, scalingMode);
-                    dc.DrawImage(sourceBitmap, rect);
-                }
-
-                var resized = new RenderTargetBitmap(targetWidth, targetHeight, 96, 96, PixelFormats.Pbgra32);
-                resized.Render(drawingVisual);
-
-                return new WriteableBitmap(resized);
-            });
 
         public byte[] LoadCore(string filePath)
         {
@@ -87,33 +34,45 @@ namespace TgaBuilderLib.FileHandling
             {
                 using var image = Pfim.Pfimage.FromFile(filePath);
 
-                PixelFormat pixelFormat = image.Format switch
-                {
-                    Pfim.ImageFormat.Rgba32 => PixelFormats.Bgra32,
-                    Pfim.ImageFormat.Rgb24 => PixelFormats.Bgr24,
-                    _ => throw new NotSupportedException($"Image format {image.Format} is not supported.")
-                };
-
                 LoadedWidth = image.Width;
                 LoadedHeight = image.Height;
-                LoadedPixelFormat = pixelFormat;
+                LoadedHasAlpha = image.Format == Pfim.ImageFormat.Rgba32;
 
-                return image.Data;
+                if (!LoadedHasAlpha && image.Format != Pfim.ImageFormat.Rgb24)
+                    throw new NotSupportedException($"Image format {image.Format} is not supported.");
+
+                if (image.Format == Pfim.ImageFormat.Rgba32)
+                    return image.Data;
+                else
+                {
+                    var LoadedBytes = new byte[LoadedHeight * LoadedWidth * 3];
+
+                    for (int y = 0; y < LoadedHeight; y++)
+                    {
+                        int srcOffset = y * image.Stride;
+                        int dstOffset = y * LoadedStride;
+
+                        for (int x = 0; x < LoadedWidth; x++)
+                        {
+                            int srcIndex = srcOffset + x * image.BitsPerPixel / 8;
+                            int dstIndex = dstOffset + x * 3;
+
+                            LoadedBytes[dstIndex + 0] = image.Data[srcIndex + 2]; // R
+                            LoadedBytes[dstIndex + 1] = image.Data[srcIndex + 1]; // G
+                            LoadedBytes[dstIndex + 2] = image.Data[srcIndex + 0]; // B
+                        }
+                    }
+                    return LoadedBytes;
+                }
             }
             else
             {
-                var bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri(filePath);
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                bitmap.Freeze();
+                var wb = _mediaFactory.LoadBitmap(filePath);
 
-                LoadedWidth = bitmap.PixelWidth;
-                LoadedHeight = bitmap.PixelHeight;
-                LoadedPixelFormat = bitmap.Format;
+                LoadedWidth = wb.PixelWidth;
+                LoadedHeight = wb.PixelHeight;
+                LoadedHasAlpha = wb.HasAlpha;
 
-                var wb = new WriteableBitmap(bitmap);
                 int stride = wb.BackBufferStride;
                 byte[] pixels = new byte[LoadedHeight * stride];
                 wb.CopyPixels(pixels, stride, 0);

@@ -1,34 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Input;
+
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.Utils;
-using Clipboard = System.Windows.Clipboard;
 
 namespace TgaBuilderLib.ViewModel
 {
     public class SelectionViewModel : ViewModelBase
     {
         public SelectionViewModel(
+            IMediaFactory mediaFactory,
+            IClipboardService clipboardService,
             ILogger logger,
             IMessageService messageService,
             IBitmapOperations bitmapOperations,
 
-            WriteableBitmap presenter)
+            IWriteableBitmap presenter)
         {
+            _mediaFactory = mediaFactory;
+            _clipboardService = clipboardService;
             _logger = logger;
             _messageService = messageService;
             _bitmapOperations = bitmapOperations;
@@ -36,11 +28,13 @@ namespace TgaBuilderLib.ViewModel
             _presenter = presenter;
         }
 
+        private readonly IMediaFactory _mediaFactory;
+        private readonly IClipboardService _clipboardService;
         private readonly ILogger _logger;
         private readonly IMessageService _messageService;
         private readonly IBitmapOperations _bitmapOperations;
 
-        private WriteableBitmap _presenter;
+        private IWriteableBitmap _presenter;
 
         private bool _isPlacing;
         private bool _autoCopy;
@@ -49,11 +43,11 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _copyCommand;
         private RelayCommand? _pasteCommand;
         private RelayCommand? _autoPasteCommand;
-        private RelayCommand<SolidColorBrush>? _selectionMonoColorFillCommand;
+        private RelayCommand<Color>? _selectionMonoColorFillCommand;
 
 
 
-        public WriteableBitmap Presenter
+        public IWriteableBitmap Presenter
         {
             get => _presenter;
             set
@@ -97,74 +91,33 @@ namespace TgaBuilderLib.ViewModel
             }
         }
 
-        public RelayCommand CopyCommand => _copyCommand ??= new RelayCommand(Copy);
+        public RelayCommand CopyCommand => _copyCommand ??= new(Copy);
 
-        public RelayCommand PasteCommand => _pasteCommand ??= new RelayCommand(Paste);
+        public RelayCommand PasteCommand => _pasteCommand ??= new(Paste);
 
-        public RelayCommand AutoPasteCommand => _autoPasteCommand ??= new RelayCommand(Paste);
+        public RelayCommand AutoPasteCommand => _autoPasteCommand ??= new(Paste);
 
         public ICommand SelectionMonoColorFillCommand
-            => _selectionMonoColorFillCommand ??= new RelayCommand<SolidColorBrush>(SelectionMonoColorFill);
+            => _selectionMonoColorFillCommand ??= new(SelectionMonoColorFill);
 
 
-        public void Copy()
-        {
-            BitmapSource bitmapSource = BitmapFrame.Create(Presenter);
-            Clipboard.SetImage(bitmapSource);
-        }
-
+        public void Copy() => _clipboardService.SetImage(Presenter);
+        
         public void Paste()
         {
             try
             {
-                if (!Clipboard.ContainsImage())
+                if (!_clipboardService.ContainsImage())
                 {
                     _messageService.SendMessage(MessageType.ClipboardNotContainingImageData, "Clipboard does not contain an image.");
                     return;
                 }
 
-                if (Clipboard.GetDataObject().GetFormats().Contains("FileDrop"))
-                {
-                    BitmapSource bitmapSource = Clipboard.GetImage();
+                if (_clipboardService.GetImage() is not IReadableBitmap bitmap)
+                    throw new InvalidOperationException("Failed to get image from clipboard.");
 
-                    var width = bitmapSource.PixelWidth;
-                    var height = bitmapSource.PixelHeight;
-                    var stride = width * 4;
-                    var pixelData = new byte[height * stride];
-
-                    bitmapSource.CopyPixels(pixelData, stride, 0);
-
-                    WriteableBitmap wb = new WriteableBitmap(
-                        pixelWidth: width,
-                        pixelHeight: height,
-                        dpiX: bitmapSource.DpiX,
-                        dpiY: bitmapSource.DpiY,
-                        pixelFormat: PixelFormats.Bgra32, palette: null);
-
-                    wb.WritePixels(
-                        sourceRect: new Int32Rect(0, 0, width, height),
-                        pixels: pixelData,
-                        stride: stride,
-                        offset: 0);
-
-                    Presenter = wb;
-                    IsPlacing = true;
-                }
-                else
-                {
-                    BitmapSource bitmapSource = Clipboard.GetImage();
-
-                    FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
-                    convertedBitmap.BeginInit();
-                    convertedBitmap.Source = bitmapSource;
-                    convertedBitmap.DestinationFormat = PixelFormats.Rgb24;
-                    convertedBitmap.EndInit();
-
-                    Presenter = new WriteableBitmap(convertedBitmap);
-                    IsPlacing = true;
-                }
-
-
+                Presenter = _mediaFactory.CloneBitmap(bitmap);
+                IsPlacing = true;
             }
             catch (Exception ex)
             {
@@ -176,21 +129,21 @@ namespace TgaBuilderLib.ViewModel
             }        
         }
 
-        public void SelectionMonoColorFill(SolidColorBrush brush)
+        public void SelectionMonoColorFill(Color color)
         {
-            Int32Rect rect = new(0, 0,
+            PixelRect rect = new(0, 0,
                 Presenter.PixelWidth,
                 Presenter.PixelHeight);
 
             _bitmapOperations.FillRectColor(
-                Presenter, rect, brush.Color);
+                Presenter, rect, color);
 
             IsPlacing = true;
         }
 
-        internal void FillSelection(WriteableBitmap presenter, Color color)
+        internal void FillSelection(IWriteableBitmap presenter, Color color)
         {
-            Int32Rect rect = new(0, 0,
+            PixelRect rect = new(0, 0,
                 Presenter.PixelWidth,
                 Presenter.PixelHeight);
 

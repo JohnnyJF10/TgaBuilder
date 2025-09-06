@@ -4,8 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {
@@ -23,7 +22,7 @@ namespace TgaBuilderLib.BitmapBytesIO
         private const short TR_TGA_X_ORIGIN = 0;
         private const short TR_TGA_Y_ORIGIN = 0;
 
-        private const short TR_TGA_BITS_PER_PIXEL = 24;
+        private const short TR_TGA_BITS_PER_PIXEL_24 = 24;
         private const byte TR_TGA_IMAGE_DESCRIPTOR = 0x20;
 
         private const byte TR_TGA_FOOTER_SIZE = 26;
@@ -39,27 +38,23 @@ namespace TgaBuilderLib.BitmapBytesIO
         private const short TR_TGA_BITS_PER_PIXEL_32 = 32;
         private const byte TR_TGA_IMAGE_DESCRIPTOR_32 = 0x28; // 0x20 (top-left) + 0x08 (alpha bits)
 
-        private bool _lastFormatWasBgra32;
+        private bool _lastHadAlpha;
 
-        public void ToTga(BitmapSource bitmap)
+        public void ToTga(IReadableBitmap bitmap)
         {
-            if (bitmap.Format != PixelFormats.Rgb24 && bitmap.Format != PixelFormats.Bgra32)
-                throw new ArgumentException("Bitmap must be in BGR24 or BGRA32 format.");
-
-            if (bitmap.Format == PixelFormats.Rgb24)
-                ToTga24(bitmap);
-            else
+            if (bitmap.HasAlpha)
                 ToTga32(bitmap);
+            else
+                ToTga24(bitmap);
 
-            _lastFormatWasBgra32 = bitmap.Format == PixelFormats.Bgra32;
+            _lastHadAlpha = bitmap.HasAlpha;
         }
 
-        private void ToTga24(BitmapSource bitmap)
+        private void ToTga24(IReadableBitmap bitmap)
         {
-            if (bitmap.Format != PixelFormats.Rgb24)
-            {
+            if (bitmap.HasAlpha)
                 throw new ArgumentException("Bitmap must be in BGR24 format.");
-            }
+
             LoadedWidth = bitmap.PixelWidth;
             LoadedHeight = bitmap.PixelHeight;
 
@@ -69,9 +64,9 @@ namespace TgaBuilderLib.BitmapBytesIO
             bitmap.CopyPixels(LoadedBytes, LoadedWidth * 3, 0);
         }
 
-        private void ToTga32(BitmapSource bitmap)
+        private void ToTga32(IReadableBitmap bitmap)
         {
-            if (bitmap.Format != PixelFormats.Bgra32)
+            if (!bitmap.HasAlpha)
                 throw new ArgumentException("Bitmap must be in BGRA32 format.");
 
             LoadedWidth = bitmap.PixelWidth;
@@ -84,7 +79,7 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         public void WriteTga(string filePath, CancellationToken? cancellationToken = null)
         {
-            if (_lastFormatWasBgra32)
+            if (_lastHadAlpha)
                 WriteTga32(filePath, cancellationToken);
             else
                 WriteTga24(filePath, cancellationToken);
@@ -99,7 +94,7 @@ namespace TgaBuilderLib.BitmapBytesIO
             using (BinaryWriter bw = new BinaryWriter(fs))
             {
                 int index = 0;
-                WriteTrTgaHeader24(bw, (short)LoadedWidth, (short)LoadedHeight);
+                WriteTrTgaHeader(bw, (short)LoadedWidth, (short)LoadedHeight, false);
                 for (int s = LoadedHeight - 1; s >= 0; s--)
                 {
                     for (int c = 0; c < LoadedWidth; c++)
@@ -126,8 +121,8 @@ namespace TgaBuilderLib.BitmapBytesIO
             using (BinaryWriter bw = new BinaryWriter(fs))
             {
                 int index = 0;
-                WriteTrTgaHeader32(bw, (short)LoadedWidth, (short)LoadedHeight);
-                for (int y = 0; y < LoadedHeight; y++)
+                WriteTrTgaHeader(bw, (short)LoadedWidth, (short)LoadedHeight, true);
+                for (int y = LoadedHeight - 1; y >= 0; y--)
                 {
                     for (int x = 0; x < LoadedWidth; x++)
                     {
@@ -135,7 +130,7 @@ namespace TgaBuilderLib.BitmapBytesIO
 
                         index = (y * LoadedWidth + x) * 4;
 
-                        bw.Write(LoadedBytes[index    ]); // Blue
+                        bw.Write(LoadedBytes[index + 0]); // Blue
                         bw.Write(LoadedBytes[index + 1]); // Green
                         bw.Write(LoadedBytes[index + 2]); // Red
                         bw.Write(LoadedBytes[index + 3]); // Alpha
@@ -145,7 +140,7 @@ namespace TgaBuilderLib.BitmapBytesIO
             }
         }
 
-        private void WriteTrTgaHeader24(BinaryWriter bw, short width, short height)
+        private void WriteTrTgaHeader(BinaryWriter bw, short width, short height, bool hasAlpha)
         {
             bw.Write(TR_TGA_ID_LENGTH);
             bw.Write(TR_TGA_COLOR_MAP_TYPE);
@@ -157,28 +152,11 @@ namespace TgaBuilderLib.BitmapBytesIO
             bw.Write(TR_TGA_Y_ORIGIN);
             bw.Write(width);
             bw.Write(height);
-            bw.Write(TR_TGA_BITS_PER_PIXEL);
-        }
-
-        private void WriteTrTgaHeader32(BinaryWriter bw, short width, short height)
-        {
-            bw.Write((byte)0);                         // ID length
-            bw.Write((byte)0);                         // Color map type
-            bw.Write((byte)2);                         // Data type: uncompressed true-color
-            bw.Write((short)0);                        // Color map origin
-            bw.Write((short)0);                        // Color map length
-            bw.Write((byte)0);                         // Color map depth
-            bw.Write((short)0);                        // X-origin
-            bw.Write((short)0);                        // Y-origin
-            bw.Write(width);                           // Width
-            bw.Write(height);                          // Height
-            bw.Write((byte)TR_TGA_BITS_PER_PIXEL_32);  // Bits per pixel
-            bw.Write((byte)TR_TGA_IMAGE_DESCRIPTOR_32);// Image descriptor (top-left + 8-bit alpha)
+            bw.Write(hasAlpha ? TR_TGA_BITS_PER_PIXEL_32 : TR_TGA_BITS_PER_PIXEL_24);
         }
 
         private void WriteTrTGaFooter(BinaryWriter bw)
         {
-
             bw.Write(TR_TGA_FOOTER_EXTENSION_AREA_OFFSET);
             bw.Write(TR_TGA_FOOTER_DEVELOPER_DIRECTORY_OFFSET);
             bw.Write(TR_TGA_FOOTER_SIGNATURE_CHARS);

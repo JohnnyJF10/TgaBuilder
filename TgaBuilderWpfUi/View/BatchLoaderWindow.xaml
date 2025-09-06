@@ -11,6 +11,7 @@
     xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel" 
     xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
     xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
@@ -33,6 +34,7 @@
                 <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter"/>
             <sys:Boolean x:Key="True">True</sys:Boolean>
             <sys:Boolean x:Key="False">False</sys:Boolean>
             <Style TargetType="{x:Type elements:ContextMenuButton}"
@@ -190,7 +192,7 @@
                     ap:SizeObserverAP.ObservedHeight="{Binding ViewportHeight, Mode=OneWayToSource}"
                     >
                     <Image
-                        Source="{Binding Presenter}"
+                        Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
                         Stretch="None"
                         RenderOptions.BitmapScalingMode="NearestNeighbor"
                         />

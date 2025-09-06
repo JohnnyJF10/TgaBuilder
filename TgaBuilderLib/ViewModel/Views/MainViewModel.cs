@@ -1,11 +1,5 @@
-﻿using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Windows;
+﻿
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
@@ -25,6 +19,7 @@ namespace TgaBuilderLib.ViewModel
             Func<ViewIndex, IView> getViewCallback,
             IMessageService messageService,
             IUndoRedoManager undoRedoManager,
+            IDispatcherService dispatcherService,
 
             SourceTexturePanelViewModel source,
             TargetTexturePanelViewModel destination,
@@ -48,11 +43,9 @@ namespace TgaBuilderLib.ViewModel
             IUsageData? usageData = null)
         {
             _getViewCallback = getViewCallback;
-
             _messageService = messageService;
-
             _undoRedoManager = undoRedoManager;
-
+            _dispatcherService = dispatcherService;
 
             Source = source;
             Destination = destination;
@@ -84,10 +77,9 @@ namespace TgaBuilderLib.ViewModel
         }
 
         private readonly Func<ViewIndex, IView> _getViewCallback;
-
         private readonly IMessageService _messageService;
-
         private readonly IUndoRedoManager _undoRedoManager;
+        private readonly IDispatcherService _dispatcherService;
 
         private FormatTabViewModel? _currnetlyEyedroppingTab;
 
@@ -127,6 +119,7 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand<bool>? _enterPanelCommand;
         private RelayCommand<bool>? _leavePanelCommand;
         private RelayCommand<(bool, bool)>? _wheelShiftCommand;
+        private RelayCommand? _switchToDestinationPlacingModeCommand;
 
 
         public SourceTexturePanelViewModel Source { get; set; }
@@ -277,6 +270,9 @@ namespace TgaBuilderLib.ViewModel
         public ICommand WheelShiftCommand => _wheelShiftCommand
             ??= new(args => WheelShift(args.Item1, args.Item2));
 
+        public ICommand SwitchToDestinationPlacingModeCommand => _switchToDestinationPlacingModeCommand
+            ??= new(() => Selection.IsPlacing = true);
+
 
 
         public void HandleMouseOnPanel(int x, int y, bool isTarget, MouseAction action, MouseModifier modifier)
@@ -306,6 +302,7 @@ namespace TgaBuilderLib.ViewModel
                     break;
 
                 case (MouseAction.Move, MouseModifier.None):
+                case (MouseAction.Move, MouseModifier.Shift):
                     panel.MouseMove();
                     break;
 
@@ -333,13 +330,21 @@ namespace TgaBuilderLib.ViewModel
                     EndScrolling();
                     break;
 
-                case (MouseAction.DragEnd, MouseModifier.Right):
-                    panel.RightDragEnd();
+                case (MouseAction.DragEnd, MouseModifier.Alt):
+                case (MouseAction.DragEnd, MouseModifier.AltLeft):
+                    panel.DragEndAlt();
+                    TileInfoVisible = true;
                     EndScrolling();
                     break;
 
-                case (MouseAction.DragEnd, MouseModifier.AltLeft):
-                    panel.DragEnd();
+                case (MouseAction.DragEnd, MouseModifier.Shift):
+                    panel.DragEndShift();
+                    TileInfoVisible = true;
+                    EndScrolling();
+                    break;
+
+                case (MouseAction.DragEnd, MouseModifier.Right):
+                    panel.RightDragEnd();
                     EndScrolling();
                     break;
 
@@ -350,6 +355,10 @@ namespace TgaBuilderLib.ViewModel
 
                 case (MouseAction.DragEnd, MouseModifier.Eyedropper):
                     HanldeEyedropperEnd();
+                    break;
+
+                case (_, MouseModifier.Middle):
+                    Destination.EndPickingStartPlacing();
                     break;
 
                 default:
@@ -394,14 +403,14 @@ namespace TgaBuilderLib.ViewModel
             {
                 Destination.MouseLeave();
                 PanelInfo = $"{Destination.Presenter.PixelWidth} x {Destination.Presenter.PixelHeight}px, " +
-                            $"{Destination.Presenter.Format.BitsPerPixel} bpp";
+                            $"{(Destination.Presenter.HasAlpha ? 32 : 24)} bpp";
                 PanelHelp = $"Destination Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
             }
             else
             {
                 Source.MouseLeave();
                 PanelInfo = $"{Source.Presenter.PixelWidth} x {Source.Presenter.PixelHeight}px, " +
-                            $"{Source.Presenter.Format.BitsPerPixel} bpp";
+                            $"{(Source.Presenter.HasAlpha ? 32 : 24)} bpp";
                 PanelHelp = $"Source Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
             }
 
@@ -433,7 +442,7 @@ namespace TgaBuilderLib.ViewModel
             await Task.Delay(1000);
 
             if (usageData.WasLoadingUnsuccessful)
-                Application.Current.Dispatcher.Invoke(() =>
+                _dispatcherService.Invoke(() =>
                     _messageService.SendMessage(MessageType.UsageDataLoadError));
         }
     }

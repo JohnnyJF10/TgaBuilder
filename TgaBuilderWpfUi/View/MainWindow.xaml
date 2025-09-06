@@ -10,6 +10,7 @@
     xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
     xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
     xmlns:pzp="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel"
+    xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
@@ -42,6 +43,7 @@
         <KeyBinding Key="D" Modifiers="Control"         Command="{Binding OpenDestinationCommand}" />
         <KeyBinding Key="Q" Modifiers="Control"         Command="{Binding OpenSourceTrCommand}" />
         <KeyBinding Key="W" Modifiers="Control"         Command="{Binding BatchLoaderCommand}" />
+        <MouseBinding Gesture="MiddleClick"             Command="{Binding SwitchToDestinationPlacingModeCommand}" />
     </Window.InputBindings>
 
     <Window.Resources>
@@ -57,7 +59,12 @@
                 <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <BooleanToVisibilityConverter               x:Key="BoolToVisibilityConverter"/>
+            <converter:BitmapSourceConverter            x:Key="BitmapSourceConverter"/>
+            <converter:WriteableBitmapConverter         x:Key="WriteableBitmapConverter"/>
+            <converter:BrushToColorStruct               x:Key="BrushToColorStruct"/>
+            <converter:BoolToStrokeDashStyleConverter   x:Key="BoolToStrokeDashStyleConverter"/>
+            <converter:ColorStructToBrush               x:Key="ColorStructToBrush"/>
             <Style TargetType="{x:Type elements:ContextMenuButton}"
                     BasedOn="{StaticResource {x:Type ui:Button}}"/>
         </ResourceDictionary>
@@ -397,7 +404,7 @@
                                 Icon="{ui:SymbolIcon SquareHint24}"
                                 Width="36"
                                 Height="36"     
-                                IsChecked="{Binding GridDashedSelected, UpdateSourceTrigger=PropertyChanged}"
+                                IsChecked="{Binding GridPointedSelected, UpdateSourceTrigger=PropertyChanged}"
                                 DockPanel.Dock="Left"
                                 ap:MouseOverInfoAP.InfoText="Change between grid designs"/>
 
@@ -480,7 +487,7 @@
                             Width="20"
                             Height="20"
                             Margin="2,0"
-                            Background="{Binding BrushSource}"
+                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
                             Command="{Binding SelectionMonoColorFillCommand}"
                             CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"
                             Style="{StaticResource FlatButtonStyle}"
@@ -588,7 +595,7 @@
                             <Image
                                 Name="SourceImage"
                                 Stretch="None"
-                                Source="{Binding Presenter}"
+                                Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
                                 ap:PanelMouseAP.IsTargetPanel="False"/>
@@ -637,7 +644,7 @@
                                 CellSize="{Binding CellSize}"
                                 Stroke="DarkGoldenrod"
                                 StrokeThickness="{Binding StrokeThickness}"
-                                MainDashStyle="{Binding MainDashStyle}"
+                                MainDashStyle="{Binding GridPointedSelected, Converter={StaticResource BoolToStrokeDashStyleConverter}}"
                                 IsHitTestVisible="False"/>
                         </Canvas>
                     </pzp:ZoomPanel>
@@ -796,7 +803,7 @@
                     Margin="2,0"
                     Background="Black"
                     Command="{Binding SelectionMonoColorFillCommand}"
-                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"
+                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
                     Style="{StaticResource FlatButtonStyle}"
                     BorderBrush="Gray"
                     ap:MouseOverInfoAP.InfoText="Set a pure black selection" 
@@ -807,7 +814,7 @@
                     Margin="3,0"
                     Background="Magenta"
                     Command="{Binding SelectionMonoColorFillCommand}"
-                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"
+                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
                     Style="{StaticResource FlatButtonStyle}"
                     BorderBrush="Gray"
                     ap:MouseOverInfoAP.InfoText="Set a pure magenta selection"
@@ -825,18 +832,22 @@
                         Background="Transparent"
                         Style="{StaticResource FlatButtonStyle}"
                         Command="{Binding SelectionMonoColorFillCommand}"
-                        CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"
+                        CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
                         BorderBrush="Gray"
                         ap:MouseOverInfoAP.InfoText="Set a pure maroon selection"
                         />
                 </Grid>
             </StackPanel>
-            <Border
+            <Button
                 BorderBrush="Gray"
                 BorderThickness="1"
                 Width="100"
                 Height="100"
-                ap:MouseOverInfoAP.InfoText="Current Tile Preview"
+                Padding="0"
+                Command="{Binding SwitchToDestinationPlacingModeCommand}"
+                Style="{StaticResource FlatButtonStyle}"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Current Tile Preview (Click to place)"
                 >
                 <Grid
                     Width="100"
@@ -850,10 +861,10 @@
                         />
                     <Image
                         x:Name="SelectionImage"
-                        Source="{Binding Selection.Presenter}"
+                        Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}"
                         RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                 </Grid>
-            </Border>
+            </Button>
             <StackPanel
                 DataContext="{Binding Selection}"
                 Orientation="Horizontal"
@@ -921,7 +932,7 @@
                             Name="AnimImage"
                             Width="100"
                             Stretch="UniformToFill"
-                            Source="{Binding Presenter}"
+                            Source="{Binding Presenter, Converter={StaticResource BitmapSourceConverter}}"
                             SnapsToDevicePixels="True"
                             Canvas.Top="{Binding OffsetTop, UpdateSourceTrigger=PropertyChanged}"
                             RenderOptions.BitmapScalingMode="NearestNeighbor"
@@ -1028,6 +1039,7 @@
                             DockPanel.Dock="Left"
                             Width="36"
                             Height="36"
+                            Margin="0,0,5,0"
                             IsChecked="{Binding ResizeToPickerModeSelected, Mode=OneWayToSource}"
                             Icon="{ui:SymbolIcon ScaleFill24}"
                             ap:MouseOverInfoAP.InfoText="Rezise Selection to Picker Size"/>
@@ -1036,9 +1048,17 @@
                             Width="36"
                             Height="36"
                             Margin="5,0"
-                            IsChecked="{Binding SwapAndPlaceModeSelected, Mode=OneWayToSource}"
+                            IsChecked="{Binding PlaceContinuouslyModeSelected}"
+                            Icon="{ui:SymbolIcon ArrowHookUpRight24}"
+                            ap:MouseOverInfoAP.InfoText="Place continuously (Left + Shift on the panel)"/>
+                        <elements:ToggleButtonEx
+                            DockPanel.Dock="Left"
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,10,0"
+                            IsChecked="{Binding SwapAndPlaceModeSelected}"
                             Icon="{ui:SymbolIcon ArrowSwap24}"
-                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection"/>
+                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Alt on the panel)"/>
                         <elements:ToggleButtonEx
                             DockPanel.Dock="Left"
                             Width="36"
@@ -1244,7 +1264,7 @@
                             Width="20"
                             Height="20"
                             Margin="2,0"
-                            Background="{Binding BrushSource}"
+                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
                             Command="{Binding SelectionMonoColorFillCommand}"
                             CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"
                             Style="{StaticResource FlatButtonStyle}"
@@ -1269,7 +1289,8 @@
                             Command="{Binding ReplaceSourceColorCommand}"
                             ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color. CAUTION: This clears the undo and redo stacks."
                             />
-                    </StackPanel>                </TabItem>
+                    </StackPanel>                
+                </TabItem>
 
                 <TabItem
                     Header="View"
@@ -1354,7 +1375,7 @@
                             <Image
                                 Name="TargetImage"
                                 Stretch="None"
-                                Source="{Binding Presenter}"
+                                Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
                                 ap:PanelMouseAP.IsTargetPanel="True"/>
@@ -1384,7 +1405,7 @@
 
                             <Image
                                 Name="SelectionPreviewImage"
-                                Source="{Binding Selection.Presenter}"
+                                Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}"
                                 Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
                                 Visibility="{Binding IsPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"

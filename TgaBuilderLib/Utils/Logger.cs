@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace TgaBuilderLib.Utils
+﻿namespace TgaBuilderLib.Utils
 {
     public class Logger : ILogger
     {

@@ -1,23 +1,23 @@
-﻿using System.Windows;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public void RotateRec(WriteableBitmap bitmap, Int32Rect rectangle, bool counterclockwise = false)
+        public void RotateRec(IWriteableBitmap bitmap, PixelRect rectangle, bool counterclockwise = false)
         {
-            int bytesPerPixel = (bitmap.Format.BitsPerPixel + 7) >> 3;
+            int bytesPerPixel = bitmap.HasAlpha ? 4 : 3;
 
             int width = rectangle.Width;
             int height = rectangle.Height;
 
             if (width <= 0 || height <= 0)
-            {
                 throw new ArgumentException("Rectangle width and height must be greater than zero.");
-            }
 
-            var tempBitmap = new WriteableBitmap(height, width, bitmap.DpiX, bitmap.DpiY, bitmap.Format, null);
+            IWriteableBitmap tempBitmap = _mediaFactory.CreateEmptyBitmap(
+                width:          width, 
+                height:         height, 
+                hasAlpha:       bytesPerPixel == 4);
 
             int bitmapStride = bitmap.BackBufferStride;
             int tempStride = tempBitmap.BackBufferStride;

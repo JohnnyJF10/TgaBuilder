@@ -4,28 +4,26 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {
     public partial class BitmapBytesIO
     {
 
-        public void ToUsual(BitmapSource bitmap, string extension)
+        public void ToUsual(IReadableBitmap bitmap, string extension)
         {
             // ToDo: Implement cancellation logic if needed.
-            BitmapEncoder encoder = extension.ToLower() switch
+            EncoderType encoderType = extension.ToLower() switch
             {
-                "png" => new PngBitmapEncoder(),
-                "jpg" or "jpeg" => new JpegBitmapEncoder(),
-                "bmp" => new BmpBitmapEncoder(),
+                "png" => EncoderType.Png,
+                "jpg" or "jpeg" => EncoderType.Jpeg,
+                "bmp" => EncoderType.Bmp,
                 _ => throw new NotSupportedException($"Unsupported file format: {extension}")
             };
 
-            encoder.Frames.Add(BitmapFrame.Create(bitmap));
-
-            using var memoryStream = new MemoryStream();
-            encoder.Save(memoryStream);
+            using var memoryStream = bitmap.ToMemoryStream(encoderType);
 
             ActualDataLength = (int)memoryStream.Length;
 

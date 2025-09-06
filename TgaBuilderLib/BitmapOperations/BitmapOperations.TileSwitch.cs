@@ -1,14 +1,13 @@
-﻿using System.Windows;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public void TileSwitch(WriteableBitmap bitmap, (int X, int Y) sourcePos, (int X, int Y) targetPos, int tileSize)
+        public void TileSwitch(IWriteableBitmap bitmap, (int X, int Y) sourcePos, (int X, int Y) targetPos, int tileSize)
         {
-            WriteableBitmap SourceTile = CropBitmap(bitmap, new Int32Rect(sourcePos.X, sourcePos.Y, tileSize, tileSize));
-            WriteableBitmap TargetTile = CropBitmap(bitmap, new Int32Rect(targetPos.X, targetPos.Y, tileSize, tileSize));
+            IWriteableBitmap SourceTile = CropBitmap(bitmap, new PixelRect(sourcePos.X, sourcePos.Y, tileSize, tileSize));
+            IWriteableBitmap TargetTile = CropBitmap(bitmap, new PixelRect(targetPos.X, targetPos.Y, tileSize, tileSize));
 
             FillRectBitmapNoConvert(SourceTile, bitmap, targetPos);
             FillRectBitmapNoConvert(TargetTile, bitmap, sourcePos);

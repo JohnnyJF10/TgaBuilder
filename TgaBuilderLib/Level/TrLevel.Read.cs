@@ -1,12 +1,6 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-using System;
-using System.Buffers;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection.PortableExecutable;
-using System.Threading;
+
 using TgaBuilderLib.Enums;
-using TgaBuilderLib.Utils;
 
 namespace TgaBuilderLib.Level
 {
@@ -37,7 +31,7 @@ namespace TgaBuilderLib.Level
                     0xFF180034 => TrVersion.TR3,
                     0x00345254 => TrVersion.TR4,
                     0x63345254 => TrVersion.TR4,
-                    _ => throw new FileFormatException("Unknown game version 0x" + versionUInt.ToString("X") + ".")
+                    _ => throw new FormatException("Unknown game version 0x" + versionUInt.ToString("X") + ".")
                 };
 
                 if (versionUInt == 0x63345254)
@@ -57,11 +51,6 @@ namespace TgaBuilderLib.Level
 
                 if (Version == TrVersion.TR4 && fileName.ToLower().Trim().EndsWith(".trc"))
                     Version = TrVersion.TRC;
-
-                // Check for NG header
-                _isNg = false;
-                if (Version == TrVersion.TR4)
-                    CheckForNgHeader(reader);
 
                 if (Version == TrVersion.TR1)
                 {
@@ -324,7 +313,7 @@ namespace TgaBuilderLib.Level
                 // Read room header marker (should be "XELA", 0x414c4558)
                 var xela = System.Text.Encoding.ASCII.GetString(levelReader.ReadBytes(4));
                 if (string.Compare(xela, "XELA", StringComparison.Ordinal) != 0)
-                    throw new FileFormatException("Invalid room header marker: " + xela);
+                    throw new FormatException("Invalid room header marker: " + xela);
 
                 // Total size of the room block
                 var roomDataSize = levelReader.ReadUInt32();
@@ -507,7 +496,7 @@ namespace TgaBuilderLib.Level
                 // Read separator (0xCDCD)
                 var ets = levelReader.ReadUInt16();
                 if (ets != 0xCDCD)
-                    throw new FileFormatException("Invalid separator after portals: " + ets.ToString("X"));
+                    throw new FormatException("Invalid separator after portals: " + ets.ToString("X"));
 
                 // Read static mesh list (each = 20 bytes)
                 levelReader.ReadBytes(20 * numStatics);
@@ -730,10 +719,10 @@ namespace TgaBuilderLib.Level
             int bytesRead = levelReader.Read(_paletteTr1, 0, 768);
 
             if (bytesRead != 768)
-                throw new FileFormatException("TR1 atlas data is incomplete or corrupted.");
+                throw new FormatException("TR1 atlas data is incomplete or corrupted.");
 
             if (_atlasTr1 == null || _atlasTr1.Length == 0)
-                throw new FileFormatException("TR1 atlas data is missing or empty.");
+                throw new FormatException("TR1 atlas data is missing or empty.");
 
             int pixelCount = _numPages * ORIGINAL_PAGE_PIXEL_COUNT;
             int index = 0;
@@ -774,7 +763,7 @@ namespace TgaBuilderLib.Level
             int bytesRead = reader.Read(_atlasTr1, 0, numPixels);
 
             if (bytesRead != numPixels)
-                throw new FileFormatException("TR1 atlas data is incomplete or corrupted.");
+                throw new FormatException("TR1 atlas data is incomplete or corrupted.");
         }
 
         private void ReadAtlasTr2Tr3(BinaryReader reader, CancellationToken? cancellationToken = null)
@@ -815,7 +804,7 @@ namespace TgaBuilderLib.Level
             int bytesRead = reader.Read(_rawAtlasCompressed, 0, (int)compressedSize);
 
             if (bytesRead != compressedSize)
-                throw new FileFormatException("TR4-5 atlas data is incomplete or corrupted.");
+                throw new FormatException("TR4-5 atlas data is incomplete or corrupted.");
 
             _rawAtlas = DecompressZlib(_rawAtlasCompressed, cancellationToken);
             _numPages = (int)uncompressedSize / ORIGINAL_PAGE_PIXEL_COUNT / IMPORT_BPP;
@@ -882,16 +871,6 @@ namespace TgaBuilderLib.Level
 
         // --- NG Handling ---
 
-        private void CheckForNgHeader(BinaryReader reader)
-        {
-            var offset = reader.BaseStream.Position;
-            reader.BaseStream.Seek(reader.BaseStream.Length - 8, SeekOrigin.Begin);
-            var ngBuffer = reader.ReadBytes(4);
-            if (ngBuffer[0] == 0x4E && ngBuffer[1] == 0x47 && ngBuffer[2] == 0x4C && ngBuffer[3] == 0x45)
-                _isNg = true;
-            reader.BaseStream.Seek(offset, SeekOrigin.Begin);
-        }
-
         private string NgGetDecryptedLevelName(string fileName)
         {
             if (_trngDecrypter is null)
@@ -902,7 +881,7 @@ namespace TgaBuilderLib.Level
                 Path.GetFileNameWithoutExtension(fileName) + "_decrypted.temp");
 
             if (!_trngDecrypter.DecryptLevel(fileName, levelName))
-                throw new FileFormatException("Failed to decrypt the level file: " + fileName);
+                throw new FormatException("Failed to decrypt the level file: " + fileName);
 
             return levelName;
         }

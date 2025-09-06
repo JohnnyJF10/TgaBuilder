@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapOperations
@@ -8,64 +6,57 @@ namespace TgaBuilderLib.BitmapOperations
     public interface IBitmapOperations
     {
         int PlacedSize { get; set; }
-        WriteableBitmap? SwapBitmap { get; set; }
-
-
-        // Create
-        WriteableBitmap CreateBitmapAndResize(
-            byte[] data,
-            int width,
-            int height,
-            int stride,
-            PixelFormat pixelFormat,
-            int targetWidth,
-            int targetHeight,
-            BitmapScalingMode scalingMode);
+        IWriteableBitmap? SwapBitmap { get; set; }
 
 
         //Convert
-        WriteableBitmap ConvertRGB24ToBGRA32(
-            WriteableBitmap sourceBitmap);
+        IWriteableBitmap ConvertRGB24ToBGRA32(
+            IWriteableBitmap sourceBitmap);
 
-        WriteableBitmap ConvertBGRA32ToRGB24(
-            WriteableBitmap sourceBitmap);
+        IWriteableBitmap ConvertBGRA32ToRGB24(
+            IWriteableBitmap sourceBitmap);
 
 
         // Crop
-        WriteableBitmap CropBitmap(
-            WriteableBitmap source,
-            Int32Rect rectangle);
+        IWriteableBitmap CropBitmap(
+            IWriteableBitmap source,
+            PixelRect rectangle);
 
-        WriteableBitmap CropBitmap(
-            WriteableBitmap source,
-            Int32Rect rectangle,
+        IWriteableBitmap CropBitmap(
+            IWriteableBitmap source,
+            PixelRect rectangle,
             Color replacedColor,
             Color newColor);
 
+        IReadableBitmap CropIReadableBitmap(
+            IReadableBitmap source,
+            PixelRect rectangle,
+            byte[]? pixelbuffer = null);
+
 
         // Scale / Change Size
-        WriteableBitmap Resize(
-            WriteableBitmap sourceBitmap,
+        IWriteableBitmap Resize(
+            IWriteableBitmap sourceBitmap,
             int newWidth,
             int newHeight);
 
-        WriteableBitmap ResizeHeightMonitored(
-            WriteableBitmap sourceBitmap,
+        IWriteableBitmap ResizeHeightMonitored(
+            IWriteableBitmap sourceBitmap,
             int newHeight,
             byte[] undoData);
 
-        WriteableBitmap ResizeWidthMonitored(
-            WriteableBitmap sourceBitmap,
+        IWriteableBitmap ResizeWidthMonitored(
+            IWriteableBitmap sourceBitmap,
             int newWidth,
             byte[] undoData);
 
-        WriteableBitmap ResizeScaled(
-            WriteableBitmap source,
+        IWriteableBitmap ResizeScaled(
+            IWriteableBitmap source,
             int targetWidth,
             int targetHeight = -1);
 
-        WriteableBitmap ResizeSorted(
-            WriteableBitmap oldBitmap,
+        IWriteableBitmap ResizeSorted(
+            IWriteableBitmap oldBitmap,
             int newWidth,
             int tileSize,
             int newHeight = -1);
@@ -73,20 +64,20 @@ namespace TgaBuilderLib.BitmapOperations
 
         // Insert / Fill
         void FillRectArray(
-            WriteableBitmap bitmap,
-            Int32Rect rect,
+            IWriteableBitmap bitmap,
+            PixelRect rect,
             byte[] pixels);
 
         void FillRectBitmapUnmonitored(
-            WriteableBitmap source,
-            WriteableBitmap target,
+            IWriteableBitmap source,
+            IWriteableBitmap target,
             (int X, int Y) pos,
             double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default);
 
         void FillRectBitmap(
-            WriteableBitmap source,
-            WriteableBitmap target,
+            IWriteableBitmap source,
+            IWriteableBitmap target,
             (int X, int Y) pos,
             byte[] undoPixels,
             byte[] redoPixels,
@@ -94,56 +85,56 @@ namespace TgaBuilderLib.BitmapOperations
             PlacingMode placingMode = PlacingMode.Default);
 
         void FillRectBitmapNoConvert(
-            WriteableBitmap source,
-            WriteableBitmap target,
+            IWriteableBitmap source,
+            IWriteableBitmap target,
             (int X, int Y) pos);
 
         void FillRectColor(
-            WriteableBitmap bitmap,
-            Int32Rect rect,
+            IWriteableBitmap bitmap,
+            PixelRect rect,
             Color? fillColor = null);
 
 
         // Pixel Operationens
         Color GetPixelBrush(
-            WriteableBitmap bitmap,
+            IWriteableBitmap bitmap,
             int x,
             int y);
 
         byte[] GetRegionPixels(
-            WriteableBitmap bmp,
-            Int32Rect rect);
+            IWriteableBitmap bmp,
+            PixelRect rect);
 
-        WriteableBitmap ReplaceColor(
-            WriteableBitmap source,
+        IWriteableBitmap ReplaceColor(
+            IWriteableBitmap source,
             Color replacedColor,
             Color newColor);
 
 
         // Transformations
         void FlipRectHor(
-            WriteableBitmap bitmap,
-            Int32Rect rectangle);
+            IWriteableBitmap bitmap,
+            PixelRect rectangle);
 
         void FlipRectVert(
-            WriteableBitmap bitmap,
-            Int32Rect rectangle);
+            IWriteableBitmap bitmap,
+            PixelRect rectangle);
 
         void RotateRec(
-            WriteableBitmap bitmap,
-            Int32Rect rectangle,
+            IWriteableBitmap bitmap,
+            PixelRect rectangle,
             bool counterclockwise = false);
 
 
         // Tile Manipulation
         void TileRally(
-            WriteableBitmap bitmap,
+            IWriteableBitmap bitmap,
             (int X, int Y) sourcePos,
             (int X, int Y) targetPos,
             int tileSize);
 
         void TileSwitch(
-            WriteableBitmap bitmap,
+            IWriteableBitmap bitmap,
             (int X, int Y) sourcePos,
             (int X, int Y) targetPos,
             int tileSize);

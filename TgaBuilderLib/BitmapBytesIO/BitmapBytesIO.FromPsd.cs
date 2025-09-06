@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing.PSD;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapBytesIO
@@ -18,7 +17,8 @@ namespace TgaBuilderLib.BitmapBytesIO
             ResizeMode mode = ResizeMode.SourceResize,
             CancellationToken? cancellationToken = null)
         {
-            ValidateImageInput(psdFilePath, LoadedFormat);
+            if (!File.Exists(psdFilePath))
+                throw new FileNotFoundException("The specified file does not exist.", psdFilePath);
 
             var psd = new PsdFile();
             psd.Load(psdFilePath);
@@ -26,9 +26,7 @@ namespace TgaBuilderLib.BitmapBytesIO
             var data = psd.ImageData;
             int bytesPerPixel = data.Length;
 
-            bool isPsd4Channels = bytesPerPixel == 4;
-
-            LoadedFormat = isPsd4Channels ? PixelFormats.Bgra32 : PixelFormats.Rgb24;
+            LoadedHasAlpha = bytesPerPixel == 4;
 
             int originalWidth = psd.Columns;
             int originalHeight = psd.Rows;
@@ -41,7 +39,7 @@ namespace TgaBuilderLib.BitmapBytesIO
             LoadedBytes = RentBlackPixelBuffer(
                 width: LoadedWidth,
                 height: LoadedHeight,
-                bytesPerPixel: bytesPerPixel);
+                hasAlpha: LoadedHasAlpha);
 
             for (int y = 0; y < originalHeight; y++)
             {
@@ -52,19 +50,19 @@ namespace TgaBuilderLib.BitmapBytesIO
                     int layerIndex = y * originalWidth + x;
                     int globalIndex = (y * LoadedWidth + x) * bytesPerPixel;
 
-                    byte a = isPsd4Channels ? data[3][layerIndex] : (byte)255;
+                    byte a = LoadedHasAlpha ? data[3][layerIndex] : (byte)255;
                     byte r = data[0][layerIndex];
                     byte g = data[1][layerIndex];
                     byte b = data[2][layerIndex];
 
-                    if (LoadedFormat == PixelFormats.Bgra32)
+                    if (LoadedHasAlpha)
                     {
                         LoadedBytes[globalIndex + 0] = b;
                         LoadedBytes[globalIndex + 1] = g;
                         LoadedBytes[globalIndex + 2] = r;
                         LoadedBytes[globalIndex + 3] = a;
                     }
-                    else if (LoadedFormat == PixelFormats.Rgb24)
+                    else
                     {
                         LoadedBytes[globalIndex + 0] = r;
                         LoadedBytes[globalIndex + 1] = g;

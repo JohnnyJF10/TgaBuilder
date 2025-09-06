@@ -1,6 +1,5 @@
-﻿using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using TgaBuilderLib.Enums;
 using TgaBuilderWpfUi.AttachedProperties;
@@ -71,7 +70,10 @@ namespace TgaBuilderWpfUi.View
 
             if (CurrentPanel != null &&
                 PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand)
-                scrollCommand.Execute(e.GetPosition(CurrentPanel));
+            {
+                Point pos = e.GetPosition(CurrentPanel);
+                scrollCommand.Execute((pos.X, pos.Y));
+            }
 
             if (PanelMouseAP.GetPanelMouseCommand(window) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((x, y, isDestination, MouseAction.Move, _modifier));
@@ -80,6 +82,12 @@ namespace TgaBuilderWpfUi.View
         private void Window_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (CurrentImage is null || sender is not Window window) return;
+
+            if (Keyboard.Modifiers == ModifierKeys.Shift)
+                _modifier = MouseModifier.Shift;
+
+            if (e.ChangedButton == MouseButton.Middle)
+                _modifier = MouseModifier.Middle;
 
             int x = ((int)e.GetPosition(CurrentImage).X);
             int y = ((int)e.GetPosition(CurrentImage).Y);

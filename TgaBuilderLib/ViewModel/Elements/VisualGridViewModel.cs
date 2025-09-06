@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using TgaBuilderLib.Commands;
+﻿using TgaBuilderLib.Commands;
 
 namespace TgaBuilderLib.ViewModel
 {
@@ -18,9 +17,9 @@ namespace TgaBuilderLib.ViewModel
 
         private bool _isVisible;
         private bool _gridVisibleSelected;
-        private bool _gridDashedSelected;
+        private bool _gridPointedSelected;
 
-        private DashStyle? mainDashStyle;
+        private bool _dottedDashStyleSelected;
 
         private RelayCommand? _resetCommand;
 
@@ -62,6 +61,12 @@ namespace TgaBuilderLib.ViewModel
         {
             get => _gridVisibleSelected;
             set => SetGridVisibleSelected(value);
+        }
+
+        public bool GridPointedSelected
+        {
+            get => _gridPointedSelected;
+            set => SetProperty(ref _gridPointedSelected, value, nameof(GridPointedSelected));
         }
 
 
@@ -133,30 +138,10 @@ namespace TgaBuilderLib.ViewModel
                 IsVisible = false;
         }
 
-        public DashStyle MainDashStyle 
-        { 
-            get => mainDashStyle ?? DashStyles.Solid; 
-            set => SetProperty(ref mainDashStyle, value, nameof(MainDashStyle));
-        }
-
-
-        public bool GridDashedSelected
+        public bool DottedDashStyleSelected
         {
-            get => _gridDashedSelected;
-            set
-            {
-                if (value == _gridDashedSelected)
-                    return;
-
-                _gridDashedSelected = value;
-
-                OnPropertyChanged(nameof(GridDashedSelected));
-
-                if (value)
-                    MainDashStyle = DashStyles.Dot;
-                else
-                    MainDashStyle = DashStyles.Solid;
-            }
+            get => _dottedDashStyleSelected;
+            set => SetProperty(ref _dottedDashStyleSelected, value, nameof(DottedDashStyleSelected));
         }
 
         public RelayCommand ResetCommand

@@ -1,16 +1,19 @@
-﻿using System.Windows;
-using System.Windows.Media.Imaging;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public WriteableBitmap Resize(WriteableBitmap sourceBitmap, int newWidth, int newHeight)
+        public IWriteableBitmap Resize(IWriteableBitmap sourceBitmap, int newWidth, int newHeight)
         {
-            int bytesPerPixel = (sourceBitmap.Format.BitsPerPixel + 7) >> 3;
+            int bytesPerPixel = sourceBitmap.HasAlpha ? 4 : 3;
 
             // Create a new bitmap with the desired size
-            var resizedBitmap = new WriteableBitmap(newWidth, newHeight, sourceBitmap.DpiX, sourceBitmap.DpiY, sourceBitmap.Format, null);
+
+            IWriteableBitmap resizedBitmap = _mediaFactory.CreateEmptyBitmap(
+                width:          newWidth, 
+                height:         newHeight, 
+                hasAlpha:       bytesPerPixel == 4);
 
             int sourceStride = sourceBitmap.BackBufferStride;
             int resizedStride = resizedBitmap.BackBufferStride;
@@ -68,16 +71,16 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            resizedBitmap.AddDirtyRect(new Int32Rect(0, 0, newWidth, newHeight));
+            resizedBitmap.AddDirtyRect(new PixelRect(0, 0, newWidth, newHeight));
             sourceBitmap.Unlock();
             resizedBitmap.Unlock();
 
             return resizedBitmap;
         }
 
-        public WriteableBitmap ResizeWidthMonitored(WriteableBitmap sourceBitmap, int newWidth, byte[] undoData)
+        public IWriteableBitmap ResizeWidthMonitored(IWriteableBitmap sourceBitmap, int newWidth, byte[] undoData)
         {
-            int bytesPerPixel = (sourceBitmap.Format.BitsPerPixel + 7) >> 3;
+            int bytesPerPixel = sourceBitmap.HasAlpha ? 4 : 3;
             int removedColumns = sourceBitmap.PixelWidth - newWidth;
 
             if (undoData.Length < removedColumns * sourceBitmap.PixelHeight * bytesPerPixel)
@@ -89,8 +92,10 @@ namespace TgaBuilderLib.BitmapOperations
             if (newWidth > sourceBitmap.PixelWidth)
                 return Resize(sourceBitmap, newWidth, sourceBitmap.PixelHeight);
 
-            var resizedBitmap = new WriteableBitmap(newWidth, sourceBitmap.PixelHeight,
-                sourceBitmap.DpiX, sourceBitmap.DpiY, sourceBitmap.Format, null);
+            IWriteableBitmap resizedBitmap = _mediaFactory.CreateEmptyBitmap(
+                width: newWidth,
+                height: sourceBitmap.PixelHeight,
+                hasAlpha: sourceBitmap.HasAlpha);
 
             sourceBitmap.Lock();
             resizedBitmap.Lock();
@@ -132,16 +137,16 @@ namespace TgaBuilderLib.BitmapOperations
                 }
             }
 
-            resizedBitmap.AddDirtyRect(new Int32Rect(0, 0, newWidth, sourceBitmap.PixelHeight));
+            resizedBitmap.AddDirtyRect(new PixelRect(0, 0, newWidth, sourceBitmap.PixelHeight));
             sourceBitmap.Unlock();
             resizedBitmap.Unlock();
 
             return resizedBitmap;
         }
 
-        public WriteableBitmap ResizeHeightMonitored(WriteableBitmap sourceBitmap, int newHeight, byte[] undoData)
+        public IWriteableBitmap ResizeHeightMonitored(IWriteableBitmap sourceBitmap, int newHeight, byte[] undoData)
         {
-            int bytesPerPixel = (sourceBitmap.Format.BitsPerPixel + 7) >> 3;
+            int bytesPerPixel = sourceBitmap.HasAlpha ? 4 : 3;
             int removedRows = sourceBitmap.PixelHeight - newHeight;
 
             if (undoData.Length < removedRows * sourceBitmap.PixelWidth * bytesPerPixel)
@@ -153,8 +158,10 @@ namespace TgaBuilderLib.BitmapOperations
             if (newHeight > sourceBitmap.PixelHeight)
                 return Resize(sourceBitmap, sourceBitmap.PixelWidth, newHeight);
 
-            var resizedBitmap = new WriteableBitmap(sourceBitmap.PixelWidth, newHeight,
-                sourceBitmap.DpiX, sourceBitmap.DpiY, sourceBitmap.Format, null);
+            IWriteableBitmap resizedBitmap = _mediaFactory.CreateEmptyBitmap(
+                width: sourceBitmap.PixelWidth,
+                height: newHeight,
+                hasAlpha: sourceBitmap.HasAlpha);
 
             sourceBitmap.Lock();
             resizedBitmap.Lock();
@@ -199,7 +206,7 @@ namespace TgaBuilderLib.BitmapOperations
                 }
             }
 
-            resizedBitmap.AddDirtyRect(new Int32Rect(0, 0, sourceBitmap.PixelWidth, newHeight));
+            resizedBitmap.AddDirtyRect(new PixelRect(0, 0, sourceBitmap.PixelWidth, newHeight));
             sourceBitmap.Unlock();
             resizedBitmap.Unlock();
 

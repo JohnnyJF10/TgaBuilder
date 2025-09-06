@@ -1,41 +1,33 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using System.Runtime.CompilerServices;
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public WriteableBitmap? SwapBitmap { get; set; }
+        public IWriteableBitmap? SwapBitmap { get; set; }
 
         public int PlacedSize { get; set; }
 
         public void FillRectBitmap(
-            WriteableBitmap source, 
-            WriteableBitmap target,
+            IWriteableBitmap source, 
+            IWriteableBitmap target,
             (int X, int Y) pos, 
             byte[] undoPixels, 
             byte[] redoPixels,
             double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default)
         {
-            if (source.Format != PixelFormats.Rgb24 && source.Format != PixelFormats.Bgra32)
-                throw new ArgumentException("Source must be in Rgb24 or Bgra32 format.");
-
-            if (target.Format == PixelFormats.Rgb24)
-                FillRectBitmap24(source, target, pos, undoPixels, redoPixels, opacity, placingMode);
-            else if (target.Format == PixelFormats.Bgra32)
+            if (target.HasAlpha)
                 FillRectBitmap32(source, target, pos, undoPixels, redoPixels, opacity, placingMode);
             else
-                throw new ArgumentException("Target must be in Rgb24 or Bgra32 format.");
-
-
+                FillRectBitmap24(source, target, pos, undoPixels, redoPixels, opacity, placingMode);
         }
 
         private void FillRectBitmap24(
-            WriteableBitmap source,
-            WriteableBitmap target,
+            IWriteableBitmap source,
+            IWriteableBitmap target,
             (int X, int Y) pos,
             byte[] undoPixels,
             byte[] redoPixels,
@@ -74,6 +66,9 @@ namespace TgaBuilderLib.BitmapOperations
 
             if (sWidth <= 0 || sHeight <= 0) return;
 
+            PixelAction action;
+            bool isTransparencyColor;
+
             source.Lock();
             target.Lock();
             SwapBitmap?.Lock();
@@ -86,7 +81,7 @@ namespace TgaBuilderLib.BitmapOperations
 
                 int srcStride = source.BackBufferStride;
                 int tgtStride = target.BackBufferStride;
-                int srcBpp = (source.Format.BitsPerPixel + 7) / 8;
+                int srcBpp = source.HasAlpha ? 4 : 3;
 
                 fixed (byte* pUndoPixels = undoPixels, pRedoPixels = redoPixels)
                 {
@@ -103,7 +98,7 @@ namespace TgaBuilderLib.BitmapOperations
                         {
                             byte r = 0, g = 0, b = 0, a = 255;
 
-                            if (source.Format == PixelFormats.Rgb24)
+                            if (!source.HasAlpha)
                             {
                                 r = srcLine[0];
                                 g = srcLine[1];
@@ -118,6 +113,7 @@ namespace TgaBuilderLib.BitmapOperations
                             }
 
                             a = (byte)(a * opacity);
+                            isTransparencyColor = (r, g, b) == (255, 0, 255);
 
                             undoLine[0] = tgtLine[0];
                             undoLine[1] = tgtLine[1];
@@ -130,23 +126,33 @@ namespace TgaBuilderLib.BitmapOperations
                                 swapLine[2] = tgtLine[2];
                             }
 
-                            if (a == 255 && (!OverlayTransparent || (r, g, b) != (255, 0, 255)))
+                            action = DecidePixelAction(
+                                alpha:                  a,
+                                srcHasAlpha:            source.HasAlpha,
+                                tgtHasAlpha:            false,
+                                isTransparencyColor:    isTransparencyColor,
+                                overlayTransparent:     OverlayTransparent);
+
+                            switch (action)
                             {
-                                tgtLine[0] = r;
-                                tgtLine[1] = g;
-                                tgtLine[2] = b;
-                            }
-                            else if ((a == 0 && !OverlayTransparent) || (srcBpp == 3 && ((r, g, b) == (255, 0, 255) && !OverlayTransparent)))
-                            {
-                                tgtLine[0] = 255;
-                                tgtLine[1] = 0;
-                                tgtLine[2] = 255;
-                            }
-                            else if (a < 255 && (srcBpp > 3 || (srcBpp == 3 && ((r, g, b) != (255, 0, 255)))))
-                            {
-                                tgtLine[0] = (byte)((tgtLine[0] * (255 - a) + r * a) / 255);
-                                tgtLine[1] = (byte)((tgtLine[1] * (255 - a) + g * a) / 255);
-                                tgtLine[2] = (byte)((tgtLine[2] * (255 - a) + b * a) / 255);
+                                case PixelAction.Copy:
+                                    tgtLine[0] = r;
+                                    tgtLine[1] = g;
+                                    tgtLine[2] = b;
+                                    break;
+                                case PixelAction.Transparent:
+                                    tgtLine[0] = 255;
+                                    tgtLine[1] = 0;
+                                    tgtLine[2] = 255;
+                                    break;
+                                case PixelAction.Blend:
+                                    tgtLine[0] = DoAlphaBlend(r, tgtLine[0], a);
+                                    tgtLine[1] = DoAlphaBlend(g, tgtLine[1], a);
+                                    tgtLine[2] = DoAlphaBlend(b, tgtLine[2], a);
+                                    break;
+                                case PixelAction.None:
+                                default:
+                                    break;
                             }
 
                             redoLine[0] = tgtLine[0];
@@ -163,8 +169,8 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            target.AddDirtyRect(new Int32Rect(posX, posY, sWidth, sHeight));
-            SwapBitmap?.AddDirtyRect(new Int32Rect(0, 0, sWidth, sHeight));
+            target.AddDirtyRect(new PixelRect(posX, posY, sWidth, sHeight));
+            SwapBitmap?.AddDirtyRect(new PixelRect(0, 0, sWidth, sHeight));
 
             SwapBitmap?.Unlock();
             target.Unlock();
@@ -172,8 +178,8 @@ namespace TgaBuilderLib.BitmapOperations
         }
 
         private void FillRectBitmap32(
-            WriteableBitmap source,
-            WriteableBitmap target,
+            IWriteableBitmap source,
+            IWriteableBitmap target,
             (int X, int Y) pos,
             byte[] undoPixels,
             byte[] redoPixels,
@@ -212,6 +218,9 @@ namespace TgaBuilderLib.BitmapOperations
 
             if (sWidth <= 0 || sHeight <= 0) return;
 
+            PixelAction action;
+            bool isTransparencyColor;
+
             source.Lock();
             target.Lock();
             SwapBitmap?.Lock();
@@ -224,7 +233,7 @@ namespace TgaBuilderLib.BitmapOperations
 
                 int srcStride = source.BackBufferStride;
                 int tgtStride = target.BackBufferStride;
-                int srcBpp = (source.Format.BitsPerPixel + 7) / 8;
+                int srcBpp = source.HasAlpha ? 4 : 3;
 
                 fixed (byte* pUndoPixels = undoPixels, pRedoPixels = redoPixels)
                 {
@@ -241,7 +250,7 @@ namespace TgaBuilderLib.BitmapOperations
                         {
                             byte r = 0, g = 0, b = 0, a = 255;
 
-                            if (source.Format == PixelFormats.Rgb24)
+                            if (!source.HasAlpha)
                             {
                                 r = srcLine[0];
                                 g = srcLine[1];
@@ -256,6 +265,7 @@ namespace TgaBuilderLib.BitmapOperations
                             }
 
                             a = (byte)(a * opacity);
+                            isTransparencyColor = (r, g, b) == (255, 0, 255);
 
                             undoLine[0] = tgtLine[0];
                             undoLine[1] = tgtLine[1];
@@ -270,25 +280,35 @@ namespace TgaBuilderLib.BitmapOperations
                                 swapLine[3] = tgtLine[3];
                             }
 
-                            if (!OverlayTransparent && (srcBpp > 3 || (srcBpp == 3 && ((r, g, b) != (255, 0, 255)))))
+                            action = DecidePixelAction(
+                                alpha:                  a,
+                                srcHasAlpha:            source.HasAlpha,
+                                tgtHasAlpha:            true,
+                                isTransparencyColor:    isTransparencyColor,
+                                overlayTransparent:     OverlayTransparent);
+
+                            switch (action)
                             {
-                                tgtLine[0] = b;
-                                tgtLine[1] = g;
-                                tgtLine[2] = r;
-                                tgtLine[3] = a;
-                            }
-                            else if ((srcBpp > 3 && a == 0 && !OverlayTransparent) || (srcBpp == 3 && ((r, g, b) == (255, 0, 255) && !OverlayTransparent)) )
-                            {
-                                tgtLine[0] = 0;
-                                tgtLine[1] = 0;
-                                tgtLine[2] = 0;
-                                tgtLine[3] = 0;
-                            }
-                            else if (srcBpp > 3 || (srcBpp == 3 && ((r, g, b) != (255, 0, 255))))
-                            {
-                                tgtLine[0] = (byte)((tgtLine[0] * (255 - a) + b * a) / 255);
-                                tgtLine[1] = (byte)((tgtLine[1] * (255 - a) + g * a) / 255);
-                                tgtLine[2] = (byte)((tgtLine[2] * (255 - a) + r * a) / 255);
+                                case PixelAction.Copy:
+                                    tgtLine[0] = b;
+                                    tgtLine[1] = g;
+                                    tgtLine[2] = r;
+                                    tgtLine[3] = a;
+                                    break;
+                                case PixelAction.Transparent:
+                                    tgtLine[0] = 0;
+                                    tgtLine[1] = 0;
+                                    tgtLine[2] = 0;
+                                    tgtLine[3] = 0;
+                                    break;
+                                case PixelAction.Blend:
+                                    tgtLine[0] = DoAlphaBlend(b, tgtLine[0], a);
+                                    tgtLine[1] = DoAlphaBlend(g, tgtLine[1], a);
+                                    tgtLine[2] = DoAlphaBlend(r, tgtLine[2], a);
+                                    break;
+                                case PixelAction.None:
+                                default:
+                                    break;
                             }
 
                             redoLine[0] = tgtLine[0];
@@ -306,8 +326,8 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            target.AddDirtyRect(new Int32Rect(posX, posY, sWidth, sHeight));
-            SwapBitmap?.AddDirtyRect(new Int32Rect(0, 0, sWidth, sHeight));
+            target.AddDirtyRect(new PixelRect(posX, posY, sWidth, sHeight));
+            SwapBitmap?.AddDirtyRect(new PixelRect(0, 0, sWidth, sHeight));
 
             SwapBitmap?.Unlock();
             target.Unlock();
@@ -315,12 +335,13 @@ namespace TgaBuilderLib.BitmapOperations
         }
 
         public void FillRectBitmapNoConvert(
-            WriteableBitmap source, 
-            WriteableBitmap target, 
+            IWriteableBitmap source, 
+            IWriteableBitmap target, 
             (int X, int Y) pos)
         {
-            int bytesPerPixel = (source.Format.BitsPerPixel + 7) >> 3;
-            if (target.Format.BitsPerPixel != source.Format.BitsPerPixel)
+            int bytesPerPixel = source.HasAlpha ? 4 : 3;
+
+            if (target.HasAlpha != source.HasAlpha)
                 throw new ArgumentException("Target and source formats must be the same.");
 
             int sWidth = source.PixelWidth;
@@ -361,7 +382,7 @@ namespace TgaBuilderLib.BitmapOperations
                     targetPtr += strideDelta;
                 }
             }
-            target.AddDirtyRect(new Int32Rect(pos.X, pos.Y, sWidth, sHeight));
+            target.AddDirtyRect(new PixelRect(pos.X, pos.Y, sWidth, sHeight));
             source.Unlock();
             target.Unlock();
         }

@@ -1,7 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.FileHandling;
@@ -16,7 +13,7 @@ namespace TgaBuilderLib.ViewModel
             IBitmapOperations bitmapOperations,
             IEyeDropper eyeDropper,
 
-            WriteableBitmap presenter,
+            IWriteableBitmap presenter,
 
             SelectionViewModel SelectionVM,
             AnimationViewModel AnimationVM,
@@ -50,7 +47,7 @@ namespace TgaBuilderLib.ViewModel
 
         protected IEyeDropper _eyeDropper;
 
-        protected WriteableBitmap _presenter;
+        protected IWriteableBitmap _presenter;
 
         protected int _xGrid;
         protected int _yGrid;
@@ -64,12 +61,12 @@ namespace TgaBuilderLib.ViewModel
         public AnimSelectShapeViewModel AnimSelectShape { get; set; }
         public AnimationViewModel Animation { get; set; }
 
-        public WriteableBitmap Presenter
+        public IWriteableBitmap Presenter
         {
             get => _presenter;
             set => SetPresenter(value);
         }
-        public Color AlphaColor { get; set; } = Colors.Magenta;
+        public Color AlphaColor { get; set; } = new Color(255, 0, 255);
 
         internal bool ReplaceColorEnabled { get; set; }
 
@@ -92,7 +89,7 @@ namespace TgaBuilderLib.ViewModel
 
         internal abstract bool CanScroll { get; }
 
-        public abstract void SetPresenter(WriteableBitmap bitmap);
+        public abstract void SetPresenter(IWriteableBitmap bitmap);
         public abstract void SetZoom(double zoom);
 
         public abstract void MouseEnter();
@@ -101,6 +98,8 @@ namespace TgaBuilderLib.ViewModel
         public abstract void MouseMove();
         public abstract void Drag();
         public abstract void DragEnd();
+        public abstract void DragEndShift();
+        public abstract void DragEndAlt();
 
         public abstract void RightDrag();
         public abstract void RightDragEnd();
@@ -176,21 +175,23 @@ namespace TgaBuilderLib.ViewModel
         {
             if (ReplaceColorEnabled)
                 Selection.Presenter = _bitmapOperations.CropBitmap(
-                    source: Presenter,
-                    rectangle: new Int32Rect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height),
-                    replacedColor: _eyeDropper.Color,
-                    newColor: Presenter.Format.BitsPerPixel == 24 ? Color.FromRgb(255, 0, 255) : Color.FromArgb(0, 0, 0, 0));
+                    source:         Presenter,
+                    rectangle:      new PixelRect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height),
+                    replacedColor:  _eyeDropper.Color,
+                    newColor:       Presenter.HasAlpha 
+                                        ? new(0, 0, 0, 0) 
+                                        : new(255, 0, 255));
             else
                 Selection.Presenter = _bitmapOperations.CropBitmap(
                     source: Presenter,
-                    rectangle: new Int32Rect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height));
+                    rectangle: new PixelRect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height));
             Selection.IsPlacing = true;
         }
 
         public void RefreshPresenter()
         {
             Presenter.Lock();
-            Presenter.AddDirtyRect(new Int32Rect(0, 0, Presenter.PixelWidth, Presenter.PixelHeight));
+            Presenter.AddDirtyRect(new PixelRect(0, 0, Presenter.PixelWidth, Presenter.PixelHeight));
             Presenter.Unlock();
         }
 
@@ -220,13 +221,15 @@ namespace TgaBuilderLib.ViewModel
             var res = _bitmapOperations.ReplaceColor(
                 source:         Presenter,
                 replacedColor:  _eyeDropper.Color,
-                newColor:       Presenter.Format.BitsPerPixel == 24 ? Color.FromRgb(255, 0, 255) : Color.FromArgb(0, 0, 0, 0));
+                newColor:       Presenter.HasAlpha 
+                                    ? new Color(0, 0, 0, 0) 
+                                    : new Color(255, 0, 255));
             SetPresenter(res);
         }
 
         protected void ConvertToBgra32Base()
         {
-            if (Presenter.Format == PixelFormats.Bgra32)
+            if (Presenter.HasAlpha)
                 return;
 
             Presenter = _bitmapOperations.ConvertRGB24ToBGRA32(Presenter);
@@ -237,7 +240,7 @@ namespace TgaBuilderLib.ViewModel
 
         protected void ConvertToRgb24Base()
         {
-            if (Presenter.Format == PixelFormats.Rgb24)
+            if (!Presenter.HasAlpha)
                 return;
 
             Presenter = _bitmapOperations.ConvertBGRA32ToRGB24(Presenter);

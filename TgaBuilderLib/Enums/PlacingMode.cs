@@ -5,7 +5,8 @@
     {
         Default = 0,
         OverlayTransparent = 1,
-        PlaceAndSwap = 2,
-        ResizeToPicker = 4
+        ResizeToPicker = 2,
+        PlaceContinuously = 4,
+        PlaceAndSwap = 8,
     }
 }

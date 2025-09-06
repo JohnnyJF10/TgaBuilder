@@ -1,5 +1,4 @@
-﻿
-namespace TgaBuilderLib.Utils
+﻿namespace TgaBuilderLib.Utils
 {
     public interface ILogger
     {

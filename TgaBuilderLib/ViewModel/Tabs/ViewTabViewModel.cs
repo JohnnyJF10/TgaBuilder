@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
-using System.Windows;
+
 using System.Windows.Input;
 using TgaBuilderLib.Commands;
-using Point = System.Windows.Point;
 
 namespace TgaBuilderLib.ViewModel
 {
@@ -24,7 +23,7 @@ namespace TgaBuilderLib.ViewModel
         private const int SCROLLING_THRESHOLD = 30;
 
         public bool IsScrolling { get; set; } = false;
-        private Vector _scrollDirection;
+        private (double X, double Y) _scrollDirection;
 
         private TexturePanelViewModelBase _panel;
 
@@ -38,7 +37,7 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _FillCommand;
         private RelayCommand? _FitCommand;
         private RelayCommand? _100PercentCommand;
-        private RelayCommand<Point>? _scrollCommand;
+        private RelayCommand<(double X, double Y)>? _scrollCommand;
 
         double maxX;
         double maxY;
@@ -76,7 +75,7 @@ namespace TgaBuilderLib.ViewModel
         public ICommand FillCommand => _FillCommand ??= new RelayCommand(Fill);
         public ICommand FitCommand => _FitCommand ??= new RelayCommand(Fit);
         public ICommand Zoom100Command => _100PercentCommand ??= new RelayCommand(Zoom100);
-        public ICommand ScrollCommand => _scrollCommand ??= new RelayCommand<Point>(DoPanelScrolling);
+        public ICommand ScrollCommand => _scrollCommand ??= new(DoPanelScrolling);
 
 
 
@@ -153,7 +152,7 @@ namespace TgaBuilderLib.ViewModel
             OnPropertyChanged(nameof(ContentActualHeight));
         }
 
-        private void DoPanelScrolling(Point pos)
+        private void DoPanelScrolling((double X, double Y) pos)
         {
             int posX = (int)pos.X;
             int posY = (int)pos.Y;
@@ -162,7 +161,7 @@ namespace TgaBuilderLib.ViewModel
                 Math.Abs(posY - VisualPanelSize.ViewportHeight) > DRAG_THRESHOLD) &&
                 _panel.CanScroll)
             {
-                Vector scrollVector = new(0, 0);
+                (double X, double Y) scrollVector = new(0, 0);
 
                 if (posY < SCROLLING_THRESHOLD)
                     scrollVector.Y = -1;
@@ -174,7 +173,7 @@ namespace TgaBuilderLib.ViewModel
                 else if (posX > VisualPanelSize.ViewportWidth - SCROLLING_THRESHOLD)
                     scrollVector.X = 1;
 
-                if (scrollVector.Length > 0)
+                if (scrollVector.X != 0 || scrollVector.Y != 0)
                 {
                     _scrollDirection = scrollVector;
                     if (!IsScrolling)

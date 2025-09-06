@@ -1,7 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
-using System.Windows;
-using System.Windows.Media;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.UndoRedo
 {
@@ -150,8 +149,8 @@ namespace TgaBuilderLib.UndoRedo
         }
 
 
-        public void PushBitmapEditAction(byte[] oldPixels, byte[] newPixels, Int32Rect region,
-            Action<Int32Rect, byte[]> placingCallback)
+        public void PushBitmapEditAction(byte[] oldPixels, byte[] newPixels, PixelRect region,
+            Action<PixelRect, byte[]> placingCallback)
         {
             if (_state != State.Acting)
                 throw new InvalidOperationException("Can only push an edit action during acting mode.");
@@ -222,7 +221,7 @@ namespace TgaBuilderLib.UndoRedo
             Debug.WriteLine("Pushed region rotate action.");
         }
 
-        public void PushRegionRotateAction(Int32Rect rectangle, Action<Int32Rect, bool> rotatingCallback)
+        public void PushRegionRotateAction(PixelRect rectangle, Action<PixelRect, bool> rotatingCallback)
         {
             if (_state != State.Acting)
                 throw new InvalidOperationException("Can only push an action during acting mode.");
@@ -235,7 +234,7 @@ namespace TgaBuilderLib.UndoRedo
             Debug.WriteLine("Pushed region rotate action.");
         }
 
-        public void PushRegionFlipAction(Int32Rect rectangle, Action<Int32Rect> flippingCallback)
+        public void PushRegionFlipAction(PixelRect rectangle, Action<PixelRect> flippingCallback)
         {
             if (_state != State.Acting)
                 throw new InvalidOperationException("Can only push an action during acting mode.");

@@ -1,10 +1,6 @@
 ﻿using System.Diagnostics;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
-using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Utils;
 
 namespace TgaBuilderLib.ViewModel
@@ -16,7 +12,7 @@ namespace TgaBuilderLib.ViewModel
             IBitmapOperations bitmapOperations,
             IEyeDropper eyeDropper,
 
-            WriteableBitmap presenter,
+            IWriteableBitmap presenter,
 
             SelectionViewModel SelectionVM,
             AnimationViewModel AnimationVM,
@@ -51,7 +47,7 @@ namespace TgaBuilderLib.ViewModel
         public VisualGridViewModel VisualGrid { get; set; }
 
         public override string PanelInfo
-            => $"{Presenter.PixelWidth} x {Presenter.PixelHeight}px, {Presenter.Format.BitsPerPixel}bpp";
+            => $"{Presenter.PixelWidth} x {Presenter.PixelHeight}px, {(Presenter.HasAlpha ? 32 : 24)}bpp";
 
         public override string PanelHelp
             => $"Source Panel: Left: Select, Right: Animate, Alt: Free selecting, Double Left: Move Grid";
@@ -67,7 +63,7 @@ namespace TgaBuilderLib.ViewModel
 
 
 
-        public override void SetPresenter(WriteableBitmap bitmap)
+        public override void SetPresenter(IWriteableBitmap bitmap)
         {
             int expectedWidth = (int)Math.Ceiling(bitmap.PixelWidth / 256.0) * 256;
             int expectedHeight = (int)Math.Ceiling(bitmap.PixelHeight / 256.0) * 256;
@@ -208,6 +204,10 @@ namespace TgaBuilderLib.ViewModel
             if (SelectionShape.Width == 0 || SelectionShape.Height == 0) return;
             SetSelection();
         }
+
+        public override void DragEndShift() => DragEnd();
+
+        public override void DragEndAlt() => DragEnd();
 
         public override void DoubleDragEnd()
         {

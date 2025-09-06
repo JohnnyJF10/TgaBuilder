@@ -1,0 +1,40 @@
+/*
+
+WPF IWriteableBitmap
+https://learn.microsoft.com/de-de/dotnet/api/system.windows.media.imaging.IWriteableBitmap?view=windowsdesktop-8.0
+
+Avalonia UI IWriteableBitmap
+https://api-docs.avaloniaui.net/docs/T_Avalonia_Media_Imaging_IWriteableBitmap
+
+*/
+
+
+using System.Data;
+using System.IO;
+
+namespace TgaBuilderLib.Abstraction
+{
+    public interface IWriteableBitmap : IReadableBitmap
+    {
+    
+    
+        public void AddDirtyRect(PixelRect dirtyRect);
+    
+        IBitmapLocker GetLocker();
+    
+        public void Freeze();
+    
+        public void Lock();
+    
+        public void Unlock();
+    
+        public void WritePixels(PixelRect rect, IntPtr pixels, int stride, int offset = 0);
+
+        public void WritePixels(PixelRect rect, Array pixels, int stride, int offset = 0);
+
+        public IntPtr BackBuffer { get; }
+
+        public int BackBufferStride { get; }
+
+    }
+}

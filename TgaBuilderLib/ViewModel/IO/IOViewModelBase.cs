@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
@@ -23,6 +16,7 @@ namespace TgaBuilderLib.ViewModel
             IImageFileManager imageManager,
             ILogger logger,
             IUsageData usageData,
+            IDispatcherService dispatcherService,
 
             TexturePanelViewModelBase panel)
         {
@@ -32,6 +26,7 @@ namespace TgaBuilderLib.ViewModel
             _imageManager = imageManager;
             _logger = logger;
             _usageData = usageData;
+            _dispatcherService = dispatcherService;
             _panel = panel;
         }
 
@@ -41,6 +36,7 @@ namespace TgaBuilderLib.ViewModel
         protected readonly IImageFileManager _imageManager;
         protected readonly ILogger _logger;
         protected readonly IUsageData _usageData;
+        protected readonly IDispatcherService _dispatcherService;
 
         protected TexturePanelViewModelBase _panel;
 
@@ -100,7 +96,7 @@ namespace TgaBuilderLib.ViewModel
         protected static bool IsHandleableOpenFileException(Exception e) =>
             e is FileNotFoundException
             or DirectoryNotFoundException
-            or FileFormatException
+            or FormatException
             or NotSupportedException
             or InvalidOperationException;
     }

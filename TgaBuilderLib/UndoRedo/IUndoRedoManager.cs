@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using System.Windows.Media;
+﻿
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.UndoRedo
 {
@@ -30,12 +30,12 @@ namespace TgaBuilderLib.UndoRedo
         void PushBitmapEditAction(
             byte[] oldPixels,
             byte[] newPixels,
-            Int32Rect region,
-            Action<Int32Rect, byte[]> placingCallback);
+            PixelRect region,
+            Action<PixelRect, byte[]> placingCallback);
 
         void PushRegionFlipAction(
-            Int32Rect rectangle,
-            Action<Int32Rect> flippingCallback);
+            PixelRect rectangle,
+            Action<PixelRect> flippingCallback);
 
         void PushRegionMoveAction(
             (int X, int Y) origPos,
@@ -44,8 +44,8 @@ namespace TgaBuilderLib.UndoRedo
             Action<(int X, int Y), (int X, int Y), int> movingCallback);
 
         void PushRegionRotateAction(
-            Int32Rect rectangle,
-            Action<Int32Rect, bool> rotatingCallback);
+            PixelRect rectangle,
+            Action<PixelRect, bool> rotatingCallback);
 
         void PushResizeLargerAction(
             int oldWidth,

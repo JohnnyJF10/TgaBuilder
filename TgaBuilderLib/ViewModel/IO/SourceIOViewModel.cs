@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
@@ -27,8 +16,9 @@ namespace TgaBuilderLib.ViewModel
             IImageFileManager imageManager,
             ILogger logger,
             IUsageData usageData,
+            IDispatcherService dispatcherService,
             TexturePanelViewModelBase panel)
-            : base(getViewCallback, fileService, messageService, imageManager, logger, usageData, panel) {}
+            : base(getViewCallback, fileService, messageService, imageManager, logger, usageData, dispatcherService, panel) {}
 
         private const FileTypes DEF_FILE_TYPES =
             FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
@@ -198,7 +188,7 @@ namespace TgaBuilderLib.ViewModel
                 _ => MessageType.UnknownError
             };
 
-            Application.Current.Dispatcher.Invoke(() => _messageService.SendMessage(resMessage));
+            _dispatcherService.Invoke(() => _messageService.SendMessage(resMessage));
         }
 
         private async Task Reload()
@@ -296,7 +286,7 @@ namespace TgaBuilderLib.ViewModel
             return files;
         }
 
-        public void CopyEntire(WriteableBitmap bitmap)
+        public void CopyEntire(IWriteableBitmap bitmap)
         {
             _panel.Presenter = _imageManager.GetDestinationConfirmBitmap(bitmap);
             _panel.RefreshPresenter();
