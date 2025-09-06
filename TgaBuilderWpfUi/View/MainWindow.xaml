@@ -43,6 +43,7 @@
         <KeyBinding Key="D" Modifiers="Control"         Command="{Binding OpenDestinationCommand}" />
         <KeyBinding Key="Q" Modifiers="Control"         Command="{Binding OpenSourceTrCommand}" />
         <KeyBinding Key="W" Modifiers="Control"         Command="{Binding BatchLoaderCommand}" />
+        <MouseBinding Gesture="MiddleClick"             Command="{Binding SwitchToDestinationPlacingModeCommand}" />
     </Window.InputBindings>
 
     <Window.Resources>
@@ -837,12 +838,16 @@
                         />
                 </Grid>
             </StackPanel>
-            <Border
+            <Button
                 BorderBrush="Gray"
                 BorderThickness="1"
                 Width="100"
                 Height="100"
-                ap:MouseOverInfoAP.InfoText="Current Tile Preview"
+                Padding="0"
+                Command="{Binding SwitchToDestinationPlacingModeCommand}"
+                Style="{StaticResource FlatButtonStyle}"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Current Tile Preview (Click to place)"
                 >
                 <Grid
                     Width="100"
@@ -859,7 +864,7 @@
                         Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}"
                         RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                 </Grid>
-            </Border>
+            </Button>
             <StackPanel
                 DataContext="{Binding Selection}"
                 Orientation="Horizontal"
@@ -1034,6 +1039,7 @@
                             DockPanel.Dock="Left"
                             Width="36"
                             Height="36"
+                            Margin="0,0,5,0"
                             IsChecked="{Binding ResizeToPickerModeSelected, Mode=OneWayToSource}"
                             Icon="{ui:SymbolIcon ScaleFill24}"
                             ap:MouseOverInfoAP.InfoText="Rezise Selection to Picker Size"/>
@@ -1042,9 +1048,17 @@
                             Width="36"
                             Height="36"
                             Margin="5,0"
-                            IsChecked="{Binding SwapAndPlaceModeSelected, Mode=OneWayToSource}"
+                            IsChecked="{Binding PlaceContinuouslyModeSelected}"
+                            Icon="{ui:SymbolIcon ArrowHookUpRight24}"
+                            ap:MouseOverInfoAP.InfoText="Place continuously (Left + Shift on the panel)"/>
+                        <elements:ToggleButtonEx
+                            DockPanel.Dock="Left"
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,10,0"
+                            IsChecked="{Binding SwapAndPlaceModeSelected}"
                             Icon="{ui:SymbolIcon ArrowSwap24}"
-                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection"/>
+                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Alt on the panel)"/>
                         <elements:ToggleButtonEx
                             DockPanel.Dock="Left"
                             Width="36"

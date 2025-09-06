@@ -98,6 +98,8 @@ namespace TgaBuilderLib.ViewModel
         public abstract void MouseMove();
         public abstract void Drag();
         public abstract void DragEnd();
+        public abstract void DragEndShift();
+        public abstract void DragEndAlt();
 
         public abstract void RightDrag();
         public abstract void RightDragEnd();

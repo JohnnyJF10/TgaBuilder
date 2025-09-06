@@ -119,6 +119,7 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand<bool>? _enterPanelCommand;
         private RelayCommand<bool>? _leavePanelCommand;
         private RelayCommand<(bool, bool)>? _wheelShiftCommand;
+        private RelayCommand? _switchToDestinationPlacingModeCommand;
 
 
         public SourceTexturePanelViewModel Source { get; set; }
@@ -269,6 +270,9 @@ namespace TgaBuilderLib.ViewModel
         public ICommand WheelShiftCommand => _wheelShiftCommand
             ??= new(args => WheelShift(args.Item1, args.Item2));
 
+        public ICommand SwitchToDestinationPlacingModeCommand => _switchToDestinationPlacingModeCommand
+            ??= new(() => Selection.IsPlacing = true);
+
 
 
         public void HandleMouseOnPanel(int x, int y, bool isTarget, MouseAction action, MouseModifier modifier)
@@ -298,6 +302,7 @@ namespace TgaBuilderLib.ViewModel
                     break;
 
                 case (MouseAction.Move, MouseModifier.None):
+                case (MouseAction.Move, MouseModifier.Shift):
                     panel.MouseMove();
                     break;
 
@@ -325,13 +330,21 @@ namespace TgaBuilderLib.ViewModel
                     EndScrolling();
                     break;
 
-                case (MouseAction.DragEnd, MouseModifier.Right):
-                    panel.RightDragEnd();
+                case (MouseAction.DragEnd, MouseModifier.Alt):
+                case (MouseAction.DragEnd, MouseModifier.AltLeft):
+                    panel.DragEndAlt();
+                    TileInfoVisible = true;
                     EndScrolling();
                     break;
 
-                case (MouseAction.DragEnd, MouseModifier.AltLeft):
-                    panel.DragEnd();
+                case (MouseAction.DragEnd, MouseModifier.Shift):
+                    panel.DragEndShift();
+                    TileInfoVisible = true;
+                    EndScrolling();
+                    break;
+
+                case (MouseAction.DragEnd, MouseModifier.Right):
+                    panel.RightDragEnd();
                     EndScrolling();
                     break;
 
@@ -342,6 +355,10 @@ namespace TgaBuilderLib.ViewModel
 
                 case (MouseAction.DragEnd, MouseModifier.Eyedropper):
                     HanldeEyedropperEnd();
+                    break;
+
+                case (_, MouseModifier.Middle):
+                    Destination.EndPickingStartPlacing();
                     break;
 
                 default:

@@ -19,10 +19,16 @@ namespace TgaBuilderLib.ViewModel
             set => SetPlacingModeFlag(PlacingMode.OverlayTransparent, value, nameof(OverlayTransparentModeSelected));
         }
 
+        public bool PlaceContinuouslyModeSelected
+        {
+            get => _destination.placingMode.HasFlag(PlacingMode.PlaceContinuously);
+            set => SetPlaceContinuously(value);
+        }
+
         public bool SwapAndPlaceModeSelected
         {
             get => _destination.placingMode.HasFlag(PlacingMode.PlaceAndSwap);
-            set => SetPlacingModeFlag(PlacingMode.PlaceAndSwap, value, nameof(SwapAndPlaceModeSelected));
+            set => SetPlaceAndSwap(value);
         }
 
         public bool ResizeToPickerModeSelected
@@ -52,6 +58,22 @@ namespace TgaBuilderLib.ViewModel
             _destination.Opacity = Math.Clamp(value, 0, 1);
 
             OnPropertyChanged(nameof(Opacity));
+        }
+
+        private void SetPlaceContinuously(bool value)
+        {
+            if (value && SwapAndPlaceModeSelected)
+                SetPlacingModeFlag(PlacingMode.PlaceAndSwap, false, nameof(SwapAndPlaceModeSelected));
+
+            SetPlacingModeFlag(PlacingMode.PlaceContinuously, value, nameof(PlaceContinuouslyModeSelected));
+        }
+
+        private void SetPlaceAndSwap(bool value)
+        {
+            if (value && PlaceContinuouslyModeSelected)
+                SetPlacingModeFlag(PlacingMode.PlaceContinuously, false, nameof(PlaceContinuouslyModeSelected));
+
+            SetPlacingModeFlag(PlacingMode.PlaceAndSwap, value, nameof(SwapAndPlaceModeSelected));
         }
 
         private void SetPlacingModeFlag(PlacingMode modeFlag, bool enabled, string propertyName)

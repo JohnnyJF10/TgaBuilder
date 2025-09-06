@@ -4,6 +4,8 @@
 [Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [Github Page](https://johnnyjf10.github.io/TgaBuilder/)
 
 ![LatestReleaseBuildStatus](https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release.yml/badge.svg)
+![Github All Releases](https://img.shields.io/github/downloads/JohnnyJF10/TgaBuilder/total.svg)
+![CodeFactor Review](https://www.codefactor.io/Content/badges/AMinus.svg)
 
 ![Logo](Screenshots/TgaBuilder_logo.png)
 
@@ -91,6 +93,7 @@ Please note that, as a .net WPF tool, TgaBuilder has significantly higher system
 - **Left click + drag**: copy area into selection
 - **Right click**: preview UV rotate
 - **Right click + drag**: preview animation range
+- **Middle click**: move to Placing Mode directly
 
 #### Placing Mode
 
@@ -107,6 +110,7 @@ Please note that, as a .net WPF tool, TgaBuilder has significantly higher system
 ### Selection Area
 
 ![SelectionArea](Screenshots/Selection.png)
+- With a click on the **Preview Image** you can manually switch to the **Placing Mode** on the Destination Panel
 - Buttons to copy entire contents from Source to Destination panels or vice versa
 - Fill selection with chosen color 
 - Copy selection to clipboard (`Ctrl + C`)
@@ -198,6 +202,7 @@ From left to rigth:
 
 From left to rigth:
 - Enable **Resize to Picker** mode (resize selection to destination picker size)
+- Enable **Continuously Placing** mode (does not switch back to Picking mode automatically after placing)
 - Enable **Swap and Place** mode (put replaced tile into selection)
 - Enable transparent overlay (do not draw magenta/alpha 0 to destination)
 ![TransparentOverlay](Screenshots/OverlayTransparent.png)

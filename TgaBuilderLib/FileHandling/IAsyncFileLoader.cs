@@ -13,7 +13,7 @@ namespace TgaBuilderLib.FileHandling
         int LoadedStride { get; }
         int LoadedWidth { get; }
 
-        Task<IWriteableBitmap> LoadAndResizeAsync(string filePath, int targetWidth, int targetHeight, BitmapScalingMode scalingMode);
+        //Task<IWriteableBitmap> LoadAndResizeAsync(string filePath, int targetWidth, int targetHeight, BitmapScalingMode scalingMode);
 
         byte[] LoadCore(string filePath);
     }

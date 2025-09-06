@@ -122,7 +122,7 @@ namespace TgaBuilderLib.BitmapBytesIO
             {
                 int index = 0;
                 WriteTrTgaHeader(bw, (short)LoadedWidth, (short)LoadedHeight, true);
-                for (int y = 0; y < LoadedHeight; y++)
+                for (int y = LoadedHeight - 1; y >= 0; y--)
                 {
                     for (int x = 0; x < LoadedWidth; x++)
                     {
@@ -130,7 +130,7 @@ namespace TgaBuilderLib.BitmapBytesIO
 
                         index = (y * LoadedWidth + x) * 4;
 
-                        bw.Write(LoadedBytes[index    ]); // Blue
+                        bw.Write(LoadedBytes[index + 0]); // Blue
                         bw.Write(LoadedBytes[index + 1]); // Green
                         bw.Write(LoadedBytes[index + 2]); // Red
                         bw.Write(LoadedBytes[index + 3]); // Alpha
@@ -153,9 +153,6 @@ namespace TgaBuilderLib.BitmapBytesIO
             bw.Write(width);
             bw.Write(height);
             bw.Write(hasAlpha ? TR_TGA_BITS_PER_PIXEL_32 : TR_TGA_BITS_PER_PIXEL_24);
-
-            if (hasAlpha)
-                bw.Write((byte)TR_TGA_IMAGE_DESCRIPTOR_32);
         }
 
         private void WriteTrTGaFooter(BinaryWriter bw)

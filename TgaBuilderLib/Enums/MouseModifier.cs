@@ -8,6 +8,8 @@
         Double,
         Alt,
         AltLeft,
-        Eyedropper
+        Shift,
+        Eyedropper,
+        Middle
     }
 }

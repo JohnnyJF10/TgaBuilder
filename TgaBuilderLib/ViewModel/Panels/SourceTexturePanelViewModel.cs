@@ -205,6 +205,10 @@ namespace TgaBuilderLib.ViewModel
             SetSelection();
         }
 
+        public override void DragEndShift() => DragEnd();
+
+        public override void DragEndAlt() => DragEnd();
+
         public override void DoubleDragEnd()
         {
             _isGridDragging = false;

@@ -120,9 +120,9 @@ namespace TgaBuilderLib.BitmapOperations
                                 tgtLine[2] = 255;
                                 break;
                             case PixelAction.Blend:
-                                tgtLine[0] = DoAlphaBlend(b, tgtLine[0], a);
+                                tgtLine[0] = DoAlphaBlend(r, tgtLine[0], a);
                                 tgtLine[1] = DoAlphaBlend(g, tgtLine[1], a);
-                                tgtLine[2] = DoAlphaBlend(r, tgtLine[2], a);
+                                tgtLine[2] = DoAlphaBlend(b, tgtLine[2], a);
                                 break;
                             case PixelAction.None:
                             default:

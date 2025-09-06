@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
@@ -25,42 +26,6 @@ namespace TgaBuilderLib.FileHandling
                 ".dds", ".tga", ".png", ".jpg", ".jpeg", ".bmp"
             };
 
-        public async Task<IWriteableBitmap> LoadAndResizeAsync(
-            string filePath,
-            int targetWidth,
-            int targetHeight,
-            BitmapScalingMode scalingMode)
-            => await Task.Run(() =>
-            {
-                string extension = Path.GetExtension(filePath).ToLowerInvariant();
-
-                IWriteableBitmap sourceBitmap;
-
-                if (extension == ".dds" || extension == ".tga")
-                {
-                    using var image = Pfim.Pfimage.FromFile(filePath);
-
-                    bool hasAlpha = image.Format == Pfim.ImageFormat.Rgba32;
-
-                    if (!hasAlpha && image.Format != Pfim.ImageFormat.Rgb24)
-                        throw new NotSupportedException($"Image format {image.Format} is not supported.");
-
-                    var wb = _mediaFactory.CreateEmptyBitmap(image.Width, image.Height, hasAlpha);
-
-                    wb.WritePixels(
-                        new PixelRect(0, 0, image.Width, image.Height),
-                        image.Data,
-                        image.Stride);
-
-                    sourceBitmap = wb;
-                }
-                else
-                {
-                    sourceBitmap = _mediaFactory.LoadBitmap(filePath);
-                }
-                return _mediaFactory.CreateRescaledBitmap(sourceBitmap, targetWidth, targetHeight);
-            });
-
         public byte[] LoadCore(string filePath)
         {
             string extension = Path.GetExtension(filePath).ToLowerInvariant();
@@ -69,27 +34,48 @@ namespace TgaBuilderLib.FileHandling
             {
                 using var image = Pfim.Pfimage.FromFile(filePath);
 
-                bool hasAlpha = image.Format == Pfim.ImageFormat.Rgba32;
-
-                if (!hasAlpha && image.Format != Pfim.ImageFormat.Rgb24)
-                    throw new NotSupportedException($"Image format {image.Format} is not supported.");
-
                 LoadedWidth = image.Width;
                 LoadedHeight = image.Height;
-                LoadedHasAlpha = hasAlpha;
+                LoadedHasAlpha = image.Format == Pfim.ImageFormat.Rgba32;
 
-                return image.Data;
+                if (!LoadedHasAlpha && image.Format != Pfim.ImageFormat.Rgb24)
+                    throw new NotSupportedException($"Image format {image.Format} is not supported.");
+
+                if (image.Format == Pfim.ImageFormat.Rgba32)
+                    return image.Data;
+                else
+                {
+                    var LoadedBytes = new byte[LoadedHeight * LoadedWidth * 3];
+
+                    for (int y = 0; y < LoadedHeight; y++)
+                    {
+                        int srcOffset = y * image.Stride;
+                        int dstOffset = y * LoadedStride;
+
+                        for (int x = 0; x < LoadedWidth; x++)
+                        {
+                            int srcIndex = srcOffset + x * image.BitsPerPixel / 8;
+                            int dstIndex = dstOffset + x * 3;
+
+                            LoadedBytes[dstIndex + 0] = image.Data[srcIndex + 2]; // R
+                            LoadedBytes[dstIndex + 1] = image.Data[srcIndex + 1]; // G
+                            LoadedBytes[dstIndex + 2] = image.Data[srcIndex + 0]; // B
+                        }
+                    }
+                    return LoadedBytes;
+                }
             }
             else
             {
                 var wb = _mediaFactory.LoadBitmap(filePath);
-                int stride = wb.BackBufferStride;
-                byte[] pixels = new byte[LoadedHeight * stride];
-                wb.CopyPixels(pixels, stride, 0);
 
                 LoadedWidth = wb.PixelWidth;
                 LoadedHeight = wb.PixelHeight;
                 LoadedHasAlpha = wb.HasAlpha;
+
+                int stride = wb.BackBufferStride;
+                byte[] pixels = new byte[LoadedHeight * stride];
+                wb.CopyPixels(pixels, stride, 0);
 
                 return pixels;
             }

@@ -212,7 +212,13 @@ namespace TgaBuilderLib.ViewModel
             SetSelectionVertical();
         }
 
-        public override void DragEnd()
+        public override void DragEnd() => DecideAndDoAction();
+
+        public override void DragEndShift() => DecideAndDoAction(PlaceContiniously: true);
+
+        public override void DragEndAlt() => DecideAndDoAction(PlaceAndSwap: true);
+
+        private void DecideAndDoAction(bool? PlaceContiniously = null, bool? PlaceAndSwap = null)
         {
             if (!IsDragging)
             {
@@ -227,7 +233,7 @@ namespace TgaBuilderLib.ViewModel
             {
                 case TargetMode.Default:
                     if (Selection.IsPlacing)
-                        PlaceTileAndUpdateView();
+                        PlaceTileAndUpdateView(PlaceContiniously, PlaceAndSwap);
                     else SetSelection();
                     return;
 
@@ -307,7 +313,7 @@ namespace TgaBuilderLib.ViewModel
             EndPickingStartPlacing();
         }
 
-        private void EndPickingStartPlacing()
+        public void EndPickingStartPlacing()
         {
             if (mode == TargetMode.Default)
             {
@@ -334,7 +340,7 @@ namespace TgaBuilderLib.ViewModel
             Picker.IsVisible = false;
         }
 
-        private void EndPlacingStartPicking()
+        public void EndPlacingStartPicking()
         {
             IsPreviewVisible = false;
             Selection.IsPlacing = false;
@@ -343,8 +349,14 @@ namespace TgaBuilderLib.ViewModel
             Picker.IsVisible = true;
         }
 
-        private void PlaceTileAndUpdateView()
+        private void PlaceTileAndUpdateView(bool? PlaceContiniously = null,  bool? PlaceAndSwap = null)
         {
+            if (PlaceContiniously is null)
+                PlaceContiniously = placingMode.HasFlag(PlacingMode.PlaceContinuously);
+
+            if (PlaceAndSwap is null)
+                PlaceAndSwap = placingMode.HasFlag(PlacingMode.PlaceAndSwap);
+
             int SelectionWidth = Selection.Presenter.PixelWidth;
             int SelectionHeight = Selection.Presenter.PixelHeight;
 
@@ -357,7 +369,7 @@ namespace TgaBuilderLib.ViewModel
             int finalByteSize = SelectionWidth * SelectionHeight
                 * (Presenter.HasAlpha ? 4 : 3);
 
-            if ((placingMode & PlacingMode.PlaceAndSwap) == PlacingMode.PlaceAndSwap)
+            if (PlaceAndSwap == true)
                 _bitmapOperations.SwapBitmap = _mediaFactory.CreateEmptyBitmap(
                     width:     SelectionWidth,
                     height:    SelectionHeight,
@@ -401,7 +413,7 @@ namespace TgaBuilderLib.ViewModel
 
             if (_bitmapOperations.SwapBitmap is not null)
                 Selection.Presenter = _bitmapOperations.SwapBitmap;
-            else
+            else if (PlaceContiniously == false)
                 EndPlacingStartPicking();
         }
 

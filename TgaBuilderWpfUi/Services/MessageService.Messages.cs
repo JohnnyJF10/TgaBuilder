@@ -219,7 +219,7 @@ namespace TgaBuilderWpfUi.Services
                 MessageType.UnknownError,
                 new WpfUiMessage(
                     "Unknown Error",
-                    "An unknown error occurred. Please try again or contact support.",
+                    "An unknown error occurred.",
                     ControlAppearance.Danger,
                     new SymbolIcon(SymbolRegular.ErrorCircle24),
                     TimeSpan.FromSeconds(10))

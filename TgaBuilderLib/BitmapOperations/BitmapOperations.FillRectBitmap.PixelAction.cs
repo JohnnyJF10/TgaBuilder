@@ -58,30 +58,16 @@ namespace TgaBuilderLib.BitmapOperations
             // -------------------------------------------
             if (!overlayTransparent)
             {
-                if (tgtHasAlpha)
-                {
-                    if (srcHasAlpha)
-                    {
-                        if (alpha == 0)
-                        {
-                            return PixelAction.Transparent;
-                        }
-                    }
-                    else // srcHasAlpha == false
-                    {
-                        if (isTransparencyColor)
-                        {
-                            return PixelAction.Transparent;
-                        }
-                    }
-                }
-                else // tgtHasAlpha == false
+                if (srcHasAlpha)
                 {
                     if (alpha == 0)
                     {
                         return PixelAction.Transparent;
                     }
-                    if (srcHasAlpha && isTransparencyColor)
+                }
+                else // srcHasAlpha == false
+                {
+                    if (isTransparencyColor)
                     {
                         return PixelAction.Transparent;
                     }

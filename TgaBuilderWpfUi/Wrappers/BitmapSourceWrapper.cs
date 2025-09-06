@@ -20,7 +20,7 @@ public class BitmapSourceWrapper : IReadableBitmap
 
     public int PixelHeight => _innerBitmapSource.PixelHeight;
 
-    public bool HasAlpha => _innerBitmapSource.Format == PixelFormats.Bgra32 || _innerBitmapSource.Format == PixelFormats.Pbgra32;
+    public bool HasAlpha => _innerBitmapSource.Format.BitsPerPixel == 32;
 
     public int Size => _innerBitmapSource.PixelWidth * _innerBitmapSource.PixelHeight * (_innerBitmapSource.Format.BitsPerPixel / 8);
 

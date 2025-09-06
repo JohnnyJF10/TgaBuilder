@@ -365,12 +365,12 @@ namespace TgaBuilderLib.ViewModel
                             hasAlpha:       _asyncFileLoader.LoadedHasAlpha,
                             pixels:         data,
                             stride:         _asyncFileLoader.LoadedStride);
-
+                        
                         loadedBitmap = _mediaFactory.CreateRescaledBitmap(
                             source:     _mediaFactory.CloneBitmap(createdBitmap),
                             newWidth:   _textureSize, 
                             newHeight:  _textureSize);
-                    }
+                    }   
                     catch (OperationCanceledException) 
                     {
                         throw;
