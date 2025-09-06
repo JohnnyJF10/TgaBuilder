@@ -41,9 +41,22 @@ namespace TgaBuilderWpfUi.Wrappers
             _innerWriteableBitmap.Freeze();
         }
 
-        public IBitmapLocker GetLocker()
+        public IBitmapLocker GetLocker(bool requiresRefresh = false)
         {
-            return new BitmapLocker(_innerWriteableBitmap);
+            Int32Rect? rect = null;
+
+            if (requiresRefresh)
+                rect = new Int32Rect(0, 0, 
+                    _innerWriteableBitmap.PixelWidth, _innerWriteableBitmap.PixelHeight);
+
+            return new BitmapLocker(_innerWriteableBitmap, requiresRefresh, rect);
+        }
+
+        public IBitmapLocker GetLocker(PixelRect dirtyRect)
+        {
+            Int32Rect rect = new Int32Rect(dirtyRect.X, dirtyRect.Y, dirtyRect.Width, dirtyRect.Height);
+
+            return new BitmapLocker(_innerWriteableBitmap, true, rect);
         }
 
         public void Lock()
@@ -66,6 +79,15 @@ namespace TgaBuilderWpfUi.Wrappers
         {
             var intRect = new Int32Rect(rect.X, rect.Y, rect.Width, rect.Height);
             _innerWriteableBitmap.WritePixels(intRect, pixels, stride, offset);
+        }
+
+        public void Refresh()
+        {
+            Int32Rect rect = new Int32Rect(0, 0, _innerWriteableBitmap.PixelWidth, _innerWriteableBitmap.PixelHeight);
+
+            _innerWriteableBitmap.Lock();
+            _innerWriteableBitmap.AddDirtyRect(rect);
+            _innerWriteableBitmap.Unlock();
         }
     }
 }

@@ -22,28 +22,28 @@ namespace TgaBuilderLib.BitmapOperations
             int targetStride = target.BackBufferStride;
             int strideDelta = sourceStride - targetStride;
 
-            source.Lock();
-            target.Lock();
+            var targetDirtyRect = new PixelRect(0, 0, recWidth, recHeight);
 
-            unsafe
+            using (var sourceLocker = source.GetLocker())
+            using (var targetLocker = target.GetLocker(targetDirtyRect))
             {
-                byte* sourcePtr = (byte*)source.BackBuffer;
-                byte* targetPtr = (byte*)target.BackBuffer;
-
-                sourcePtr += rectY * sourceStride + rectX * bytesPerPixel;
-
-                for (int r = 0; r < recHeight; r++)
+                unsafe
                 {
-                    for (int s = 0; s < targetStride; s++)
+                    byte* sourcePtr = (byte*)sourceLocker.BackBuffer;
+                    byte* targetPtr = (byte*)targetLocker.BackBuffer;
+
+                    sourcePtr += rectY * sourceStride + rectX * bytesPerPixel;
+
+                    for (int r = 0; r < recHeight; r++)
                     {
-                        *targetPtr++ = *sourcePtr++;
+                        for (int s = 0; s < targetStride; s++)
+                        {
+                            *targetPtr++ = *sourcePtr++;
+                        }
+                        sourcePtr += strideDelta;
                     }
-                    sourcePtr += strideDelta;
                 }
             }
-            target.AddDirtyRect(new PixelRect(0, 0, recWidth, recHeight));
-            source.Unlock();
-            target.Unlock();
 
             return target;
         }
@@ -92,78 +92,76 @@ namespace TgaBuilderLib.BitmapOperations
                 height: recHeight,
                 hasAlpha: source.HasAlpha);
 
-            source.Lock();
-            target.Lock();
-
             byte r, g, b, a = 255;
             int bpp = source.HasAlpha ? 4 : 3;
 
-            unsafe
+            var targetDirtyRect = new PixelRect(0, 0, recWidth, recHeight);
+
+            using (var sourceLocker = source.GetLocker())
+            using (var targetLocker = target.GetLocker(targetDirtyRect))
             {
-                byte* srcPtr = (byte*)source.BackBuffer;
-                byte* resPtr = (byte*)target.BackBuffer;
-
-                for (int y = 0; y < recHeight; y++)
+                unsafe
                 {
-                    byte* srcRow = srcPtr + (y + rectY) * source.BackBufferStride + bpp * rectX;
-                    byte* resRow = resPtr + y * target.BackBufferStride;
+                    byte* srcPtr = (byte*)sourceLocker.BackBuffer.ToPointer();
+                    byte* resPtr = (byte*)targetLocker.BackBuffer.ToPointer();
 
-                    for (int x = 0; x < recWidth; x++)
+                    for (int y = 0; y < recHeight; y++)
                     {
-                        if (source.HasAlpha)
-                        {
-                            b = srcRow[0];
-                            g = srcRow[1];
-                            r = srcRow[2];
-                            a = srcRow[3];
+                        byte* srcRow = srcPtr + (y + rectY) * source.BackBufferStride + bpp * rectX;
+                        byte* resRow = resPtr + y * target.BackBufferStride;
 
-                            if (a == 0 || (replacedColor.R, replacedColor.G, replacedColor.B, replacedColor.A) == (r, g, b, a))
+                        for (int x = 0; x < recWidth; x++)
+                        {
+                            if (source.HasAlpha)
                             {
-                                // Replace with new color  
-                                resRow[0] = newColor.B;        // B  
-                                resRow[1] = newColor.G;        // G  
-                                resRow[2] = newColor.R;        // R  
-                                resRow[3] = newColor.A ?? 255; // A  
+                                b = srcRow[0];
+                                g = srcRow[1];
+                                r = srcRow[2];
+                                a = srcRow[3];
+
+                                if (a == 0 || (replacedColor.R, replacedColor.G, replacedColor.B, replacedColor.A) == (r, g, b, a))
+                                {
+                                    // Replace with new color  
+                                    resRow[0] = newColor.B;        // B  
+                                    resRow[1] = newColor.G;        // G  
+                                    resRow[2] = newColor.R;        // R  
+                                    resRow[3] = newColor.A ?? 255; // A  
+                                }
+                                else
+                                {
+                                    resRow[0] = b; // B  
+                                    resRow[1] = g; // G  
+                                    resRow[2] = r; // R  
+                                    resRow[3] = a; // A  
+                                }
                             }
                             else
                             {
-                                resRow[0] = b; // B  
-                                resRow[1] = g; // G  
-                                resRow[2] = r; // R  
-                                resRow[3] = a; // A  
-                            }
-                        }
-                        else
-                        {
-                            r = srcRow[0];
-                            g = srcRow[1];
-                            b = srcRow[2];
+                                r = srcRow[0];
+                                g = srcRow[1];
+                                b = srcRow[2];
 
-                            if (a == 0 || (replacedColor.R, replacedColor.G, replacedColor.B) == (r, g, b))
-                            {
-                                // Replace with new color  
-                                resRow[0] = newColor.R; // R  
-                                resRow[1] = newColor.G; // G  
-                                resRow[2] = newColor.B; // B  
+                                if (a == 0 || (replacedColor.R, replacedColor.G, replacedColor.B) == (r, g, b))
+                                {
+                                    // Replace with new color  
+                                    resRow[0] = newColor.R; // R  
+                                    resRow[1] = newColor.G; // G  
+                                    resRow[2] = newColor.B; // B  
+                                }
+                                else
+                                {
+                                    resRow[0] = r; // R  
+                                    resRow[1] = g; // G  
+                                    resRow[2] = b; // B  
+                                }
                             }
-                            else
-                            {
-                                resRow[0] = r; // R  
-                                resRow[1] = g; // G  
-                                resRow[2] = b; // B  
-                            }
-                        }
 
-                        srcRow += bpp;
-                        resRow += bpp;
+                            srcRow += bpp;
+                            resRow += bpp;
+                        }
                     }
                 }
             }
-
-            target.AddDirtyRect(new PixelRect(0, 0, recWidth, recHeight));
-            source.Unlock();
-            target.Unlock();
-
             return target;
         }
     }

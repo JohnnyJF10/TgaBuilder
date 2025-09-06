@@ -15,30 +15,34 @@ namespace TgaBuilderLib.BitmapOperations
 
             int bytesPerPixel = bitmap.HasAlpha ? 4 : 3;
             int stride = bitmap.BackBufferStride;
-            IntPtr pBackBuffer = bitmap.BackBuffer;
+
+
+            
 
             byte b, g, r, a;
 
-            unsafe
+            using var locker = bitmap.GetLocker();
             {
-                byte* pPixel = (byte*)pBackBuffer.ToPointer() + y * stride + x * bytesPerPixel;
+                unsafe
+                {
+                    byte* pPixel = (byte*)locker.BackBuffer + (y * stride) + (x * bytesPerPixel);
 
-                if (bitmap.HasAlpha)
-                {
-                    b = pPixel[0];
-                    g = pPixel[1];
-                    r = pPixel[2];
-                    a = pPixel[3];
-                }
-                else
-                {
-                    r = pPixel[0];
-                    g = pPixel[1];
-                    b = pPixel[2];
-                    a = 255; // No alpha channel in 24-bit format
+                    if (bitmap.HasAlpha)
+                    {
+                        b = pPixel[0];
+                        g = pPixel[1];
+                        r = pPixel[2];
+                        a = pPixel[3];
+                    }
+                    else
+                    {
+                        r = pPixel[0];
+                        g = pPixel[1];
+                        b = pPixel[2];
+                        a = 255; // No alpha channel in 24-bit format
+                    }
                 }
             }
-
             return new Color(r, g, b, a);
         }
     }

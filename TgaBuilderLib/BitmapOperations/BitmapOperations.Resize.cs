@@ -18,13 +18,13 @@ namespace TgaBuilderLib.BitmapOperations
             int sourceStride = sourceBitmap.BackBufferStride;
             int resizedStride = resizedBitmap.BackBufferStride;
 
-            sourceBitmap.Lock();
-            resizedBitmap.Lock();
+            using var sourceLocker = sourceBitmap.GetLocker();
+            using var resizedLocker = resizedBitmap.GetLocker(requiresRefresh: true);
 
             unsafe
             {
-                byte* sourcePtr = (byte*)sourceBitmap.BackBuffer;
-                byte* resizedPtr = (byte*)resizedBitmap.BackBuffer;
+                byte* sourcePtr = (byte*)sourceLocker.BackBuffer;
+                byte* resizedPtr = (byte*)resizedLocker.BackBuffer;
 
                 int widthLimit = Math.Min(sourceBitmap.PixelWidth, newWidth);
                 int heightLimit = Math.Min(sourceBitmap.PixelHeight, newHeight);
@@ -71,9 +71,7 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            resizedBitmap.AddDirtyRect(new PixelRect(0, 0, newWidth, newHeight));
-            sourceBitmap.Unlock();
-            resizedBitmap.Unlock();
+
 
             return resizedBitmap;
         }
@@ -97,13 +95,13 @@ namespace TgaBuilderLib.BitmapOperations
                 height: sourceBitmap.PixelHeight,
                 hasAlpha: sourceBitmap.HasAlpha);
 
-            sourceBitmap.Lock();
-            resizedBitmap.Lock();
+            using var sourceLocker = sourceBitmap.GetLocker();
+            using var resizedLocker = resizedBitmap.GetLocker(requiresRefresh: true);
 
             unsafe
             {
-                byte* sourcePtr = (byte*)sourceBitmap.BackBuffer;
-                byte* resizedPtr = (byte*)resizedBitmap.BackBuffer;
+                byte* sourcePtr = (byte*)sourceLocker.BackBuffer;
+                byte* resizedPtr = (byte*)resizedLocker.BackBuffer;
 
                 int sourceStride = sourceBitmap.BackBufferStride;
                 int resizedStride = resizedBitmap.BackBufferStride;
@@ -137,10 +135,6 @@ namespace TgaBuilderLib.BitmapOperations
                 }
             }
 
-            resizedBitmap.AddDirtyRect(new PixelRect(0, 0, newWidth, sourceBitmap.PixelHeight));
-            sourceBitmap.Unlock();
-            resizedBitmap.Unlock();
-
             return resizedBitmap;
         }
 
@@ -163,13 +157,13 @@ namespace TgaBuilderLib.BitmapOperations
                 height: newHeight,
                 hasAlpha: sourceBitmap.HasAlpha);
 
-            sourceBitmap.Lock();
-            resizedBitmap.Lock();
+            using var sourceLocker = sourceBitmap.GetLocker();
+            using var resizedLocker = resizedBitmap.GetLocker(requiresRefresh: true);
 
             unsafe
             {
-                byte* sourcePtr = (byte*)sourceBitmap.BackBuffer;
-                byte* resizedPtr = (byte*)resizedBitmap.BackBuffer;
+                byte* sourcePtr = (byte*)sourceLocker.BackBuffer;
+                byte* resizedPtr = (byte*)resizedLocker.BackBuffer;
 
                 int sourceStride = sourceBitmap.BackBufferStride;
                 int resizedStride = resizedBitmap.BackBufferStride;
@@ -205,10 +199,6 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-
-            resizedBitmap.AddDirtyRect(new PixelRect(0, 0, sourceBitmap.PixelWidth, newHeight));
-            sourceBitmap.Unlock();
-            resizedBitmap.Unlock();
 
             return resizedBitmap;
         }

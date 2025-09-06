@@ -16,25 +16,20 @@ namespace TgaBuilderLib.Abstraction
 {
     public interface IWriteableBitmap : IReadableBitmap
     {
-    
-    
         public void AddDirtyRect(PixelRect dirtyRect);
-    
-        IBitmapLocker GetLocker();
-    
+
+        public IBitmapLocker GetLocker(bool requiresRefresh = false);
+
+        public IBitmapLocker GetLocker(PixelRect dirtyRect);
+
+        public void Refresh();
+
         public void Freeze();
-    
-        public void Lock();
-    
-        public void Unlock();
     
         public void WritePixels(PixelRect rect, IntPtr pixels, int stride, int offset = 0);
 
         public void WritePixels(PixelRect rect, Array pixels, int stride, int offset = 0);
 
-        public IntPtr BackBuffer { get; }
-
         public int BackBufferStride { get; }
-
     }
 }

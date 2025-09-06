@@ -23,54 +23,56 @@ namespace TgaBuilderLib.BitmapOperations
                 ? GetRequiredPositions(targetPos, sourceIndex - targetIndex, tileSize, bitmapWidth)
                 : GetRequiredPositions(sourcePos, targetIndex - sourceIndex, tileSize, bitmapWidth);
 
-            bitmap.Lock();
+            var dirtyRect = new PixelRect(
+                0,
+                RequiredPositions.First().Y,
+                bitmapWidth,
+                RequiredPositions.Last().Y - RequiredPositions.First().Y + tileSize);
 
-            unsafe
-            {
-                byte* originPtr = (byte*)bitmap.BackBuffer;
-                byte* writePtr;
-                byte* readPtr;
-
-                if (sourceIndex > targetIndex)
+            using var locker = bitmap.GetLocker(dirtyRect);
+            { 
+                unsafe
                 {
-                    for (int i = RequiredPositions.Count - 1; i > 0; i--)
+                    byte* originPtr = (byte*)locker.BackBuffer;
+                    byte* writePtr;
+                    byte* readPtr;
+
+                    if (sourceIndex > targetIndex)
                     {
-                        writePtr = originPtr + RequiredPositions[i].Y * bitmapStride + RequiredPositions[i].X * bytesPerPixel;
-                        readPtr = originPtr + RequiredPositions[i - 1].Y * bitmapStride + RequiredPositions[i - 1].X * bytesPerPixel;
-                        for (int r = 0; r < tileSize; r++)
+                        for (int i = RequiredPositions.Count - 1; i > 0; i--)
                         {
-                            for (int s = 0; s < tileStride; s++)
+                            writePtr = originPtr + RequiredPositions[i].Y * bitmapStride + RequiredPositions[i].X * bytesPerPixel;
+                            readPtr = originPtr + RequiredPositions[i - 1].Y * bitmapStride + RequiredPositions[i - 1].X * bytesPerPixel;
+                            for (int r = 0; r < tileSize; r++)
                             {
-                                *writePtr++ = *readPtr++;
+                                for (int s = 0; s < tileStride; s++)
+                                {
+                                    *writePtr++ = *readPtr++;
+                                }
+                                writePtr += bitmapStride - tileStride;
+                                readPtr += bitmapStride - tileStride;
                             }
-                            writePtr += bitmapStride - tileStride;
-                            readPtr += bitmapStride - tileStride;
                         }
                     }
-                }
-                else
-                {
-                    for (int i = 0; i < RequiredPositions.Count - 1; i++)
+                    else
                     {
-                        readPtr = originPtr + RequiredPositions[i + 1].Y * bitmapStride + RequiredPositions[i + 1].X * bytesPerPixel;
-                        writePtr = originPtr + RequiredPositions[i].Y * bitmapStride + RequiredPositions[i].X * bytesPerPixel;
-                        for (int r = 0; r < tileSize; r++)
+                        for (int i = 0; i < RequiredPositions.Count - 1; i++)
                         {
-                            for (int s = 0; s < tileStride; s++)
+                            readPtr = originPtr + RequiredPositions[i + 1].Y * bitmapStride + RequiredPositions[i + 1].X * bytesPerPixel;
+                            writePtr = originPtr + RequiredPositions[i].Y * bitmapStride + RequiredPositions[i].X * bytesPerPixel;
+                            for (int r = 0; r < tileSize; r++)
                             {
-                                *writePtr++ = *readPtr++;
+                                for (int s = 0; s < tileStride; s++)
+                                {
+                                    *writePtr++ = *readPtr++;
+                                }
+                                writePtr += bitmapStride - tileStride;
+                                readPtr += bitmapStride - tileStride;
                             }
-                            writePtr += bitmapStride - tileStride;
-                            readPtr += bitmapStride - tileStride;
                         }
                     }
                 }
             }
-
-            bitmap.AddDirtyRect(new PixelRect(0, RequiredPositions.First().Y, bitmapWidth,
-                        RequiredPositions.Last().Y - RequiredPositions.First().Y + tileSize));
-            bitmap.Unlock();
-
             FillRectBitmapNoConvert(TileToInject, bitmap, (targetPos.X, targetPos.Y));
         }
 

@@ -22,15 +22,16 @@ namespace TgaBuilderLib.BitmapOperations
                 height:         height,
                 hasAlpha:       false);
 
-            source.Lock();
-            result.Lock();
+
+            using var sourceLocker = source.GetLocker();
+            using var resultLocker = result.GetLocker(requiresRefresh: true);
 
             byte r, g, b, a = 255;
 
             unsafe
             {
-                byte* srcPtr = (byte*)source.BackBuffer;
-                byte* resPtr = (byte*)result.BackBuffer;
+                byte* srcPtr = (byte*)sourceLocker.BackBuffer;
+                byte* resPtr = (byte*)resultLocker.BackBuffer;
 
                 for (int y = 0; y < height; y++)
                 {
@@ -63,10 +64,6 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            result.AddDirtyRect(new PixelRect(0, 0, width, height));
-
-            source.Unlock();
-            result.Unlock();
 
             return result;
         }
@@ -83,15 +80,16 @@ namespace TgaBuilderLib.BitmapOperations
                 height: height,
                 hasAlpha: true);
 
-            source.Lock();
-            result.Lock();
+
+            using var sourceLocker = source.GetLocker();
+            using var resultLocker = result.GetLocker(requiresRefresh: true);
 
             byte r, g, b, a = 255;
             
             unsafe
             {
-                byte* srcPtr = (byte*)source.BackBuffer;
-                byte* resPtr = (byte*)result.BackBuffer;
+                byte* srcPtr = (byte*)sourceLocker.BackBuffer;
+                byte* resPtr = (byte*)resultLocker.BackBuffer;
 
                 for (int y = 0; y < height; y++)
                 {
@@ -129,8 +127,7 @@ namespace TgaBuilderLib.BitmapOperations
             }
             result.AddDirtyRect(new PixelRect(0, 0, width, height));
 
-            source.Unlock();
-            result.Unlock();
+
 
             return result;
         }

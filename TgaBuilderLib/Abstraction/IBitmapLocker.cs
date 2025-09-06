@@ -4,9 +4,9 @@ namespace TgaBuilderLib.Abstraction
 {
     public interface IBitmapLocker : IDisposable
     {
+        /// <summary>
+        /// Pointer to the back buffer of the bitmap.
+        /// </summary>
         public IntPtr BackBuffer { get; }
-        public int Stride { get; }
-        public int Width { get; }
-        public int Height { get; }
     }
 }

@@ -25,37 +25,33 @@ namespace TgaBuilderLib.BitmapOperations
             int bitmapStride = bitmap.BackBufferStride;
             int tempStride = tempBitmap.BackBufferStride;
 
-            bitmap.Lock();
-            tempBitmap.Lock();
-
-            unsafe
+            using var bitmapLocker = bitmap.GetLocker();
+            using var tempLocker = tempBitmap.GetLocker();
             {
-                byte* bitmapPtr = (byte*)bitmap.BackBuffer;
-                byte* tempPtr = (byte*)tempBitmap.BackBuffer;
-
-                // Move the bitmap pointer to the starting position of the rectangle
-                bitmapPtr += rectangle.Y * bitmapStride + rectangle.X * bytesPerPixel;
-
-                // Flip the rectangle horizontally
-                for (int y = 0; y < height; y++)
+                unsafe
                 {
-                    for (int x = 0; x < width; x++)
+                    byte* bitmapPtr = (byte*)bitmapLocker.BackBuffer;
+                    byte* tempPtr = (byte*)tempLocker.BackBuffer;
+
+                    // Move the bitmap pointer to the starting position of the rectangle
+                    bitmapPtr += rectangle.Y * bitmapStride + rectangle.X * bytesPerPixel;
+
+                    // Flip the rectangle horizontally
+                    for (int y = 0; y < height; y++)
                     {
-                        int sourceIndex = y * bitmapStride + x * bytesPerPixel;
-                        int tempIndex = y * tempStride + (width - x - 1) * bytesPerPixel;
-                        for (int b = 0; b < bytesPerPixel; b++)
+                        for (int x = 0; x < width; x++)
                         {
-                            tempPtr[tempIndex + b] = bitmapPtr[sourceIndex + b];
+                            int sourceIndex = y * bitmapStride + x * bytesPerPixel;
+                            int tempIndex = y * tempStride + (width - x - 1) * bytesPerPixel;
+                            for (int b = 0; b < bytesPerPixel; b++)
+                            {
+                                tempPtr[tempIndex + b] = bitmapPtr[sourceIndex + b];
+                            }
                         }
                     }
                 }
-
-                bitmap.Unlock();
-                tempBitmap.Unlock();
-
-                FillRectBitmapNoConvert(tempBitmap, bitmap, (rectangle.X, rectangle.Y));
-            }
+            } // End using lockers
+            FillRectBitmapNoConvert(tempBitmap, bitmap, (rectangle.X, rectangle.Y));
         }
-
     }
 }

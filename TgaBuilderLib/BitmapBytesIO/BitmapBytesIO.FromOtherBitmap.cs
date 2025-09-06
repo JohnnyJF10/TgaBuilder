@@ -21,38 +21,36 @@ namespace TgaBuilderLib.BitmapBytesIO
                 height: height,
                 hasAlpha: source.HasAlpha);
 
-            source.Lock();
-            target.Lock();
+            PixelRect targetDirtyRect = new PixelRect(0, 0, targetWidth, height);
 
-            unsafe
+            using (var sourceLocker = source.GetLocker())
+            using (var targetLocker = target.GetLocker(targetDirtyRect))
             {
-                byte* srcPtr = (byte*)source.BackBuffer;
-                byte* dstPtr = (byte*)target.BackBuffer;
-
-                int sourceStride = source.BackBufferStride;
-                int targetStride = target.BackBufferStride;
-
-                for (int y = 0; y < height; y++)
+                unsafe
                 {
-                    byte* srcRow = srcPtr + y * sourceStride;
-                    byte* dstRow = dstPtr + y * targetStride;
+                    byte* srcPtr = (byte*)sourceLocker.BackBuffer.ToPointer();
+                    byte* dstPtr = (byte*)targetLocker.BackBuffer.ToPointer();
 
-                    for (int b = 0; b < targetStride; b++)
+                    int sourceStride = source.BackBufferStride;
+                    int targetStride = target.BackBufferStride;
+
+                    for (int y = 0; y < height; y++)
                     {
-                        if (b < sourceStride)
+                        byte* srcRow = srcPtr + y * sourceStride;
+                        byte* dstRow = dstPtr + y * targetStride;
+
+                        for (int b = 0; b < targetStride; b++)
                         {
-                            *dstRow++ = *srcRow++;
+                            if (b < sourceStride)
+                            {
+                                *dstRow++ = *srcRow++;
+                            }
+
                         }
-
                     }
+
                 }
-
             }
-
-            target.AddDirtyRect(new PixelRect(0, 0, targetWidth, height));
-            source.Unlock();
-            target.Unlock();
-
             return target;
         }
 

@@ -16,9 +16,7 @@ namespace TgaBuilderLib.BitmapOperations
         {
             int stride = rect.Width * (bitmap.HasAlpha ? 4 : 3);
             bitmap.WritePixels(rect, pixels, stride, 0);
-            bitmap.Lock();
-            bitmap.AddDirtyRect(rect);
-            bitmap.Unlock();
+            bitmap.Refresh();
         }
     }
 }

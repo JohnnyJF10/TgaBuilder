@@ -188,12 +188,7 @@ namespace TgaBuilderLib.ViewModel
             Selection.IsPlacing = true;
         }
 
-        public void RefreshPresenter()
-        {
-            Presenter.Lock();
-            Presenter.AddDirtyRect(new PixelRect(0, 0, Presenter.PixelWidth, Presenter.PixelHeight));
-            Presenter.Unlock();
-        }
+        public void RefreshPresenter() => Presenter.Refresh();
 
         protected void SetSelectionHorizontal()
         {

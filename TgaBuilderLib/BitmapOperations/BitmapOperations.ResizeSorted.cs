@@ -44,13 +44,13 @@ namespace TgaBuilderLib.BitmapOperations
 
             var Positions = GetAllPositions(tileSize, oldWidth, oldHeight, newWidth, newHeight);
 
-            oldBitmap.Lock();
-            newBitmap.Lock();
+            using var oldLocker = oldBitmap.GetLocker();
+            using var newLocker = newBitmap.GetLocker(requiresRefresh: true);
 
             unsafe
             {
-                byte* oldOriginPtr = (byte*)oldBitmap.BackBuffer;
-                byte* newOriginPtr = (byte*)newBitmap.BackBuffer;
+                byte* oldOriginPtr = (byte*)oldLocker.BackBuffer;
+                byte* newOriginPtr = (byte*)newLocker.BackBuffer;
                 byte* oldPtr;
                 byte* newPtr;
 
@@ -68,14 +68,6 @@ namespace TgaBuilderLib.BitmapOperations
                         oldPtr += oldStride - tileStride;
                     }
                 }
-
-                if (newWidth > oldBitmap.PixelWidth || newHeight > oldBitmap.PixelHeight)
-                {
- 
-                }
-
-                oldBitmap.Unlock();
-                newBitmap.Unlock();
             }
 
             return newBitmap;
