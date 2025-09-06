@@ -52,15 +52,18 @@ namespace TgaBuilderLib.BitmapOperations
             PixelAction action;
             bool isTransparencyColor;
 
-            source.Lock();
-            target.Lock();
-            SwapBitmap?.Lock();
+            var targetDirtyRect = new PixelRect(posX, posY, sWidth, sHeight);
+            var swapDirtyRect = new PixelRect(0, 0, sWidth, sHeight);
+
+            using var sourceLocker = source.GetLocker();
+            using var targetLocker = target.GetLocker(targetDirtyRect);
+            using var swapLocker = SwapBitmap != null ? SwapBitmap.GetLocker(swapDirtyRect) : null;
 
             unsafe
             {
-                byte* srcBase = (byte*)source.BackBuffer;
-                byte* tgtBase = (byte*)target.BackBuffer;
-                byte* swapBase = SwapBitmap != null ? (byte*)SwapBitmap.BackBuffer : null;
+                byte* srcBase = (byte*)sourceLocker.BackBuffer.ToPointer();
+                byte* tgtBase = (byte*)targetLocker.BackBuffer.ToPointer();
+                byte* swapBase = SwapBitmap != null ? (byte*)swapLocker!.BackBuffer.ToPointer() : null;
 
                 int srcStride = source.BackBufferStride;
                 int tgtStride = target.BackBufferStride;
@@ -136,12 +139,6 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            target.AddDirtyRect(new PixelRect(posX, posY, sWidth, sHeight));
-            SwapBitmap?.AddDirtyRect(new PixelRect(0, 0, sWidth, sHeight));
-
-            SwapBitmap?.Unlock();
-            target.Unlock();
-            source.Unlock();
         }
 
         private void FillRectBitmap32Unmonitored(
@@ -178,15 +175,18 @@ namespace TgaBuilderLib.BitmapOperations
             PixelAction action;
             bool isTransparencyColor;
 
-            source.Lock();
-            target.Lock();
-            SwapBitmap?.Lock();
+            var targetDirtyRect = new PixelRect(posX, posY, sWidth, sHeight);
+            var swapDirtyRect = new PixelRect(0, 0, sWidth, sHeight);
+
+            using var sourceLocker = source.GetLocker();
+            using var targetLocker = target.GetLocker(targetDirtyRect);
+            using var swapLocker = SwapBitmap != null ? SwapBitmap.GetLocker(swapDirtyRect) : null;
 
             unsafe
             {
-                byte* srcBase = (byte*)source.BackBuffer;
-                byte* tgtBase = (byte*)target.BackBuffer;
-                byte* swapBase = SwapBitmap != null ? (byte*)SwapBitmap.BackBuffer : null;
+                byte* srcBase = (byte*)sourceLocker.BackBuffer.ToPointer();
+                byte* tgtBase = (byte*)targetLocker.BackBuffer.ToPointer();
+                byte* swapBase = SwapBitmap != null ? (byte*)swapLocker!.BackBuffer.ToPointer() : null;
 
                 int srcStride = source.BackBufferStride;
                 int tgtStride = target.BackBufferStride;
@@ -265,12 +265,6 @@ namespace TgaBuilderLib.BitmapOperations
                     }
                 }
             }
-            target.AddDirtyRect(new PixelRect(posX, posY, sWidth, sHeight));
-            SwapBitmap?.AddDirtyRect(new PixelRect(0, 0, sWidth, sHeight));
-
-            SwapBitmap?.Unlock();
-            target.Unlock();
-            source.Unlock();
         }
     }
 }

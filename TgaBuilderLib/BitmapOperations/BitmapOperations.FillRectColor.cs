@@ -35,16 +35,10 @@ namespace TgaBuilderLib.BitmapOperations
                 Array.Copy(colorBytes, 0, pixelData, i, bytesPerPixel);
             }
 
-            bitmap.Lock();
-            try
-            {
+            var dirtyRect = new PixelRect(x, y, width, height);
+
+            using (var locker = bitmap.GetLocker(dirtyRect))
                 bitmap.WritePixels(new PixelRect(x, y, width, height), pixelData, stride, 0);
-            }
-            finally
-            {
-                bitmap.AddDirtyRect(new PixelRect(x, y, width, height));
-                bitmap.Unlock();
-            }
         }
     }
 }

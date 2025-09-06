@@ -4,6 +4,7 @@ using System.Windows;
 using System.Runtime.InteropServices;
 
 using TgaBuilderLib.Abstraction;
+using System.Diagnostics;
 
 namespace TgaBuilderWpfUi.Wrappers
 {
@@ -15,31 +16,52 @@ namespace TgaBuilderWpfUi.Wrappers
     {
         private readonly WriteableBitmap _bitmap;
         private bool _disposed;
+
     
         public IntPtr BackBuffer { get; }
-        public int Stride { get; }
-        public int Width { get; }
-        public int Height { get; }
-    
-        internal BitmapLocker(WriteableBitmap bitmap)
+
+        public Int32Rect DirtyRect { get; }
+
+        public bool RequiresRefresh { get; }
+
+
+        internal BitmapLocker(WriteableBitmap bitmap, bool requiresRefresh = true, Int32Rect? dirtyRect = null)
         {
-            _bitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
-    
-            // Lock bitmap
+            _bitmap = bitmap;
+
+            DirtyRect = dirtyRect ?? new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight);
+
+            if (DirtyRect.X < 0 || DirtyRect.Y < 0 || DirtyRect.Width <= 0 || DirtyRect.Height <= 0 ||
+                DirtyRect.X + DirtyRect.Width > bitmap.PixelWidth ||
+                DirtyRect.Y + DirtyRect.Height > bitmap.PixelHeight)
+            {
+                Debug.WriteLine(false, "CAUTION: DirtyRect is out of bounds. Fallback to full bitmap."+
+                    $"Violated Conditions: " + 
+                    $"DirtyRect.X < 0: {DirtyRect.X < 0}, " +
+                    $"DirtyRect.Y < 0: {DirtyRect.Y < 0}, " +
+                    $"DirtyRect.Width <= 0: {DirtyRect.Width <= 0}, " +
+                    $"DirtyRect.Height <= 0: {DirtyRect.Height <= 0}, " +
+                    $"DirtyRect.X + DirtyRect.Width > bitmap.PixelWidth: {DirtyRect.X + DirtyRect.Width > bitmap.PixelWidth}, " +
+                    $"DirtyRect.Y + DirtyRect.Height > bitmap.PixelHeight: {DirtyRect.Y + DirtyRect.Height > bitmap.PixelHeight}"
+                    );
+                DirtyRect = new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight);
+            }
+
+            RequiresRefresh = requiresRefresh;
+
             _bitmap.Lock();
     
             BackBuffer = _bitmap.BackBuffer;
-            Stride = _bitmap.BackBufferStride;
-            Width = _bitmap.PixelWidth;
-            Height = _bitmap.PixelHeight;
         }
     
         public void Dispose()
         {
-            if (_disposed) return;
-    
-            // Mark changes and unlock
-            _bitmap.AddDirtyRect(new Int32Rect(0, 0, Width, Height));
+            if (_disposed) 
+                return;
+
+            if (RequiresRefresh)
+                _bitmap.AddDirtyRect(DirtyRect);
+
             _bitmap.Unlock();
     
             _disposed = true;

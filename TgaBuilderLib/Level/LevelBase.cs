@@ -159,18 +159,16 @@ namespace TgaBuilderLib.Level
                 height:     actualHeight,
                 hasAlpha:   true);
 
-            IWriteableBitmap.Lock();
+            var dirtyRect = new PixelRect(0, 0, targetPanelWidth, actualHeight);
+
+            using var locker = IWriteableBitmap.GetLocker(dirtyRect);
 
             // Only visible area
-            IntPtr backBuffer = IWriteableBitmap.BackBuffer;
             Marshal.Copy(
-                source: TargetAtlas, 
+                source:         TargetAtlas, 
                 startIndex:     0, 
-                destination:    backBuffer, 
+                destination:    locker.BackBuffer, 
                 length:         croppedSize);
-
-            IWriteableBitmap.AddDirtyRect(new PixelRect(0, 0, targetPanelWidth, actualHeight));
-            IWriteableBitmap.Unlock();
 
             return IWriteableBitmap;
         }
