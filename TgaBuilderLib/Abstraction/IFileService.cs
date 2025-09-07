@@ -8,21 +8,21 @@ namespace TgaBuilderLib.Abstraction
 
         public bool OpenFileDialog(
             FileTypes types,
-            string? InitDir = null,
-            string? Title = null);
+            string? initDir = null,
+            string? title = null);
 
         public bool OpenFileDialog(
             List<FileTypes> typesList,
-            string? InitDir = null,
-            string? Title = null);
+            string? initDir = null,
+            string? title = null);
 
         public bool SaveFileDialog(
             FileTypes types,
-            string? InitDir = null,
-            string? Title = null);
+            string? initDir = null,
+            string? title = null);
 
         bool SelectFolderDialog(
-            string? InitDir = null, 
-            string? Title = null);
+            string? initDir = null, 
+            string? title = null);
     }
 }

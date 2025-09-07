@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TgaBuilderLib", "TgaBuilder
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZoomPanel", "ZoomPanel\ZoomPanel.csproj", "{98987923-D982-42F1-806B-7AACCB926EAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TgaBuilderAvaloniaUi", "TgaBuilderAvaloniaUi\TgaBuilderAvaloniaUi.csproj", "{080817F8-5035-4046-83B0-D891F0AA5B5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +29,10 @@ Global
 		{98987923-D982-42F1-806B-7AACCB926EAB}.Debug|x64.Build.0 = Debug|x64
 		{98987923-D982-42F1-806B-7AACCB926EAB}.Release|x64.ActiveCfg = Release|x64
 		{98987923-D982-42F1-806B-7AACCB926EAB}.Release|x64.Build.0 = Release|x64
+		{080817F8-5035-4046-83B0-D891F0AA5B5A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{080817F8-5035-4046-83B0-D891F0AA5B5A}.Debug|x64.Build.0 = Debug|Any CPU
+		{080817F8-5035-4046-83B0-D891F0AA5B5A}.Release|x64.ActiveCfg = Release|Any CPU
+		{080817F8-5035-4046-83B0-D891F0AA5B5A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

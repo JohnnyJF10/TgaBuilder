@@ -1,0 +1,94 @@
+<Window
+  x:Class="TgaBuilderAvaloniaUi.View.MainWindow"
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:paz="using:Avalonia.Controls.PanAndZoom"
+  Title="TgaBuilderAvaloniaUi"
+  d:DesignHeight="450"
+  d:DesignWidth="800"
+  mc:Ignorable="d">
+  <Grid 
+    ColumnDefinitions="50,*,50" 
+    RowDefinitions="Auto,12,Auto,12,*,12">
+    
+    <StackPanel
+      Grid.Row="0"
+      Grid.Column="1"
+      HorizontalAlignment="Center"
+      Orientation="Vertical">
+      <TextBlock Text="F - Fill" />
+      <TextBlock Text="U - Uniform" />
+      <TextBlock Text="R - Reset" />
+      <TextBlock Text="T - Toggle Stretch Mode" />
+      <TextBlock Text="Mouse Wheel - Zoom to Point" />
+      <TextBlock Text="Mouse Left Button Down - Pan" />
+    </StackPanel>
+    <StackPanel
+      Grid.Row="2"
+      Grid.Column="1"
+      HorizontalAlignment="Center"
+      Orientation="Horizontal">
+      <TextBlock VerticalAlignment="Center" Text="PanButton:" />
+
+      <TextBlock VerticalAlignment="Center" Text="Stretch:" />
+
+      <TextBlock VerticalAlignment="Center" Text="ZoomSpeed:" />
+      <TextBox
+        Width="50"
+        Margin="2"
+        Text="{Binding #ZoomBorder.ZoomSpeed, Mode=TwoWay}"
+        TextAlignment="Center" />
+
+      <CheckBox
+        VerticalAlignment="Center"
+        Content="EnablePan"
+        IsChecked="{Binding #ZoomBorder.EnablePan}" />
+        
+      <CheckBox
+        VerticalAlignment="Center"
+        Content="EnableZoom"
+        IsChecked="{Binding #ZoomBorder.EnableZoom}" />
+    </StackPanel>
+    <ScrollViewer
+      Grid.Row="4"
+      Grid.Column="1"
+      HorizontalScrollBarVisibility="Auto"
+      VerticalScrollBarVisibility="Auto">
+      <paz:ZoomBorder
+        Name="ZoomBorder"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        Background="SlateBlue"
+        ClipToBounds="True"
+        Focusable="True"
+        Stretch="None"
+        ZoomSpeed="1.2">
+        <Canvas
+          Width="300"
+          Height="300"
+          Background="LightGray">
+          <Rectangle
+            Canvas.Left="100"
+            Canvas.Top="100"
+            Width="50"
+            Height="50"
+            Fill="Red" />
+          <StackPanel Canvas.Left="100" Canvas.Top="200">
+            <TextBlock
+              Width="100"
+              Background="Red"
+              Foreground="WhiteSmoke"
+              Text="Text1" />
+            <TextBlock
+              Width="100"
+              Background="Red"
+              Foreground="WhiteSmoke"
+              Text="Text2" />
+          </StackPanel>
+        </Canvas>
+      </paz:ZoomBorder>
+    </ScrollViewer>
+  </Grid>
+</Window>

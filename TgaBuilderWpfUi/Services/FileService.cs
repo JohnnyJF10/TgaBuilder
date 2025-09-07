@@ -23,17 +23,17 @@ namespace TgaBuilderWpfUi.Services
 
         public bool OpenFileDialog(
             FileTypes types,
-            string? InitDir = null,
-            string? Title = null)
+            string? initDir = null,
+            string? title = null)
         {
             var openFileDialog = new OpenFileDialog();
 
             openFileDialog.Filter = GetConvergedFilter(types);
             openFileDialog.Filter += "|All Files (*.*)|*.*";
             openFileDialog.DefaultExt = GetDefaultExt(types);
-            openFileDialog.Title = Title ?? DEFAULT_OPEN_FILE_TITLE;
+            openFileDialog.Title = title ?? DEFAULT_OPEN_FILE_TITLE;
 
-            if (InitDir != null) openFileDialog.InitialDirectory = InitDir;
+            if (initDir != null) openFileDialog.InitialDirectory = initDir;
 
             if (openFileDialog.ShowDialog() == true)
             {
@@ -46,8 +46,8 @@ namespace TgaBuilderWpfUi.Services
 
         public bool OpenFileDialog(
             List<FileTypes> typesList,
-            string? InitDir = null,
-            string? Title = null)
+            string? initDir = null,
+            string? title = null)
         {
             var openFileDialog = new OpenFileDialog();
 
@@ -61,9 +61,9 @@ namespace TgaBuilderWpfUi.Services
             openFileDialog.Filter = string.Join("|", filterParts);
             openFileDialog.Filter += "|All Files (*.*)|*.*"; 
             openFileDialog.DefaultExt = GetDefaultExt(typesList.First()); 
-            openFileDialog.Title = Title ?? DEFAULT_OPEN_FILE_TITLE;
+            openFileDialog.Title = title ?? DEFAULT_OPEN_FILE_TITLE;
 
-            if (InitDir != null) openFileDialog.InitialDirectory = InitDir;
+            if (initDir != null) openFileDialog.InitialDirectory = initDir;
 
             if (openFileDialog.ShowDialog() == true)
             {
@@ -76,14 +76,14 @@ namespace TgaBuilderWpfUi.Services
 
         public bool SaveFileDialog(
             FileTypes types,
-            string? InitDir = null, 
-            string? Title = null)
+            string? initDir = null, 
+            string? title = null)
         {
             var saveFileDialog = new SaveFileDialog();
 
             saveFileDialog.Filter = GetSeperatedFilter(types);
-            saveFileDialog.Title = Title ?? DEFAULT_SAVE_FILE_TITLE;
-            if (InitDir != null) saveFileDialog.InitialDirectory = InitDir;
+            saveFileDialog.Title = title ?? DEFAULT_SAVE_FILE_TITLE;
+            if (initDir != null) saveFileDialog.InitialDirectory = initDir;
             if (saveFileDialog.ShowDialog() == true)
             {
                 SelectedPath = saveFileDialog.FileName;
@@ -93,9 +93,9 @@ namespace TgaBuilderWpfUi.Services
             return false;
         }
 
-        public bool SelectFolderDialog(string? InitDir = null, string? Title = null)
+        public bool SelectFolderDialog(string? initDir = null, string? title = null)
         {
-            string? folder = FolderPicker.ShowDialog(Title ?? DEFAULT_OPEN_FOLDER_TITLE, null);
+            string? folder = FolderPicker.ShowDialog(title ?? DEFAULT_OPEN_FOLDER_TITLE, null);
             if (folder != null)
             {
                 SelectedPath = folder;
