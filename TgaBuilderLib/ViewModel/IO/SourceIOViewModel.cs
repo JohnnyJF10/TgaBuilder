@@ -81,7 +81,7 @@ namespace TgaBuilderLib.ViewModel
             if (batchLoaderView.DataContext is not BatchLoaderViewModel batchLoaderVM) 
                 return;
 
-            batchLoaderView.ShowDialog();
+            batchLoaderView.ShowDialogAsync();
 
             if (batchLoaderView.DialogResult != true) 
                 return;

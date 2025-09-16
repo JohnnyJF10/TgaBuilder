@@ -1,4 +1,4 @@
-﻿<ui:FluentWindow
+﻿<elements:AsyncWindow
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     x:Class="TgaBuilderWpfUi.View.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -1651,4 +1651,4 @@
             Grid.RowSpan="5"
             />
     </Grid>
-</ui:FluentWindow>
+</elements:AsyncWindow>

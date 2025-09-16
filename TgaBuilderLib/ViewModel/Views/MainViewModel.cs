@@ -381,7 +381,7 @@ namespace TgaBuilderLib.ViewModel
         {
             var aboutView = _getViewCallback(ViewIndex.About);
 
-            aboutView.ShowDialog();
+            aboutView.ShowDialogAsync();
         }
 
         public void EnterPanel(bool isTargetPanel)

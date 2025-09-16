@@ -2,16 +2,17 @@
 using System.Diagnostics;
 using System.Windows.Navigation;
 using TgaBuilderLib.Abstraction;
+using TgaBuilderWpfUi.Elements;
 using Wpf.Ui.Controls;
 
 namespace TgaBuilderWpfUi.View
 {
-    public partial class AboutWindow : FluentWindow, IView
+    public partial class AboutWindow : AsyncWindow
     {
         public AboutWindow(INotifyPropertyChanged viewModel)
         {
             InitializeComponent();
-            DataContext = viewModel;
+            base.DataContext = viewModel;
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)

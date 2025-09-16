@@ -254,13 +254,13 @@ namespace TgaBuilderLib.ViewModel
             DoHeightResizing();
 
             view.DialogResult = true;
-            view.Close();
+            view.CloseAsync();
         }
 
         public void Cancel(IView view)
         {
             view.DialogResult = false;
-            view.Close();
+            view.CloseAsync();
         }
 
         private void DoHeightResizing()

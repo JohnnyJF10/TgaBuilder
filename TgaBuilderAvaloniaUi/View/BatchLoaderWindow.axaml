@@ -1,22 +1,21 @@
 ﻿<elements:AsyncWindow 
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    x:Class="TgaBuilderWpfUi.View.BatchLoaderWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    x:Class="TgaBuilderAvaloniaUi.View.BatchLoaderWindow"
+    xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:TgaBuilderWpfUi.View" 
+    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View" 
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib" 
     xmlns:sys="clr-namespace:System;assembly=mscorlib" 
-    xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel" 
-    xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
-    xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
-    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters"
+    xmlns:paz="using:Avalonia.Controls.PanAndZoom"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+    xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
     mc:Ignorable="d"
-    ExtendsContentIntoTitleBar="True"
-    WindowBackdropType="Mica"
-    WindowCornerPreference="Round"
-    WindowStartupLocation="CenterScreen"
+    WindowStartupLocation="CenterScreen" 
+    UseLayoutRounding="True"
+    Background="{DynamicResource SystemChromeMediumColor}"
+    Foreground="{DynamicResource SystemBaseHighColor}"
     Title="MainWindow"
     Height="550"
     MinHeight="550"
@@ -28,10 +27,10 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml"/>
-                <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml"/>
-                <ResourceDictionary Source="/Styles/CheckerBrush.xaml"/>
-                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.axaml"/>
+                <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.axaml"/>
+                <ResourceDictionary Source="/Styles/CheckerBrush.axaml"/>
+                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter"/>
@@ -55,23 +54,20 @@
         <DockPanel
             Grid.ColumnSpan="2"
             >
-            <ui:TitleBar
+            <Border
                 DockPanel.Dock="Right"
                 Width="133"
                 Style="{StaticResource TitleBarNavigationAreaStyle}"
                 />
 
-            <ui:TitleBar
-                Title="Batch File Loader"
+          <Border
+              Title="Batch File Loader"
                 ShowMinimize="False"
                 ShowMaximize="False"
                 ShowClose="False"
                 Margin="3,3,0,0"
                 Grid.ColumnSpan="2">
-                    <ui:TitleBar.Icon>
-                        <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
-                    </ui:TitleBar.Icon>
-            </ui:TitleBar>
+            </Border>
         </DockPanel>
 
         <StackPanel
@@ -80,7 +76,7 @@
             Grid.Column="0"
             Grid.ColumnSpan="2"
             >
-            <ui:Button 
+            <Button 
                 Content="Select Folder..."
                 Margin="10"
                 HorizontalAlignment="Stretch"
@@ -155,7 +151,7 @@
             </ComboBox>
             
         </StackPanel>
-        <ui:Card
+        <Card
             VerticalAlignment="Stretch"
             Grid.Row="2"
             Grid.Column="1"    
@@ -182,7 +178,7 @@
                 HorizontalScrollBarVisibility="Auto"
                 VerticalScrollBarVisibility="Auto"
                 CanContentScroll="True">
-                <wpfzoompanel:ZoomPanel
+                <paz:ZoomPanel
                     BorderBrush="Transparent"
                     Background="Transparent"
                     ViewportZoom="{Binding Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
@@ -196,7 +192,7 @@
                         Stretch="None"
                         RenderOptions.BitmapScalingMode="NearestNeighbor"
                         />
-                </wpfzoompanel:ZoomPanel>
+                </paz:ZoomPanel>
             </ScrollViewer>
         </elements:FileDropBorder>
         <TextBlock
@@ -223,19 +219,19 @@
             <DockPanel
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Bottom">
-                <ui:SymbolIcon
-                    Symbol="ZoomOut24"
+                <Label
+                    Text="-"
                     DockPanel.Dock="Left"
                     ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
                     />
-                <ui:Button 
+                <Button 
                     Content="Import"
                     DockPanel.Dock="Right"
                     Margin="10"
                     HorizontalAlignment="Stretch"
                     Command="{Binding ImportCommand}"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
-                <ui:Button 
+                <Button 
                     Content="Cancel"
                     DockPanel.Dock="Right"
                     Margin="10"
@@ -243,8 +239,8 @@
                     Command="{Binding CancelCommand}"          
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
 
-                <ui:SymbolIcon
-                    Symbol="ZoomIn24"
+                <Label
+                    Text="+"
                     DockPanel.Dock="Right"
                     ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
                     Margin="0,0,30,0"
@@ -264,7 +260,7 @@
                     />
             </DockPanel>
         </Border>
-        <ui:SnackbarPresenter 
+        <SnackbarPresenter 
             x:Name="MessageSnackbarPresenter"
             d:Visibility="Hidden"
             Grid.ColumnSpan="2"

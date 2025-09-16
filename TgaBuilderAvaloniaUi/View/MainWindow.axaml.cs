@@ -1,58 +1,41 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using TgaBuilderAvaloniaUi.Elements;
+using TgaBuilderAvaloniaUi.Services;
+using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderAvaloniaUi.View
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : AsyncWindow
     {
-        private readonly ZoomBorder? _zoomBorder;
+        public Image? CurrentImage { get; set; }
+        public ZoomBorder? CurrentPanel { get; set; }
 
-        public MainWindow()
+        public bool IsLoaded => throw new NotImplementedException();
+
+        public Cursor EyedropperCursor = new Cursor(StandardCursorType.Hand);
+
+        private MouseModifier _modifier = MouseModifier.None;
+
+        private Dictionary<Image, ZoomBorder>? _imagePanelDict;
+
+        public MainWindow(INotifyPropertyChanged mainViewModel)
         {
+            AddHandler(InputElement.PointerPressedEvent, Window_PointerPressed, handledEventsToo: true);
+            AddHandler(InputElement.PointerReleasedEvent, Window_PointerReleased, handledEventsToo: true);
+            AddHandler(InputElement.PointerMovedEvent, Window_PointerMoved, handledEventsToo: true);
+            AddHandler(InputElement.DoubleTappedEvent, Window_DoubleTapped, handledEventsToo: true);
+            AddHandler(InputElement.PointerWheelChangedEvent, MainWindow_PointerWheelChanged, handledEventsToo: true);
+
             InitializeComponent();
-            this.AttachDevTools();
-
-            _zoomBorder = this.Find<ZoomBorder>("ZoomBorder");
-            if (_zoomBorder != null)
-            {
-                _zoomBorder.KeyDown += ZoomBorder_KeyDown;
-
-                _zoomBorder.ZoomChanged += ZoomBorder_ZoomChanged;
-            }
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
-
-        private void ZoomBorder_KeyDown(object? sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.F:
-                    _zoomBorder?.Fill();
-                    break;
-                case Key.U:
-                    _zoomBorder?.Uniform();
-                    break;
-                case Key.R:
-                    _zoomBorder?.ResetMatrix();
-                    break;
-                case Key.T:
-                    _zoomBorder?.ToggleStretchMode();
-                    _zoomBorder?.AutoFit();
-                    break;
-            }
-        }
-
-        private void ZoomBorder_ZoomChanged(object sender, ZoomChangedEventArgs e)
-        {
-            Debug.WriteLine($"[ZoomChanged] {e.ZoomX} {e.ZoomY} {e.OffsetX} {e.OffsetY}");
+            base.DataContext = mainViewModel;
         }
     }
 }

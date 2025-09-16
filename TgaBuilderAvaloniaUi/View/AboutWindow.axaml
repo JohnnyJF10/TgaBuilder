@@ -1,19 +1,19 @@
 ﻿<elemenents:AsyncWindow
-    xmlns:elemenents="clr-namespace:TgaBuilderWpfUi.Elements"
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    x:Class="TgaBuilderWpfUi.View.AboutWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:elemenents="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    x:Class="TgaBuilderAvaloniaUi.View.AboutWindow"
+    xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:TgaBuilderWpfUi.View" 
+    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View" 
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib" 
-    xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:views="clr-namespace:TgaBuilderLib.ViewModel.Views;assembly=TgaBuilderLib"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+    xmlns:views="clr-namespace:TgaBuilderLib.ViewModel.Views;assembly=TgaBuilderLib"
     mc:Ignorable="d"
-    ExtendsContentIntoTitleBar="True"
-    WindowBackdropType="Mica"
-    WindowCornerPreference="Round"
-    WindowStartupLocation="CenterScreen"
+    WindowStartupLocation="CenterScreen" 
+    UseLayoutRounding="True"
+    Background="{DynamicResource SystemChromeMediumColor}"
+    Foreground="{DynamicResource SystemBaseHighColor}"
     Title="About"
     ResizeMode="NoResize"
     SizeToContent="Height"
@@ -32,13 +32,10 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <ui:TitleBar
+        <Border
             Title="About"
             Grid.Row="0">
-            <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
-            </ui:TitleBar.Icon>
-        </ui:TitleBar>
+        </Border>
         <StackPanel
             Orientation="Vertical"
             Grid.Row="1"
@@ -105,13 +102,7 @@
                 </TextBlock>
             </DockPanel>
         </StackPanel>
-        <ui:Card
-            Grid.Row="2"
-            VerticalAlignment="Stretch"
-            Margin="-10,0,-10,-10"
-            IsHitTestVisible="False"
-            />
-        <ui:Button
+        <Button
             Grid.Row="2"
             Content="Close"
             Command="{Binding CloseCommand}"

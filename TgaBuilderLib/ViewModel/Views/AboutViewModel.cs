@@ -7,7 +7,7 @@ namespace TgaBuilderLib.ViewModel.Views
     public class AboutViewModel : ViewModelBase
     {
         private RelayCommand<IView>? _closeCommand;
-        public ICommand CloseCommand => _closeCommand ??= new RelayCommand<IView>(v => v.Close());
+        public ICommand CloseCommand => _closeCommand ??= new RelayCommand<IView>(v => v.CloseAsync());
 
         public string Title
             => $"TgaBuilder - {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "Unknown Version"}";

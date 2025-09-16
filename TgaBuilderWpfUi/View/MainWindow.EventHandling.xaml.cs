@@ -9,7 +9,7 @@ using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace TgaBuilderWpfUi.View
 {
-    public partial class MainWindow : FluentWindow
+    public partial class MainWindow
     {
         private void Window_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
