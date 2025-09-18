@@ -32,6 +32,10 @@ namespace TgaBuilderAvaloniaUi
             MainWindow mainWindow = provider.GetServices<IView>().ElementAt(0) as MainWindow
                 ?? throw new InvalidOperationException("MainWindow not found in DI container");
 
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = mainWindow;
+            }
 
             mainWindow.Loaded += (_, _) =>
             {

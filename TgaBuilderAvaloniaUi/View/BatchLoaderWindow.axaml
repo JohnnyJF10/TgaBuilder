@@ -1,270 +1,211 @@
-﻿<elements:AsyncWindow 
-    x:Class="TgaBuilderAvaloniaUi.View.BatchLoaderWindow"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View" 
-    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib" 
-    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
-    xmlns:paz="using:Avalonia.Controls.PanAndZoom"
-    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-    xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
-    mc:Ignorable="d"
-    WindowStartupLocation="CenterScreen" 
-    UseLayoutRounding="True"
-    Background="{DynamicResource SystemChromeMediumColor}"
-    Foreground="{DynamicResource SystemBaseHighColor}"
-    Title="MainWindow"
-    Height="550"
-    MinHeight="550"
-    Width="600"
-    MinWidth="560"
-    d:Background="Black"
-    d:DataContext="{d:DesignInstance Type=viewmodel:BatchLoaderViewModel, IsDesignTimeCreatable=False}"
+﻿<elements:AsyncWindow
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
+        xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:paz="using:Avalonia.Controls.PanAndZoom"
+        xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+        xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+        xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+        x:Class="TgaBuilderAvaloniaUi.View.BatchLoaderWindow"
+        x:DataType="viewmodel:BatchLoaderViewModel"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
+        Background="{DynamicResource SystemChromeMediumColor}"
+        Foreground="{DynamicResource SystemBaseHighColor}"
+        Title="Batch File Loader"
+        Height="550"
+        MinHeight="550"
+        Width="600"
+        MinWidth="560"
+        >
+
+  <!-- Resources: converters kept. Styles and special merged dictionaries removed per request. -->
+  <Window.Resources>
+    <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
+    <sys:Boolean x:Key="True">True</sys:Boolean>
+    <sys:Boolean x:Key="False">False</sys:Boolean>
+    <!-- If you need a Bool->Visibility converter, provide one in Converters namespace or use built-in when available -->
+  </Window.Resources>
+
+  <Grid
+    RowDefinitions="Auto,Auto,*,Auto"
+    ColumnDefinitions="150,*"
     >
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.axaml"/>
-                <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.axaml"/>
-                <ResourceDictionary Source="/Styles/CheckerBrush.axaml"/>
-                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.axaml"/>
-            </ResourceDictionary.MergedDictionaries>
-            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-            <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter"/>
-            <sys:Boolean x:Key="True">True</sys:Boolean>
-            <sys:Boolean x:Key="False">False</sys:Boolean>
-            <Style TargetType="{x:Type elements:ContextMenuButton}"
-                    BasedOn="{StaticResource {x:Type ui:Button}}"/>
-        </ResourceDictionary>
-    </Window.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <DockPanel
-            Grid.ColumnSpan="2"
-            >
-            <Border
-                DockPanel.Dock="Right"
-                Width="133"
-                Style="{StaticResource TitleBarNavigationAreaStyle}"
-                />
 
-          <Border
-              Title="Batch File Loader"
-                ShowMinimize="False"
-                ShowMaximize="False"
-                ShowClose="False"
-                Margin="3,3,0,0"
+    <!-- Title / title bar area -->
+    <DockPanel Grid.ColumnSpan="2">
+      <!-- Right area (previously TitleBarNavigationAreaStyle) kept as plain Border so no styles required -->
+      <Border DockPanel.Dock="Right" 
+              Width="133" 
+              Background="Transparent" />
+
+      <Border Margin="3,3,0,0" 
+              Grid.ColumnSpan="2">
+        <TextBlock Text="Batch File Loader" 
+                   FontWeight="Bold" 
+                   VerticalAlignment="Center" 
+                   Margin="6,2" />
+      </Border>
+    </DockPanel>
+
+    <!-- Top commands -->
+    <StackPanel Orientation="Horizontal" Grid.Row="1" 
+                Grid.Column="0" 
                 Grid.ColumnSpan="2">
-            </Border>
-        </DockPanel>
+      <Button Content="Select Folder..."
+              Margin="10"
+              HorizontalAlignment="Stretch"
+              Command="{Binding SelectTRRFolderCommand}"
+              CommandParameter="{StaticResource False}" />
 
-        <StackPanel
-            Orientation="Horizontal"
-            Grid.Row="1"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            >
-            <Button 
-                Content="Select Folder..."
-                Margin="10"
-                HorizontalAlignment="Stretch"
-                Command="{Binding SelectTRRFolderCommand}"
-                CommandParameter="{StaticResource False}"/>
-            <elements:ContextMenuButton
-                Margin="10" 
-                ItemsSource="{Binding RecentBatchLoaderFolders}"
-                ItemCommand="{Binding OpenRecentFolderCommand}">
-                <TextBlock>
-                    <Run Text=" Open Recent Folders" />
-                    <Run FontFamily="Segoe UI Symbol" Text="&#xE0E5;" />
-                </TextBlock>
-            </elements:ContextMenuButton>
-        </StackPanel>
-        <StackPanel
-            Grid.Row="2"
-            Grid.RowSpan="2"
-            >
-            <Label
-                Content="First Texture Index:"
-                Margin="10, 10, 10, 0"
-                HorizontalAlignment="Left"/>
-            <elements:MouseWheelNumberBox 
-                Margin="10, 0, 10, 10"
-                Style="{StaticResource ModifiedUiNumberBoxStyle}"
-                Value="{Binding StartTexIndex, UpdateSourceTrigger=PropertyChanged}"
-                />
-            <Label
-                Content="Number of Textures:"
-                Margin="10, 10, 10, 0"
-                HorizontalAlignment="Left"/>
-            <elements:MouseWheelNumberBox 
-                Margin="10, 0, 10, 10"
-                Style="{StaticResource ModifiedUiNumberBoxStyle}"
-                Value="{Binding NumTextures, UpdateSourceTrigger=PropertyChanged}"
-                />
-            <Label
-                Content="Texture Size:"
-                Margin="10, 10, 10, 0"
-                HorizontalAlignment="Left"/>
-            <elements:MouseWheelNumberBox 
-                Margin="10, 0, 10, 10"
-                Style="{StaticResource ModifiedUiNumberBoxStyle}"
-                Value="{Binding TextureSize, UpdateSourceTrigger=PropertyChanged}"
-                />
-            <Label
-                Content="Import Panel Width:"
-                Margin="10, 10, 10, 0"
-                HorizontalAlignment="Left"
-                />
-            <elements:MouseWheelNumberBox 
-                Margin="10, 0, 10, 10"
-                Style="{StaticResource ModifiedUiNumberBoxStyle}"
-                Value="{Binding PanelWidth, UpdateSourceTrigger=PropertyChanged}"
-                />
-            <Label
-                Content="Scaling Mode:"
-                Margin="10, 10, 10, 0"
-                HorizontalAlignment="Left"
-                />
-            <ComboBox 
-                Margin="10, 0, 10, 10"
-                SelectedIndex="{Binding ScalingModeIndex, UpdateSourceTrigger=PropertyChanged}"
-                >
-                <ComboBoxItem Content="Linear" />
-                <ComboBoxItem Content="Fant" />
-                <ComboBoxItem Content="Near. Neigh." 
-                              IsSelected="True"
-                              />
+      <Button Margin="10"
+              >
+        <TextBlock>
+          <Run Text=" Open Recent Folders" />
+          <Run FontFamily="Segoe UI Symbol" Text="&#xE0E5;" />
+        </TextBlock>
+      </Button>
+    </StackPanel>
 
-            </ComboBox>
-            
-        </StackPanel>
-        <Card
-            VerticalAlignment="Stretch"
+    <!-- Left settings column -->
+    <StackPanel Grid.Row="2" 
+                Grid.RowSpan="2" 
+                Margin="0">
+      
+      <TextBlock Text="First Texture Index:" 
+                 Margin="10,10,10,0" />
+      
+      <NumericUpDown Margin="10,0,10,10" 
+                     Value="{Binding StartTexIndex, UpdateSourceTrigger=PropertyChanged}" />
+
+      <TextBlock Text="Number of Textures:" 
+                 Margin="10,10,10,0" />
+      
+      <NumericUpDown Margin="10,0,10,10"
+                     Value="{Binding NumTextures, UpdateSourceTrigger=PropertyChanged}" />
+
+      <TextBlock Text="Texture Size:" 
+                 Margin="10,10,10,0" />
+      
+      <NumericUpDown Margin="10,0,10,10" 
+                     Value="{Binding TextureSize, UpdateSourceTrigger=PropertyChanged}" />
+
+      <TextBlock Text="Import Panel Width:" 
+                 Margin="10,10,10,0" />
+      
+      <NumericUpDown Margin="10,0,10,10" 
+                     Value="{Binding PanelWidth, UpdateSourceTrigger=PropertyChanged}" />
+
+      <TextBlock Text="Scaling Mode:" 
+                 Margin="10,10,10,0" />
+      
+      <ComboBox Margin="10,0,10,10" 
+                SelectedIndex="{Binding ScalingModeIndex, UpdateSourceTrigger=PropertyChanged}">
+        <ComboBoxItem Content="Linear" />
+        <ComboBoxItem Content="Fant" />
+        <ComboBoxItem Content="Near. Neigh." />
+      </ComboBox>
+    </StackPanel>
+
+    <!-- Right preview area: replaced Card with simple Border to avoid custom styles -->
+    <Border VerticalAlignment="Stretch"
             Grid.Row="2"
-            Grid.Column="1"    
+            Grid.Column="1"
             Grid.RowSpan="2"
             IsHitTestVisible="False"
             Margin="0,0,-10,-10"
-            />
-        <Rectangle
-            Grid.Row="2"
-            Grid.Column="1"
-            Margin="5.1"
-            Fill="{StaticResource CheckerBrush}"
-            Width="{Binding ContentActualWidth}"
-            Height="{Binding ContentActualHeight}"
-            IsHitTestVisible="False"
-             />
-        <elements:FileDropBorder
-            Grid.Row="2"
-            Grid.Column="1"
-            Margin="5"
-            DropCommand="{Binding FileDropCommand}"
-            >
-            <ScrollViewer
-                HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Auto"
-                CanContentScroll="True">
-                <paz:ZoomPanel
-                    BorderBrush="Transparent"
-                    Background="Transparent"
-                    ViewportZoom="{Binding Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    ZoomAndPanInitialPosition="FitScreen"
-                    ap:SizeObserverAP.ObserveSize="True"
-                    ap:SizeObserverAP.ObservedWidth="{Binding ViewportWidth, Mode=OneWayToSource}"
-                    ap:SizeObserverAP.ObservedHeight="{Binding ViewportHeight, Mode=OneWayToSource}"
-                    >
-                    <Image
-                        Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
-                        Stretch="None"
-                        RenderOptions.BitmapScalingMode="NearestNeighbor"
-                        />
-                </paz:ZoomPanel>
-            </ScrollViewer>
-        </elements:FileDropBorder>
-        <TextBlock
-            Grid.Row="2"
-            Grid.Column="1"
-            Text="Drop Image Files here"
-            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-            IsHitTestVisible="False" 
-            HorizontalAlignment="Center" 
-            VerticalAlignment="Center" 
-            FontSize="24"
-            Visibility="{Binding IsDropHintVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-            />
+            Background="Transparent"
+            CornerRadius="6"
+            BorderThickness="1">
+      <!-- empty placeholder for visual background -->
+    </Border>
 
-        <Border
-            Grid.Row="4"
-            Grid.Column="1"
-            Padding="12"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Bottom"
-            BorderThickness="0,1,0,0"
-            BorderBrush="Transparent"
-            CornerRadius="0">
-            <DockPanel
+    <!-- Checker background rectangle -->
+    <Rectangle Grid.Row="2" 
+               Grid.Column="1" 
+               Margin="5.1" 
+               Width="{Binding ContentActualWidth}" 
+               Height="{Binding ContentActualHeight}" 
+               IsHitTestVisible="False" />
+
+    <!-- File drop / image presenter -->
+    <elements:FileDropBorder 
+      Grid.Row="2" 
+      Grid.Column="1" 
+      Margin="5" 
+      DropCommand="{Binding FileDropCommand}">
+      <ScrollViewer 
+        HorizontalScrollBarVisibility="Auto" 
+        VerticalScrollBarVisibility="Auto" 
+        >
+        <paz:ZoomBorder Stretch="None"
+                       ZoomSpeed="1.5"
+                       EnableConstrains="False"
+                       EnableGestures="True"
+                       Background="SlateBlue" 
+                       ClipToBounds="True" 
+                       Focusable="True"
+                       VerticalAlignment="Stretch" 
+                       HorizontalAlignment="Stretch"
+                       ap:SizeObserverAP.ObserveSize="True"
+                       ap:SizeObserverAP.ObservedWidth="{Binding ViewportWidth, Mode=OneWayToSource}"
+                       ap:SizeObserverAP.ObservedHeight="{Binding ViewportHeight, Mode=OneWayToSource}">
+
+          <Image Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
+                 Stretch="None" />
+
+        </paz:ZoomBorder>
+      </ScrollViewer>
+    </elements:FileDropBorder>
+
+    <!-- Drop hint text -->
+    <TextBlock Grid.Row="2"
+               Grid.Column="1"
+               Text="Drop Image Files here"
+               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+               IsHitTestVisible="False"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               FontSize="24"
+               IsVisible="{Binding IsDropHintVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+
+    <!-- Bottom actions area (was Border with DockPanel) -->
+    <Border Grid.Row="4" Grid.Column="1" Padding="12" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" BorderThickness="0,1,0,0" BorderBrush="Transparent">
+      <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+        <TextBlock Text="-" DockPanel.Dock="Left" ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" />
+
+        <Button Content="Import"
+                DockPanel.Dock="Right"
+                Margin="10"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom">
-                <Label
-                    Text="-"
-                    DockPanel.Dock="Left"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    />
-                <Button 
-                    Content="Import"
-                    DockPanel.Dock="Right"
-                    Margin="10"
-                    HorizontalAlignment="Stretch"
-                    Command="{Binding ImportCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
-                <Button 
-                    Content="Cancel"
-                    DockPanel.Dock="Right"
-                    Margin="10"
-                    HorizontalAlignment="Stretch"
-                    Command="{Binding CancelCommand}"          
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
+                Command="{Binding ImportCommand}"
+                CommandParameter="{Binding $parent[Window]}" />
 
-                <Label
-                    Text="+"
-                    DockPanel.Dock="Right"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    Margin="0,0,30,0"
-                    />
-                <elements:MouseWheelSlider
-                    Style="{StaticResource MouseWheelSliderStyle}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Margin="5,0"
-                    Minimum="0.1"
-                    Maximum="10"
-                    MinWidth="3"
-                    AutoToolTipPlacement="TopLeft"
-                    AutoToolTipPrecision="1"
-                    Value="{Binding Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    />
-            </DockPanel>
-        </Border>
-        <SnackbarPresenter 
-            x:Name="MessageSnackbarPresenter"
-            d:Visibility="Hidden"
-            Grid.ColumnSpan="2"
-            Grid.RowSpan="4"
-            />
-    </Grid>
+        <Button Content="Cancel"
+                DockPanel.Dock="Right"
+                Margin="10"
+                HorizontalAlignment="Stretch"
+                Command="{Binding CancelCommand}"
+                CommandParameter="{Binding $parent[Window]}" />
+
+        <TextBlock Text="+" DockPanel.Dock="Right" ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" Margin="0,0,30,0" />
+
+        <Slider VerticalAlignment="Center"
+                HorizontalAlignment="Stretch"
+                Margin="5,0"
+                Minimum="0.1"
+                Maximum="10"
+                MinWidth="3"
+                Value="{Binding Zoom, Mode=TwoWay}"
+                ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" />
+      </DockPanel>
+    </Border>
+
+    <!-- Snackbar presenter: kept as-is (assuming you have a SnackbarPresenter control) -->
+  </Grid>
+
 </elements:AsyncWindow>

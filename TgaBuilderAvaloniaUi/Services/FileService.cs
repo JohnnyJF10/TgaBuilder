@@ -20,10 +20,12 @@ namespace TgaBuilderAvaloniaUi.Services
         private const string DEFAULT_SAVE_FILE_TITLE = "Save TGA File";
         private const string DEFAULT_OPEN_FOLDER_TITLE = "Select a Folder";
 
+        private string _selectedPath = string.Empty;
+
         public string SelectedPath 
         { 
-            get => throw new NotImplementedException(); 
-            set => throw new NotImplementedException(); 
+            get => _selectedPath;
+            set => _selectedPath = value;
         }
 
         public bool OpenFileDialog(FileTypes types, string? initDir = null, string? title = null)

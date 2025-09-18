@@ -1,116 +1,57 @@
-﻿<elemenents:AsyncWindow
-    xmlns:elemenents="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-    x:Class="TgaBuilderAvaloniaUi.View.AboutWindow"
+﻿<elements:AsyncWindow
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View" 
-    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib" 
-    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
     xmlns:views="clr-namespace:TgaBuilderLib.ViewModel.Views;assembly=TgaBuilderLib"
+    x:DataType="views:AboutViewModel"
+    x:Class="TgaBuilderAvaloniaUi.View.AboutWindow"
     mc:Ignorable="d"
-    WindowStartupLocation="CenterScreen" 
-    UseLayoutRounding="True"
+    WindowStartupLocation="CenterScreen"
+    SizeToContent="Height"
+    Width="300"
+    MinWidth="300"
+    Height="400"
+    MinHeight="400"
     Background="{DynamicResource SystemChromeMediumColor}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="About"
-    ResizeMode="NoResize"
-    SizeToContent="Height"
-    SnapsToDevicePixels="True"
-    WindowStyle="ToolWindow"
-    Height="400"
-    MinHeight="400"
-    Width="300"
-    MinWidth="300"
-    d:Background="Black"
-    d:DataContext="{d:DesignInstance Type=views:AboutViewModel}"
     >
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="60"/>
-        </Grid.RowDefinitions>
-        <Border
-            Title="About"
-            Grid.Row="0">
-        </Border>
-        <StackPanel
-            Orientation="Vertical"
-            Grid.Row="1"
-            Margin="10,0"
-            >
 
-            <StackPanel
-                Orientation="Horizontal"
-                >
-                <Image
-                    Source="pack://application:,,,/Resources/TgaBuilder_picture.png"
-                    Width="64"
-                    Height="64"
-                    Margin="5,5,10,5"
-                    />
-                <StackPanel>
-                    <TextBlock
-                        Text="{Binding Title}"
-                        FontSize="18"
-                        TextWrapping="Wrap"
-                        FontWeight="Bold"
-                />
-                    <TextBlock
-                        Text="{Binding Subtitle}"
-                        FontSize="16"
-                        TextWrapping="Wrap"
-                />
-                    <TextBlock
-                        Text="{Binding DotNetInfo}"
-                        FontSize="12"
-                        TextWrapping="Wrap"
-                        Margin="0,5,0,0"
-                />
-                </StackPanel>
-            </StackPanel>
-            
-            <TextBlock
-                Text="{Binding AboutText}"
-                FontSize="14"
-                TextWrapping="Wrap"
-                Margin="0,5"
-                />
+  <Grid RowDefinitions="Auto,*,60">
+    <Border Grid.Row="0"/>
 
-            <DockPanel>
-                <TextBlock 
-                    FontSize="10" 
-                    Margin="5"
-                    DockPanel.Dock="Left"
-                    >
-                    <Hyperlink NavigateUri="https://github.com/JohnnyJF10/TgaBuilder/tree/master" 
-                               RequestNavigate="Hyperlink_RequestNavigate">
-                        GitHub
-                    </Hyperlink>
-                </TextBlock>
-                <TextBlock 
-                    FontSize="10" 
-                    Margin="5"
-                    HorizontalAlignment="Right"
-                    >
-                    <Hyperlink NavigateUri="https://github.com/JohnnyJF10/TgaBuilder/blob/master/LICENSE.txt" 
-                               RequestNavigate="Hyperlink_RequestNavigate">
-                        License: MIT
-                    </Hyperlink>
-                </TextBlock>
-            </DockPanel>
+    <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10,0">
+      <StackPanel Orientation="Horizontal">
+
+        <StackPanel>
+          <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding Subtitle}" FontSize="16" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding DotNetInfo}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,0"/>
         </StackPanel>
-        <Button
-            Grid.Row="2"
+      </StackPanel>
+
+      <TextBlock Text="{Binding AboutText}" FontSize="14" TextWrapping="Wrap" Margin="0,5"/>
+
+      <DockPanel>
+        <HyperlinkButton FontSize="10" 
+                         Margin="5" 
+                         DockPanel.Dock="Left"
+                         NavigateUri="https://github.com/JohnnyJF10/TgaBuilder/tree/master"
+                         />
+        <HyperlinkButton FontSize="10" 
+                         Margin="5" 
+                         HorizontalAlignment="Right"
+                         NavigateUri="https://github.com/JohnnyJF10/TgaBuilder/blob/master/LICENSE.txt"/>
+      </DockPanel>
+    </StackPanel>
+
+    <Button Grid.Row="2"
             Content="Close"
             Command="{Binding CloseCommand}"
-            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+            CommandParameter="{Binding $parent[Window]}"
             HorizontalAlignment="Right"
             Margin="0,0,15,0"
-            Width="75"
-            Height="30"
-            />
-    </Grid>
-</elemenents:AsyncWindow>
+            Width="75" Height="30"/>
+  </Grid>
+</elements:AsyncWindow>

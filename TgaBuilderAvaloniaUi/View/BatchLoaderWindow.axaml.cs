@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using TgaBuilderLib.Abstraction;
+using Avalonia.Controls.PanAndZoom;
 using TgaBuilderAvaloniaUi.Elements;
 
 namespace TgaBuilderAvaloniaUi.View

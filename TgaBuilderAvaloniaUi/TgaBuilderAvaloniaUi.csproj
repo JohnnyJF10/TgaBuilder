@@ -35,4 +35,8 @@
   <ItemGroup>
     <ProjectReference Include="..\TgaBuilderLib\TgaBuilderLib.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Styles\" />
+  </ItemGroup>
 </Project>
