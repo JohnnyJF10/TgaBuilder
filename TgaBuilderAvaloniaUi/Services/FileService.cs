@@ -22,13 +22,13 @@ namespace TgaBuilderAvaloniaUi.Services
 
         private string _selectedPath = string.Empty;
 
-        public string SelectedPath 
-        { 
+        public string SelectedPath
+        {
             get => _selectedPath;
             set => _selectedPath = value;
         }
 
-        public bool OpenFileDialog(FileTypes types, string? initDir = null, string? title = null)
+        public async Task<bool> OpenFileDialog(FileTypes types, string? initDir = null, string? title = null)
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
                 throw new InvalidOperationException("The application is not running in desktop mode.");
@@ -36,8 +36,12 @@ namespace TgaBuilderAvaloniaUi.Services
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
                 throw new InvalidOperationException("Could not get the top-level window.");
 
+                            var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
+                ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
+                : null;
+
             // Start async operation to open the dialog.
-            var files = topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            var filesResult = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = title ?? DEFAULT_OPEN_FILE_TITLE,
                 FileTypeFilter = new List<FilePickerFileType>
@@ -48,12 +52,8 @@ namespace TgaBuilderAvaloniaUi.Services
                     }
                 },
                 AllowMultiple = false,
-                SuggestedStartLocation = initDir != null && Directory.Exists(initDir)
-                    ? topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir).GetAwaiter().GetResult()
-                    : null
+                SuggestedStartLocation = suggestedStartLocation
             });
-
-            var filesResult = files.GetAwaiter().GetResult();
 
             if (filesResult.Count >= 1)
             {
@@ -67,7 +67,7 @@ namespace TgaBuilderAvaloniaUi.Services
             }
         }
 
-        public bool OpenFileDialog(List<FileTypes> typesList, string? initDir = null, string? title = null)
+        public async Task<bool> OpenFileDialog(List<FileTypes> typesList, string? initDir = null, string? title = null)
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
                 throw new InvalidOperationException("The application is not running in desktop mode.");
@@ -81,24 +81,25 @@ namespace TgaBuilderAvaloniaUi.Services
             {
                 var patterns = GetPattern(fileTypes);
 
-                var fpft = new FilePickerFileType("Test");
-                fpft.Patterns = patterns;
+                var fpft = new FilePickerFileType("Test")
+                {
+                    Patterns = patterns
+                };
 
                 fileTypeFilters.Add(fpft);
             }
 
-            // Start async operation to open the dialog.
-            var files = topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
+                ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
+                : null;
+
+            var filesResult = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = title ?? DEFAULT_OPEN_FILE_TITLE,
                 FileTypeFilter = fileTypeFilters,
                 AllowMultiple = false,
-                SuggestedStartLocation = initDir != null && Directory.Exists(initDir)
-                    ? topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir).GetAwaiter().GetResult()
-                    : null
+                SuggestedStartLocation = suggestedStartLocation
             });
-
-            var filesResult = files.GetAwaiter().GetResult();
 
             if (filesResult.Count >= 1)
             {
@@ -111,30 +112,32 @@ namespace TgaBuilderAvaloniaUi.Services
             }
         }
 
-        public bool SaveFileDialog(FileTypes types, string? initDir = null, string? title = null)
+        public async Task<bool> SaveFileDialog(FileTypes types, string? initDir = null, string? title = null)
         {
-            
+
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
                 throw new InvalidOperationException("The application is not running in desktop mode.");
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
                 throw new InvalidOperationException("Could not get the top-level window.");
 
-            var files = topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-            {
-                Title = title ?? DEFAULT_OPEN_FILE_TITLE,
-                FileTypeChoices = new List<FilePickerFileType>
+            var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
+                ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
+                : null;
+
+            var fileTypeChoices = new List<FilePickerFileType>
                 {
                     new ("Supported Files")
-                    {
-                        Patterns = GetPattern(types)
-                    }
-                },
-                SuggestedStartLocation = initDir != null && Directory.Exists(initDir)
-                    ? topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir).GetAwaiter().GetResult()
-                    : null
+                };
+
+            var fileResult = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = title ?? DEFAULT_OPEN_FILE_TITLE,
+                FileTypeChoices = fileTypeChoices,
+                SuggestedStartLocation = suggestedStartLocation
             });
-            var fileResult = files.GetAwaiter().GetResult();
+
+
             if (fileResult != null)
             {
                 SelectedPath = fileResult.Path.LocalPath;
@@ -146,23 +149,25 @@ namespace TgaBuilderAvaloniaUi.Services
             }
         }
 
-        public bool SelectFolderDialog(string? initDir = null, string? title = null)
+        public async Task<bool> SelectFolderDialog(string? initDir = null, string? title = null)
         {
-            
+
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
                 throw new InvalidOperationException("The application is not running in desktop mode.");
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
                 throw new InvalidOperationException("Could not get the top-level window.");
 
-            var folder = topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+                var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
+                ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
+                : null;
+
+            var folderResult = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
             {
                 Title = title ?? DEFAULT_OPEN_FOLDER_TITLE,
-                SuggestedStartLocation = initDir != null && Directory.Exists(initDir)
-                    ? topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir).GetAwaiter().GetResult()
-                    : null
+                SuggestedStartLocation = suggestedStartLocation
             });
-            var folderResult = folder.GetAwaiter().GetResult();
+
             if (folderResult.Count >= 1)
             {
                 SelectedPath = folderResult[0].Path.LocalPath;
@@ -193,6 +198,5 @@ namespace TgaBuilderAvaloniaUi.Services
 
             return result;
         }
-
     }
 }

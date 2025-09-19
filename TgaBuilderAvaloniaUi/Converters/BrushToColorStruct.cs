@@ -23,6 +23,7 @@ namespace TgaBuilderAvaloniaUi.Converters
             else
             {
                 System.Diagnostics.Debug.WriteLine("BrushToColorStruct: Value is not of type SolidColorBrush. Returning Fallback color.");
+                System.Diagnostics.Debug.WriteLine("Type: " + (value?.GetType().FullName ?? "null"));
                 return new TgaBuilderLib.Abstraction.Color(0, 0, 0, 0);
             }
         }

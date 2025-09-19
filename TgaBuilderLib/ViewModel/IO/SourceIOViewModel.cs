@@ -127,9 +127,13 @@ namespace TgaBuilderLib.ViewModel
                 };
 
             if (String.IsNullOrEmpty(fileName))
-                if (_fileService.OpenFileDialog(fileTypes) == true)
+            {
+                bool? dialogResult = await _fileService.OpenFileDialog(fileTypes);
+
+                if (dialogResult == true)
                     fileName = _fileService.SelectedPath;
                 else return;
+            }
 
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;

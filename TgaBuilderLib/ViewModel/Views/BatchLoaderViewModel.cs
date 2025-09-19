@@ -148,13 +148,13 @@ namespace TgaBuilderLib.ViewModel
 
 
         public ICommand SelectTRRFolderCommand
-            => _selectTRRFolderCommand ??= new RelayCommand(() => SelectFolder());
+            => _selectTRRFolderCommand ??= new RelayCommand(async () => await SelectFolder());
         public ICommand ImportCommand 
             => _importCommand ??= new RelayCommand<IView>(Import);
         public ICommand CancelCommand 
             => _cancelCommand ??= new RelayCommand<IView>(Cancel);
         public ICommand OpenRecentFolderCommand
-            => openRecentFolderCommand ??= new RelayCommand<string>(SelectFolder);
+            => openRecentFolderCommand ??= new RelayCommand<string>(async s => await SelectFolder(s));
         public ICommand FileDropCommand
             => _fileDropCommand ??= new RelayCommand<List<string>>(FileDrop);
 
@@ -527,18 +527,21 @@ namespace TgaBuilderLib.ViewModel
             return false;
         }
 
-        private void SelectFolder(string folderName = "")
+        private async Task SelectFolder(string folderName = "")
         {
             if (String.IsNullOrEmpty(folderName))
-                if (_fileService.SelectFolderDialog() == true)
+            {
+                bool? dialogResult = await _fileService.SelectFolderDialog();
+                if (dialogResult == true)
                     folderName = _fileService.SelectedPath;
                 else return;
+            }
 
             if (!Directory.Exists(folderName))
-            {
-                _messageService.SendMessage(MessageType.BatchLoaderFolderSetFail);
-                return;
-            }
+                {
+                    _messageService.SendMessage(MessageType.BatchLoaderFolderSetFail);
+                    return;
+                }
 
             _selectedFolderPath = folderName;
 

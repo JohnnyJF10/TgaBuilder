@@ -109,5 +109,24 @@ namespace TgaBuilderAvaloniaUi.View
             if (PanelMouseAP.GetWheelShiftCommand(this) is ICommand wheelShiftCommand)
                 wheelShiftCommand.Execute((isDestination, e.Delta.Y < 0));
         }
+
+        private void MainWindow_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
+            {
+                SourcePanel.EnableZoom = true;
+                TargetPanel.EnableZoom = true;
+            }
+        }
+
+        private void MainWindow_KeyUp(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
+            {
+                SourcePanel.EnableZoom = false;
+                TargetPanel.EnableZoom = false;
+            }
+
+        }
     }
 }
