@@ -8,7 +8,7 @@ namespace TgaBuilderAvaloniaUi.Converters
         {
         public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
         {
-            if (value is SolidColorBrush brush)
+            if (value is ISolidColorBrush brush)
             {
                 var color = brush.Color;
                 if (color.A < 255)
@@ -22,7 +22,7 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("BrushToColorStruct: Value is not of type SolidColorBrush. Returning Fallback color.");
+                System.Diagnostics.Debug.WriteLine("BrushToColorStruct: Value is not an ISolidColorBrush. Returning Fallback color.");
                 System.Diagnostics.Debug.WriteLine("Type: " + (value?.GetType().FullName ?? "null"));
                 return new TgaBuilderLib.Abstraction.Color(0, 0, 0, 0);
             }

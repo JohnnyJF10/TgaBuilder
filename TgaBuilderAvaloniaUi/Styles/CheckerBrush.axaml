@@ -1,0 +1,29 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border>
+      <Rectangle Width="600" Height="100" Fill="{StaticResource CheckerBrush}" Stretch="None"/>
+    </Border>
+  </Design.PreviewWith>
+  
+  <DrawingBrush x:Key="CheckerBrush" TileMode="Tile" SourceRect="0,0,16,16" DestinationRect="0,0,16,16" Stretch="None" >
+    <DrawingBrush.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="Gray">
+          <GeometryDrawing.Geometry>
+            <RectangleGeometry Rect="0,0,16,16"/>
+          </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+        <GeometryDrawing Brush="LightGray">
+          <GeometryDrawing.Geometry>
+            <GeometryGroup>
+              <RectangleGeometry Rect="0,0,8,8"/>
+              <RectangleGeometry Rect="8,8,8,8"/>
+            </GeometryGroup>
+          </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+      </DrawingGroup>
+    </DrawingBrush.Drawing>
+  </DrawingBrush>
+</ResourceDictionary>

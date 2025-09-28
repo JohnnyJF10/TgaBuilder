@@ -5,6 +5,7 @@ using Avalonia.Platform.Storage;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,10 +32,16 @@ namespace TgaBuilderAvaloniaUi.Services
         public async Task<bool> OpenFileDialog(FileTypes types, string? initDir = null, string? title = null)
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                throw new InvalidOperationException("The application is not running in desktop mode.");
+            {
+                Debug.WriteLine("The application is not running in desktop mode.");
+                return false;
+            }
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
-                throw new InvalidOperationException("Could not get the top-level window.");
+            {
+                Debug.WriteLine("Could not get the top-level window.");
+                return false;
+            }
 
                             var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
                 ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
@@ -57,7 +64,6 @@ namespace TgaBuilderAvaloniaUi.Services
 
             if (filesResult.Count >= 1)
             {
-
                 SelectedPath = filesResult[0].Path.LocalPath;
                 return true;
             }
@@ -70,10 +76,16 @@ namespace TgaBuilderAvaloniaUi.Services
         public async Task<bool> OpenFileDialog(List<FileTypes> typesList, string? initDir = null, string? title = null)
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                throw new InvalidOperationException("The application is not running in desktop mode.");
+            {
+                Debug.WriteLine("The application is not running in desktop mode.");
+                return false;
+            }
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
-                throw new InvalidOperationException("Could not get the top-level window.");
+            {
+                Debug.WriteLine("Could not get the top-level window.");
+                return false;
+            }
 
             var fileTypeFilters = new List<FilePickerFileType>();
 
@@ -116,10 +128,16 @@ namespace TgaBuilderAvaloniaUi.Services
         {
 
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                throw new InvalidOperationException("The application is not running in desktop mode.");
+            {
+                Debug.WriteLine("The application is not running in desktop mode.");
+                return false;
+            }
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
-                throw new InvalidOperationException("Could not get the top-level window.");
+            {
+                Debug.WriteLine("Could not get the top-level window.");
+                return false;
+            }
 
             var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
                 ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
@@ -127,7 +145,8 @@ namespace TgaBuilderAvaloniaUi.Services
 
             var fileTypeChoices = new List<FilePickerFileType>
                 {
-                    new ("Supported Files")
+                    new("Png Files (*.png)") { Patterns = new[] { "*.png" }},
+                    new("Tga Files (*.tga)") { Patterns = new[] { "*.tga" }}
                 };
 
             var fileResult = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -151,14 +170,19 @@ namespace TgaBuilderAvaloniaUi.Services
 
         public async Task<bool> SelectFolderDialog(string? initDir = null, string? title = null)
         {
-
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                throw new InvalidOperationException("The application is not running in desktop mode.");
+            {
+                Debug.WriteLine("The application is not running in desktop mode.");
+                return false;
+            }
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
-                throw new InvalidOperationException("Could not get the top-level window.");
+            {
+                Debug.WriteLine("Could not get the top-level window.");
+                return false;
+            }
 
-                var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
+            var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
                 ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
                 : null;
 

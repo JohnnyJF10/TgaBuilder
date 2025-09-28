@@ -1,7 +1,11 @@
-﻿using System.ComponentModel;
-using TgaBuilderLib.Abstraction;
-using Avalonia.Controls.PanAndZoom;
+﻿using Avalonia.Controls.PanAndZoom;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.ComponentModel;
+using System.Linq;
 using TgaBuilderAvaloniaUi.Elements;
+using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
 {
@@ -11,6 +15,17 @@ namespace TgaBuilderAvaloniaUi.View
         {
             InitializeComponent();
             base.DataContext = viewModel;
+        }
+
+        [Obsolete("For designer use only")]
+        public BatchLoaderWindow()
+        {
+            var serviceProvider = GlobalServiceProvider.Instance;
+
+            var vm = serviceProvider.GetRequiredService<BatchLoaderViewModel>()
+                ?? throw new InvalidOperationException("BatchLoaderViewModel not found in DI container");
+            InitializeComponent();
+            base.DataContext = vm;
         }
     }
 }

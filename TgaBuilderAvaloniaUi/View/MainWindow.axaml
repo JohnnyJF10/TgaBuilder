@@ -1,217 +1,186 @@
 ﻿<elements:AsyncWindow
     x:Class="TgaBuilderAvaloniaUi.View.MainWindow"
-    x:Name="MainWin"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
-    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
     xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-    xmlns:paz="using:Avalonia.Controls.PanAndZoom"
     xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
     xmlns:input="using:Avalonia.Input"
-    x:DataType="viewmodel:MainViewModel"
-    mc:Ignorable="d"
-    WindowStartupLocation="CenterScreen" 
-    UseLayoutRounding="True"
-    Background="{DynamicResource SystemChromeMediumColor}"
-    Foreground="{DynamicResource SystemBaseHighColor}"
+    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:paz="using:Avalonia.Controls.PanAndZoom"
+    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    xmlns:notif="clr-namespace:Avalonia.Notification.Controls;assembly=Notification.Avalonia"
+    x:Name="MainWin"
     Title="MainWindow"
-    Height="570"
-    MinHeight="570"
     Width="800"
+    Height="570"
     MinWidth="760"
-    ap:PanelMouseAP.PanelMouseCommand="{Binding MousePanelCommand}"
+    MinHeight="570"
     ap:PanelMouseAP.EnterPanelCommand="{Binding EnterPanelCommand}"
     ap:PanelMouseAP.LeavePanelCommand="{Binding LeavePanelCommand}"
+    ap:PanelMouseAP.PanelMouseCommand="{Binding MousePanelCommand}"
     ap:PanelMouseAP.WheelShiftCommand="{Binding WheelShiftCommand}"
-    >
-
-
+    x:DataType="viewmodel:MainViewModel"
+    Background="{DynamicResource SystemChromeMediumColor}"
+    Foreground="{DynamicResource SystemBaseHighColor}"
+    UseLayoutRounding="True"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
 
     <Window.Resources>
         <ResourceDictionary>
-            <converter:BitmapSourceConverter            x:Key="BitmapSourceConverter"/>
-            <converter:WriteableBitmapConverter         x:Key="WriteableBitmapConverter"/>
-            <converter:BrushToColorStruct               x:Key="BrushToColorStruct"/>
-            <converter:BoolToStrokeDashStyleConverter   x:Key="BoolToStrokeDashStyleConverter"/>
-            <converter:ColorStructToBrush               x:Key="ColorStructToBrush"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/IconDictionary.axaml" />
+                <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
+                <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:BitmapSourceConverter x:Key="BitmapSourceConverter" />
+            <converter:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
+            <converter:BrushToColorStruct x:Key="BrushToColorStruct" />
+            <converter:BoolToStrokeDashStyleConverter x:Key="BoolToStrokeDashStyleConverter" />
+            <converter:SignSwitchConverter x:Key="SignSwitchConverter" />
+            <converter:ColorStructToBrush x:Key="ColorStructToBrush" />
         </ResourceDictionary>
     </Window.Resources>
-    <Grid
-        >
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"
-                              MinWidth="315"/>
-            <ColumnDefinition Width="120"/>
-            <ColumnDefinition Width="*"
-                              MinWidth="315"/>
+            <ColumnDefinition Width="*" MinWidth="315" />
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition Width="*" MinWidth="315" />
         </Grid.ColumnDefinitions>
 
 
         <DockPanel>
-            <Border
-                Margin="3,3,0,0"
-                >
-            </Border>
-            <Border
-                Margin="0,3,0,0"
-                >
+            <Border Margin="3,3,0,0" />
+            <Border Margin="0,3,0,0">
                 <Border>
-                    <StackPanel Orientation="Horizontal"
-                                IsEnabled="{Binding SourceIO.ControlsEnabled}"
-                                >
-                        <Button
-                            Content="FolderOpen"
-                            Width="36"
-                            Height="36"
-                            BorderThickness="0"
-                            
-                            Command="{Binding OpenSourceCommand}"
+                    <StackPanel
+                        Background="Transparent"
+                        IsEnabled="{Binding SourceIO.ControlsEnabled}"
+                        Orientation="Horizontal"
+                        Spacing="5">
+                        <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="Open Source Panel (Ctrl + E)"
-                            />
+                            Command="{Binding OpenSourceCommand}"
+                            Icon="{StaticResource folder_open}" />
 
-                        <DropDownButton
-                            Content="FolderArrowUp"
-                            Width="36"
-                            Height="36"
-                            BorderThickness="0"
-                            ap:MouseOverInfoAP.InfoText="Open Recent Source Panels"
-                            />
-
-                        <Button
-                            Content="ArrowClockwise"
-                            Width="36"
-                            Height="36"
-                            BorderThickness="0"
+                      <DropDownButton
+                          Width="36"
+                          Height="36"
+                          ap:MouseOverInfoAP.InfoText="Open Recent Source Panels"
+                          Content="FolderArrowUp" >
+                        <DropDownButton.Flyout>
+                          <MenuFlyout
+                            ItemsSource="{Binding SourceIO.RecentSourceFileNames}"
+                            >
                             
-                            Command="{Binding ReloadSourceCommand}"
+                            <MenuFlyout.ItemTemplate>
+                              <DataTemplate>
+                                <MenuItem Header="{Binding .}"
+                                          Command="{Binding DataContext.OpenRecentSourceCommand, ElementName=MainWin }"
+                                          CommandParameter="{Binding .}" />
+                              </DataTemplate>
+                            </MenuFlyout.ItemTemplate>
+                          </MenuFlyout>
+                        </DropDownButton.Flyout>
+                      </DropDownButton>
+
+                        <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.ReloadFileText}"
-                            />
+                            Command="{Binding ReloadSourceCommand}"
+                            Icon="{StaticResource arrow_clockwise}" />
 
-                        <Button
-                            Content="ArrowUp"
-                            Width="36"
-                            Height="36"
-                            BorderThickness="0"
-                            
-                            Command="{Binding OpenPreviousSourceCommand}"
+                        <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.PreviousFileOpenText}"
-                            />
+                            Command="{Binding OpenPreviousSourceCommand}"
+                            Icon="{StaticResource arrow_up}" />
 
-                        <Button
-                            Content="ArrowDown"
-                            Width="36"
-                            Height="36"
-                            BorderThickness="0"
-                            
-                            Command="{Binding OpenNextSourceCommand}"
+                        <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.NextFileOpenText}"
-                            />
+                            Command="{Binding OpenNextSourceCommand}"
+                            Icon="{StaticResource arrow_down}" />
 
                     </StackPanel>
                 </Border>
             </Border>
         </DockPanel>
 
-        <Grid
-            Grid.Column="1"
-            Margin="0,3,0,0"
-            >
-            <Border>
-                <Button
-                    Content="ArrowUndo"
-                    Width="36"
-                    Height="36"
-                    BorderThickness="0"
-                    
+        <Grid Grid.Column="1" Margin="0,3,0,0">
+            <StackPanel Orientation="Horizontal">
+                <elements:IconButton
+                    x:Name="UndoButton"
+                    Margin="19,0,5,0"
+                    ap:MouseOverInfoAP.InfoText="Undo (Ctrl + Z)"
+                    Background="Transparent"
                     Command="{Binding UndoCommand}"
+                    Icon="{StaticResource arrow_undo}" />
+                <elements:IconButton
+                    x:Name="RedoButton"
+                    Margin="5,0,0,0"
+                    ap:MouseOverInfoAP.InfoText="Redo (Ctrl + Y)"
                     Background="Transparent"
-                    ap:MouseOverInfoAP.InfoText="Undo (Ctrl + Z)" 
-                    Margin="19,0,0,0"/>
-            </Border>
-            <Border>
-                <Button 
-                    Content="ArrowRedo"
-                    Width="36"
-                    Height="36"
-                    Margin="0,0,19,0"
                     BorderThickness="0"
-                    
                     Command="{Binding RedoCommand}"
-                    Background="Transparent"
-                    ap:MouseOverInfoAP.InfoText="Redo (Ctrl + Y)"/>
-            </Border>
-            
+                    Icon="{StaticResource arrow_redo}" />
+            </StackPanel>
+
         </Grid>
-        
-        <DockPanel
-            Grid.Column="2"
-            >
-            <Border   
-                Width="133"
-                DockPanel.Dock="Right"
-                         />
-          <Border
 
-                Margin="0,3,0,0"
-                >
-            <Border>
-                    <StackPanel Orientation="Horizontal"
-                                IsEnabled="{Binding TargetIO.ControlsEnabled}"
-                                >
-                        <Button Content="DocumentAdd"
-                                   Width="36"
-                                   Height="36"
-                                   BorderThickness="0"
-                                   
-                                   Command="{Binding NewCommand}"
-                                   ap:MouseOverInfoAP.InfoText="New File (Ctrl + N)"
-                                   
-                                   />
-                        <Button Content="FolderOpen"
-                                   Width="36"
-                                   Height="36"
-                                   BorderThickness="0"
-                                   
-                                   Command="{Binding OpenDestinationCommand}"
-                                   ap:MouseOverInfoAP.InfoText="Open Destination Panel (Ctrl + D)"
-                                   />
+        <DockPanel Grid.Column="2">
+            <Border Width="133" DockPanel.Dock="Right" />
+            <Border Margin="0,3,0,0">
+                <Border>
+                    <StackPanel 
+                        IsEnabled="{Binding TargetIO.ControlsEnabled}" 
+                        Orientation="Horizontal"
+                        Spacing="5"
+                        >
+                        <elements:IconButton
+                            ap:MouseOverInfoAP.InfoText="New File (Ctrl + N)"
+                            Command="{Binding NewCommand}"
+                            Icon="{StaticResource document_add}" />
+                        <elements:IconButton
+                            ap:MouseOverInfoAP.InfoText="Open Destination Panel (Ctrl + D)"
+                            Command="{Binding OpenDestinationCommand}"
+                            Icon="{StaticResource folder_open}" />
 
-
-                        <DropDownButton
-                            Width="36"
-                            Height="36"
-                            BorderThickness="0"
-                            ap:MouseOverInfoAP.InfoText="Open Recent Destination Panels"
-                            />
-
-                        <Button
-                            Content="Save"
-                            Width="36"
-                            Height="36"
-                            Command="{Binding SaveCommand}"
+                      <DropDownButton
+                          Width="36"
+                          Height="36"
+                          ap:MouseOverInfoAP.InfoText="Open Recent Destination Panels"
+                          Content="FolderArrowUp" >
+                        <DropDownButton.Flyout>
+                          <MenuFlyout
+                            ItemsSource="{Binding TargetIO.RecentDestinationFileNames}"
                             
-                            BorderThickness="0"
-                            Background="Transparent"
+                            >
+                            <MenuFlyout.ItemTemplate>
+                              <DataTemplate>
+                                <MenuItem Header="{Binding .}"
+                                          Command="{Binding DataContext.OpenRecentDestinationCommand, ElementName=MainWin }"
+                                          CommandParameter="{Binding .}" />
+                              </DataTemplate>
+                            </MenuFlyout.ItemTemplate>
+                          </MenuFlyout>
+                        </DropDownButton.Flyout>
+                      </DropDownButton>
+
+                        <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="Save File (Ctrl + S)"
-                            />
-                        <Button
-                            Content="SaveArrowRight"
-                            BorderThickness="0"
-                            Width="36"
-                            Height="36"
-                            
-                            Command="{Binding SaveAsCommand}"
-                            Background="Transparent"
+                            Command="{Binding SaveCommand}"
+                            Icon="{StaticResource save}" />
+                        <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="Save As (Ctrl + Shift + S)"
-                            />
+                            Command="{Binding SaveAsCommand}"
+                            Icon="{StaticResource save_as} " />
 
                     </StackPanel>
                 </Border>
@@ -219,677 +188,597 @@
         </DockPanel>
 
 
-        <Grid
-            Grid.Row="1"
-            Grid.Column="0">
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="75"/>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="75" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TabControl
                 Margin="5"
                 BorderBrush="Transparent"
-                TabStripPlacement="Top"
                 IsEnabled="{Binding SourceIO.ControlsEnabled}"
-                >
-                <TabItem
-                    Header="Import"
-                    Height="25"
-                    >
-                    <DockPanel
-                        Margin="5,0,5,0"
-                        HorizontalAlignment="Stretch"
-                        >
-                        <Button
-                            Content="XBoxController"
-                            Width="36"
-                            Height="36"
-                            DockPanel.Dock="Left"
+                TabStripPlacement="Top">
+                <TabItem Height="15" Header="Import">
+
+                    <DockPanel Margin="5,0,5,0" HorizontalAlignment="Stretch">
+                        <elements:IconButton
+                            Icon="{StaticResource games}"
+                            ap:MouseOverInfoAP.InfoText="Import from Classic TR... (Ctrl + Q)"
                             Command="{Binding OpenSourceTrCommand}"
-                            ap:MouseOverInfoAP.InfoText="Import from Classic TR... (Ctrl + Q)"/>
-                        <ToggleButton
-                            DockPanel.Dock="Left"
-                            Width="36"
-                            Height="36"
+                            DockPanel.Dock="Left" />
+                        <elements:IconToggleButton
                             Margin="5,0,0,0"
-                            Content="Map"
-                            IsChecked="{Binding SourceIO.TrImportRepackingSelected}"
-                            ap:MouseOverInfoAP.InfoText="Use Texture Repacking (remove TE Padding)"/>
-                        <Button
-                            DockPanel.Dock="Right"
+                            ap:MouseOverInfoAP.InfoText="Use Texture Repacking (remove TE Padding)"
+                            Icon="{StaticResource map}"
+                            DockPanel.Dock="Left"
+                            IsChecked="{Binding SourceIO.TrImportRepackingSelected}" />
+                        <elements:IconButton
+                            Icon="{StaticResource set_top_stack}"
                             Margin="0,0,5,0"
-                            Content="StackArrowForward"
-                            Width="36"
-                            Height="36"
+                            ap:MouseOverInfoAP.InfoText="Open Batch Loader... (Ctrl + W)"
                             Command="{Binding BatchLoaderCommand}"
-                            ap:MouseOverInfoAP.InfoText="Open Batch Loader... (Ctrl + W)"/>
+                            DockPanel.Dock="Right" />
                         <NumericUpDown
                             Margin="5,0"
                             ap:MouseOverInfoAP.InfoText="Set the number of pages of the TR file to import. Each page has a width of 256 pix."
-                            Value="{Binding SourceIO.TrImportHorPageNum, UpdateSourceTrigger=PropertyChanged}"/>
+                            Value="{Binding SourceIO.TrImportHorPageNum, UpdateSourceTrigger=PropertyChanged}" />
                     </DockPanel>
                 </TabItem>
-                <TabItem
-                    Header="Offset"
-                    Height="25"
-                    >
-                    <Grid
-                        DataContext="{Binding Source.VisualGrid}"
-                        Margin="5,0,5,0">
+                <TabItem Height="15">
+                    <TabItem.Header>
+                        <TextBlock FontSize="14" Text="Grid" />
+                    </TabItem.Header>
+                    <Grid Margin="5,0,5,0" DataContext="{Binding Source.VisualGrid}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                      <NumericUpDown
-                            HorizontalAlignment="Stretch"
+                        <NumericUpDown
                             Margin="0,0,2.5,0"
-                            Value="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged}"
+                            HorizontalAlignment="Stretch"
                             ap:MouseOverInfoAP.InfoText="Set the offset of the source texture panel in X direction"
-                            />
-                      <NumericUpDown
-                            Margin="2.5,0,0,0"
+                            Value="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged}" />
+                        <NumericUpDown
                             Grid.Column="1"
-                            Value="{Binding OffsetY, UpdateSourceTrigger=PropertyChanged}"
+                            Margin="2.5,0,0,0"
                             HorizontalAlignment="Stretch"
                             ap:MouseOverInfoAP.InfoText="Set the offset of the source texture panel in Y direction"
-                            />
-                        <StackPanel
-                            Grid.Column="2"
-                            Orientation="Horizontal"
-                            >
-                            <Button
+                            Value="{Binding OffsetY, UpdateSourceTrigger=PropertyChanged}" />
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <elements:IconButton
+                                Icon="{StaticResource backspace}"
                                 Grid.Column="2"
-                                Content="ArrowUpLeft"
-                                Command="{Binding ResetCommand}"
-                                Width="36"
-                                Height="36"
                                 Margin="5,0,0,0"
-                                ap:MouseOverInfoAP.InfoText="Reset Offset"/>
+                                ap:MouseOverInfoAP.InfoText="Reset Offset"
+                                Command="{Binding ResetCommand}"
+                                />
 
                             <ToggleButton
-                                Content="Grid24"
-                                Margin="5,0,5,0"
                                 Width="36"
                                 Height="36"
+                                Margin="5,0,5,0"
+                                ap:MouseOverInfoAP.InfoText="Display Grid"
+                                Content="Grid24"
                                 DockPanel.Dock="Left"
-                                IsChecked="{Binding GridVisibleSelected, UpdateSourceTrigger=PropertyChanged}"
-                                ap:MouseOverInfoAP.InfoText="Display Grid"/>
-                            
+                                IsChecked="{Binding GridVisibleSelected, UpdateSourceTrigger=PropertyChanged}" />
+
                             <ToggleButton
-                                Content="SquareHint24"
                                 Width="36"
-                                Height="36"     
-                                IsChecked="{Binding GridPointedSelected, UpdateSourceTrigger=PropertyChanged}"
+                                Height="36"
+                                ap:MouseOverInfoAP.InfoText="Change between grid designs"
+                                Content="SquareHint24"
                                 DockPanel.Dock="Left"
-                                ap:MouseOverInfoAP.InfoText="Change between grid designs"/>
+                                IsChecked="{Binding GridPointedSelected, UpdateSourceTrigger=PropertyChanged}" />
 
                         </StackPanel>
 
 
                     </Grid>
                 </TabItem>
-                <TabItem
-                    Header="Format"
-                    Height="25"
-                    >
+                <TabItem Height="15">
+                    <TabItem.Header>
+                        <TextBlock FontSize="14" Text="Format" />
+                    </TabItem.Header>
                     <StackPanel
-                        DataContext="{Binding SourceFormatTab}"
                         Margin="5,0"
+                        DataContext="{Binding SourceFormatTab}"
                         Orientation="Horizontal">
                         <TextBlock
-                            Text="BPP:"
                             Margin="0,0,0,1.6"
                             VerticalAlignment="Center"
-                            />
+                            Text="BPP:" />
 
-                        <Grid
-                        Margin="0,0,5,0"
-                        >
+                        <Grid Margin="0,0,5,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock
-                            Grid.Column="0"
-                            Text="24"
-                            Margin="5"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding IsRgb24}"
-                            />
+                                Grid.Column="0"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding IsRgb24}"
+                                Text="24" />
                             <TextBlock
-                            Grid.Column="0"
-                            Text="24"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Margin="5"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding IsBgra32}"
-                            />
+                                Grid.Column="0"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                IsVisible="{Binding IsBgra32}"
+                                Text="24" />
 
                             <ToggleSwitch
-                            Grid.Column="1"
-                            IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ap:MouseOverInfoAP.InfoText="Sets the Source image format"
-                            />
+                                Grid.Column="1"
+                                ap:MouseOverInfoAP.InfoText="Sets the Source image format"
+                                IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                             <TextBlock
-                            Grid.Column="2"
-                            Text="32"
-                            Margin="5"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding IsBgra32}"
-                            />
+                                Grid.Column="2"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding IsBgra32}"
+                                Text="32" />
                             <TextBlock
-                            Grid.Column="2"
-                            Text="32"
-                            Margin="5"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding IsRgb24}"
-                            />
+                                Grid.Column="2"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                IsVisible="{Binding IsRgb24}"
+                                Text="32" />
                         </Grid>
-                        <Button
-                            Content="EyeDropper"
-                            Width="36"
-                            Height="36"
+                        <elements:IconButton
+                            Icon="{StaticResource color_line}"
                             Margin="5,0,5,0"
-                            DockPanel.Dock="Left"
+                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
                             Command="{Binding EyeDropperCommand}"
-                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
+                            DockPanel.Dock="Left" />
 
                         <Button
                             Width="20"
                             Height="20"
                             Margin="2,0"
-                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
-                            Command="{Binding SelectionMonoColorFillCommand}"
-                            CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                            BorderBrush="Gray"
                             ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color in the selection"
-                        />
+                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
+                            BorderBrush="Gray"
+                            Command="{Binding SelectionMonoColorFillCommand}"
+                            CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
 
-                        <ToggleButton
-                            DockPanel.Dock="Right"
-                            Width="36"
-                            Height="36"
+                        <elements:IconToggleButton
+                            Icon="{StaticResource calligraphy_pen}"
                             Margin="5,0,5,0"
-                            IsChecked="{Binding IsReplaceSelectionColor, Mode=OneWayToSource}"
-                            Content="CalligraphyPen"
                             ap:MouseOverInfoAP.InfoText="When selecting textures which shall be replaced with magenta as transparent color"
-                            />
-                        <Button
-                            Content="Edit"
-                            Width="36"
-                            Height="36"
-                            DockPanel.Dock="Left"
-                            Command="{Binding ReplaceSourceColorCommand}"
+                            DockPanel.Dock="Right"
+                            IsChecked="{Binding IsReplaceSelectionColor, Mode=OneWayToSource}" />
+                        <elements:IconButton
+                            Icon="{StaticResource color_fill}"
                             ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color"
-                            />
+                            Command="{Binding ReplaceSourceColorCommand}"
+                            DockPanel.Dock="Left" />
                     </StackPanel>
                 </TabItem>
-                <TabItem
-                    Header="View"
-                    Height="25"
-                    >
-                    <DockPanel
-                        Margin="5,0,5,0"
-                        DataContext="{Binding SourceViewTab}">
-                        <Button
-                            Content="ArrowAutoFitWidthDotted"
-                            Width="36"
-                            Height="36"
-                            DockPanel.Dock="Left"
+                <TabItem Height="15">
+                    <TabItem.Header>
+                        <TextBlock FontSize="14" Text="View" />
+                    </TabItem.Header>
+                    <DockPanel Margin="5,0,5,0" DataContext="{Binding SourceViewTab}">
+                        <elements:IconButton
+                            Icon="{StaticResource arrow_autofit_width}"
+                            ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
                             Command="{Binding FillCommand}"
-                            ap:MouseOverInfoAP.InfoText="Fit to Panel Width"/>
-                        <Button
-                            Content="ArrowAutoFitHeightDotted"
+                            DockPanel.Dock="Left" />
+                      <elements:IconButton
+                            Icon="{StaticResource arrow_autofit_height}"
                             Margin="5,0"
-                            Width="36"
-                            Height="36"
-                            DockPanel.Dock="Left"
+                            ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
                             Command="{Binding FitCommand}"
-                            ap:MouseOverInfoAP.InfoText="Fit to Panel Height"/>
-                        <Button
-                            Content="ZoomFit"
-                            Width="36"
-                            Height="36"
-                            DockPanel.Dock="Left"
+                            DockPanel.Dock="Left" />
+                      <elements:IconButton
+                            Icon="{StaticResource scale_fit}"
+                            ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"
                             Command="{Binding Zoom100Command}"
-                            ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"/>
+                            DockPanel.Dock="Left" />
 
                     </DockPanel>
                 </TabItem>
             </TabControl>
-            
-            <Rectangle
-                Grid.Column="0"
-                Grid.Row="1"
-                Fill="{StaticResource CheckerBrush}"
-                DataContext="{Binding SourceViewTab}"
-                Width="{Binding ContentActualWidth}"
-                Height="{Binding ContentActualHeight}"
-                Margin="0.1"
-                IsHitTestVisible="False"
-                 />
             <elements:FileDropBorder
-                ClipToBounds="True"
                 Grid.Row="1"
                 Margin="10,0"
-                DropCommand="{Binding FileDropSourceCommand}"
-                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp}"
                 ap:MouseOverInfoAP.EnableMouseUpdates="True"
-                >
-                <elements:ScrollViewerEx
-                    >
+                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp}"
+                ClipToBounds="True"
+                DropCommand="{Binding FileDropSourceCommand}">
+                <ScrollViewer
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Auto"
+                  >
                     <paz:ZoomBorder
                         x:Name="SourcePanel"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        ap:PanelAttributesAP.OffsetXAtr="{Binding MultipliedOffsetX}"
+                        ap:PanelAttributesAP.OffsetYAtr="{Binding MultipliedOffsetY}"
+                        ap:PanelAttributesAP.ZoomAtr="{Binding Zoom}"
+                        ap:PanelMouseAP.ScrollCommand="{Binding ScrollCommand}"
+                        ap:SizeObserverAP.ObserveSize="True"
+                        ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
+                        ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
+                        Background="Transparent"
+                        ClipToBounds="True"
                         DataContext="{Binding SourceViewTab}"
-                        ZoomX="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        ZoomY="{Binding ZoomX, ElementName=SourcePanel}"
-                        Stretch="None"
-                        ZoomSpeed="1.5"
-                        EnableZoom="False"
                         EnableConstrains="True"
                         EnableGestures="True"
-                        Background="SlateBlue"
-                        ClipToBounds="True"
+                        EnablePan="False"
+                        EnableZoom="False"
                         Focusable="True"
-                        VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
-                        ap:SizeObserverAP.ObserveSize="True"
-                        ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
-                        ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
-                        ap:PanelMouseAP.ScrollCommand="{Binding ScrollCommand}">
+                        PanButton="Left"
+                        Stretch="None"
+                        ZoomSpeed="1.5"
+                        OffsetX="{Binding MultipliedOffsetX, Mode=OneWayToSource}"
+                        OffsetY="{Binding MultipliedOffsetY, Mode=OneWayToSource}"
+                        ZoomX="{Binding Zoom, Mode=OneWayToSource}"
+                        ZoomY="{Binding Zoom, Mode=OneWayToSource}">
+                      
                         <Canvas
                             x:Name="SourceCanvas"
-                            DataContext="{Binding DataContext.Source, ElementName=MainWin}"
                             Width="{Binding ElementName=SourceImage, Path=Bounds.Width}"
                             Height="{Binding ElementName=SourceImage, Path=Bounds.Height}"
-                            >
+                            DataContext="{Binding DataContext.Source, ElementName=MainWin}">
+                            <Canvas.Transitions>
+                                <Transitions>
+                                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+                                </Transitions>
+                            </Canvas.Transitions>
+                            <elements:CheckerRectangle
+                                Width="{Binding ElementName=SourceImage, Path=Bounds.Width}"
+                                Height="{Binding ElementName=SourceImage, Path=Bounds.Height}"
+                                TileDensity="{Binding ElementName=SourcePanel, Path=DataContext.Zoom}"
+                                />
                             <Image
                                 Name="SourceImage"
-                                Stretch="None"
-                                Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
                                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
-                                ap:PanelMouseAP.IsTargetPanel="False"/>
+                                ap:PanelMouseAP.IsTargetPanel="False"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="None" />
                             <Rectangle
-                                DataContext="{Binding SelectionShape}"
-                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
                                 Width="{Binding Width, UpdateSourceTrigger=PropertyChanged}"
                                 Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
-                                Stroke="Yellow"
-                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                                IsHitTestVisible="False"/>
-                            <elements:PickerShape
-                                DataContext="{Binding Picker}"
-                                Size="{Binding Size}"
+                                DataContext="{Binding SelectionShape}"
+                                IsHitTestVisible="False"
                                 IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
+                                Stroke="Yellow"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}" />
+                            <elements:PickerShape
                                 Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                                Stroke="Red"
-                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                                IsHitTestVisible="False"/>
-                                
-                            <elements:AnimRangeSelectionShape
-                                DataContext="{Binding AnimSelectShape}"
-                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
-                                StrokeColor="Green"
-                                StrokeThickness="{Binding StrokeThickness}"
+                                DataContext="{Binding Picker}"
                                 IsHitTestVisible="False"
+                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
+                                Size="{Binding Size}"
+                                Stroke="Red"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <elements:AnimRangeSelectionShape
                                 Canvas.Left="{Binding X}"
                                 Canvas.Top="{Binding Y}"
-                                StepHeight="{Binding StepHeight}"
-                                TopStepPosition="{Binding StepPositionTop}"
-                                BottomStepPosition="{Binding StepPositionBottom}"
                                 Width="{Binding Width}"
-                                Height="{Binding Height}"/>
-                            <elements:VisualGrid
-                                DataContext="{Binding VisualGrid}"
+                                Height="{Binding Height}"
+                                BottomStepPosition="{Binding StepPositionBottom}"
+                                DataContext="{Binding AnimSelectShape}"
+                                IsHitTestVisible="False"
                                 IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
+                                StepHeight="{Binding StepHeight}"
+                                StrokeColor="Green"
+                                StrokeThickness="{Binding StrokeThickness}"
+                                TopStepPosition="{Binding StepPositionTop}" />
+                            <elements:VisualGrid
                                 Width="{Binding ElementName=SourceImage, Path=Bounds.Width}"
                                 Height="{Binding ElementName=SourceImage, Path=Bounds.Height}"
+                                CellSize="{Binding CellSize}"
+                                DataContext="{Binding VisualGrid}"
                                 GridOffsetX="{Binding OffsetX}"
                                 GridOffsetY="{Binding OffsetY}"
-                                CellSize="{Binding CellSize}"
-                                Stroke="DarkGoldenrod"
-                                StrokeThickness="{Binding StrokeThickness}"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 MainDashStyle="{Binding GridPointedSelected, Converter={StaticResource BoolToStrokeDashStyleConverter}}"
-                                IsHitTestVisible="False"/>
+                                Stroke="DarkGoldenrod"
+                                StrokeThickness="{Binding StrokeThickness}" />
                         </Canvas>
                     </paz:ZoomBorder>
-                </elements:ScrollViewerEx>
+                </ScrollViewer>
             </elements:FileDropBorder>
             <TextBlock
-                DataContext="{Binding SourceIO}"
                 Grid.Row="1"
-                Text="Drop Image or Level Files here"
-                TextWrapping="Wrap"
-                TextAlignment="Center"
-                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                IsHitTestVisible="False" 
-                HorizontalAlignment="Center" 
-                VerticalAlignment="Center" 
                 Width="210"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                DataContext="{Binding SourceIO}"
                 FontSize="24"
+                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                IsHitTestVisible="False"
                 IsVisible="{Binding IsDropHintVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-            />
+                Text="Drop Image or Level Files here"
+                TextAlignment="Center"
+                TextWrapping="Wrap" />
             <Rectangle
-                IsVisible="{Binding SourceIO.IsLoading}"
                 Grid.Row="1"
-                Fill="Gray"
                 Margin="10,0"
-                Opacity="0.5"
-                />
+                Fill="Gray"
+                IsVisible="{Binding SourceIO.IsLoading}"
+                Opacity="0.5" />
             <Border
                 Grid.Row="1"
                 Width="150"
                 Height="150"
-                IsVisible="{Binding SourceIO.IsLoading}"
-                >
+                IsVisible="{Binding SourceIO.IsLoading}">
                 <StackPanel>
-                    <ProgressBar
-                        IsIndeterminate="{Binding SourceIO.IsLoading}"
-                        />
+                    <ProgressBar IsIndeterminate="{Binding SourceIO.IsLoading}" />
                     <Button
                         Grid.Row="1"
-                        Content="Cancel" 
-                        Margin="0,15,0,0" 
-                        VerticalAlignment="Center"
+                        Margin="0,15,0,0"
                         HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
                         Command="{Binding CancelSourceIOCommand}"
-                        />
+                        Content="Cancel" />
                 </StackPanel>
             </Border>
 
             <DockPanel
                 Grid.Row="2"
                 Width="{Binding ElementName=TargetPanel, Path=Bounds.Width}"
-                Margin="3,3,0,0"
-                >
+                Margin="3,3,0,0">
                 <TextBlock
-                    Text="{Binding SourceIO.LastFileName}"
-                    FontWeight="DemiBold"
-                    HorizontalAlignment="Center"
                     Margin="0,3,10,0"
+                    HorizontalAlignment="Center"
                     DockPanel.Dock="Left"
-                    />
+                    FontWeight="DemiBold"
+                    Text="{Binding SourceIO.LastFileName}" />
                 <NumericUpDown
-                    DataContext="{Binding Source}"
-                    DockPanel.Dock="Right"
-                    Value="{Binding SelectedPickerSize, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    Width="105"
                     Height="23"
                     Margin="0,0,0,4"
-                    Width="105"
                     ap:MouseOverInfoAP.InfoText="Source Picker size (Shift + Mouse Wheel on the panel)"
-                    />
-                <TextBlock
-                    Text="ZoomOut24"
-                    DockPanel.Dock="Left"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    />
-                <TextBlock
-                    Text="ZoomIn24"
+                    DataContext="{Binding Source}"
                     DockPanel.Dock="Right"
+                    Value="{Binding SelectedPickerSize, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <Path
+                  Margin="0,5,0,0"
+                    Fill="Black"
+                    Data="{StaticResource zoom_out}"
                     ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    Margin="0,0,10,0"
-                    />
-                <Slider                   
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Margin="5,0"
-                    Minimum="0.1"
-                    Maximum="10"
+                    DockPanel.Dock="Left"
+                      />
+                <Path
+                    Margin="0,5,10,0"
+                    Fill="Black"
+                    Data="{StaticResource zoom_in}"
+                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
+                    DockPanel.Dock="Right"
+                      />
+                <Slider
                     MinWidth="3"
-                    Value="{Binding SourceViewTab.Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    Margin="5,0"
+                    Padding="0,-10"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
                     ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    />
-            </DockPanel>        
+                    Maximum="10"
+                    Minimum="0.1"
+                    Value="{Binding SourceViewTab.Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            </DockPanel>
         </Grid>
 
         <GridSplitter
             Grid.Row="1"
-            Grid.Column="1"
             Grid.RowSpan="3"
+            Grid.Column="1"
             Width="5"
             HorizontalAlignment="Right"
             VerticalAlignment="Stretch"
             Background="Transparent"
             ResizeBehavior="PreviousAndNext"
-            ResizeDirection="Columns"/>
+            ResizeDirection="Columns" />
         <GridSplitter
             Grid.Row="1"
-            Grid.Column="1"
             Grid.RowSpan="3"
+            Grid.Column="1"
             Width="5"
             HorizontalAlignment="Left"
             VerticalAlignment="Stretch"
             Background="Transparent"
             ResizeBehavior="PreviousAndNext"
-            ResizeDirection="Columns"/>
+            ResizeDirection="Columns" />
         <StackPanel
             Grid.Row="1"
             Grid.Column="1"
             VerticalAlignment="Top">
-            <StackPanel
-                Orientation="Horizontal"
-                HorizontalAlignment="Center"
-                >
-                <Button
-                    DockPanel.Dock="Right"
-                    Content="ChevronDoubleLeft20}"
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <elements:IconButton
+                    Icon="{StaticResource ios_chevron_left}"
                     Margin="5"
-                    Width="36"
-                    Height="36"
+                    ap:MouseOverInfoAP.InfoText="Copy entire Target Texture Panel to Source."
                     Command="{Binding EntireToSourceCommand}"
-                    IsEnabled="{Binding TargetIO.ControlsEnabled}"
-                    ap:MouseOverInfoAP.InfoText="Copy entire Target Texture Panel to Source."/>
-                <Button
                     DockPanel.Dock="Right"
-                    Content="ChevronDoubleRight20}"
+                    IsEnabled="{Binding TargetIO.ControlsEnabled}" />
+                <elements:IconButton
+                    Icon="{StaticResource ios_chevron_right}"
                     Margin="5"
-                    Width="36"
-                    Height="36"
+                    ap:MouseOverInfoAP.InfoText="Copy entire Source Texture Panel to Target. CAUTION: This clears the undo and redo stacks."
                     Command="{Binding EntireToTargetCommand}"
-                    IsEnabled="{Binding TargetIO.ControlsEnabled}"
-                    ap:MouseOverInfoAP.InfoText="Copy entire Source Texture Panel to Target. CAUTION: This clears the undo and redo stacks."/>
+                    DockPanel.Dock="Right"
+                    IsEnabled="{Binding TargetIO.ControlsEnabled}" />
             </StackPanel>
             <StackPanel
-                DataContext="{Binding Selection}"
-                HorizontalAlignment="Center"
                 Margin="5"
+                HorizontalAlignment="Center"
+                DataContext="{Binding Selection}"
                 Orientation="Horizontal">
                 <Button
                     Width="30"
                     Height="30"
                     Margin="2,0"
+                    ap:MouseOverInfoAP.InfoText="Set a pure black selection"
                     Background="Black"
-                    Command="{Binding SelectionMonoColorFillCommand}"
-                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                    
                     BorderBrush="Gray"
-                    ap:MouseOverInfoAP.InfoText="Set a pure black selection" 
-                />
+                    Command="{Binding SelectionMonoColorFillCommand}"
+                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
                 <Button
                     Width="30"
                     Height="30"
                     Margin="3,0"
-                    Background="Magenta"
-                    Command="{Binding SelectionMonoColorFillCommand}"
-                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                    
-                    BorderBrush="Gray"
                     ap:MouseOverInfoAP.InfoText="Set a pure magenta selection"
-                    />
+                    Background="Magenta"
+                    BorderBrush="Gray"
+                    Command="{Binding SelectionMonoColorFillCommand}"
+                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
                 <Grid>
                     <Rectangle
                         Width="30"
                         Height="30"
-                        Fill="{StaticResource CheckerBrush}"
-                        />
+                        Fill="{StaticResource CheckerBrush}" />
                     <Button
                         Width="30"
                         Height="30"
                         Margin="2,0"
-                        Background="Transparent"
-                        Command="{Binding SelectionMonoColorFillCommand}"
-                        CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                        BorderBrush="Gray"
                         ap:MouseOverInfoAP.InfoText="Set a pure maroon selection"
-                        />
+                        Background="Transparent"
+                        BorderBrush="Gray"
+                        Command="{Binding SelectionMonoColorFillCommand}"
+                        CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
                 </Grid>
             </StackPanel>
             <Button
-                BorderBrush="Gray"
-                BorderThickness="1"
                 Width="100"
                 Height="100"
                 Padding="0"
-                Command="{Binding SwitchToDestinationPlacingModeCommand}"
                 HorizontalAlignment="Center"
                 ap:MouseOverInfoAP.InfoText="Current Tile Preview (Click to place)"
-                >
-                <Grid
-                    Width="100"
-                    Height="100"
-                    
-                    >
+                BorderBrush="Gray"
+                BorderThickness="1"
+                Command="{Binding SwitchToDestinationPlacingModeCommand}">
+                <Grid Width="100" Height="100">
                     <Rectangle
                         Width="{Binding ElementName=SelectionImage, Path=Bounds.Width}"
                         Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}"
-                        Fill="{StaticResource CheckerBrush}"
-                        />
-                    <Image
-                        x:Name="SelectionImage"
-                        Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}"
-                        />
+                        Fill="{StaticResource CheckerBrush}" />
+                    <Image x:Name="SelectionImage" Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
                 </Grid>
             </Button>
             <StackPanel
+                IsVisible="False"
+                HorizontalAlignment="Center"
                 DataContext="{Binding Selection}"
-                Orientation="Horizontal"
-                HorizontalAlignment="Center">
+                Orientation="Horizontal">
                 <Button
-                    Margin="5"
                     Width="36"
                     Height="36"
-                    Content="Copy"
+                    Margin="5"
                     HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Copy (Ctrl + C)"
                     Command="{Binding CopyCommand}"
-                    ap:MouseOverInfoAP.InfoText="Copy (Ctrl + C)"/>
+                    Content="Copy" />
                 <Button
-                    Margin="5"
                     Width="36"
                     Height="36"
-                    Content="Clipboard"
+                    Margin="5"
                     HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Past (Ctrl + V)"
                     Command="{Binding PasteCommand}"
-                    ap:MouseOverInfoAP.InfoText="Past (Ctrl + V)"/>
+                    Content="Clipboard" />
             </StackPanel>
             <StackPanel
-                Orientation="Horizontal"
                 HorizontalAlignment="Center"
-                DataContext="{Binding Selection}">
+                DataContext="{Binding Selection}"
+                Orientation="Horizontal"
+                IsVisible="False"
+                >
                 <ToggleButton
-                    Margin="5"
                     Width="36"
                     Height="36"
-                    Content="CopyArrowRight"
+                    Margin="5"
                     HorizontalAlignment="Right"
-                    IsChecked="{Binding AutoCopy, Mode=TwoWay}"
-                    ap:MouseOverInfoAP.InfoText="Copy Automatically"/>
+                    ap:MouseOverInfoAP.InfoText="Copy Automatically"
+                    Content="CopyArrowRight"
+                    IsChecked="{Binding AutoCopy, Mode=TwoWay}" />
 
                 <ToggleButton
                     x:Name="AutoPasteToggleButton"
-                    Margin="5"
                     Width="36"
                     Height="36"
-                    Content="ClipboardArrowRight"
+                    Margin="5"
                     HorizontalAlignment="Right"
-                    IsChecked="{Binding AutoPaste, Mode=TwoWay}"
-                    ap:MouseOverInfoAP.InfoText="Paste Automatically"/>
+                    ap:MouseOverInfoAP.InfoText="Paste Automatically"
+                    Content="ClipboardArrowRight"
+                    IsChecked="{Binding AutoPaste, Mode=TwoWay}" />
             </StackPanel>
-            <StackPanel
-                DataContext="{Binding Animation}"
-                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}">
+            <StackPanel DataContext="{Binding Animation}" IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}">
                 <Border
-                    BorderBrush="Gray"
-                    BorderThickness="1"
                     Width="100"
                     Height="100"
                     ap:MouseOverInfoAP.InfoText="Animation View"
-                    >
-                    <Canvas
-                        x:Name="AnimCanvas"
-                        ClipToBounds="True">
+                    BorderBrush="Gray"
+                    BorderThickness="1">
+                    <Canvas x:Name="AnimCanvas" ClipToBounds="True">
                         <Rectangle
-                            Fill="{StaticResource CheckerBrush}"
                             Width="100"
                             Height="100"
-                            />
+                            Fill="{StaticResource CheckerBrush}" />
                         <Image
                             Name="AnimImage"
-                            Width="100"
-                            Stretch="UniformToFill"
-                            Source="{Binding Presenter, Converter={StaticResource BitmapSourceConverter}}"
                             Canvas.Top="{Binding OffsetTop, UpdateSourceTrigger=PropertyChanged}"
+                            Width="100"
                             ClipToBounds="True"
-                            />
-                    </Canvas> 
+                            Source="{Binding Presenter, Converter={StaticResource BitmapSourceConverter}}"
+                            Stretch="UniformToFill" />
+                    </Canvas>
                 </Border>
 
-                <Slider               
+                <Slider
                     Margin="5"
-                    Minimum="1"
-                    Maximum="100"
-                    IsSnapToTickEnabled="True"
-                    SmallChange="10"
-                    LargeChange="10"
-                    TickFrequency="10"
-                    Value="{Binding Speed, UpdateSourceTrigger=PropertyChanged}"
-                    TickPlacement="TopLeft"
-                    VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
                     ap:MouseOverInfoAP.InfoText="Set Animation Speed"
-                    />
-                <StackPanel
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Center">
+                    IsSnapToTickEnabled="True"
+                    LargeChange="10"
+                    Maximum="100"
+                    Minimum="1"
+                    SmallChange="10"
+                    TickFrequency="10"
+                    TickPlacement="TopLeft"
+                    Value="{Binding Speed, UpdateSourceTrigger=PropertyChanged}" />
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                     <Grid>
-                        <Button
+                        <elements:IconButton
+                            Icon="{StaticResource play}"
                             Margin="5"
-                            Width="36"
-                            Height="36"
                             HorizontalAlignment="Right"
-                            Command="{Binding StartCommand}"
                             ap:MouseOverInfoAP.InfoText="Play Animation"
-                            Content="Play"
-                            IsVisible="{Binding IsPlayVisible, UpdateSourceTrigger=PropertyChanged}">
-                        </Button>
-                        <Button
+                            Command="{Binding StartCommand}"
+                            
+                            IsVisible="{Binding IsPlayVisible, UpdateSourceTrigger=PropertyChanged}" />
+                        <elements:IconButton
+                            Icon="{StaticResource stop}"
                             Margin="5"
-                            Width="36"
-                            Height="36"
                             HorizontalAlignment="Right"
-                            Command="{Binding StopCommand}"
                             ap:MouseOverInfoAP.InfoText="Pause Animation"
-                            Content="Pause"
-                            IsVisible="{Binding IsPauseVisible, UpdateSourceTrigger=PropertyChanged}">
-                        </Button>
+                            Command="{Binding StopCommand}"
+                            
+                            IsVisible="{Binding IsPauseVisible, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
 
-                    <Button
+                    <elements:IconButton
+                        Icon="{StaticResource dismiss}"
                         Margin="5"
-                        Width="36"
-                        Height="36"
                         HorizontalAlignment="Right"
-                        Command="{Binding CloseCommand}"
                         ap:MouseOverInfoAP.InfoText="End Animation"
-                        Content="Dismiss">
-                    </Button>
+                        Command="{Binding CloseCommand}"
+                         />
                 </StackPanel>
             </StackPanel>
 
@@ -899,604 +788,535 @@
         <Border
             Grid.Row="1"
             Grid.Column="2"
+            Margin="0,0,-10,0"
             VerticalAlignment="Stretch"
-            IsHitTestVisible="False"
-            Margin="0,0,-10,0"/>
-        <Grid
-            Grid.Row="1"
-            Grid.Column="2">
+            IsHitTestVisible="False" />
+        <Grid Grid.Row="1" Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="75"/>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="75" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TabControl
                 Grid.Row="0"
-                BorderBrush="Transparent"
                 Margin="5"
-                TabStripPlacement="Top"
+                BorderBrush="Transparent"
                 IsEnabled="{Binding TargetIO.ControlsEnabled}"
-                >
-                <TabItem
-                    Header="Placing"
-                    Height="25"
-                    >
-                    <DockPanel
-                        DataContext="{Binding PlacingTab}"
-                        Margin="5,0,5,0">
-                        <ToggleButton
-                            DockPanel.Dock="Left"
-                            Width="36"
-                            Height="36"
+                TabStripPlacement="Top">
+                <TabItem Height="25" Header="Placing">
+                    <DockPanel Margin="5,0,5,0" DataContext="{Binding PlacingTab}">
+                        <elements:IconToggleButton
+                            Icon="{StaticResource scale_fill}"
                             Margin="0,0,5,0"
-                            IsChecked="{Binding ResizeToPickerModeSelected, Mode=OneWayToSource}"
-                            Content="ScaleFill"
-                            ap:MouseOverInfoAP.InfoText="Rezise Selection to Picker Size"/>
-                        <ToggleButton
+                            ap:MouseOverInfoAP.InfoText="Rezise Selection to Picker Size"
                             DockPanel.Dock="Left"
-                            Width="36"
-                            Height="36"
+                            IsChecked="{Binding ResizeToPickerModeSelected, Mode=OneWayToSource}" />
+                        <elements:IconToggleButton
+                            Icon="{StaticResource arrow_hook_up_right}"
                             Margin="5,0"
-                            IsChecked="{Binding PlaceContinuouslyModeSelected}"
-                            Content="ArrowHookUpRight"
-                            ap:MouseOverInfoAP.InfoText="Place continuously (Left + Shift on the panel)"/>
-                        <ToggleButton
+                            ap:MouseOverInfoAP.InfoText="Place continuously (Left + Shift on the panel)"
                             DockPanel.Dock="Left"
-                            Width="36"
-                            Height="36"
+                            IsChecked="{Binding PlaceContinuouslyModeSelected}" />
+                        <elements:IconToggleButton
+                            Icon="{StaticResource arrow_swap}"
                             Margin="0,0,10,0"
-                            IsChecked="{Binding SwapAndPlaceModeSelected}"
-                            Content="ArrowSwap"
-                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Alt on the panel)"/>
-                        <ToggleButton
+                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Alt on the panel)"
                             DockPanel.Dock="Left"
-                            Width="36"
-                            Height="36"
+                            IsChecked="{Binding SwapAndPlaceModeSelected}" />
+                        <elements:IconToggleButton
+                            Icon="{StaticResource shape_intersect}"
                             Margin="0,0,0,0"
-                            IsChecked="{Binding OverlayTransparentModeSelected, Mode=OneWayToSource}"
-                            Content="ShapeIntersect"
-                            ap:MouseOverInfoAP.InfoText="Transparent areas are not copied to the target panel (Magenta in 24 bbp bitmaps or alpha = 0 in 32 bbp bitmaps)"/>
-                        <TextBlock
-                            Text="ShapeUnion24"
-                            Margin="5,0,0,0"/>
-                      <TextBlock
-                          Text="ShapeSubtract24"
-                            DockPanel.Dock="Right"/>
-                        <Slider               
-                            VerticalAlignment="Center"
-                            Margin="5"
-                            Minimum="0"
-                            Maximum="1"
-                            SmallChange="0.1"
-                            LargeChange="0.1"
-                            Value="{Binding Opacity}"
-                            ap:MouseOverInfoAP.InfoText="Set Opacity of placed image data"
+                            ap:MouseOverInfoAP.InfoText="Transparent areas are not copied to the target panel (Magenta in 24 bbp bitmaps or alpha = 0 in 32 bbp bitmaps)"
+                            DockPanel.Dock="Left"
+                            IsChecked="{Binding OverlayTransparentModeSelected, Mode=OneWayToSource}" />
+                        <Path 
+                            Margin="5,5,0,0" 
+                            Fill="Black"
+                            Data="{StaticResource slide_hide}" 
                             />
+                        <Path 
+                            Margin="0,5,0,0" 
+                            DockPanel.Dock="Right"
+                            Fill="Black"
+                            Data="{StaticResource slide_add}" />
+                        <Slider
+                            Margin="5,0"
+                            Padding="0,-5"
+                            ap:MouseOverInfoAP.InfoText="Set Opacity of placed image data"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Minimum="0"
+                            SmallChange="0.1"
+                            Value="{Binding Opacity}" />
 
                     </DockPanel>
                 </TabItem>
 
-                <TabItem
-                    Header="Size"
-                    Height="27"
-                    >
-                    <Grid
-                        Margin="5,0,5,0"
-                        DataContext="{Binding SizeTab}">
+                <TabItem Height="27" Header="Size">
+                    <Grid Margin="5,0,5,0" DataContext="{Binding SizeTab}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <NumericUpDown
                             HorizontalAlignment="Stretch"
-                            Value="{Binding NumPagesY, UpdateSourceTrigger=PropertyChanged}"
                             ap:MouseOverInfoAP.InfoText="Set the number of pages of the target texture panel in Y direction. Each page has a height of 256 pix."
-                            />
+                            Value="{Binding NumPagesY, UpdateSourceTrigger=PropertyChanged}" />
                         <NumericUpDown
-                            Margin="5,0"
                             Grid.Column="1"
-                            Value="{Binding NumPagesX, UpdateSourceTrigger=PropertyChanged}"
+                            Margin="5,0"
                             HorizontalAlignment="Stretch"
                             ap:MouseOverInfoAP.InfoText="Set the number of pages of the target texture panel in X direction. Possible values are 1, 2 and 4."
-                            />
-                        <ToggleButton
+                            Value="{Binding NumPagesX, UpdateSourceTrigger=PropertyChanged}" />
+                        <elements:IconToggleButton
+                            Icon="{StaticResource pane_open}"
                             Grid.Column="2"
-                            Width="36"
-                            Height="36"
-                            IsChecked="{Binding SortedResizing}"
                             ap:MouseOverInfoAP.InfoText="Rearrange Tiles duirng Resizing the panel width based on the picker width"
-                            Content="PanelRightContract"/>
+                            IsChecked="{Binding SortedResizing}" />
                     </Grid>
 
                 </TabItem>
-                <TabItem
-                    Header="Mode"
-                    Height="27"
-                    >
+                <TabItem Height="27" Header="Mode">
                     <StackPanel
                         Margin="5,0,5,0"
                         DataContext="{Binding EditsTab}"
                         Orientation="Horizontal">
-                        <ToggleButton
-                            Width="36"
-                            Height="36"
-                            IsChecked="{Binding RegularModeSelected}"
-                            Content="ArrowSquareDown"
-                            ap:MouseOverInfoAP.InfoText="Regular Mode"/>
-                        <Rectangle
-                            Width="10"
-                            Height="10"/>
-                        <ToggleButton
-                            Width="36"
-                            Height="36"
+                        <elements:IconToggleButton
+                            Icon="{StaticResource arrow_square_down}"
+                            ap:MouseOverInfoAP.InfoText="Regular Mode"
+                            IsChecked="{Binding RegularModeSelected}" />
+                        <Rectangle Width="10" Height="10" />
+                        <elements:IconToggleButton
+                            Icon="{StaticResource arrow_rotate_counterclockwise}"
                             Margin="0,0,5,0"
-                            IsChecked="{Binding RotateModeSelected}"
-                            Content="ArrowRotateCounterclockwise"
-                            ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"/>
+                            ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"
+                            IsChecked="{Binding RotateModeSelected}" />
 
                         <ToggleButton
                             Width="36"
                             Height="36"
                             Margin="0,0,5,0"
-                            IsChecked="{Binding MirrorHorizontalModeSelected}"
                             ap:MouseOverInfoAP.InfoText="Mirror Horizontal Mode"
-                            Content="↔️"/>
+                            Content="↔️"
+                            IsChecked="{Binding MirrorHorizontalModeSelected}" />
                         <ToggleButton
                             Width="36"
                             Height="36"
-                            IsChecked="{Binding MirrorVerticalModeSelected}"
                             ap:MouseOverInfoAP.InfoText="Mirror Vertical Mode"
-                            Content="↕️"/>
-                        <Rectangle
-                            Width="10"
-                            Height="10"/>
-                        <ToggleButton
-                            Width="36"
-                            Height="36"
+                            Content=" ↕️"
+                            IsChecked="{Binding MirrorVerticalModeSelected}" />
+                        <Rectangle Width="10" Height="10" />
+                        <elements:IconToggleButton
+                            Icon="{StaticResource channle_share}"
                             Margin="0,0,5,0"
-                            IsChecked="{Binding TileSwapModeSelected}"
-                            Content="ChannelShare"
-                            ap:MouseOverInfoAP.InfoText="Tile Rally Mode"/>
+                            ap:MouseOverInfoAP.InfoText="Tile Rally Mode"
+                            IsChecked="{Binding TileSwapModeSelected}" />
 
-                        <ToggleButton
-                            Width="36"
-                            Height="36"
+                        <elements:IconToggleButton
+                            Icon="{StaticResource link_square}"
                             Margin="0,0,5,0"
-                            IsChecked="{Binding MoveModeSelected}"
-                            Content="LinkSquare"
-                            ap:MouseOverInfoAP.InfoText="Tile Swap Mode"/>
+                            ap:MouseOverInfoAP.InfoText="Tile Swap Mode"
+                            IsChecked="{Binding MoveModeSelected}" />
 
                     </StackPanel>
                 </TabItem>
-                <TabItem
-                    Header="Format"
-                    Height="27"
-                    >
+                <TabItem Height="27" Header="Format">
                     <StackPanel
-                        DataContext="{Binding DestinationFormatTab}"
                         Margin="5,0"
+                        DataContext="{Binding DestinationFormatTab}"
                         Orientation="Horizontal">
                         <TextBlock
-                            Text="BPP:"
                             Margin="0,0,0,1.6"
                             VerticalAlignment="Center"
-                            />
+                            Text="BPP:" />
 
-                        <Grid
-                        Margin="0,0,5,0"
-                        >
+                        <Grid Margin="0,0,5,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock
-                            Grid.Column="0"
-                            Text="24"
-                            Margin="5"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding IsRgb24}"
-                            />
+                                Grid.Column="0"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding IsRgb24}"
+                                Text="24" />
                             <TextBlock
-                            Grid.Column="0"
-                            Text="24"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Margin="5"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding IsBgra32}"
-                            />
+                                Grid.Column="0"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                IsVisible="{Binding IsBgra32}"
+                                Text="24" />
 
                             <ToggleSwitch
-                            Grid.Column="1"
-                            IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ap:MouseOverInfoAP.InfoText="Sets the Destination image format. CAUTION: This clears the undo and redo stacks."
-                            />
+                                Grid.Column="1"
+                                ap:MouseOverInfoAP.InfoText="Sets the Destination image format. CAUTION: This clears the undo and redo stacks."
+                                IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                             <TextBlock
-                            Grid.Column="2"
-                            Text="32"
-                            Margin="5"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding IsBgra32}"
-                            />
+                                Grid.Column="2"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding IsBgra32}"
+                                Text="32" />
                             <TextBlock
-                            Grid.Column="2"
-                            Text="32"
-                            Margin="5"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding IsRgb24}"
-                            />
+                                Grid.Column="2"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                IsVisible="{Binding IsRgb24}"
+                                Text="32" />
                         </Grid>
-                        <Button
-                            Content="EyeDropper"
-                            Width="36"
-                            Height="36"
+                        <elements:IconButton
+                            Icon="{StaticResource color_line}"
                             Margin="5,0,5,0"
-                            DockPanel.Dock="Left"
+                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
                             Command="{Binding EyeDropperCommand}"
-                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
+                            DockPanel.Dock="Left" />
 
                         <Button
                             Width="20"
                             Height="20"
                             Margin="2,0"
-                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
-                            Command="{Binding SelectionMonoColorFillCommand}"
-                            CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                            BorderBrush="Gray"
                             ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color in the selection"
-                        />
+                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
+                            BorderBrush="Gray"
+                            Command="{Binding SelectionMonoColorFillCommand}"
+                            CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
 
-                        <ToggleButton
-                            DockPanel.Dock="Right"
-                            Width="36"
-                            Height="36"
+                        <elements:IconToggleButton
+                            Icon="{StaticResource calligraphy_pen}"
                             Margin="5,0,5,0"
-                            IsChecked="{Binding IsReplaceSelectionColor, Mode=OneWayToSource}"
-                            Content="CalligraphyPen"
                             ap:MouseOverInfoAP.InfoText="When selecting textures which shall be replaced with magenta as transparent color"
-                            />
-                        <Button
-                            Content="Edit"
-                            Width="36"
-                            Height="36"
-                            DockPanel.Dock="Left"
-                            Command="{Binding ReplaceSourceColorCommand}"
+                            DockPanel.Dock="Right"
+                            IsChecked="{Binding IsReplaceSelectionColor, Mode=OneWayToSource}" />
+                        <elements:IconButton
+                            Icon="{StaticResource color_fill}"
                             ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color. CAUTION: This clears the undo and redo stacks."
-                            />
-                    </StackPanel>                
+                            Command="{Binding ReplaceSourceColorCommand}"
+                            DockPanel.Dock="Left" />
+                    </StackPanel>
                 </TabItem>
 
-                <TabItem
-                    Header="View"
-                    Height="25"
-                    >
-                    <DockPanel
-                        Margin="5,0,5,0"
-                        DataContext="{Binding DestinationViewTab}">
-                        <Button
-                            Content="ArrowAutoFitWidthDotted"
+                <TabItem Height="25" Header="View">
+                    <DockPanel Margin="5,0,5,0" DataContext="{Binding DestinationViewTab}">
+                        <elements:IconButton
+                            Icon="{StaticResource arrow_autofit_width}"
                             Margin="0,0,5,0"
-                            Width="36"
-                            Height="36"
-                            DockPanel.Dock="Left"
+                            ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
                             Command="{Binding FillCommand}"
-                            ap:MouseOverInfoAP.InfoText="Fit to Panel Width"/>
-                        <Button
-                            Content="ArrowAutoFitHeightDotted"
+                            DockPanel.Dock="Left" />
+                        <elements:IconButton
+                            Icon="{StaticResource arrow_autofit_height}"
                             Margin="0,0,5,0"
-                            Width="36"
-                            Height="36"
-                            DockPanel.Dock="Left"
+                            ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
                             Command="{Binding FitCommand}"
-                            ap:MouseOverInfoAP.InfoText="Fit to Panel Height"/>
-                        <Button
-                            Content="ZoomFit"
+                            DockPanel.Dock="Left" />
+                        <elements:IconButton
+                            Icon="{StaticResource scale_fit}"
                             Margin="0,0,5,0"
-                            Width="36"
-                            Height="36"
-                            DockPanel.Dock="Left"
+                            ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"
                             Command="{Binding Zoom100Command}"
-                            ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"/>
+                            DockPanel.Dock="Left" />
                     </DockPanel>
                 </TabItem>
 
             </TabControl>
-            <Rectangle
-                Grid.Column="0"
-                Grid.Row="1"
-                Fill="{StaticResource CheckerBrush}"
-                DataContext="{Binding DestinationViewTab}"
-                Width="{Binding ContentActualWidth}"
-                Height="{Binding ContentActualHeight}"
-                Margin="0.1"
-                IsHitTestVisible="False"
-                 />
             <elements:FileDropBorder
                 Grid.Row="1"
                 Margin="10,0"
-                ClipToBounds="True"
-                DropCommand="{Binding FileDropDestinationCommand}"
-                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp}"
                 ap:MouseOverInfoAP.EnableMouseUpdates="True"
-                >
-                <elements:ScrollViewerEx
-
-
-                    >
+                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp}"
+                ClipToBounds="True"
+                DropCommand="{Binding FileDropDestinationCommand}">
+                <ScrollViewer
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Auto"
+                  >
                     <paz:ZoomBorder
                         x:Name="TargetPanel"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        ap:PanelAttributesAP.OffsetXAtr="{Binding MultipliedOffsetX}"
+                        ap:PanelAttributesAP.OffsetYAtr="{Binding MultipliedOffsetY}"
+                        ap:PanelAttributesAP.ZoomAtr="{Binding Zoom}"
+                        ap:PanelMouseAP.ScrollCommand="{Binding ScrollCommand}"
+                        ap:SizeObserverAP.ObserveSize="True"
+                        ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, Mode=OneWayToSource}"
+                        ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, Mode=OneWayToSource}"
+                        Background="Transparent"
+                        ClipToBounds="True"
                         DataContext="{Binding DestinationViewTab}"
-                        Stretch="None"
-                        ZoomX="{Binding Zoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        ZoomY="{Binding ZoomX, ElementName=TargetPanel}"
-                        ZoomSpeed="1.5"
-                        EnableZoom="False"
                         EnableConstrains="True"
                         EnableGestures="True"
-                        Background="SlateBlue"
-                        ClipToBounds="True"
+                        EnablePan="False"
+                        EnableZoom="False"
                         Focusable="True"
-                        VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
-                        ap:SizeObserverAP.ObserveSize="True"
-                        ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, Mode=OneWayToSource}"
-                        ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, Mode=OneWayToSource}"
-                        ap:PanelMouseAP.ScrollCommand="{Binding ScrollCommand}"
-                        >
+                        PanButton="Left"
+                        Stretch="None"
+                        ZoomSpeed="1.5"
+                        OffsetX="{Binding MultipliedOffsetX, Mode=OneWayToSource}"
+                        OffsetY="{Binding MultipliedOffsetY, Mode=OneWayToSource}"
+                        ZoomX="{Binding Zoom, Mode=OneWayToSource}"
+                        ZoomY="{Binding Zoom, Mode=OneWayToSource}">
                         <Canvas
                             x:Name="TargetCanvas"
-                            DataContext="{Binding DataContext.Destination, ElementName=MainWin}"
                             Width="{Binding ElementName=TargetImage, Path=Bounds.Width}"
                             Height="{Binding ElementName=TargetImage, Path=Bounds.Height}"
-                            ClipToBounds="True">
-
+                            ClipToBounds="True"
+                            DataContext="{Binding DataContext.Destination, ElementName=MainWin}">
+                            <Canvas.Transitions>
+                                <Transitions>
+                                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+                                </Transitions>
+                            </Canvas.Transitions>
+                          <elements:CheckerRectangle
+                              Width="{Binding ElementName=TargetImage, Path=Bounds.Width}"
+                              Height="{Binding ElementName=TargetImage, Path=Bounds.Height}"
+                              TileDensity="{Binding ElementName=TargetPanel, Path=DataContext.Zoom}"
+                                />                          
                             <Image
                                 Name="TargetImage"
-                                Stretch="None"
-                                Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
                                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
-                                ap:PanelMouseAP.IsTargetPanel="True"/>
+                                ap:PanelMouseAP.IsTargetPanel="True"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="None" />
 
                             <Rectangle
-                                DataContext="{Binding SelectionShape}"
-                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
                                 Width="{Binding Width, UpdateSourceTrigger=PropertyChanged}"
                                 Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
+                                DataContext="{Binding SelectionShape}"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 Stroke="Yellow"
-                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                                IsHitTestVisible="False"/>
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}" />
 
                             <elements:PickerShape
-                                DataContext="{Binding Picker}"
-                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                                DataContext="{Binding Picker}"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 Size="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
                                 Stroke="Red"
-                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                                IsHitTestVisible="False"/>
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}" />
 
                             <Image
                                 Name="SelectionPreviewImage"
-                                Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}"
                                 Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
+                                IsHitTestVisible="False"
                                 IsVisible="{Binding IsPreviewVisible, UpdateSourceTrigger=PropertyChanged}"
-                                IsHitTestVisible="False"/>
+                                Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
 
-                            <Border
-                                BorderBrush="Yellow"
+                            <Rectangle
+                                Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
                                 Width="{Binding ElementName=SelectionPreviewImage, Path=Bounds.Width}"
                                 Height="{Binding ElementName=SelectionPreviewImage, Path=Bounds.Height}"
-                                BorderThickness="{Binding SelectionShape.StrokeThickness}"
+                                IsHitTestVisible="False"
                                 IsVisible="{Binding ElementName=SelectionPreviewImage, Path=IsVisible}"
-                                Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
-                                Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
-                                IsHitTestVisible="False"/>
+                                Stroke="Yellow"
+                                StrokeThickness="{Binding SelectionShape.StrokeThickness}" />
 
                             <elements:AnimRangeSelectionShape
-                                DataContext="{Binding AnimSelectShape}"
-                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
-                                StrokeColor="Green"
-                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                                IsHitTestVisible="False"
                                 Canvas.Left="{Binding X}"
                                 Canvas.Top="{Binding Y}"
-                                StepHeight="{Binding StepHeight}"
-                                TopStepPosition="{Binding StepPositionTop}"
-                                BottomStepPosition="{Binding StepPositionBottom}"
                                 Width="{Binding Width}"
-                                Height="{Binding Height}"/>
+                                Height="{Binding Height}"
+                                BottomStepPosition="{Binding StepPositionBottom}"
+                                DataContext="{Binding AnimSelectShape}"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
+                                StepHeight="{Binding StepHeight}"
+                                StrokeColor="Green"
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
+                                TopStepPosition="{Binding StepPositionTop}" />
 
                             <Rectangle
+                                Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
+                                Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                                Width="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
+                                Height="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
                                 DataContext="{Binding OriginalPosShape}"
-                                IsVisible="{Binding  IsVisible, UpdateSourceTrigger=PropertyChanged}"
-                                Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
-                                Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                                Width="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
-                                Height="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 Stroke="DarkOrchid"
-                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
                                 StrokeDashArray="1,1"
-                                IsHitTestVisible="False"/>
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}" />
 
                             <Rectangle
-                                DataContext="{Binding TargetPosShape}"
-                                IsVisible="{Binding  IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
                                 Width="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
                                 Height="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
+                                DataContext="{Binding TargetPosShape}"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 Stroke="Orchid"
-                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}"
-                                IsHitTestVisible="False"/>
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}" />
                         </Canvas>
 
                     </paz:ZoomBorder>
-                </elements:ScrollViewerEx>
+                </ScrollViewer>
             </elements:FileDropBorder>
             <TextBlock
-                DataContext="{Binding TargetIO}"
                 Grid.Row="1"
-                Text="Drop Image Files here"
-                TextWrapping="Wrap"
-                TextAlignment="Center"
-                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                IsHitTestVisible="False" 
-                HorizontalAlignment="Center" 
-                VerticalAlignment="Center" 
                 Width="150"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                DataContext="{Binding TargetIO}"
                 FontSize="24"
+                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                IsHitTestVisible="False"
                 IsVisible="{Binding IsDropHintVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-            />
+                Text="Drop Image Files here"
+                TextAlignment="Center"
+                TextWrapping="Wrap" />
             <Rectangle
-                IsVisible="{Binding TargetIO.IsLoading}"
                 Grid.Row="1"
-                Fill="Gray"
                 Margin="10,0"
-                Opacity="0.5"
-                />
+                Fill="Gray"
+                IsVisible="{Binding TargetIO.IsLoading}"
+                Opacity="0.5" />
             <Border
                 Grid.Row="1"
                 Width="150"
                 Height="150"
-                IsVisible="{Binding TargetIO.IsLoading}"
-                >
+                IsVisible="{Binding TargetIO.IsLoading}">
                 <StackPanel>
-                    <ProgressBar
-                        IsIndeterminate="{Binding TargetIO.IsLoading}"
-                        />
+                    <ProgressBar IsIndeterminate="{Binding TargetIO.IsLoading}" />
                     <Button
                         Grid.Row="1"
-                        Content="Cancel" 
-                        Margin="0,15,0,0" 
-                        VerticalAlignment="Center"
+                        Margin="0,15,0,0"
                         HorizontalAlignment="Center"
-                        />
+                        VerticalAlignment="Center"
+                        Content="Cancel" />
                 </StackPanel>
             </Border>
 
             <DockPanel
                 Grid.Row="2"
-                HorizontalAlignment="Stretch"
                 Margin="3,3,0,0"
-                >
+                HorizontalAlignment="Stretch">
                 <TextBlock
-                    Text="{Binding TargetIO.LastFileName}"
-                    FontWeight="DemiBold"
-                    HorizontalAlignment="Center"
                     Margin="0,3,10,0"
+                    HorizontalAlignment="Center"
                     DockPanel.Dock="Left"
-                    />
+                    FontWeight="DemiBold"
+                    Text="{Binding TargetIO.LastFileName}" />
                 <NumericUpDown
-                    DataContext="{Binding Destination}"
-                    DockPanel.Dock="Right"
-                    Value="{Binding SelectedPickerSize, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    Width="105"
                     Height="23"
                     Margin="0,0,0,4"
-                    Width="105"
                     ap:MouseOverInfoAP.InfoText="Destination Picker size (Shift + Mouse Wheel on the panel)"
-                    />
-                <TextBlock
-                    Text="ZoomOut24"
-                    DockPanel.Dock="Left"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    />
-                <TextBlock
-                    Text="ZoomIn24"
+                    DataContext="{Binding Destination}"
                     DockPanel.Dock="Right"
+                    Value="{Binding SelectedPickerSize, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <Path
+                  Margin="0,5,0,0"
+                    Fill="Black"
+                    Data="{StaticResource zoom_out}"
                     ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    Margin="0,0,10,0"
+                    DockPanel.Dock="Left"
+                    />
+                <Path
+                    Margin="0,5,10,0"
+                    Fill="Black"
+                    Data="{StaticResource zoom_in}"
+                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
+                    DockPanel.Dock="Right"
                     />
                 <Slider
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Margin="5,0"
-                    Minimum="0.1"
-                    Maximum="10"
                     MinWidth="3"
-                    Value="{Binding DestinationViewTab.Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    Margin="5,0"
+                    Padding="0,-10"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
                     ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    />
+                    Maximum="10"
+                    Minimum="0.1"
+                    Value="{Binding DestinationViewTab.Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </DockPanel>
         </Grid>
 
         <DockPanel
-            Grid.ColumnSpan="3"
             Grid.Row="4"
             Grid.Column="0"
-            >
+            Grid.ColumnSpan="3">
 
             <StackPanel
                 Margin="5,0"
                 VerticalAlignment="Center"
-                Orientation="Horizontal"
                 IsVisible="{Binding PanelInfoVisible, UpdateSourceTrigger=PropertyChanged}"
-                >
+                Orientation="Horizontal">
+                <Path 
+                  Margin="0,2,0,0" 
+                  Fill="Black"
+                  Data="{StaticResource cursor}"
+                  />
                 <TextBlock
-                    Margin="0,2,0,0"
-                    Text="Cursor24"/>
-                <TextBlock
+                    Width="100"
+                    Margin="5,5,5,0"
                     VerticalAlignment="Top"
-                    Margin="5,0"
-                    Text="{Binding PixelInfo}"
-                    Width="100" 
-                    />
-                <TextBlock                    
-                    IsVisible="{Binding TileInfoVisible, UpdateSourceTrigger=PropertyChanged}"
-                    Text="FullScreenMaximize24"/>
-                <TextBlock                    
-                    IsVisible="{Binding SelectionInfoVisible, UpdateSourceTrigger=PropertyChanged}"
-                    Text="RectangleLandscape24"/>
+                    Text="{Binding PixelInfo}" />
+                <Path 
+                  Width="20"
+                  Height="20"
+                  Stretch="Fill"
+                  IsVisible="{Binding TileInfoVisible, UpdateSourceTrigger=PropertyChanged}"
+                  Fill="Black"
+                  Data="{StaticResource screenshot_simple}" />
+                <Path 
+                  Width="20"
+                  Height="20"
+                  Stretch="Fill"
+                  IsVisible="{Binding SelectionInfoVisible, UpdateSourceTrigger=PropertyChanged}" 
+                  Fill="Black"
+                  Data="{StaticResource square_simple}" />
                 <TextBlock
-                    Text="{Binding TileInfo}"
-                    Margin="5,0"
-                    Width="60" 
-                    />
-                <TextBlock                    
-                    Margin="0,2,0,0"
-                    Text="Image24"/>
-                <TextBlock
-                    Text="{Binding PanelInfo}"
-                    Margin="5,0"
-                    />
+                    Width="60"
+                    Margin="5,5,5,0"
+                    Text="{Binding TileInfo}" />
+                <Path 
+                  Width="20"
+                  Height="20"
+                  Stretch="Fill"
+                  Margin="0,2,0,0" 
+                  Fill="Black"
+                  Data="{StaticResource image}" />
+                <TextBlock 
+                  Margin="5,5,5,0" 
+                  Text="{Binding PanelInfo}" />
 
             </StackPanel>
-            <Button
-                DockPanel.Dock="Right"
-                
-                Content="Info16}"
-                BorderBrush="Transparent"
-                Background="Transparent"
+            <elements:IconButton
                 Command="{Binding AboutCommand}"
-                />
-            <Button
-                x:Name="ApplicationThemeButton"
                 DockPanel.Dock="Right"
-                
-                Content="WeatherSunny16"
-                BorderBrush="Transparent"
-                Background="Transparent"
-                />
+                Icon="{StaticResource info}" />
             <TextBlock
-                FontWeight="DemiBold"
-                Text="{Binding DebugNote}"
                 Margin="5,0"
-                DockPanel.Dock="Right"
                 VerticalAlignment="Center"
+                DockPanel.Dock="Right"
+                FontWeight="DemiBold"
                 Foreground="DarkRed"
-                />
+                Text="{Binding DebugNote}" />
             <TextBlock
                 x:Name="MouseOverInfoTextBlock"
+                Margin="5"
                 Text="Welcome to TgaBuilder! Made with ❤ by Jonson."
-                TextWrapping="NoWrap"
                 TextTrimming="CharacterEllipsis"
-                Margin="5"/>
+                TextWrapping="NoWrap" />
         </DockPanel>
+      <notif:NotificationMessageContainer
+        Manager="{Binding Manager, ElementName=MainWin}"
+        Grid.Row="1"
+        Grid.ColumnSpan="2"/>
     </Grid>
 </elements:AsyncWindow>

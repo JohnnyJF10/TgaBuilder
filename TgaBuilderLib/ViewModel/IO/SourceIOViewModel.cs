@@ -34,6 +34,9 @@ namespace TgaBuilderLib.ViewModel
         private string _nextFile = string.Empty;
 
 
+        internal event EventHandler? LoadedSuccessfully;
+
+
         public IList<string> LastFolderFileNames { get; private set; } = new List<string>();
 
         public IEnumerable<string> RecentSourceFileNames => _usageData.RecentInputFiles;
@@ -75,13 +78,13 @@ namespace TgaBuilderLib.ViewModel
             OnPropertyChanged(nameof(TrImportHorPageNum));
         }
 
-        public void BatchLoader()
+        public async Task BatchLoader()
         {
             var batchLoaderView = _getViewCallback(ViewIndex.BatchLoader);
             if (batchLoaderView.DataContext is not BatchLoaderViewModel batchLoaderVM) 
                 return;
 
-            batchLoaderView.ShowDialogAsync();
+            await batchLoaderView.ShowDialogAsync();
 
             if (batchLoaderView.DialogResult != true) 
                 return;
@@ -180,6 +183,8 @@ namespace TgaBuilderLib.ViewModel
             ResetVisualGrid();
 
             SendLoadStatus();
+
+            OnLoadedSuccessfully();
         }
 
         private void SendLoadStatus()
@@ -301,6 +306,9 @@ namespace TgaBuilderLib.ViewModel
             if (_panel is SourceTexturePanelViewModel sourcePanel)
                 sourcePanel.VisualGrid.Reset();
         }
+
+        private void OnLoadedSuccessfully()
+            => LoadedSuccessfully?.Invoke(this, EventArgs.Empty);
 
         private int CalculateNewPageXValue(int proposedValue, int currentValue)
             => proposedValue < currentValue ? proposedValue switch

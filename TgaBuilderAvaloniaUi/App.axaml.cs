@@ -32,6 +32,9 @@ namespace TgaBuilderAvaloniaUi
             MainWindow mainWindow = provider.GetServices<IView>().ElementAt(0) as MainWindow
                 ?? throw new InvalidOperationException("MainWindow not found in DI container");
 
+            // This is required in Avalonia UI as partial changes on Images are not automatically redrawn.
+            mainViewModel.VisualInvalidator = new ImageVisualInvalidator(mainWindow.TargetImage);
+
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = mainWindow;

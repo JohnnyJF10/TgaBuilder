@@ -11,6 +11,7 @@
         xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
         x:Class="TgaBuilderAvaloniaUi.View.BatchLoaderWindow"
         x:DataType="viewmodel:BatchLoaderViewModel"
+        x:Name="BatchLoaderWin"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
@@ -25,11 +26,17 @@
 
   <!-- Resources: converters kept. Styles and special merged dictionaries removed per request. -->
   <Window.Resources>
+    <ResourceDictionary>
+    <ResourceDictionary.MergedDictionaries>
+      <ResourceInclude Source="/Styles/IconDictionary.axaml" />
+      <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+    </ResourceDictionary.MergedDictionaries>
     <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
     <sys:Boolean x:Key="True">True</sys:Boolean>
     <sys:Boolean x:Key="False">False</sys:Boolean>
     <!-- If you need a Bool->Visibility converter, provide one in Converters namespace or use built-in when available -->
-  </Window.Resources>
+  </ResourceDictionary>
+      </Window.Resources>
 
   <Grid
     RowDefinitions="Auto,Auto,*,Auto"
@@ -62,13 +69,24 @@
               Command="{Binding SelectTRRFolderCommand}"
               CommandParameter="{StaticResource False}" />
 
-      <Button Margin="10"
+      <DropDownButton Margin="10"
+                      Content="Open Recent Folders"
               >
-        <TextBlock>
-          <Run Text=" Open Recent Folders" />
-          <Run FontFamily="Segoe UI Symbol" Text="&#xE0E5;" />
-        </TextBlock>
-      </Button>
+        <DropDownButton.Flyout>
+          <MenuFlyout
+            ItemsSource="{Binding RecentBatchLoaderFolders}"
+                            >
+
+            <MenuFlyout.ItemTemplate>
+              <DataTemplate>
+                <MenuItem Header="{Binding .}"
+                          Command="{Binding DataContext.OpenRecentFolderCommand, ElementName=BatchLoaderWin}"
+                          CommandParameter="{Binding .}" />
+              </DataTemplate>
+            </MenuFlyout.ItemTemplate>
+          </MenuFlyout>
+        </DropDownButton.Flyout>
+      </DropDownButton>
     </StackPanel>
 
     <!-- Left settings column -->
@@ -154,9 +172,29 @@
                        ap:SizeObserverAP.ObserveSize="True"
                        ap:SizeObserverAP.ObservedWidth="{Binding ViewportWidth, Mode=OneWayToSource}"
                        ap:SizeObserverAP.ObservedHeight="{Binding ViewportHeight, Mode=OneWayToSource}">
-
-          <Image Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
-                 Stretch="None" />
+          <Canvas
+              x:Name="BatchLoaderCanvas"
+              Width="{Binding ElementName=BatchLoadedImage, Path=Bounds.Width}"
+              Height="{Binding ElementName=BatchLoadedImage, Path=Bounds.Height}"
+              >
+            <Canvas.Transitions>
+              <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+              </Transitions>
+            </Canvas.Transitions>
+            <elements:CheckerRectangle
+                Width="{Binding ElementName=BatchLoadedImage, Path=Bounds.Width}"
+                Height="{Binding ElementName=BatchLoadedImage, Path=Bounds.Height}"
+                TileDensity="{Binding ElementName=BatchLoaderWin, Path=DataContext.Zoom}"
+                                />
+            <Image
+                Name="BatchLoadedImage"
+                ap:PanelMouseAP.CheckMouseEnterLeave="True"
+                ap:PanelMouseAP.IsTargetPanel="False"
+                RenderOptions.BitmapInterpolationMode="None"
+                Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
+                Stretch="None" />
+          </Canvas>
 
         </paz:ZoomBorder>
       </ScrollViewer>
@@ -176,7 +214,6 @@
     <!-- Bottom actions area (was Border with DockPanel) -->
     <Border Grid.Row="4" Grid.Column="1" Padding="12" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" BorderThickness="0,1,0,0" BorderBrush="Transparent">
       <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-        <TextBlock Text="-" DockPanel.Dock="Left" ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" />
 
         <Button Content="Import"
                 DockPanel.Dock="Right"
@@ -192,7 +229,20 @@
                 Command="{Binding CancelCommand}"
                 CommandParameter="{Binding $parent[Window]}" />
 
-        <TextBlock Text="+" DockPanel.Dock="Right" ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" Margin="0,0,30,0" />
+        <Path
+          Margin="0,15,0,0"
+            Fill="Black"
+            Data="{StaticResource zoom_out}"
+            ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
+            DockPanel.Dock="Left"
+                    />
+        <Path
+            Margin="0,15,10,0"
+            Fill="Black"
+            Data="{StaticResource zoom_in}"
+            ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
+            DockPanel.Dock="Right"
+                    />
 
         <Slider VerticalAlignment="Center"
                 HorizontalAlignment="Stretch"

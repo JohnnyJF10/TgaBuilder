@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.View;
@@ -183,10 +184,16 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
         private static MainWindow GetMainWindow()
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                throw new InvalidOperationException("The application is not running in desktop mode.");
+            {
+                Debug.WriteLine("The application is not running in desktop mode.");
+                return new MainWindow();
+            }
 
             if (desktop.MainWindow is not MainWindow mainWindow)
-                throw new InvalidOperationException("Could not get the main window.");
+            {
+                Debug.WriteLine("Could not get the MainWindow.");
+                return new MainWindow();
+            }
 
             return mainWindow;
         }

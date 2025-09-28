@@ -21,7 +21,7 @@ namespace TgaBuilderWpfUi.Services
 
         public string SelectedPath { get; set; } = "";
 
-        public bool OpenFileDialog(
+        public Task <bool> OpenFileDialog(
             FileTypes types,
             string? initDir = null,
             string? title = null)
@@ -35,16 +35,15 @@ namespace TgaBuilderWpfUi.Services
 
             if (initDir != null) openFileDialog.InitialDirectory = initDir;
 
-            if (openFileDialog.ShowDialog() == true)
-            {
-                SelectedPath = openFileDialog.FileName;
-                return true;
-            }
+            var result = openFileDialog.ShowDialog() == true;
 
-            return false;
+            if (result)
+                SelectedPath = openFileDialog.FileName;
+
+            return Task.FromResult(result);
         }
 
-        public bool OpenFileDialog(
+        public Task<bool> OpenFileDialog(
             List<FileTypes> typesList,
             string? initDir = null,
             string? title = null)
@@ -65,16 +64,15 @@ namespace TgaBuilderWpfUi.Services
 
             if (initDir != null) openFileDialog.InitialDirectory = initDir;
 
-            if (openFileDialog.ShowDialog() == true)
-            {
-                SelectedPath = openFileDialog.FileName;
-                return true;
-            }
+            var result = openFileDialog.ShowDialog() == true;
 
-            return false;
+            if (result)
+                SelectedPath = openFileDialog.FileName;
+
+            return Task.FromResult(result);
         }
 
-        public bool SaveFileDialog(
+        public Task<bool> SaveFileDialog(
             FileTypes types,
             string? initDir = null, 
             string? title = null)
@@ -84,24 +82,25 @@ namespace TgaBuilderWpfUi.Services
             saveFileDialog.Filter = GetSeperatedFilter(types);
             saveFileDialog.Title = title ?? DEFAULT_SAVE_FILE_TITLE;
             if (initDir != null) saveFileDialog.InitialDirectory = initDir;
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                SelectedPath = saveFileDialog.FileName;
-                return true;
-            }
 
-            return false;
+            var result = saveFileDialog.ShowDialog() == true;
+
+            if (result)
+                SelectedPath = saveFileDialog.FileName;
+
+            return Task.FromResult(result);
         }
 
-        public bool SelectFolderDialog(string? initDir = null, string? title = null)
+        public Task<bool> SelectFolderDialog(string? initDir = null, string? title = null)
         {
             string? folder = FolderPicker.ShowDialog(title ?? DEFAULT_OPEN_FOLDER_TITLE, null);
-            if (folder != null)
-            {
-                SelectedPath = folder;
-                return true;
-            }
-            return false;
+
+            var result = !string.IsNullOrWhiteSpace(folder);
+
+            if (result)
+                SelectedPath = folder!;
+            
+            return Task.FromResult(result);
         }
 
         private string GetConvergedFilter(FileTypes selectedTypes, string OptionName = "All supported files")

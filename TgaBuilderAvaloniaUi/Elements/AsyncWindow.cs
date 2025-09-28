@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,10 +56,16 @@ namespace TgaBuilderAvaloniaUi.Elements
         public async Task<bool?> ShowDialogAsync()
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                throw new InvalidOperationException("The application is not running in desktop mode.");
+            {
+                Debug.WriteLine("The application is not running in desktop mode.");
+                return null;
+            }
 
             if (desktop.MainWindow is not Window mainWindow)
-                throw new InvalidOperationException("Could not get the main window.");
+            {
+                Debug.WriteLine("The main window is not available.");
+                return null;
+            }
 
             return await base.ShowDialog<bool?>(mainWindow);
         }

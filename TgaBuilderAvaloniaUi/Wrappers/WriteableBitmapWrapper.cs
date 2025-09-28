@@ -35,7 +35,7 @@ namespace TgaBuilderAvaloniaUi.Wrappers
 
         private WriteableBitmap _innerWriteableBitmap;
 
-        public void AddDirtyRect(PixelRect dirtyRect) { /* Nothing to do */ }
+        public void AddDirtyRect(PixelRect dirtyRect) { /* Nothing to do in Avalonia UI*/ }
 
         public IBitmapLocker GetLocker(bool requiresRefresh = false)
         {
@@ -46,12 +46,14 @@ namespace TgaBuilderAvaloniaUi.Wrappers
 
         public IBitmapLocker GetLocker(PixelRect dirtyRect) => GetLocker();
 
-        public void Refresh() { /* Nothing to do */ }
+        public void Refresh() { /* Nothing to do in Avalonia UI*/ }
 
-        public void Freeze() { /* Nothing to do */ }
+        public void Freeze() { /* Nothing to do in Avalonia UI*/ }
 
         public void WritePixels(PixelRect rect, IntPtr pixels, int stride, int offset = 0)
         {
+            int bytesPerPixel = HasAlpha ? 4 : 3;
+
             using (var fb = _innerWriteableBitmap.Lock())
             {
                 int destStride = fb.RowBytes;
@@ -62,14 +64,14 @@ namespace TgaBuilderAvaloniaUi.Wrappers
                     IntPtr srcRow = pixels + offset + y * stride;
                     IntPtr destRow = destBase
                                    + (rect.Y + y) * destStride
-                                   + rect.X * 4; // 4 Bytes pro Pixel (Bgra8888)
+                                   + rect.X * bytesPerPixel;
 
                     unsafe
                     {
                         Buffer.MemoryCopy(srcRow.ToPointer(),
                                           destRow.ToPointer(),
                                           destStride,
-                                          rect.Width * 4);
+                                          rect.Width * bytesPerPixel);
                     }
                 }
             }

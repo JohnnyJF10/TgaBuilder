@@ -2,14 +2,17 @@
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
+using Avalonia.Notification;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using TgaBuilderAvaloniaUi.Elements;
-using TgaBuilderAvaloniaUi.Services;
-using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
+using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
 {
@@ -17,6 +20,8 @@ namespace TgaBuilderAvaloniaUi.View
     {
         public Image? CurrentImage { get; set; }
         public ZoomBorder? CurrentPanel { get; set; }
+
+        public INotificationMessageManager Manager { get; } = new NotificationMessageManager();
 
         public bool IsLoaded => throw new NotImplementedException();
 
@@ -36,6 +41,17 @@ namespace TgaBuilderAvaloniaUi.View
             AddHandler(InputElement.KeyDownEvent, MainWindow_KeyDown, handledEventsToo: true);
             AddHandler(InputElement.KeyUpEvent, MainWindow_KeyUp, handledEventsToo: true);
 
+            InitializeComponent();
+            base.DataContext = mainViewModel;
+        }
+
+        [Obsolete("For designer use only")]
+        public MainWindow()
+        {
+            var serviceProvider = GlobalServiceProvider.Instance;
+
+            var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>()
+                ?? throw new InvalidOperationException("MainViewModel not found in DI container");
             InitializeComponent();
             base.DataContext = mainViewModel;
         }

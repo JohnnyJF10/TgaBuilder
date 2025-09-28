@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using System;
@@ -14,6 +15,9 @@ namespace TgaBuilderAvaloniaUi.View
         private void Window_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
             if (CurrentImage == null) return;
+
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
+                return;
 
             bool isDestination = CurrentImage.Name == "TargetImage";
             CurrentPanel = GetPanelFromImage(CurrentImage);
@@ -97,25 +101,41 @@ namespace TgaBuilderAvaloniaUi.View
 
             e.Pointer.Capture(null);
             _modifier = MouseModifier.None;
+
+            CurrentImage.InvalidateVisual();
         }
 
         private void MainWindow_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
         {
             if (CurrentImage == null) return;
-            if (!e.KeyModifiers.HasFlag(KeyModifiers.Shift)) return;
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+            {
+                bool isDestination = CurrentImage.Name == "TargetImage";
 
-            bool isDestination = CurrentImage.Name == "TargetImage";
-
-            if (PanelMouseAP.GetWheelShiftCommand(this) is ICommand wheelShiftCommand)
-                wheelShiftCommand.Execute((isDestination, e.Delta.Y < 0));
+                if (PanelMouseAP.GetWheelShiftCommand(this) is ICommand wheelShiftCommand)
+                    wheelShiftCommand.Execute((isDestination, e.Delta.Y < 0));
+            }
+            else if (!e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                CurrentPanel = GetPanelFromImage(CurrentImage);
+                CurrentPanel.SetMatrix(CurrentPanel.Matrix * Matrix.CreateTranslation(0, 100 * e.Delta.Y));
+            }
         }
 
         private void MainWindow_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
             {
+                var sourceMatrix = SourcePanel.Matrix;
+                var targetMatrix = TargetPanel.Matrix;
+
                 SourcePanel.EnableZoom = true;
+                SourcePanel.EnablePan = true;
                 TargetPanel.EnableZoom = true;
+                TargetPanel.EnablePan = true;
+
+                SourcePanel.SetMatrix(sourceMatrix);
+                TargetPanel.SetMatrix(targetMatrix);
             }
         }
 
@@ -123,8 +143,16 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
             {
+                var sourceMatrix = SourcePanel.Matrix;
+                var targetMatrix = TargetPanel.Matrix;
+
                 SourcePanel.EnableZoom = false;
+                SourcePanel.EnablePan = false;
                 TargetPanel.EnableZoom = false;
+                TargetPanel.EnablePan = false;
+
+                SourcePanel.SetMatrix(sourceMatrix);
+                TargetPanel.SetMatrix(targetMatrix);
             }
 
         }

@@ -22,6 +22,11 @@ using TgaBuilderLib.ViewModel.Views;
 
 namespace TgaBuilderAvaloniaUi
 {
+    public static class GlobalServiceProvider
+    {
+        public static IServiceProvider Instance { get; set; } = null!;
+    }
+
     public partial class App
     {
 		private const int PAGE_SIZE = 256;
@@ -50,6 +55,8 @@ namespace TgaBuilderAvaloniaUi
             AddTabVMsToProvider(services);
             AddViewVMsToProvider(services);
             AddViewsToProvider(services);
+
+            GlobalServiceProvider.Instance = services.BuildServiceProvider();
         }
 
         private void AddFactoriesToProvider(IServiceCollection services)

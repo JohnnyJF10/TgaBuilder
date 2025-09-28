@@ -12,11 +12,31 @@ namespace TgaBuilderLib.BitmapOperations
             return pixels;
         }
 
-        public void FillRectArray(IWriteableBitmap bitmap, PixelRect rect, byte[] pixels)
+        public unsafe void FillRectArray(IWriteableBitmap bitmap, PixelRect rect, byte[] pixels)
         {
-            int stride = rect.Width * (bitmap.HasAlpha ? 4 : 3);
-            bitmap.WritePixels(rect, pixels, stride, 0);
-            bitmap.Refresh();
+            int bytesPerPixel = bitmap.HasAlpha ? 4 : 3;
+
+            int srcStride = rect.Width * bytesPerPixel;
+            int dstStride = bitmap.BackBufferStride;
+
+            using var lockBitmap = bitmap.GetLocker();
+
+            byte* backBuffer = (byte*)lockBitmap.BackBuffer;
+            byte* dstBase = backBuffer + rect.Y * dstStride + rect.X * bytesPerPixel;
+
+            fixed (byte* srcPtr = pixels)
+            {
+                byte* srcRow = srcPtr;
+                byte* dstRow = dstBase;
+
+                for (int y = 0; y < rect.Height; y++)
+                {
+                    Buffer.MemoryCopy(srcRow, dstRow, srcStride, srcStride);
+
+                    srcRow += srcStride;
+                    dstRow += dstStride;
+                }
+            }
         }
     }
 }

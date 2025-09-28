@@ -86,12 +86,22 @@ namespace TgaBuilderWpfUi.View
             if (Keyboard.Modifiers == ModifierKeys.Shift)
                 _modifier = MouseModifier.Shift;
 
+            bool isDestination = CurrentImage.Name == "TargetImage";
+
             if (e.ChangedButton == MouseButton.Middle)
+            {
+                if (!isDestination)
+                {
+                    CurrentImage.ReleaseMouseCapture();
+                    _modifier = MouseModifier.None;
+                    return;
+                }
+
                 _modifier = MouseModifier.Middle;
+            }
 
             int x = ((int)e.GetPosition(CurrentImage).X);
             int y = ((int)e.GetPosition(CurrentImage).Y);
-            bool isDestination = CurrentImage.Name == "TargetImage";
 
             if (PanelMouseAP.GetPanelMouseCommand(window) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((x, y, isDestination, MouseAction.DragEnd, _modifier));
