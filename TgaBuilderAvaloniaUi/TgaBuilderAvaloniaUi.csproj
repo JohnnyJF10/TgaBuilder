@@ -32,6 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TgaBuilderLib\TgaBuilderLib.csproj" />
   </ItemGroup>
 </Project>

@@ -26,7 +26,22 @@
     Foreground="{DynamicResource SystemBaseHighColor}"
     UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen"
+    Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
     mc:Ignorable="d">
+
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Ctrl+A" Command="{Binding NewCommand}" />
+    <KeyBinding Gesture="Ctrl+C" Command="{Binding CopyCommand}" />
+    <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteCommand}" />
+    <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
+    <KeyBinding Gesture="Ctrl+Y" Command="{Binding RedoCommand}" />
+    <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
+    <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+    <KeyBinding Gesture="Ctrl+E" Command="{Binding OpenSourceCommand}" />
+    <KeyBinding Gesture="Ctrl+D" Command="{Binding OpenDestinationCommand}" />
+    <KeyBinding Gesture="Ctrl+Q" Command="{Binding OpenSourceTrCommand}" />
+    <KeyBinding Gesture="Ctrl+W" Command="{Binding BatchLoaderCommand}" />
+  </Window.KeyBindings>
 
     <Window.Resources>
         <ResourceDictionary>
@@ -43,6 +58,7 @@
             <converter:BoolToStrokeDashStyleConverter x:Key="BoolToStrokeDashStyleConverter" />
             <converter:SignSwitchConverter x:Key="SignSwitchConverter" />
             <converter:ColorStructToBrush x:Key="ColorStructToBrush" />
+          <converter:ZoomToOffsetConverter x:Key="ZoomToOffsetConverter" />
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -63,35 +79,42 @@
             <Border Margin="0,3,0,0">
                 <Border>
                     <StackPanel
+                        Margin="17,0"
                         Background="Transparent"
                         IsEnabled="{Binding SourceIO.ControlsEnabled}"
                         Orientation="Horizontal"
                         Spacing="5">
-                        <elements:IconButton
-                            ap:MouseOverInfoAP.InfoText="Open Source Panel (Ctrl + E)"
-                            Command="{Binding OpenSourceCommand}"
-                            Icon="{StaticResource folder_open}" />
-
-                      <DropDownButton
-                          Width="36"
+                      <SplitButton
+                          Width="70"
                           Height="36"
-                          ap:MouseOverInfoAP.InfoText="Open Recent Source Panels"
-                          Content="FolderArrowUp" >
-                        <DropDownButton.Flyout>
+                          ap:MouseOverInfoAP.InfoText="Open Source Panels (Ctrl + E)"
+                          Command="{Binding OpenSourceCommand}"
+                          >
+                        <SplitButton.Content>
+                          <Path
+                              Fill="Black"
+                              Data="{StaticResource folder_open}"
+                              Width="16"
+                              Height="13"
+                              Stretch="Fill"
+                              />
+                        </SplitButton.Content>
+                        <SplitButton.Flyout>
                           <MenuFlyout
                             ItemsSource="{Binding SourceIO.RecentSourceFileNames}"
-                            >
                             
+                            >
                             <MenuFlyout.ItemTemplate>
                               <DataTemplate>
                                 <MenuItem Header="{Binding .}"
+                                          TextElement.FontSize="12"
                                           Command="{Binding DataContext.OpenRecentSourceCommand, ElementName=MainWin }"
                                           CommandParameter="{Binding .}" />
                               </DataTemplate>
                             </MenuFlyout.ItemTemplate>
                           </MenuFlyout>
-                        </DropDownButton.Flyout>
-                      </DropDownButton>
+                        </SplitButton.Flyout>
+                      </SplitButton>
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.ReloadFileText}"
@@ -119,14 +142,12 @@
                     x:Name="UndoButton"
                     Margin="19,0,5,0"
                     ap:MouseOverInfoAP.InfoText="Undo (Ctrl + Z)"
-                    Background="Transparent"
                     Command="{Binding UndoCommand}"
                     Icon="{StaticResource arrow_undo}" />
                 <elements:IconButton
                     x:Name="RedoButton"
                     Margin="5,0,0,0"
                     ap:MouseOverInfoAP.InfoText="Redo (Ctrl + Y)"
-                    Background="Transparent"
                     BorderThickness="0"
                     Command="{Binding RedoCommand}"
                     Icon="{StaticResource arrow_redo}" />
@@ -142,22 +163,30 @@
                         IsEnabled="{Binding TargetIO.ControlsEnabled}" 
                         Orientation="Horizontal"
                         Spacing="5"
+                        Margin="21,0"
                         >
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="New File (Ctrl + N)"
                             Command="{Binding NewCommand}"
                             Icon="{StaticResource document_add}" />
-                        <elements:IconButton
-                            ap:MouseOverInfoAP.InfoText="Open Destination Panel (Ctrl + D)"
-                            Command="{Binding OpenDestinationCommand}"
-                            Icon="{StaticResource folder_open}" />
 
-                      <DropDownButton
-                          Width="36"
+
+                      <SplitButton
+                          Width="70"
                           Height="36"
-                          ap:MouseOverInfoAP.InfoText="Open Recent Destination Panels"
-                          Content="FolderArrowUp" >
-                        <DropDownButton.Flyout>
+                          ap:MouseOverInfoAP.InfoText="Open Destination Panels (Ctrl + D)"
+                          Command="{Binding OpenDestinationCommand}"
+                          >
+                        <SplitButton.Content>
+                          <Path
+                              Fill="Black"
+                              Data="{StaticResource folder_open}" 
+                              Width="16"
+                              Height="13"
+                              Stretch="Fill"
+                              />
+                        </SplitButton.Content>
+                        <SplitButton.Flyout>
                           <MenuFlyout
                             ItemsSource="{Binding TargetIO.RecentDestinationFileNames}"
                             
@@ -165,13 +194,14 @@
                             <MenuFlyout.ItemTemplate>
                               <DataTemplate>
                                 <MenuItem Header="{Binding .}"
+                                          TextElement.FontSize="12"
                                           Command="{Binding DataContext.OpenRecentDestinationCommand, ElementName=MainWin }"
                                           CommandParameter="{Binding .}" />
                               </DataTemplate>
                             </MenuFlyout.ItemTemplate>
                           </MenuFlyout>
-                        </DropDownButton.Flyout>
-                      </DropDownButton>
+                        </SplitButton.Flyout>
+                      </SplitButton>
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="Save File (Ctrl + S)"
@@ -411,10 +441,10 @@
                         DataContext="{Binding SourceViewTab}"
                         EnableConstrains="True"
                         EnableGestures="True"
-                        EnablePan="False"
-                        EnableZoom="False"
+                        EnablePan="True"
+                        EnableZoom="True"
                         Focusable="True"
-                        PanButton="Left"
+                        PanButton="Middle"
                         Stretch="None"
                         ZoomSpeed="1.5"
                         OffsetX="{Binding MultipliedOffsetX, Mode=OneWayToSource}"
@@ -598,6 +628,12 @@
             Grid.Row="1"
             Grid.Column="1"
             VerticalAlignment="Top">
+            <Label
+                HorizontalAlignment="Center"
+                FontWeight="Bold"
+                Foreground="DarkRed"
+                Margin="0,10,0,5"
+                Content="Preview Version"/>
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <elements:IconButton
                     Icon="{StaticResource ios_chevron_left}"
@@ -719,11 +755,11 @@
             </StackPanel>
             <StackPanel DataContext="{Binding Animation}" IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}">
                 <Border
+                    Margin="0,20,0,0"
                     Width="100"
                     Height="100"
                     ap:MouseOverInfoAP.InfoText="Animation View"
-                    BorderBrush="Gray"
-                    BorderThickness="1">
+                    BorderThickness="0">
                     <Canvas x:Name="AnimCanvas" ClipToBounds="True">
                         <Rectangle
                             Width="100"
@@ -952,9 +988,12 @@
                                 Text="24" />
 
                             <ToggleSwitch
+                                x:Name="DestinationFormatSwitch"
                                 Grid.Column="1"
                                 ap:MouseOverInfoAP.InfoText="Sets the Destination image format. CAUTION: This clears the undo and redo stacks."
-                                IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                IsChecked="{Binding IsBgra32}" 
+                                Click="DestinationFormatSwitch_Click"
+                                />
 
                             <TextBlock
                                 Grid.Column="2"
@@ -1052,10 +1091,10 @@
                         DataContext="{Binding DestinationViewTab}"
                         EnableConstrains="True"
                         EnableGestures="True"
-                        EnablePan="False"
-                        EnableZoom="False"
+                        EnablePan="True"
+                        EnableZoom="True"
                         Focusable="True"
-                        PanButton="Left"
+                        PanButton="Middle"
                         Stretch="None"
                         ZoomSpeed="1.5"
                         OffsetX="{Binding MultipliedOffsetX, Mode=OneWayToSource}"
@@ -1309,7 +1348,7 @@
                 Text="{Binding DebugNote}" />
             <TextBlock
                 x:Name="MouseOverInfoTextBlock"
-                Margin="5"
+                Margin="5,11,5,5"
                 Text="Welcome to TgaBuilder! Made with ❤ by Jonson."
                 TextTrimming="CharacterEllipsis"
                 TextWrapping="NoWrap" />

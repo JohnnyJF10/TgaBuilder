@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.FileHandling;
@@ -152,6 +153,8 @@ namespace TgaBuilderLib.ViewModel
             Picker.IsVisible = false;
 
             AnimSelectShape.SetShapeProperties(xGrid, yGrid, Picker.Size);
+
+            Debug.WriteLine($"AnimSelectShape: {AnimSelectShape.X}, {AnimSelectShape.Y}, {AnimSelectShape.Width}, {AnimSelectShape.Height}");
         }
 
         public void SetupAnimation()

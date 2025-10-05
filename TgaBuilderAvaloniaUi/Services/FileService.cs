@@ -93,7 +93,11 @@ namespace TgaBuilderAvaloniaUi.Services
             {
                 var patterns = GetPattern(fileTypes);
 
-                var fpft = new FilePickerFileType("Test")
+                string optionName = "Others";
+
+                optionName = GetSpecialOptionHeaderStrings(fileTypes);
+
+                var fpft = new FilePickerFileType(optionName)
                 {
                     Patterns = patterns
                 };
@@ -221,6 +225,25 @@ namespace TgaBuilderAvaloniaUi.Services
             if (types.HasFlag(FileTypes.TEN)) result.Add("*.ten");
 
             return result;
+        }
+
+        private string GetSpecialOptionHeaderStrings(FileTypes types)
+        {
+            if (types.HasFlag(FileTypes.TGA)
+                && types.HasFlag(FileTypes.PNG)
+                && types.HasFlag(FileTypes.JPG)
+                && types.HasFlag(FileTypes.JPEG)
+                && types.HasFlag(FileTypes.BMP)
+                && types.HasFlag(FileTypes.PSD)
+                && types.HasFlag(FileTypes.DDS))
+                return "Image Files";
+            if (types.HasFlag(FileTypes.PHD)
+                && types.HasFlag(FileTypes.TR2)
+                && types.HasFlag(FileTypes.TR4)
+                && types.HasFlag(FileTypes.TRC)
+                && types.HasFlag(FileTypes.TEN))
+                return "Level Files";
+            return "Others";
         }
     }
 }

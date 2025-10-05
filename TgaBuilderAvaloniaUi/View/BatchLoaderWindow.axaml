@@ -22,6 +22,7 @@
         MinHeight="550"
         Width="600"
         MinWidth="560"
+        Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
         >
 
   <!-- Resources: converters kept. Styles and special merged dictionaries removed per request. -->
@@ -229,7 +230,9 @@
                 Command="{Binding CancelCommand}"
                 CommandParameter="{Binding $parent[Window]}" />
 
-        <Path
+        <Border/>
+
+        <!--<Path
           Margin="0,15,0,0"
             Fill="Black"
             Data="{StaticResource zoom_out}"
@@ -251,7 +254,7 @@
                 Maximum="10"
                 MinWidth="3"
                 Value="{Binding Zoom, Mode=TwoWay}"
-                ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" />
+                ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" />-->
       </DockPanel>
     </Border>
 

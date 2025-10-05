@@ -100,12 +100,12 @@ namespace TgaBuilderLib.ViewModel
         public bool IsBgra32
         {
             get => _panel.Presenter.HasAlpha;
-            set => SetIsBgra32(value);
+            set => _ = SetIsBgra32(value);
         }
 
         public bool IsRgb24 => !IsBgra32;
 
-        private void SetIsBgra32(bool value)
+        private async Task SetIsBgra32(bool value)
         {
             if ((_panel.Presenter.HasAlpha) == value)
                 return;
@@ -116,11 +116,10 @@ namespace TgaBuilderLib.ViewModel
             }
             else
             {
-                var result = _messageBoxService?.ShowOkCancelMessageBox(
+                bool result = _messageBoxService is null ? true : await _messageBoxService.ShowOkCancelMessageBox(
                     "Convert to Rgb24",
                     "Converting to Rgb24 will discard alpha channel information. " +
-                    "Are you sure you want to proceed?")
-                    .Result;
+                    "Are you sure you want to proceed?");
 
                 if (result != false)
                     _panel.ConvertToRgb24();

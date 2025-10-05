@@ -1,4 +1,6 @@
-﻿namespace TgaBuilderLib.ViewModel
+﻿using System.Diagnostics;
+
+namespace TgaBuilderLib.ViewModel
 {
     public class AnimSelectShapeViewModel : ViewModelBase
     {

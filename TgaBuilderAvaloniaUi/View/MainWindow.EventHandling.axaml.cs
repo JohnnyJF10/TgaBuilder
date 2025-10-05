@@ -2,7 +2,10 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using System;
+using System.Drawing;
+using System.Linq;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
 using TgaBuilderLib.Enums;
@@ -17,6 +20,9 @@ namespace TgaBuilderAvaloniaUi.View
             if (CurrentImage == null) return;
 
             if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
+                return;
+
+            if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
                 return;
 
             bool isDestination = CurrentImage.Name == "TargetImage";
@@ -85,11 +91,11 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (CurrentImage == null) return;
 
+            if (e.InitialPressMouseButton == MouseButton.Middle)
+                return;
+
             if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 _modifier = MouseModifier.Shift;
-
-            if (e.GetCurrentPoint(CurrentImage).Properties.PointerUpdateKind == PointerUpdateKind.MiddleButtonReleased)
-                _modifier = MouseModifier.Middle;
 
             var pos = e.GetPosition(CurrentImage);
             int x = (int)pos.X;
@@ -103,58 +109,17 @@ namespace TgaBuilderAvaloniaUi.View
             _modifier = MouseModifier.None;
 
             CurrentImage.InvalidateVisual();
+
+            var hit = this.GetVisualsAt(e.GetPosition(this));
+
+            if (hit.Count() > 0 && hit.ElementAt(0) != CurrentImage)
+                PanelMouseAP.OnPointerExited(CurrentImage);
         }
 
-        private void MainWindow_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
+        private void DestinationFormatSwitch_Click(object? sender, RoutedEventArgs e)
         {
-            if (CurrentImage == null) return;
-            if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
-            {
-                bool isDestination = CurrentImage.Name == "TargetImage";
-
-                if (PanelMouseAP.GetWheelShiftCommand(this) is ICommand wheelShiftCommand)
-                    wheelShiftCommand.Execute((isDestination, e.Delta.Y < 0));
-            }
-            else if (!e.KeyModifiers.HasFlag(KeyModifiers.Control))
-            {
-                CurrentPanel = GetPanelFromImage(CurrentImage);
-                CurrentPanel.SetMatrix(CurrentPanel.Matrix * Matrix.CreateTranslation(0, 100 * e.Delta.Y));
-            }
-        }
-
-        private void MainWindow_KeyDown(object? sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
-            {
-                var sourceMatrix = SourcePanel.Matrix;
-                var targetMatrix = TargetPanel.Matrix;
-
-                SourcePanel.EnableZoom = true;
-                SourcePanel.EnablePan = true;
-                TargetPanel.EnableZoom = true;
-                TargetPanel.EnablePan = true;
-
-                SourcePanel.SetMatrix(sourceMatrix);
-                TargetPanel.SetMatrix(targetMatrix);
-            }
-        }
-
-        private void MainWindow_KeyUp(object? sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
-            {
-                var sourceMatrix = SourcePanel.Matrix;
-                var targetMatrix = TargetPanel.Matrix;
-
-                SourcePanel.EnableZoom = false;
-                SourcePanel.EnablePan = false;
-                TargetPanel.EnableZoom = false;
-                TargetPanel.EnablePan = false;
-
-                SourcePanel.SetMatrix(sourceMatrix);
-                TargetPanel.SetMatrix(targetMatrix);
-            }
-
+            if (DestinationFormatSwitch.IsChecked == false)
+                DestinationFormatSwitch.IsChecked = true;
         }
     }
 }

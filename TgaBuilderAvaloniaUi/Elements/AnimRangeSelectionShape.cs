@@ -7,23 +7,6 @@ namespace TgaBuilderAvaloniaUi.Elements
     public class AnimRangeSelectionShape : Control
     {
         // --- Properties ---
-        public static readonly StyledProperty<int> ShapeWidthProperty =
-            AvaloniaProperty.Register<AnimRangeSelectionShape, int>(nameof(ShapeWidth), 0);
-
-        public int ShapeWidth
-        {
-            get => GetValue(ShapeWidthProperty);
-            set => SetValue(ShapeWidthProperty, value);
-        }
-
-        public static readonly StyledProperty<int> ShapeHeightProperty =
-            AvaloniaProperty.Register<AnimRangeSelectionShape, int>(nameof(ShapeHeight), 0);
-
-        public int ShapeHeight
-        {
-            get => GetValue(ShapeHeightProperty);
-            set => SetValue(ShapeHeightProperty, value);
-        }
 
         public static readonly StyledProperty<int> TopStepPositionProperty =
             AvaloniaProperty.Register<AnimRangeSelectionShape, int>(nameof(TopStepPosition), 0);
@@ -83,8 +66,8 @@ namespace TgaBuilderAvaloniaUi.Elements
         static AnimRangeSelectionShape()
         {
             AffectsRender<AnimRangeSelectionShape>(
-                ShapeWidthProperty,
-                ShapeHeightProperty,
+                WidthProperty,
+                HeightProperty,
                 TopStepPositionProperty,
                 BottomStepPositionProperty,
                 StepHeightProperty,
@@ -94,86 +77,81 @@ namespace TgaBuilderAvaloniaUi.Elements
         }
 
         // --- Rendering ---
-        public override void Render(DrawingContext context)
+        public override void Render(DrawingContext drawingContext)
         {
-            base.Render(context);
+            base.Render(drawingContext);
 
             var pen = new Pen(StrokeColor, StrokeThickness);
 
-            double width = ShapeWidth;
-            double height = ShapeHeight;
-
-            // --- Special Cases ---
-            if (height == 0 && BottomStepPosition > TopStepPosition + StepHeight)
+            if (Height == 0 && BottomStepPosition > TopStepPosition + StepHeight)
             {
                 // Top rectangle
-                context.DrawLine(pen, new Point(0, 0), new Point(TopStepPosition + StepHeight, 0));
-                context.DrawLine(pen, new Point(TopStepPosition + StepHeight, 0), new Point(TopStepPosition + StepHeight, StepHeight));
-                context.DrawLine(pen, new Point(TopStepPosition + StepHeight, StepHeight), new Point(0, StepHeight));
-                context.DrawLine(pen, new Point(0, StepHeight), new Point(0, 0));
+                drawingContext.DrawLine(pen, new Point(0, 0), new Point(TopStepPosition + StepHeight, 0));
+                drawingContext.DrawLine(pen, new Point(TopStepPosition + StepHeight, 0), new Point(TopStepPosition + StepHeight, StepHeight));
+                drawingContext.DrawLine(pen, new Point(TopStepPosition + StepHeight, StepHeight), new Point(0, StepHeight));
+                drawingContext.DrawLine(pen, new Point(0, StepHeight), new Point(0, 0));
 
                 // Bottom rectangle
-                context.DrawLine(pen, new Point(BottomStepPosition - StepHeight, height - StepHeight), new Point(width, height - StepHeight));
-                context.DrawLine(pen, new Point(width, height - StepHeight), new Point(width, height));
-                context.DrawLine(pen, new Point(width, height), new Point(BottomStepPosition - StepHeight, height));
-                context.DrawLine(pen, new Point(BottomStepPosition - StepHeight, height), new Point(BottomStepPosition - StepHeight, height));
+                drawingContext.DrawLine(pen, new Point(BottomStepPosition - StepHeight, Height - StepHeight), new Point(Width, Height - StepHeight));
+                drawingContext.DrawLine(pen, new Point(Width, Height - StepHeight), new Point(Width, Height));
+                drawingContext.DrawLine(pen, new Point(Width, Height), new Point(BottomStepPosition - StepHeight, Height));
+                drawingContext.DrawLine(pen, new Point(BottomStepPosition - StepHeight, Height), new Point(BottomStepPosition - StepHeight, Height - StepHeight));
                 return;
             }
 
-            if (height == StepHeight)
+            if (Height == StepHeight)
             {
                 if (BottomStepPosition > TopStepPosition)
                 {
-                    context.DrawLine(pen, new Point(TopStepPosition, 0), new Point(BottomStepPosition, 0));
-                    context.DrawLine(pen, new Point(BottomStepPosition, 0), new Point(BottomStepPosition, StepHeight));
-                    context.DrawLine(pen, new Point(BottomStepPosition, StepHeight), new Point(TopStepPosition, StepHeight));
-                    context.DrawLine(pen, new Point(TopStepPosition, StepHeight), new Point(TopStepPosition, 0));
+                    drawingContext.DrawLine(pen, new Point(TopStepPosition, 0), new Point(BottomStepPosition, 0));
+                    drawingContext.DrawLine(pen, new Point(BottomStepPosition, 0), new Point(BottomStepPosition, StepHeight));
+                    drawingContext.DrawLine(pen, new Point(BottomStepPosition, StepHeight), new Point(TopStepPosition, StepHeight));
+                    drawingContext.DrawLine(pen, new Point(TopStepPosition, StepHeight), new Point(TopStepPosition, 0));
                 }
                 else
                 {
-                    context.DrawLine(pen, new Point(BottomStepPosition - StepHeight, 0), new Point(TopStepPosition + StepHeight, 0));
-                    context.DrawLine(pen, new Point(TopStepPosition + StepHeight, 0), new Point(TopStepPosition + StepHeight, StepHeight));
-                    context.DrawLine(pen, new Point(TopStepPosition + StepHeight, StepHeight), new Point(BottomStepPosition - StepHeight, StepHeight));
-                    context.DrawLine(pen, new Point(BottomStepPosition - StepHeight, StepHeight), new Point(BottomStepPosition - StepHeight, 0));
+                    drawingContext.DrawLine(pen, new Point(BottomStepPosition - StepHeight, 0), new Point(TopStepPosition + StepHeight, 0));
+                    drawingContext.DrawLine(pen, new Point(TopStepPosition + StepHeight, 0), new Point(TopStepPosition + StepHeight, StepHeight));
+                    drawingContext.DrawLine(pen, new Point(TopStepPosition + StepHeight, StepHeight), new Point(BottomStepPosition - StepHeight, StepHeight));
+                    drawingContext.DrawLine(pen, new Point(BottomStepPosition - StepHeight, StepHeight), new Point(BottomStepPosition - StepHeight, 0));
                 }
                 return;
             }
 
-            if (height - StepHeight == StepHeight && BottomStepPosition < TopStepPosition)
+            if (Height - StepHeight == StepHeight && BottomStepPosition < TopStepPosition)
             {
                 // Top rectangle
-                context.DrawLine(pen, new Point(TopStepPosition, 0), new Point(width, 0));
-                context.DrawLine(pen, new Point(width, 0), new Point(width, StepHeight));
-                context.DrawLine(pen, new Point(width, StepHeight), new Point(TopStepPosition, StepHeight));
-                context.DrawLine(pen, new Point(TopStepPosition, StepHeight), new Point(TopStepPosition, 0));
+                drawingContext.DrawLine(pen, new Point(TopStepPosition, 0), new Point(Width, 0));
+                drawingContext.DrawLine(pen, new Point(Width, 0), new Point(Width, StepHeight));
+                drawingContext.DrawLine(pen, new Point(Width, StepHeight), new Point(TopStepPosition, StepHeight));
+                drawingContext.DrawLine(pen, new Point(TopStepPosition, StepHeight), new Point(TopStepPosition, 0));
 
                 // Bottom rectangle
-                context.DrawLine(pen, new Point(0, height - StepHeight), new Point(BottomStepPosition, height - StepHeight));
-                context.DrawLine(pen, new Point(BottomStepPosition, height - StepHeight), new Point(BottomStepPosition, height));
-                context.DrawLine(pen, new Point(BottomStepPosition, height), new Point(0, height));
-                context.DrawLine(pen, new Point(0, height), new Point(0, height - StepHeight));
+                drawingContext.DrawLine(pen, new Point(0, Height - StepHeight), new Point(BottomStepPosition, Height - StepHeight));
+                drawingContext.DrawLine(pen, new Point(BottomStepPosition, Height - StepHeight), new Point(BottomStepPosition, Height));
+                drawingContext.DrawLine(pen, new Point(BottomStepPosition, Height), new Point(0, Height));
+                drawingContext.DrawLine(pen, new Point(0, Height), new Point(0, Height - StepHeight));
                 return;
             }
 
-            // --- Default polygon ---
-            double topDraw = height > 0 ? TopStepPosition : TopStepPosition + StepHeight;
-            double bottomDraw = height > 0 ? BottomStepPosition : BottomStepPosition - StepHeight;
+            double TopStepPositionDraw = Height > 0 ? TopStepPosition : TopStepPosition + StepHeight;
+            double BottomStepPositionDraw = Height > 0 ? BottomStepPosition : BottomStepPosition - StepHeight;
 
             var points = new Point[]
             {
                 new Point(0, StepHeight),
-                new Point(topDraw, StepHeight),
-                new Point(topDraw, 0),
-                new Point(width, 0),
-                new Point(width, height - StepHeight),
-                new Point(bottomDraw, height - StepHeight),
-                new Point(bottomDraw, height),
-                new Point(0, height)
+                new Point(TopStepPositionDraw, StepHeight),
+                new Point(TopStepPositionDraw, 0),
+                new Point(Width, 0),
+                new Point(Width, Height - StepHeight),
+                new Point(BottomStepPositionDraw, Height - StepHeight),
+                new Point(BottomStepPositionDraw, Height),
+                new Point(0, Height)
             };
 
             for (int i = 0; i < points.Length - 1; i++)
-                context.DrawLine(pen, points[i], points[i + 1]);
-            context.DrawLine(pen, points[^1], points[0]);
+                drawingContext.DrawLine(pen, points[i], points[i + 1]);
+            drawingContext.DrawLine(pen, points[^1], points[0]);
         }
     }
 }

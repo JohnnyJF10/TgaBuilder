@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.View;
@@ -86,22 +87,27 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
         private static void Image_PointerExited(object? sender, PointerEventArgs e)
         {
-            if (sender is Image image)
+            if (sender is Image image && e.Pointer.Captured != image)
             {
-                bool isDestination = GetIsTargetPanel(image);
-
-                var mainWindow = GetMainWindow();
-
-                mainWindow.CurrentImage = null;
-                mainWindow.CurrentPanel = null;
-
-                var LeavePanelCommand = GetLeavePanelCommand(mainWindow);
-
-                if (LeavePanelCommand is not null && LeavePanelCommand.CanExecute(isDestination))
-                    LeavePanelCommand.Execute(isDestination);
-
-                mainWindow.Cursor = new Cursor(StandardCursorType.Arrow);
+                OnPointerExited(image);
             }
+        }
+
+        internal static void OnPointerExited(Image image) 
+        {
+            bool isDestination = GetIsTargetPanel(image);
+
+            var mainWindow = GetMainWindow();
+
+            mainWindow.CurrentImage = null;
+            mainWindow.CurrentPanel = null;
+
+            var LeavePanelCommand = GetLeavePanelCommand(mainWindow);
+
+            if (LeavePanelCommand is not null && LeavePanelCommand.CanExecute(isDestination))
+                LeavePanelCommand.Execute(isDestination);
+
+            mainWindow.Cursor = new Cursor(StandardCursorType.Arrow);
         }
 
         public static readonly AttachedProperty<ICommand?> LeavePanelCommandProperty =

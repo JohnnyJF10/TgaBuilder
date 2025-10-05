@@ -37,9 +37,6 @@ namespace TgaBuilderAvaloniaUi.View
             AddHandler(InputElement.PointerReleasedEvent, Window_PointerReleased, handledEventsToo: true);
             AddHandler(InputElement.PointerMovedEvent, Window_PointerMoved, handledEventsToo: true);
             AddHandler(InputElement.DoubleTappedEvent, Window_DoubleTapped, handledEventsToo: true);
-            AddHandler(InputElement.PointerWheelChangedEvent, MainWindow_PointerWheelChanged, handledEventsToo: true);
-            AddHandler(InputElement.KeyDownEvent, MainWindow_KeyDown, handledEventsToo: true);
-            AddHandler(InputElement.KeyUpEvent, MainWindow_KeyUp, handledEventsToo: true);
 
             InitializeComponent();
             base.DataContext = mainViewModel;
