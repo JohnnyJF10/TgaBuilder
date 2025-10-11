@@ -18,6 +18,8 @@
         public int CenterX => X + Size / 2;
         public int CenterY => Y + Size / 2;
 
+        public (int, int) CenterT => (CenterX, CenterY);
+
         public bool IsVisible
         {
             get => _isVisible;
@@ -59,6 +61,7 @@
 
             OnPropertyChanged(nameof(CenterX));
             OnPropertyChanged(nameof(X));
+            OnPropertyChanged(nameof(CenterT));
         }
 
         private void SetY(int value)
@@ -70,6 +73,7 @@
 
             OnPropertyChanged(nameof(CenterY));
             OnPropertyChanged(nameof(Y));
+            OnPropertyChanged(nameof(CenterT));
         }
 
         private void SetSize(int value)
@@ -80,6 +84,7 @@
 
             OnPropertyChanged(nameof(CenterX));
             OnPropertyChanged(nameof(CenterY));
+            OnPropertyChanged(nameof(CenterT));
             OnPropertyChanged(nameof(Size));
         }
     }

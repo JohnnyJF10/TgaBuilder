@@ -87,10 +87,9 @@ namespace TgaBuilderLib.ViewModel
         {
             if (_undoRedoManager.IsTargetDirty())
             {
-                var result = _messageBoxService.ShowYesNoCancelMessageBox(
+                var result = await _messageBoxService.ShowYesNoCancelMessageBox(
                     Header: "Save changes?",
-                    Message: "Do you want to save changes?")
-                    .Result;
+                    Message: "Do you want to save changes?");
                 switch (result)
                 {
                     case YesNoCancel.Yes:
@@ -114,10 +113,9 @@ namespace TgaBuilderLib.ViewModel
         {
             if (_undoRedoManager.IsTargetDirty())
             {
-                var result = _messageBoxService.ShowYesNoCancelMessageBox(
+                var result = await _messageBoxService.ShowYesNoCancelMessageBox(
                     Header: "Save changes?",
-                    Message: "Do you want to save changes?")
-                    .Result;
+                    Message: "Do you want to save changes?");
                 switch (result)
                 {
                     case YesNoCancel.Yes:
@@ -143,10 +141,9 @@ namespace TgaBuilderLib.ViewModel
         {
             if (_undoRedoManager.IsTargetDirty())
             {
-                var result = _messageBoxService.ShowYesNoCancelMessageBox(
+                var result = await _messageBoxService.ShowYesNoCancelMessageBox(
                     Header: "Save changes?",
-                    Message: "Do you want to save changes?")
-                    .Result;
+                    Message: "Do you want to save changes?");
                 switch (result)
                 {
                     case YesNoCancel.Yes:

@@ -32,10 +32,22 @@
       <StackPanel Grid.Row="2" Orientation="Horizontal"
                   HorizontalAlignment="Right" Spacing="8" Margin="0,16,0,0">
 
-        <Button x:Name="OkButton" Content="OK" MinWidth="80"/>
-        <Button x:Name="CancelButton" Content="Abbrechen" MinWidth="80"/>
-        <Button x:Name="YesButton" Content="Ja" MinWidth="80"/>
-        <Button x:Name="NoButton" Content="Nein" MinWidth="80"/>
+        <Button x:Name="OkButton" 
+                HorizontalContentAlignment="Center"
+                Content="OK" 
+                MinWidth="80"/>
+        <Button x:Name="CancelButton" 
+                HorizontalContentAlignment="Center"
+                Content="Cancel" 
+                MinWidth="80"/>
+        <Button x:Name="YesButton" 
+                HorizontalContentAlignment="Center"
+                Content="Yes" 
+                MinWidth="80"/>
+        <Button x:Name="NoButton" 
+                HorizontalContentAlignment="Center"
+                Content="No" 
+                MinWidth="80"/>
       </StackPanel>
     </Grid>
   </Border>

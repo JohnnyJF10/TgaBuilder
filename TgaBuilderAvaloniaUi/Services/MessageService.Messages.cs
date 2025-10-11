@@ -15,7 +15,7 @@ namespace TgaBuilderAvaloniaUi.Services
                 MessageType.SourceOpenSuccess,
                 new AvaloniaUIMessage(
                     title: "Information",
-                    message: "File loaded successfully.",
+                    message: "The source image was loaded successfully.",
                     accent: "#4CAF50",
                     badge: "Info",
                     timeout: 5)
@@ -78,7 +78,7 @@ namespace TgaBuilderAvaloniaUi.Services
                 MessageType.DestinationOpenSuccess,
                 new AvaloniaUIMessage(
                     title: "Information",
-                    message: "",
+                    message: "The destination image was loaded successfully.",
                     accent: "#4CAF50",
                     badge: "Info",
                     timeout: 5)

@@ -13,9 +13,9 @@
     xmlns:notif="clr-namespace:Avalonia.Notification.Controls;assembly=Notification.Avalonia"
     x:Name="MainWin"
     Title="MainWindow"
-    Width="800"
+    Width="810"
     Height="570"
-    MinWidth="760"
+    MinWidth="800"
     MinHeight="570"
     ap:PanelMouseAP.EnterPanelCommand="{Binding EnterPanelCommand}"
     ap:PanelMouseAP.LeavePanelCommand="{Binding LeavePanelCommand}"
@@ -58,7 +58,10 @@
             <converter:BoolToStrokeDashStyleConverter x:Key="BoolToStrokeDashStyleConverter" />
             <converter:SignSwitchConverter x:Key="SignSwitchConverter" />
             <converter:ColorStructToBrush x:Key="ColorStructToBrush" />
+          <converter:TupleToPointConverter x:Key="TupleToPointConverter" />
           <converter:ZoomToOffsetConverter x:Key="ZoomToOffsetConverter" />
+          <converter:PathToFriendlyPathConverter x:Key="PathToFriendlyPathConverter" />
+          <converter:PanelHelpConverter x:Key="PanelHelpConverter" />
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -106,8 +109,7 @@
                             >
                             <MenuFlyout.ItemTemplate>
                               <DataTemplate>
-                                <MenuItem Header="{Binding .}"
-                                          TextElement.FontSize="12"
+                                <MenuItem Header="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
                                           Command="{Binding DataContext.OpenRecentSourceCommand, ElementName=MainWin }"
                                           CommandParameter="{Binding .}" />
                               </DataTemplate>
@@ -193,8 +195,7 @@
                             >
                             <MenuFlyout.ItemTemplate>
                               <DataTemplate>
-                                <MenuItem Header="{Binding .}"
-                                          TextElement.FontSize="12"
+                                <MenuItem Header="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
                                           Command="{Binding DataContext.OpenRecentDestinationCommand, ElementName=MainWin }"
                                           CommandParameter="{Binding .}" />
                               </DataTemplate>
@@ -418,7 +419,7 @@
                 Grid.Row="1"
                 Margin="10,0"
                 ap:MouseOverInfoAP.EnableMouseUpdates="True"
-                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp}"
+                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ClipToBounds="True"
                 DropCommand="{Binding FileDropSourceCommand}">
                 <ScrollViewer
@@ -703,7 +704,9 @@
                         Width="{Binding ElementName=SelectionImage, Path=Bounds.Width}"
                         Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}"
                         Fill="{StaticResource CheckerBrush}" />
-                    <Image x:Name="SelectionImage" Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
+                    <Image x:Name="SelectionImage"
+                           RenderOptions.BitmapInterpolationMode="None"
+                           Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
                 </Grid>
             </Button>
             <StackPanel
@@ -767,6 +770,7 @@
                             Fill="{StaticResource CheckerBrush}" />
                         <Image
                             Name="AnimImage"
+                            RenderOptions.BitmapInterpolationMode="None"
                             Canvas.Top="{Binding OffsetTop, UpdateSourceTrigger=PropertyChanged}"
                             Width="100"
                             ClipToBounds="True"
@@ -848,19 +852,19 @@
                             DockPanel.Dock="Left"
                             IsChecked="{Binding ResizeToPickerModeSelected, Mode=OneWayToSource}" />
                         <elements:IconToggleButton
-                            Icon="{StaticResource arrow_hook_up_right}"
+                            Icon="{StaticResource arrow_up_left_circle}"
                             Margin="5,0"
                             ap:MouseOverInfoAP.InfoText="Place continuously (Left + Shift on the panel)"
                             DockPanel.Dock="Left"
                             IsChecked="{Binding PlaceContinuouslyModeSelected}" />
                         <elements:IconToggleButton
-                            Icon="{StaticResource arrow_swap}"
+                            Icon="{StaticResource arrow_sync_circle}"
                             Margin="0,0,10,0"
                             ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Alt on the panel)"
                             DockPanel.Dock="Left"
                             IsChecked="{Binding SwapAndPlaceModeSelected}" />
                         <elements:IconToggleButton
-                            Icon="{StaticResource shape_intersect}"
+                            Icon="{StaticResource text_field}"
                             Margin="0,0,0,0"
                             ap:MouseOverInfoAP.InfoText="Transparent areas are not copied to the target panel (Magenta in 24 bbp bitmaps or alpha = 0 in 32 bbp bitmaps)"
                             DockPanel.Dock="Left"
@@ -919,7 +923,7 @@
                         DataContext="{Binding EditsTab}"
                         Orientation="Horizontal">
                         <elements:IconToggleButton
-                            Icon="{StaticResource arrow_square_down}"
+                            Icon="{StaticResource arrow_down_right_circle}"
                             ap:MouseOverInfoAP.InfoText="Regular Mode"
                             IsChecked="{Binding RegularModeSelected}" />
                         <Rectangle Width="10" Height="10" />
@@ -944,7 +948,7 @@
                             IsChecked="{Binding MirrorVerticalModeSelected}" />
                         <Rectangle Width="10" Height="10" />
                         <elements:IconToggleButton
-                            Icon="{StaticResource channle_share}"
+                            Icon="{StaticResource pair}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Tile Rally Mode"
                             IsChecked="{Binding TileSwapModeSelected}" />
@@ -1068,7 +1072,7 @@
                 Grid.Row="1"
                 Margin="10,0"
                 ap:MouseOverInfoAP.EnableMouseUpdates="True"
-                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp}"
+                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ClipToBounds="True"
                 DropCommand="{Binding FileDropDestinationCommand}">
                 <ScrollViewer
@@ -1148,6 +1152,7 @@
 
                             <Image
                                 Name="SelectionPreviewImage"
+                                RenderOptions.BitmapInterpolationMode="None"
                                 Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
                                 IsHitTestVisible="False"
@@ -1189,6 +1194,15 @@
                                 Stroke="DarkOrchid"
                                 StrokeDashArray="1,1"
                                 StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Line
+                                IsVisible="{Binding TargetPosShape.IsVisible}"
+                                StartPoint="{Binding OriginalPosShape.CenterT, Converter={StaticResource TupleToPointConverter}}"
+                                EndPoint="{Binding TargetPosShape.CenterT, Converter={StaticResource TupleToPointConverter}}"
+                                Stroke="MediumOrchid"
+                                StrokeThickness="{Binding TargetPosShape.StrokeThickness}"
+                                StrokeDashArray="1,1"
+                                IsHitTestVisible="False"/>
 
                             <Rectangle
                                 Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"

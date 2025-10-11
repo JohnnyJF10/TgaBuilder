@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
+using static System.Drawing.PSD.ResolutionInfo;
 
 namespace TgaBuilderAvaloniaUi.Services
 {
@@ -43,7 +44,7 @@ namespace TgaBuilderAvaloniaUi.Services
                 return false;
             }
 
-                            var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
+            var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
                 ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
                 : null;
 
@@ -95,15 +96,22 @@ namespace TgaBuilderAvaloniaUi.Services
 
                 string optionName = "Others";
 
+                string displayExt = GetExtensionNames(fileTypes);
+
                 optionName = GetSpecialOptionHeaderStrings(fileTypes);
 
-                var fpft = new FilePickerFileType(optionName)
+                var fpft = new FilePickerFileType($"{optionName} ({displayExt})")
                 {
                     Patterns = patterns
                 };
 
                 fileTypeFilters.Add(fpft);
             }
+
+            fileTypeFilters.Add(new FilePickerFileType("All Files")
+            {
+                Patterns = new[] { "*.*" }
+            });
 
             var suggestedStartLocation = initDir != null && Directory.Exists(initDir)
                 ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
@@ -207,22 +215,50 @@ namespace TgaBuilderAvaloniaUi.Services
             }
         }
 
+        private void AddPattern(string ext, List<string> patternList)
+        {
+            patternList.Add($"*.{ext.ToLower()}");
+            patternList.Add($"*.{ext.ToUpper()}");
+            patternList.Add($"*.{char.ToUpper(ext[0]) + ext.Substring(1).ToLower()}");
+        }
+
         private List<string> GetPattern(FileTypes types)
         {
             var result = new List<string>();
 
-            if (types.HasFlag(FileTypes.TGA)) result.Add("*.tga");
-            if (types.HasFlag(FileTypes.BMP)) result.Add("*.bmp");
-            if (types.HasFlag(FileTypes.PNG)) result.Add("*.png");
-            if (types.HasFlag(FileTypes.JPG)) result.Add("*.jpg");
-            if (types.HasFlag(FileTypes.JPEG)) result.Add("*.jpeg");
-            if (types.HasFlag(FileTypes.PSD)) result.Add("*.psd");
-            if (types.HasFlag(FileTypes.DDS)) result.Add("*.dds");
-            if (types.HasFlag(FileTypes.PHD)) result.Add("*.phd");
-            if (types.HasFlag(FileTypes.TR2)) result.Add("*.tr2");
-            if (types.HasFlag(FileTypes.TR4)) result.Add("*.tr4");
-            if (types.HasFlag(FileTypes.TRC)) result.Add("*.trc");
-            if (types.HasFlag(FileTypes.TEN)) result.Add("*.ten");
+            if (types.HasFlag(FileTypes.TGA)) AddPattern("tga", result);
+            if (types.HasFlag(FileTypes.BMP)) AddPattern("bmp", result);
+            if (types.HasFlag(FileTypes.PNG)) AddPattern("png", result);
+            if (types.HasFlag(FileTypes.JPG)) AddPattern("jpg", result);
+            if (types.HasFlag(FileTypes.JPEG)) AddPattern("jpeg", result);
+            if (types.HasFlag(FileTypes.PSD)) AddPattern("psd", result);
+            if (types.HasFlag(FileTypes.DDS)) AddPattern("dds", result);
+            if (types.HasFlag(FileTypes.PHD)) AddPattern("phd", result);
+            if (types.HasFlag(FileTypes.TR2)) AddPattern("tr2", result);
+            if (types.HasFlag(FileTypes.TR4)) AddPattern("tr4", result);
+            if (types.HasFlag(FileTypes.TRC)) AddPattern("trc", result);
+            if (types.HasFlag(FileTypes.TEN)) AddPattern("ten", result);
+
+            return result;
+        }
+
+        private string GetExtensionNames(FileTypes types)
+        {
+            var result = string.Empty;
+
+            if (types.HasFlag(FileTypes.TGA)) result += "*.tga, ";
+            if (types.HasFlag(FileTypes.BMP)) result += "*.bmp, ";
+            if (types.HasFlag(FileTypes.PNG)) result += "*.png, ";
+            if (types.HasFlag(FileTypes.JPG)) result += "*.jpg, ";
+            if (types.HasFlag(FileTypes.JPEG)) result += "*.jpeg, ";
+            if (types.HasFlag(FileTypes.PSD)) result += "*.psd, ";
+            if (types.HasFlag(FileTypes.DDS)) result += "*.dds, ";
+            if (types.HasFlag(FileTypes.PHD)) result += "*.phd, ";
+            if (types.HasFlag(FileTypes.TR2)) result += "*.tr2, ";
+            if (types.HasFlag(FileTypes.TR4)) result += "*.tr4, ";
+            if (types.HasFlag(FileTypes.TRC)) result += "*.trc, ";
+            if (types.HasFlag(FileTypes.TEN)) result += "*.ten, ";
+            if (result.EndsWith(", ")) result = result.Substring(0, result.Length - 2);
 
             return result;
         }

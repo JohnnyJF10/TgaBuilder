@@ -92,7 +92,7 @@ namespace TgaBuilderLib.ViewModel
         private string _pixelInfo = string.Empty;
         private string _tileInfo = string.Empty;
         private string _panelInfo = string.Empty;
-        private string _panelHelp = string.Empty;
+        private PanelHelpType _panelHelp;
 
 
         private PanelMouseCommand? _mousePanelCommand;
@@ -179,7 +179,7 @@ namespace TgaBuilderLib.ViewModel
             get => _panelInfo;
             set => SetCallerProperty(ref _panelInfo, value);
         }
-        public string PanelHelp
+        public PanelHelpType PanelHelp
         {
             get => _panelHelp;
             set => SetCallerProperty(ref _panelHelp, value);
@@ -372,7 +372,11 @@ namespace TgaBuilderLib.ViewModel
             PixelInfo = panel.PixelInfo;
             TileInfo = panel.TileInfo;
             PanelInfo = panel.PanelInfo;
-            PanelHelp = panel.PanelHelp;
+            PanelHelp = isTarget 
+                ? Selection.IsPlacing 
+                    ? PanelHelpType.DestinationOnPanelPlacingInfo 
+                    : PanelHelpType.DestinationOnPanelPickingInfo
+                : PanelHelpType.SourceOnPanelInfo;
 
             _undoCommand?.RaiseCanExecuteChanged();
             _redoCommand?.RaiseCanExecuteChanged();
@@ -412,14 +416,14 @@ namespace TgaBuilderLib.ViewModel
                 Destination.MouseLeave();
                 PanelInfo = $"{Destination.Presenter.PixelWidth} x {Destination.Presenter.PixelHeight}px, " +
                             $"{(Destination.Presenter.HasAlpha ? 32 : 24)} bpp";
-                PanelHelp = $"Destination Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
+                PanelHelp = PanelHelpType.DestinationOnPanZoomInfo;
             }
             else
             {
                 Source.MouseLeave();
                 PanelInfo = $"{Source.Presenter.PixelWidth} x {Source.Presenter.PixelHeight}px, " +
                             $"{(Source.Presenter.HasAlpha ? 32 : 24)} bpp";
-                PanelHelp = $"Source Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
+                PanelHelp = PanelHelpType.SourceOnPanZoomInfo;
             }
 
             PanelInfoVisible = false;

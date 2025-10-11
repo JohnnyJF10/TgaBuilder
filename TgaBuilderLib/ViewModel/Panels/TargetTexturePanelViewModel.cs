@@ -71,12 +71,6 @@ namespace TgaBuilderLib.ViewModel
             $"{Presenter.PixelWidth / Picker.Size * Presenter.PixelHeight / Picker.Size} tiles), " +
             $"{(Presenter.HasAlpha ? 32 : 24)}bpp";
 
-
-        public override string PanelHelp
-            => "Destination Panel: " + (Selection.IsPlacing 
-                ? "Left: Place, Right: Discard" 
-                : "Left: Select, Right: Animate");
-
         public double Opacity { get; set; } = 1.0;
 
         public override double Zoom
