@@ -155,9 +155,9 @@ Please also note that this tool is licensed under the MIT licence.
   - **Number of Textures**
 - Define square resize size for textures
 
-### Offset Tab (Source Panel)
+### Grid Tab (Source Panel)
 
-![Offset Tab](Screenshots/TabOffset.png)
+![Offset Tab](Screenshots/TabGrid.png)
 
 From left to rigth:
 - Set **X offset**
