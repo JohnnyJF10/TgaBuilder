@@ -1,4 +1,4 @@
-﻿<ui:FluentWindow
+﻿<elements:AsyncWindow
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     x:Class="TgaBuilderWpfUi.View.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -65,6 +65,7 @@
             <converter:BrushToColorStruct               x:Key="BrushToColorStruct"/>
             <converter:BoolToStrokeDashStyleConverter   x:Key="BoolToStrokeDashStyleConverter"/>
             <converter:ColorStructToBrush               x:Key="ColorStructToBrush"/>
+            <converter:PanelHelpConverter               x:Key="PanelHelpConverter"/>
             <Style TargetType="{x:Type elements:ContextMenuButton}"
                     BasedOn="{StaticResource {x:Type ui:Button}}"/>
         </ResourceDictionary>
@@ -563,7 +564,7 @@
                 Grid.Row="1"
                 Margin="10,0"
                 DropCommand="{Binding FileDropSourceCommand}"
-                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp}"
+                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ap:MouseOverInfoAP.EnableMouseUpdates="True"
                 >
                 <ScrollViewer
@@ -1342,7 +1343,7 @@
                 Margin="10,0"
                 ClipToBounds="True"
                 DropCommand="{Binding FileDropDestinationCommand}"
-                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp}"
+                ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ap:MouseOverInfoAP.EnableMouseUpdates="True"
                 >
                 <ScrollViewer
@@ -1651,4 +1652,4 @@
             Grid.RowSpan="5"
             />
     </Grid>
-</ui:FluentWindow>
+</elements:AsyncWindow>

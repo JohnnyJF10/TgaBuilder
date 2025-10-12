@@ -21,33 +21,32 @@ namespace TgaBuilderWpfUi.Services
 
         public string SelectedPath { get; set; } = "";
 
-        public bool OpenFileDialog(
+        public Task <bool> OpenFileDialog(
             FileTypes types,
-            string? InitDir = null,
-            string? Title = null)
+            string? initDir = null,
+            string? title = null)
         {
             var openFileDialog = new OpenFileDialog();
 
             openFileDialog.Filter = GetConvergedFilter(types);
             openFileDialog.Filter += "|All Files (*.*)|*.*";
             openFileDialog.DefaultExt = GetDefaultExt(types);
-            openFileDialog.Title = Title ?? DEFAULT_OPEN_FILE_TITLE;
+            openFileDialog.Title = title ?? DEFAULT_OPEN_FILE_TITLE;
 
-            if (InitDir != null) openFileDialog.InitialDirectory = InitDir;
+            if (initDir != null) openFileDialog.InitialDirectory = initDir;
 
-            if (openFileDialog.ShowDialog() == true)
-            {
+            var result = openFileDialog.ShowDialog() == true;
+
+            if (result)
                 SelectedPath = openFileDialog.FileName;
-                return true;
-            }
 
-            return false;
+            return Task.FromResult(result);
         }
 
-        public bool OpenFileDialog(
+        public Task<bool> OpenFileDialog(
             List<FileTypes> typesList,
-            string? InitDir = null,
-            string? Title = null)
+            string? initDir = null,
+            string? title = null)
         {
             var openFileDialog = new OpenFileDialog();
 
@@ -61,47 +60,47 @@ namespace TgaBuilderWpfUi.Services
             openFileDialog.Filter = string.Join("|", filterParts);
             openFileDialog.Filter += "|All Files (*.*)|*.*"; 
             openFileDialog.DefaultExt = GetDefaultExt(typesList.First()); 
-            openFileDialog.Title = Title ?? DEFAULT_OPEN_FILE_TITLE;
+            openFileDialog.Title = title ?? DEFAULT_OPEN_FILE_TITLE;
 
-            if (InitDir != null) openFileDialog.InitialDirectory = InitDir;
+            if (initDir != null) openFileDialog.InitialDirectory = initDir;
 
-            if (openFileDialog.ShowDialog() == true)
-            {
+            var result = openFileDialog.ShowDialog() == true;
+
+            if (result)
                 SelectedPath = openFileDialog.FileName;
-                return true;
-            }
 
-            return false;
+            return Task.FromResult(result);
         }
 
-        public bool SaveFileDialog(
+        public Task<bool> SaveFileDialog(
             FileTypes types,
-            string? InitDir = null, 
-            string? Title = null)
+            string? initDir = null, 
+            string? title = null)
         {
             var saveFileDialog = new SaveFileDialog();
 
             saveFileDialog.Filter = GetSeperatedFilter(types);
-            saveFileDialog.Title = Title ?? DEFAULT_SAVE_FILE_TITLE;
-            if (InitDir != null) saveFileDialog.InitialDirectory = InitDir;
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                SelectedPath = saveFileDialog.FileName;
-                return true;
-            }
+            saveFileDialog.Title = title ?? DEFAULT_SAVE_FILE_TITLE;
+            if (initDir != null) saveFileDialog.InitialDirectory = initDir;
 
-            return false;
+            var result = saveFileDialog.ShowDialog() == true;
+
+            if (result)
+                SelectedPath = saveFileDialog.FileName;
+
+            return Task.FromResult(result);
         }
 
-        public bool SelectFolderDialog(string? InitDir = null, string? Title = null)
+        public Task<bool> SelectFolderDialog(string? initDir = null, string? title = null)
         {
-            string? folder = FolderPicker.ShowDialog(Title ?? DEFAULT_OPEN_FOLDER_TITLE, null);
-            if (folder != null)
-            {
-                SelectedPath = folder;
-                return true;
-            }
-            return false;
+            string? folder = FolderPicker.ShowDialog(title ?? DEFAULT_OPEN_FOLDER_TITLE, null);
+
+            var result = !string.IsNullOrWhiteSpace(folder);
+
+            if (result)
+                SelectedPath = folder!;
+            
+            return Task.FromResult(result);
         }
 
         private string GetConvergedFilter(FileTypes selectedTypes, string OptionName = "All supported files")

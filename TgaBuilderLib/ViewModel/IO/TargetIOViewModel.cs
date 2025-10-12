@@ -87,10 +87,9 @@ namespace TgaBuilderLib.ViewModel
         {
             if (_undoRedoManager.IsTargetDirty())
             {
-                var result = _messageBoxService.ShowYesNoCancelMessageBox(
+                var result = await _messageBoxService.ShowYesNoCancelMessageBox(
                     Header: "Save changes?",
-                    Message: "Do you want to save changes?")
-                    .Result;
+                    Message: "Do you want to save changes?");
                 switch (result)
                 {
                     case YesNoCancel.Yes:
@@ -114,10 +113,9 @@ namespace TgaBuilderLib.ViewModel
         {
             if (_undoRedoManager.IsTargetDirty())
             {
-                var result = _messageBoxService.ShowYesNoCancelMessageBox(
+                var result = await _messageBoxService.ShowYesNoCancelMessageBox(
                     Header: "Save changes?",
-                    Message: "Do you want to save changes?")
-                    .Result;
+                    Message: "Do you want to save changes?");
                 switch (result)
                 {
                     case YesNoCancel.Yes:
@@ -143,10 +141,9 @@ namespace TgaBuilderLib.ViewModel
         {
             if (_undoRedoManager.IsTargetDirty())
             {
-                var result = _messageBoxService.ShowYesNoCancelMessageBox(
+                var result = await _messageBoxService.ShowYesNoCancelMessageBox(
                     Header: "Save changes?",
-                    Message: "Do you want to save changes?")
-                    .Result;
+                    Message: "Do you want to save changes?");
                 switch (result)
                 {
                     case YesNoCancel.Yes:
@@ -158,9 +155,12 @@ namespace TgaBuilderLib.ViewModel
             }
 
             if (String.IsNullOrEmpty(fileName))
-                if (_fileService.OpenFileDialog(DEF_FILE_TYPES) == true)
+            {
+                bool? dialogResult = await _fileService.OpenFileDialog(DEF_FILE_TYPES);
+                if (dialogResult == true)
                     fileName = _fileService.SelectedPath;
                 else return;
+            }
 
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;
@@ -219,9 +219,13 @@ namespace TgaBuilderLib.ViewModel
         private async Task<bool> Save(string? fileName = null)
         {
             if (String.IsNullOrEmpty(fileName) || !IsFileWriteable(fileName))
-                if (_fileService.SaveFileDialog(WRITEABLE_FILE_TYPES) == true)
+            {
+                var dialogResult = await _fileService.SaveFileDialog(WRITEABLE_FILE_TYPES);
+                
+                if (dialogResult == true)
                     fileName = _fileService.SelectedPath;
                 else return false;
+            }
 
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;

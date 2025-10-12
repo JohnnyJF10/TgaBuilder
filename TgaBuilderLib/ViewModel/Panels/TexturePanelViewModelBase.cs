@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.FileHandling;
@@ -81,9 +82,6 @@ namespace TgaBuilderLib.ViewModel
 
 
         public abstract string PanelInfo { get; }
-        public abstract string PanelHelp { get; }
-
-
 
         public abstract double Zoom { get; set; }
 
@@ -152,6 +150,8 @@ namespace TgaBuilderLib.ViewModel
             Picker.IsVisible = false;
 
             AnimSelectShape.SetShapeProperties(xGrid, yGrid, Picker.Size);
+
+            Debug.WriteLine($"AnimSelectShape: {AnimSelectShape.X}, {AnimSelectShape.Y}, {AnimSelectShape.Width}, {AnimSelectShape.Height}");
         }
 
         public void SetupAnimation()
@@ -230,7 +230,6 @@ namespace TgaBuilderLib.ViewModel
             Presenter = _bitmapOperations.ConvertRGB24ToBGRA32(Presenter);
 
             OnPropertyChanged(nameof(Presenter));
-            OnPropertyChanged(nameof(PanelHelp));
         }
 
         protected void ConvertToRgb24Base()
@@ -241,7 +240,6 @@ namespace TgaBuilderLib.ViewModel
             Presenter = _bitmapOperations.ConvertBGRA32ToRGB24(Presenter);
 
             OnPropertyChanged(nameof(Presenter));
-            OnPropertyChanged(nameof(PanelHelp));
         }
 
         protected void TerminateAllUserActions()

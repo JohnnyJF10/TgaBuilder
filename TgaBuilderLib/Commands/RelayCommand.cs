@@ -19,14 +19,13 @@ namespace TgaBuilderLib.Commands
         public void Execute(object? parameter) =>
             _execute();
 
-        public event EventHandler? CanExecuteChanged
-        {
-            add => CommandManagerProxy.RequerySuggested += value!;
-            remove => CommandManagerProxy.RequerySuggested -= value!;
-        }
+        public event EventHandler? CanExecuteChanged;
 
-        public void RaiseCanExecuteChanged() =>
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
             CommandManagerProxy.InvalidateRequerySuggested();
+        }
     }
 
     public class RelayCommand<T> : ICommand
@@ -62,13 +61,16 @@ namespace TgaBuilderLib.Commands
                 throw new InvalidCastException($"Parameter of type '{parameter?.GetType().Name}' cannot be cast to type {typeof(T).Name}.");
         }
 
-        public event EventHandler? CanExecuteChanged
-        {
-            add => CommandManagerProxy.RequerySuggested += value!;
-            remove => CommandManagerProxy.RequerySuggested -= value!;
-        }
+        public event EventHandler? CanExecuteChanged;
+        //{
+        //    add => CommandManagerProxy.RequerySuggested += value!;
+        //    remove => CommandManagerProxy.RequerySuggested -= value!;
+        //}
 
-        public void RaiseCanExecuteChanged() =>
+        public void RaiseCanExecuteChanged()
+        {             
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
             CommandManagerProxy.InvalidateRequerySuggested();
+        }
     }
 }

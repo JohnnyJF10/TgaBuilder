@@ -74,6 +74,9 @@ namespace TgaBuilderLib.ViewModel
 
             DestinationFormatTab.EyedroppingRequested += (_, _)
                 => _currnetlyEyedroppingTab = DestinationFormatTab;
+
+            SourceIO.LoadedSuccessfully += (_, _) 
+                => OnSourceLoadedSuccessfully();
         }
 
         private readonly Func<ViewIndex, IView> _getViewCallback;
@@ -89,11 +92,11 @@ namespace TgaBuilderLib.ViewModel
         private string _pixelInfo = string.Empty;
         private string _tileInfo = string.Empty;
         private string _panelInfo = string.Empty;
-        private string _panelHelp = string.Empty;
+        private PanelHelpType _panelHelp;
 
 
         private PanelMouseCommand? _mousePanelCommand;
-        private RelayCommand? _batchLoaderCommand;
+        private AsyncCommand? _batchLoaderCommand;
         private RelayCommand? _aboutCommand;
         private RelayCommand? _entireToSourceCommand;
         private AsyncCommand? _entireToTargetCommand;
@@ -121,6 +124,8 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand<(bool, bool)>? _wheelShiftCommand;
         private RelayCommand? _switchToDestinationPlacingModeCommand;
 
+
+        public IVisualInvalidator? VisualInvalidator { get; set; }
 
         public SourceTexturePanelViewModel Source { get; set; }
         public TargetTexturePanelViewModel Destination { get; set; }
@@ -174,7 +179,7 @@ namespace TgaBuilderLib.ViewModel
             get => _panelInfo;
             set => SetCallerProperty(ref _panelInfo, value);
         }
-        public string PanelHelp
+        public PanelHelpType PanelHelp
         {
             get => _panelHelp;
             set => SetCallerProperty(ref _panelHelp, value);
@@ -250,10 +255,10 @@ namespace TgaBuilderLib.ViewModel
             ??= new(TargetIO.CancelOpen);
 
         public ICommand UndoCommand => _undoCommand 
-            ??= new(() => _undoRedoManager.Undo(), () => _undoRedoManager.CanUndo);
+            ??= new(Undo, () => _undoRedoManager.CanUndo);
 
         public ICommand RedoCommand => _redoCommand 
-            ??= new(() => _undoRedoManager.Redo(), () => _undoRedoManager.CanRedo);
+            ??= new(Redo, () => _undoRedoManager.CanRedo);
 
         public ICommand CopyCommand => _copyCommand 
             ??= new(Selection.Copy);
@@ -367,7 +372,14 @@ namespace TgaBuilderLib.ViewModel
             PixelInfo = panel.PixelInfo;
             TileInfo = panel.TileInfo;
             PanelInfo = panel.PanelInfo;
-            PanelHelp = panel.PanelHelp;
+            PanelHelp = isTarget 
+                ? Selection.IsPlacing 
+                    ? PanelHelpType.DestinationOnPanelPlacingInfo 
+                    : PanelHelpType.DestinationOnPanelPickingInfo
+                : PanelHelpType.SourceOnPanelInfo;
+
+            _undoCommand?.RaiseCanExecuteChanged();
+            _redoCommand?.RaiseCanExecuteChanged();
         }
 
         private void HanldeEyedropperEnd()
@@ -381,7 +393,7 @@ namespace TgaBuilderLib.ViewModel
         {
             var aboutView = _getViewCallback(ViewIndex.About);
 
-            aboutView.ShowDialog();
+            aboutView.ShowDialogAsync();
         }
 
         public void EnterPanel(bool isTargetPanel)
@@ -404,14 +416,14 @@ namespace TgaBuilderLib.ViewModel
                 Destination.MouseLeave();
                 PanelInfo = $"{Destination.Presenter.PixelWidth} x {Destination.Presenter.PixelHeight}px, " +
                             $"{(Destination.Presenter.HasAlpha ? 32 : 24)} bpp";
-                PanelHelp = $"Destination Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
+                PanelHelp = PanelHelpType.DestinationOnPanZoomInfo;
             }
             else
             {
                 Source.MouseLeave();
                 PanelInfo = $"{Source.Presenter.PixelWidth} x {Source.Presenter.PixelHeight}px, " +
                             $"{(Source.Presenter.HasAlpha ? 32 : 24)} bpp";
-                PanelHelp = $"Source Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom";
+                PanelHelp = PanelHelpType.SourceOnPanZoomInfo;
             }
 
             PanelInfoVisible = false;
@@ -435,6 +447,31 @@ namespace TgaBuilderLib.ViewModel
             panel.SelectedPickerSize += isNegative ? -1 : 1;
 
             TileInfo = panel.TileInfo;
+        }
+
+        private void Undo()
+        {
+            _undoRedoManager.Undo();
+            _redoCommand?.RaiseCanExecuteChanged();
+            _undoCommand?.RaiseCanExecuteChanged();
+
+            VisualInvalidator?.InvalidateVisual();
+        }
+
+        private void Redo()
+        {
+            _undoRedoManager.Redo();
+            _undoCommand?.RaiseCanExecuteChanged();
+            _redoCommand?.RaiseCanExecuteChanged();
+
+            VisualInvalidator?.InvalidateVisual();
+        }
+
+        private void OnSourceLoadedSuccessfully()
+        {
+            _reloadSourceCommand?.RaiseCanExecuteChanged();
+            _openPreviousSourceCommand?.RaiseCanExecuteChanged();
+            _openNextSourceCommand?.RaiseCanExecuteChanged();
         }
 
         private async Task CheckUsageDataLoading(IUsageData usageData)

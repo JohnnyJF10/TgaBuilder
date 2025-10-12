@@ -6,23 +6,23 @@ namespace TgaBuilderLib.Abstraction
     {
         string SelectedPath { get; set; }
 
-        public bool OpenFileDialog(
+        public Task <bool> OpenFileDialog(
             FileTypes types,
-            string? InitDir = null,
-            string? Title = null);
+            string? initDir = null,
+            string? title = null);
 
-        public bool OpenFileDialog(
+        public Task <bool> OpenFileDialog(
             List<FileTypes> typesList,
-            string? InitDir = null,
-            string? Title = null);
+            string? initDir = null,
+            string? title = null);
 
-        public bool SaveFileDialog(
+        public Task <bool> SaveFileDialog(
             FileTypes types,
-            string? InitDir = null,
-            string? Title = null);
+            string? initDir = null,
+            string? title = null);
 
-        bool SelectFolderDialog(
-            string? InitDir = null, 
-            string? Title = null);
+        public Task <bool> SelectFolderDialog(
+            string? initDir = null, 
+            string? title = null);
     }
 }

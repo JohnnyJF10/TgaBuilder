@@ -2,18 +2,18 @@
 {
     public interface IView
     {
-        public void Show();
+        Task ShowAsync();
 
-        public void Hide();
+        Task HideAsync();
 
-        public void Close();
+        Task CloseAsync();
 
-        public bool? ShowDialog();
+        Task<bool?> ShowDialogAsync();
 
-        public bool? DialogResult { get; set; }
+        bool? DialogResult { get; set; }
 
-        public object? DataContext { get; set; }
+        object? DataContext { get; set; }
 
-        public bool IsLoaded { get; }
+        bool IsLoaded { get; }
     }
 }

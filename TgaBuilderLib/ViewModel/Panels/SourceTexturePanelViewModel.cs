@@ -49,9 +49,6 @@ namespace TgaBuilderLib.ViewModel
         public override string PanelInfo
             => $"{Presenter.PixelWidth} x {Presenter.PixelHeight}px, {(Presenter.HasAlpha ? 32 : 24)}bpp";
 
-        public override string PanelHelp
-            => $"Source Panel: Left: Select, Right: Animate, Alt: Free selecting, Double Left: Move Grid";
-
         public override double Zoom
         {
             get => _zoom;

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
+using TgaBuilderWpfUi.Elements;
 using TgaBuilderWpfUi.Services;
 using Wpf.Ui.Appearance;
 using WPFZoomPanel;
@@ -12,10 +13,13 @@ using Image = System.Windows.Controls.Image;
 
 namespace TgaBuilderWpfUi.View
 {
-    public partial class MainWindow : FluentWindow, IView, ISnackbarOwner
+    public partial class MainWindow : AsyncWindow, ISnackbarOwner
     {
         public Image? CurrentImage { get; set; }
         public ZoomPanel? CurrentPanel { get; set; }
+
+        public bool IsLoaded => throw new NotImplementedException();
+
         public Cursor EyedropperCursor = new(Application
             .GetResourceStream(
             new Uri("Resources/eyedropper.cur", UriKind.Relative))
@@ -27,14 +31,14 @@ namespace TgaBuilderWpfUi.View
 
         public MainWindow(INotifyPropertyChanged mainViewModel)
         {
-            PreviewMouseDown += Window_PreviewMouseDown;
-            MouseDoubleClick += Window_MouseDoubleClick;
-            PreviewMouseMove += Window_PreviewMouseMove;
-            PreviewMouseUp += Window_PreviewMouseUp;
-            PreviewMouseWheel += MainWindow_PreviewMouseWheel;
+            base.PreviewMouseDown += Window_PreviewMouseDown;
+            base.MouseDoubleClick += Window_MouseDoubleClick;
+            base.PreviewMouseMove += Window_PreviewMouseMove;
+            base.PreviewMouseUp += Window_PreviewMouseUp;
+            base.PreviewMouseWheel += MainWindow_PreviewMouseWheel;
 
             InitializeComponent();
-            DataContext = mainViewModel;
+            base.DataContext = mainViewModel;
         }
     }
 }
