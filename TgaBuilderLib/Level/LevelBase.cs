@@ -126,7 +126,7 @@ namespace TgaBuilderLib.Level
                 yOffset += rowHeight;
             }
 
-            targetPanelHeight = NextHigherMultiple(yOffset, ORIGINAL_PAGE_SIZE); 
+            targetPanelHeight = NextHigherMultiple(yOffset, ORIGINAL_PAGE_SIZE);
 
             return positions.ToList();
         }
@@ -155,9 +155,9 @@ namespace TgaBuilderLib.Level
 
             // IWriteableBitmap with capped height
             IWriteableBitmap IWriteableBitmap = _mediaFactory.CreateEmptyBitmap(
-                width:      targetPanelWidth,
-                height:     actualHeight,
-                hasAlpha:   true);
+                width: targetPanelWidth,
+                height: actualHeight,
+                hasAlpha: true);
 
             var dirtyRect = new PixelRect(0, 0, targetPanelWidth, actualHeight);
 
@@ -165,10 +165,10 @@ namespace TgaBuilderLib.Level
 
             // Only visible area
             Marshal.Copy(
-                source:         TargetAtlas, 
-                startIndex:     0, 
-                destination:    locker.BackBuffer, 
-                length:         croppedSize);
+                source: TargetAtlas,
+                startIndex: 0,
+                destination: locker.BackBuffer,
+                length: croppedSize);
 
             return IWriteableBitmap;
         }

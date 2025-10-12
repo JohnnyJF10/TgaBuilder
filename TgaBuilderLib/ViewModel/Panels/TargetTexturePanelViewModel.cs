@@ -27,26 +27,26 @@ namespace TgaBuilderLib.ViewModel
 
             PickerViewModel pickerVM,
             AnimSelectShapeViewModel animSelectShapeVM,
-            SelectionShapeViewModel selectionShapeVM) 
+            SelectionShapeViewModel selectionShapeVM)
             : base(
-                cursorSetter:         cursorSetter,
-                bitmapOperations:     bitmapOperations,
-                eyeDropper:           eyeDropper,
+                cursorSetter: cursorSetter,
+                bitmapOperations: bitmapOperations,
+                eyeDropper: eyeDropper,
 
-                presenter:            presenter,
+                presenter: presenter,
 
-                SelectionVM:          SelectionVM,
-                AnimationVM:          AnimationVM,
+                SelectionVM: SelectionVM,
+                AnimationVM: AnimationVM,
 
-                pickerVM:             pickerVM,
-                animSelectShapeVM:    animSelectShapeVM,
-                selectionShapeVM:     selectionShapeVM)
+                pickerVM: pickerVM,
+                animSelectShapeVM: animSelectShapeVM,
+                selectionShapeVM: selectionShapeVM)
         {
             _mediaFactory = mediaFactory;
             _undoRedoManager = undoRedoManager;
 
             OriginalPosShape = originalPosShapeVM;
-            TargetPosShape =   targetPosShapeVM;
+            TargetPosShape = targetPosShapeVM;
         }
 
         private readonly IMediaFactory _mediaFactory;
@@ -122,9 +122,9 @@ namespace TgaBuilderLib.ViewModel
 
         public override void SetZoom(double zoom)
         {
-            if (zoom == _zoom) 
+            if (zoom == _zoom)
                 return;
-            if (zoom <= 0) 
+            if (zoom <= 0)
                 zoom = 1;
 
             _zoom = zoom;
@@ -157,7 +157,7 @@ namespace TgaBuilderLib.ViewModel
                 {
                     IsPreviewVisible = true;
                 }
-                else 
+                else
                 {
                     OriginalPosShape.IsVisible = true;
                     TargetPosShape.IsVisible = true;
@@ -261,10 +261,10 @@ namespace TgaBuilderLib.ViewModel
 
         public override void RightDrag()
         {
-            if (Selection.IsPlacing) 
+            if (Selection.IsPlacing)
             {
                 Selection.IsPlacing = false;
-                IsPreviewVisible = false; 
+                IsPreviewVisible = false;
             }
             else
                 ManageAnimSelectShape();
@@ -276,7 +276,7 @@ namespace TgaBuilderLib.ViewModel
         public override void RightDragEnd()
         {
             if (!Selection.IsPlacing)
-                SetupAnimation(); 
+                SetupAnimation();
 
             EndPlacingStartPicking();
         }
@@ -343,7 +343,7 @@ namespace TgaBuilderLib.ViewModel
             Picker.IsVisible = true;
         }
 
-        private void PlaceTileAndUpdateView(bool? PlaceContiniously = null,  bool? PlaceAndSwap = null)
+        private void PlaceTileAndUpdateView(bool? PlaceContiniously = null, bool? PlaceAndSwap = null)
         {
             if (PlaceContiniously is null)
                 PlaceContiniously = placingMode.HasFlag(PlacingMode.PlaceContinuously);
@@ -365,9 +365,9 @@ namespace TgaBuilderLib.ViewModel
 
             if (PlaceAndSwap == true)
                 _bitmapOperations.SwapBitmap = _mediaFactory.CreateEmptyBitmap(
-                    width:     SelectionWidth,
-                    height:    SelectionHeight,
-                    hasAlpha:  Presenter.HasAlpha);
+                    width: SelectionWidth,
+                    height: SelectionHeight,
+                    hasAlpha: Presenter.HasAlpha);
             else
                 _bitmapOperations.SwapBitmap = null;
 
@@ -377,29 +377,29 @@ namespace TgaBuilderLib.ViewModel
                 var redoPixels = _undoRedoManager.RentUndoRedoArray();
 
                 _bitmapOperations.FillRectBitmap(
-                    source:         Selection.Presenter,
-                    target:         Presenter,
-                    pos:            (Picker.X, Picker.Y),
-                    undoPixels:     undoPixels,
-                    redoPixels:     redoPixels,
-                    opacity:        Opacity,
-                    placingMode:    placingMode);
+                    source: Selection.Presenter,
+                    target: Presenter,
+                    pos: (Picker.X, Picker.Y),
+                    undoPixels: undoPixels,
+                    redoPixels: redoPixels,
+                    opacity: Opacity,
+                    placingMode: placingMode);
 
                 _undoRedoManager.PushBitmapEditAction(
-                    region: new PixelRect(Picker.X, Picker.Y, 
+                    region: new PixelRect(Picker.X, Picker.Y,
                         SelectionWidth, SelectionHeight),
-                    oldPixels:          undoPixels,
-                    newPixels:          redoPixels,
-                    placingCallback:    UndoRedoPlacing);
+                    oldPixels: undoPixels,
+                    newPixels: redoPixels,
+                    placingCallback: UndoRedoPlacing);
             }
             else
             {
                 _bitmapOperations.FillRectBitmapUnmonitored(
-                    source:         Selection.Presenter,
-                    target:         Presenter,
-                    pos:            (Picker.X, Picker.Y),
-                    opacity:        Opacity,
-                    placingMode:    placingMode);
+                    source: Selection.Presenter,
+                    target: Presenter,
+                    pos: (Picker.X, Picker.Y),
+                    opacity: Opacity,
+                    placingMode: placingMode);
 
                 _undoRedoManager.ClearAllOutOfMemory();
             }
@@ -415,7 +415,7 @@ namespace TgaBuilderLib.ViewModel
         {
             _bitmapOperations.FillRectArray(
                 bitmap: Presenter,
-                rect:   rect,
+                rect: rect,
                 pixels: pixels);
         }
 
@@ -433,29 +433,29 @@ namespace TgaBuilderLib.ViewModel
                     : (oldWidth - width) * height * (Presenter.HasAlpha ? 4 : 3);
 
                 if (_undoRedoManager.TryBeginRenting(
-                    totalSizeInBytes:   requiredBytes,
-                    arraysNeeded:       1))
+                    totalSizeInBytes: requiredBytes,
+                    arraysNeeded: 1))
                 {
                     var undoPixels = _undoRedoManager.RentUndoRedoArray();
 
-                    Presenter = height < oldHeight 
+                    Presenter = height < oldHeight
                         ? _bitmapOperations.ResizeHeightMonitored(
-                            sourceBitmap:   Presenter,
-                            newHeight:      height,
-                            undoData:       undoPixels)
+                            sourceBitmap: Presenter,
+                            newHeight: height,
+                            undoData: undoPixels)
                         : _bitmapOperations.ResizeWidthMonitored(
-                            sourceBitmap:   Presenter,
-                            newWidth:       width,
-                            undoData:       undoPixels);
+                            sourceBitmap: Presenter,
+                            newWidth: width,
+                            undoData: undoPixels);
 
                     _undoRedoManager.PushResizeSmallerAction(
-                        croppedPixels:          undoPixels,
-                        oldWidth:               oldWidth,
-                        newWidth:               width,
-                        oldHeight:              oldHeight,
-                        newHeight:              height,
-                        resizeLargerCallback:   UndoRedoEnlargeAndFillPresenter,
-                        resizeSmallerCallback:  UndoRedoResizePresenter);
+                        croppedPixels: undoPixels,
+                        oldWidth: oldWidth,
+                        newWidth: width,
+                        oldHeight: oldHeight,
+                        newHeight: height,
+                        resizeLargerCallback: UndoRedoEnlargeAndFillPresenter,
+                        resizeSmallerCallback: UndoRedoResizePresenter);
                 }
                 else
                 {
@@ -470,17 +470,17 @@ namespace TgaBuilderLib.ViewModel
             else
             {
                 Presenter = _bitmapOperations.Resize(
-                    sourceBitmap:   Presenter,
-                    newWidth:       width,
-                    newHeight:      height);
+                    sourceBitmap: Presenter,
+                    newWidth: width,
+                    newHeight: height);
 
                 _undoRedoManager.PushResizeLargerAction(
-                    oldWidth:               oldWidth,
-                    newWidth:               width,
-                    oldHeight:              oldHeight,
-                    newHeight:              height,
-                    resizeLargerCallback:   UndoRedoEnlargeandFillPresenter,
-                    resizeSmallerCallback:  UndoRedoResizePresenter);
+                    oldWidth: oldWidth,
+                    newWidth: width,
+                    oldHeight: oldHeight,
+                    newHeight: height,
+                    resizeLargerCallback: UndoRedoEnlargeandFillPresenter,
+                    resizeSmallerCallback: UndoRedoResizePresenter);
             }
             UpdatePanelAfterResize();
         }
@@ -512,15 +512,15 @@ namespace TgaBuilderLib.ViewModel
                     "Either one of the arguments must be greater than the current dimensions of the bitmap.");
 
             Presenter = _bitmapOperations.Resize(
-                sourceBitmap:   Presenter,
-                newWidth:       width,
-                newHeight:      height);
+                sourceBitmap: Presenter,
+                newWidth: width,
+                newHeight: height);
 
 
             _bitmapOperations.FillRectArray(
-                bitmap:     Presenter,
-                rect:       fillRect,
-                pixels:     pixels);
+                bitmap: Presenter,
+                rect: fillRect,
+                pixels: pixels);
 
             UpdatePanelAfterResize();
         }
@@ -538,15 +538,15 @@ namespace TgaBuilderLib.ViewModel
                     "Either one of the arguments must be greater than the current dimensions of the bitmap.");
 
             Presenter = _bitmapOperations.Resize(
-                sourceBitmap:   Presenter,
-                newWidth:       width,
-                newHeight:      height);
+                sourceBitmap: Presenter,
+                newWidth: width,
+                newHeight: height);
 
 
             _bitmapOperations.FillRectColor(
-                bitmap:     Presenter,
-                rect:       fillRect,
-                fillColor:  new(0, 0, 0, 0));
+                bitmap: Presenter,
+                rect: fillRect,
+                fillColor: new(0, 0, 0, 0));
 
             UpdatePanelAfterResize();
         }
@@ -564,20 +564,20 @@ namespace TgaBuilderLib.ViewModel
             int oldHeight = Presenter.PixelHeight;
 
             Presenter = _bitmapOperations.ResizeSorted(
-                oldBitmap:  Presenter,
-                newWidth:   width,
-                tileSize:   Picker.Size);
+                oldBitmap: Presenter,
+                newWidth: width,
+                tileSize: Picker.Size);
 
             int newWidth = Presenter.PixelWidth;
             int newHeight = Presenter.PixelHeight;
 
             _undoRedoManager.PushResizeSortedAction(
-                oldWidth:               oldWidth,
-                newWidth:               newWidth,
-                oldHeight:              oldHeight,
-                newHeight:              newHeight,
-                pickerSize:             Picker.Size,
-                resizeSortedCallback:   UndoRedoResizeSorted);
+                oldWidth: oldWidth,
+                newWidth: newWidth,
+                oldHeight: oldHeight,
+                newHeight: newHeight,
+                pickerSize: Picker.Size,
+                resizeSortedCallback: UndoRedoResizeSorted);
 
             UpdatePanelAfterResize();
         }
@@ -603,7 +603,7 @@ namespace TgaBuilderLib.ViewModel
             _bitmapOperations.RotateRec(Presenter, rect);
 
             _undoRedoManager.PushRegionRotateAction(
-                rectangle:        rect,
+                rectangle: rect,
                 rotatingCallback: RotateUndoRedo);
         }
 
@@ -618,8 +618,8 @@ namespace TgaBuilderLib.ViewModel
             _bitmapOperations.FlipRectHor(Presenter, rect);
 
             _undoRedoManager.PushRegionFlipAction(
-                rectangle:          rect,
-                flippingCallback:   FlipHorizontalUndoRedo);
+                rectangle: rect,
+                flippingCallback: FlipHorizontalUndoRedo);
         }
 
         private void FlipHorizontalUndoRedo(PixelRect rect)
@@ -633,8 +633,8 @@ namespace TgaBuilderLib.ViewModel
             _bitmapOperations.FlipRectVert(Presenter, rect);
 
             _undoRedoManager.PushRegionFlipAction(
-                rectangle:          rect,
-                flippingCallback:   FlipVerticalUndoRedo);
+                rectangle: rect,
+                flippingCallback: FlipVerticalUndoRedo);
         }
 
         private void FlipVerticalUndoRedo(PixelRect rect)
@@ -655,9 +655,9 @@ namespace TgaBuilderLib.ViewModel
                 _tileToShiftPos, (Picker.X, Picker.Y), Picker.Size);
 
             _undoRedoManager.PushRegionMoveAction(
-                origPos:        (OriginalPosShape.X, OriginalPosShape.Y),
-                targetPos:      (TargetPosShape.X, TargetPosShape.Y),
-                tileSize:       Picker.Size,
+                origPos: (OriginalPosShape.X, OriginalPosShape.Y),
+                targetPos: (TargetPosShape.X, TargetPosShape.Y),
+                tileSize: Picker.Size,
                 movingCallback: TileRallyUndoRedo);
 
             EndPlacingStartPicking();
@@ -677,9 +677,9 @@ namespace TgaBuilderLib.ViewModel
                 _tileToShiftPos, (Picker.X, Picker.Y), Picker.Size);
 
             _undoRedoManager.PushRegionMoveAction(
-                origPos:        (OriginalPosShape.X, OriginalPosShape.Y),
-                targetPos:      (TargetPosShape.X, TargetPosShape.Y),
-                tileSize:       Picker.Size,
+                origPos: (OriginalPosShape.X, OriginalPosShape.Y),
+                targetPos: (TargetPosShape.X, TargetPosShape.Y),
+                tileSize: Picker.Size,
                 movingCallback: TileSwitchUndoRedo);
 
             EndPlacingStartPicking();

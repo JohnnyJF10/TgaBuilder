@@ -4,7 +4,7 @@ namespace TgaBuilderLib.ViewModel
 {
     public class VisualGridViewModel : ViewModelBase
     {
-        public VisualGridViewModel( int cellSize = 64)
+        public VisualGridViewModel(int cellSize = 64)
         {
             _cellSize = cellSize;
         }
@@ -73,7 +73,7 @@ namespace TgaBuilderLib.ViewModel
 
         private void SetOffsetX(int value)
         {
-            if (value == _offsetX) 
+            if (value == _offsetX)
                 return;
 
             int maxOffset = Math.Min(CellSize - 1, Math.Abs(SourceWidth - CellSize));
@@ -96,7 +96,7 @@ namespace TgaBuilderLib.ViewModel
 
         private void SetCellSize(int value)
         {
-            if (value == _cellSize) 
+            if (value == _cellSize)
                 return;
 
             _cellSize = value;

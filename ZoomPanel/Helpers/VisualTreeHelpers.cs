@@ -28,7 +28,7 @@ namespace WPFZoomPanel.Helpers
                     return result;
             }
 
-            return null; 
+            return null;
         }
 
         /// <summary>

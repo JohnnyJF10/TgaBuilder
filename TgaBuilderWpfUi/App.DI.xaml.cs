@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Pfim;
-using System.Buffers;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
@@ -17,9 +15,7 @@ using TgaBuilderLib.ViewModel.Views;
 using TgaBuilderWpfUi.Services;
 using TgaBuilderWpfUi.View;
 using TgaBuilderWpfUi.Wrappers;
-using Wpf.Ui.Controls;
 using Application = System.Windows.Application;
-using Color = System.Windows.Media.Color;
 
 namespace TgaBuilderWpfUi
 {
@@ -58,18 +54,18 @@ namespace TgaBuilderWpfUi
             services.AddSingleton<Func<string, int, bool, LevelBase>>(sp =>
                 (fileName, trTexturePanelHorPagesNum, useTrTextureRepacking) =>
                     new TrLevel(
-                        mediaFactory:               sp.GetRequiredService<IMediaFactory>(),
-                        fileName:                   fileName,
-                        trTexturePanelHorPagesNum:  trTexturePanelHorPagesNum,
-                        useTrTextureRepacking:      useTrTextureRepacking,
-                        trngDecrypter:              sp.GetRequiredService<ITrngDecrypter>()));
+                        mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                        fileName: fileName,
+                        trTexturePanelHorPagesNum: trTexturePanelHorPagesNum,
+                        useTrTextureRepacking: useTrTextureRepacking,
+                        trngDecrypter: sp.GetRequiredService<ITrngDecrypter>()));
 
             services.AddSingleton<Func<string, int, LevelBase>>(sp =>
                 (fileName, trTexturePanelHorPagesNum) =>
                     new TenLevel(
-                        mediaFactory:               sp.GetRequiredService<IMediaFactory>(),
-                        fileName:                   fileName,
-                        trTexturePanelHorPagesNum:  trTexturePanelHorPagesNum));
+                        mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                        fileName: fileName,
+                        trTexturePanelHorPagesNum: trTexturePanelHorPagesNum));
         }
 
         private void AddCoreServicesToProvider(IServiceCollection services)

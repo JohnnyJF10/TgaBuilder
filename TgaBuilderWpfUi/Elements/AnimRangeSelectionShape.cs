@@ -9,58 +9,58 @@ namespace TgaBuilderWpfUi.Elements
         // Dependency Properties
         public static readonly new DependencyProperty WidthProperty =
             DependencyProperty.Register(
-                "Width", 
-                typeof(int), 
-                typeof(AnimRangeSelectionShape), 
+                "Width",
+                typeof(int),
+                typeof(AnimRangeSelectionShape),
                 new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly new DependencyProperty HeightProperty =
             DependencyProperty.Register(
-                "Height", 
-                typeof(int), 
-                typeof(AnimRangeSelectionShape), 
+                "Height",
+                typeof(int),
+                typeof(AnimRangeSelectionShape),
                 new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty TopStepPositionProperty =
             DependencyProperty.Register(
-                "TopStepPosition", 
-                typeof(int), 
-                typeof(AnimRangeSelectionShape), 
+                "TopStepPosition",
+                typeof(int),
+                typeof(AnimRangeSelectionShape),
                 new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty BottomStepPositionProperty =
             DependencyProperty.Register(
-                "BottomStepPosition", 
-                typeof(int), 
-                typeof(AnimRangeSelectionShape), 
+                "BottomStepPosition",
+                typeof(int),
+                typeof(AnimRangeSelectionShape),
                 new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty StepHeightProperty =
             DependencyProperty.Register(
-                "StepHeight", 
-                typeof(int), 
-                typeof(AnimRangeSelectionShape), 
+                "StepHeight",
+                typeof(int),
+                typeof(AnimRangeSelectionShape),
                 new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty FillColorProperty =
             DependencyProperty.Register(
-                "FillColor", 
-                typeof(Brush), 
-                typeof(AnimRangeSelectionShape), 
+                "FillColor",
+                typeof(Brush),
+                typeof(AnimRangeSelectionShape),
                 new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty StrokeThicknessProperty =
             DependencyProperty.Register(
-                "StrokeThickness", 
-                typeof(double), 
-                typeof(AnimRangeSelectionShape), 
+                "StrokeThickness",
+                typeof(double),
+                typeof(AnimRangeSelectionShape),
                 new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty StrokeColorProperty =
             DependencyProperty.Register(
-                "StrokeColor", 
-                typeof(Brush), 
-                typeof(AnimRangeSelectionShape), 
+                "StrokeColor",
+                typeof(Brush),
+                typeof(AnimRangeSelectionShape),
                 new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.AffectsRender));
 
         // CLR Properties

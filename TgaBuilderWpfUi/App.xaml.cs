@@ -26,7 +26,7 @@ namespace TgaBuilderWpfUi
 
             MainViewModel mainViewModel = provider.GetRequiredService<MainViewModel>();
 
-            MainWindow mainWindow = provider.GetServices<IView>().ElementAt(0) as MainWindow 
+            MainWindow mainWindow = provider.GetServices<IView>().ElementAt(0) as MainWindow
                 ?? throw new InvalidOperationException("MainWindow not found in DI container");
 
             ApplicationThemeManager.GetAppTheme();
@@ -38,7 +38,7 @@ namespace TgaBuilderWpfUi
                 _ = mainViewModel.DestinationViewTab.DefferedFill();
             };
 
-            mainWindow.ApplicationThemeButton.Click += (_, _) 
+            mainWindow.ApplicationThemeButton.Click += (_, _)
                 => ChangeTheme();
 
             mainWindow.Show();

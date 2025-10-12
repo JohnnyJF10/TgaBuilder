@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderAvaloniaUi.Services
 {
@@ -11,12 +6,12 @@ namespace TgaBuilderAvaloniaUi.Services
     {
         public void SetDefaultCursor()
         {
-            
+
         }
 
         public void SetEyedropperCursor()
         {
-            
+
         }
     }
 }

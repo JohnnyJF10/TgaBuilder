@@ -39,11 +39,11 @@ namespace TgaBuilderWpfUi.Services
                 uiMessage.Message += $" Error: {ex.Message} - Please find more information in the log file.";
 
             snackbarService.Show(
-                title:      uiMessage.Title,
-                message:    uiMessage.Message,
+                title: uiMessage.Title,
+                message: uiMessage.Message,
                 appearance: uiMessage.Appearance,
-                icon:       uiMessage.Icon,
-                timeout:    uiMessage.timeout);
+                icon: uiMessage.Icon,
+                timeout: uiMessage.timeout);
         }
     }
 }

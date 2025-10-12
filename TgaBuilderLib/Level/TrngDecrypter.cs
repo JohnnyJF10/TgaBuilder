@@ -1,7 +1,4 @@
-﻿using System.Buffers;
-using System.IO;
-
-namespace TgaBuilderLib.Level
+﻿namespace TgaBuilderLib.Level
 {
     public partial class TrngDecrypter : ITrngDecrypter
     {
@@ -28,10 +25,10 @@ namespace TgaBuilderLib.Level
 
         public bool DecryptLevel(string source, string target)
         {
-            if (!File.Exists(source)) 
+            if (!File.Exists(source))
                 return false;
 
-            byte[] header = new byte[KeyLength]; 
+            byte[] header = new byte[KeyLength];
 
             try
             {

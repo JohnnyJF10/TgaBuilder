@@ -27,7 +27,7 @@ namespace TgaBuilderWpfUi.View
 
         public SnackbarPresenter SnackbarPresenter => MessageSnackbarPresenter;
 
-        public void SetPanelFromImage(Image image) 
+        public void SetPanelFromImage(Image image)
             => CurrentPanel = GetPanelFromImage(image);
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.IO;
-using System.Windows;
 using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
@@ -20,11 +18,11 @@ namespace TgaBuilderLib.ViewModel
             IMessageService messageService,
 
             IUsageData usageData,
-            IAsyncFileLoader asyncFileLoader, 
+            IAsyncFileLoader asyncFileLoader,
             IBitmapOperations bitmapOperations,
             ILogger logger,
 
-            IWriteableBitmap presenter)   
+            IWriteableBitmap presenter)
         {
             _mediaFactory = mediaFactory;
             _fileService = fileService;
@@ -113,7 +111,7 @@ namespace TgaBuilderLib.ViewModel
         public int ScalingModeIndex
         {
             get => (int)_bitmapScalingMode - 1;
-            set => SetScalingModeIndex(value);  
+            set => SetScalingModeIndex(value);
         }
 
         public bool IsDropHintVisible
@@ -122,15 +120,15 @@ namespace TgaBuilderLib.ViewModel
             set => SetProperty(ref _isDropHintVisible, value, nameof(IsDropHintVisible));
         }
 
-        public double ViewportWidth 
-        { 
-            get => _viewportWidth; 
+        public double ViewportWidth
+        {
+            get => _viewportWidth;
             set => SetViewportSize(value, _viewportHeight);
         }
 
-        public double ViewportHeight 
-        { 
-            get => _viewportHeight; 
+        public double ViewportHeight
+        {
+            get => _viewportHeight;
             set => SetViewportSize(_viewportWidth, value);
         }
 
@@ -149,9 +147,9 @@ namespace TgaBuilderLib.ViewModel
 
         public ICommand SelectTRRFolderCommand
             => _selectTRRFolderCommand ??= new RelayCommand(async () => await SelectFolder());
-        public ICommand ImportCommand 
+        public ICommand ImportCommand
             => _importCommand ??= new RelayCommand<IView>(Import);
-        public ICommand CancelCommand 
+        public ICommand CancelCommand
             => _cancelCommand ??= new RelayCommand<IView>(Cancel);
         public ICommand OpenRecentFolderCommand
             => openRecentFolderCommand ??= new RelayCommand<string>(async s => await SelectFolder(s));
@@ -200,9 +198,9 @@ namespace TgaBuilderLib.ViewModel
 
         public void SetNumTextures(int num)
         {
-            if (num == _numTextures) 
+            if (num == _numTextures)
                 return;
-            if (num < 0) 
+            if (num < 0)
                 num = 0;
 
             int oldVal = _numTextures;
@@ -220,7 +218,7 @@ namespace TgaBuilderLib.ViewModel
 
         public void SetTextureSize(int size)
         {
-            if (size == _textureSize) 
+            if (size == _textureSize)
                 return;
 
             size = Math.Clamp(size, TEX_MIN_SIZE, TEX_MAX_SIZE);
@@ -238,7 +236,7 @@ namespace TgaBuilderLib.ViewModel
 
         private void SetImportPanelWidth(int value)
         {
-            if (value == _panelWidth) 
+            if (value == _panelWidth)
                 return;
 
             value = CalculateNewPanelWidth(value, _panelWidth);
@@ -273,9 +271,9 @@ namespace TgaBuilderLib.ViewModel
             int stride = PanelWidth * 4;
 
             IWriteableBitmap paddedBitmap = _mediaFactory.CreateEmptyBitmap(
-                width:       PanelWidth,
-                height:     paddedHeight,
-                hasAlpha:   true);
+                width: PanelWidth,
+                height: paddedHeight,
+                hasAlpha: true);
 
             byte[] blackPixels = new byte[paddedHeight * stride];
             for (int i = 0; i < blackPixels.Length; i += 4)
@@ -288,28 +286,28 @@ namespace TgaBuilderLib.ViewModel
 
             paddedBitmap.WritePixels(
                 rect: new PixelRect(0, 0, PanelWidth, paddedHeight),
-                pixels:     blackPixels, 
-                stride:     stride, 
-                offset:     0);
+                pixels: blackPixels,
+                stride: stride,
+                offset: 0);
 
             // Copy original pixels to the top of the padded bitmap
             var croppedSource = _bitmapOperations.CropBitmap(
-                source:     Presenter, 
-                rectangle:  new PixelRect(0, 0, PanelWidth, Presenter.PixelHeight));
+                source: Presenter,
+                rectangle: new PixelRect(0, 0, PanelWidth, Presenter.PixelHeight));
 
             int srcStride = PanelWidth * 4;
             byte[] srcPixels = new byte[Presenter.PixelHeight * srcStride];
 
             croppedSource.CopyPixels(
-                pixels: srcPixels, 
-                stride: srcStride, 
+                pixels: srcPixels,
+                stride: srcStride,
                 offset: 0);
 
             paddedBitmap.WritePixels(
                 rect: new PixelRect(0, 0, PanelWidth, Presenter.PixelHeight),
-                pixels:     srcPixels, 
-                stride:     srcStride, 
-                offset:     0);
+                pixels: srcPixels,
+                stride: srcStride,
+                offset: 0);
 
             Presenter = paddedBitmap;
         }
@@ -329,7 +327,7 @@ namespace TgaBuilderLib.ViewModel
 
             lock (_updateTaskLock)
             {
-                _updateTaskCts?.Cancel(); 
+                _updateTaskCts?.Cancel();
                 _updateTaskCts = new CancellationTokenSource();
                 token = _updateTaskCts.Token;
             }
@@ -360,18 +358,18 @@ namespace TgaBuilderLib.ViewModel
                             cancellationToken: token);
 
                         createdBitmap = _mediaFactory.CreateBitmapFromRaw(
-                            pixelWidth:     _asyncFileLoader.LoadedWidth,
-                            pixelHeight:    _asyncFileLoader.LoadedHeight,
-                            hasAlpha:       _asyncFileLoader.LoadedHasAlpha,
-                            pixels:         data,
-                            stride:         _asyncFileLoader.LoadedStride);
-                        
+                            pixelWidth: _asyncFileLoader.LoadedWidth,
+                            pixelHeight: _asyncFileLoader.LoadedHeight,
+                            hasAlpha: _asyncFileLoader.LoadedHasAlpha,
+                            pixels: data,
+                            stride: _asyncFileLoader.LoadedStride);
+
                         loadedBitmap = _mediaFactory.CreateRescaledBitmap(
-                            source:     _mediaFactory.CloneBitmap(createdBitmap),
-                            newWidth:   _textureSize, 
-                            newHeight:  _textureSize);
-                    }   
-                    catch (OperationCanceledException) 
+                            source: _mediaFactory.CloneBitmap(createdBitmap),
+                            newWidth: _textureSize,
+                            newHeight: _textureSize);
+                    }
+                    catch (OperationCanceledException)
                     {
                         throw;
                     }
@@ -386,21 +384,21 @@ namespace TgaBuilderLib.ViewModel
                     int y = (successCount / texPerRow) * _textureSize;
 
                     _bitmapOperations.FillRectBitmapNoConvert(
-                        source:     loadedBitmap,
-                        target:     Presenter,
-                        pos:        (x, y));
+                        source: loadedBitmap,
+                        target: Presenter,
+                        pos: (x, y));
 
                     successCount++;
 
                     await Task.Delay(1, token);
-                    await Task.Yield(); 
+                    await Task.Yield();
                 }
             }
-            catch (OperationCanceledException) {}
-            catch (Exception ex) 
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
             {
                 _logger.LogError(ex);
-                throw; 
+                throw;
             }
 
             if (!allFilesLoadedSuccessfully)
@@ -423,7 +421,7 @@ namespace TgaBuilderLib.ViewModel
 
             lock (_updateTaskLock)
             {
-                _updateTaskCts?.Cancel(); 
+                _updateTaskCts?.Cancel();
                 _updateTaskCts = new CancellationTokenSource();
                 token = _updateTaskCts.Token;
             }
@@ -451,7 +449,7 @@ namespace TgaBuilderLib.ViewModel
                         try
                         {
                             data = await Task.Run(
-                                function:          () => _asyncFileLoader.LoadCore(file),
+                                function: () => _asyncFileLoader.LoadCore(file),
                                 cancellationToken: token);
 
                             createdBitmap = _mediaFactory.CreateBitmapFromRaw(
@@ -467,7 +465,7 @@ namespace TgaBuilderLib.ViewModel
                                 newHeight: _textureSize);
 
                         }
-                        catch (OperationCanceledException) 
+                        catch (OperationCanceledException)
                         {
                             throw;
                         }
@@ -481,9 +479,9 @@ namespace TgaBuilderLib.ViewModel
                         int y = (successCount / texPerRow) * _textureSize;
 
                         _bitmapOperations.FillRectBitmapNoConvert(
-                            source:     loadedBitmap,
-                            target:     Presenter,
-                            pos:        (x, y));
+                            source: loadedBitmap,
+                            target: Presenter,
+                            pos: (x, y));
 
                         successCount++;
 
@@ -538,20 +536,20 @@ namespace TgaBuilderLib.ViewModel
             }
 
             if (!Directory.Exists(folderName))
-                {
-                    _messageService.SendMessage(MessageType.BatchLoaderFolderSetFail);
-                    return;
-                }
+            {
+                _messageService.SendMessage(MessageType.BatchLoaderFolderSetFail);
+                return;
+            }
 
             _selectedFolderPath = folderName;
 
             string searchPath = Path.Combine(_selectedFolderPath);
-        
+
             _allFiles = Directory.EnumerateFiles(searchPath)
                 .Where(file => _asyncFileLoader.SupportedExtensions.Contains(Path.GetExtension(file)))
                 .OrderBy(Path.GetFileName)
                 .ToList();
-        
+
             if (_allFiles.Count == 0)
             {
                 _messageService.SendMessage(MessageType.BatchLoaderFolderSetNoImageFiles);
@@ -631,15 +629,15 @@ namespace TgaBuilderLib.ViewModel
                 < 1024 => 512,
                 < 2048 => 1024,
                 < 4096 => 2048,
-                _      => 4096,
+                _ => 4096,
             }
             : proposedValue switch
             {
 
                 > 2048 => 4096,
                 > 1024 => 2048,
-                > 512  => 1024,
-                _      => 512,
+                > 512 => 1024,
+                _ => 512,
             };
 
         private int NextLowerPowerOfTwo(int n)

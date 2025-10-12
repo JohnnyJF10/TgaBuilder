@@ -1,18 +1,12 @@
 ﻿using Avalonia;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TgaBuilderAvaloniaUi.Elements
 {
     public class CheckerRectangle : Rectangle
     {
-        
+
         public static readonly StyledProperty<double> TileDensityProperty =
             AvaloniaProperty.Register<CheckerRectangle, double>(
                 nameof(TileDensity), 16);
@@ -27,7 +21,7 @@ namespace TgaBuilderAvaloniaUi.Elements
 
         static CheckerRectangle()
         {
-            
+
             TileDensityProperty.Changed.AddClassHandler<CheckerRectangle>((s, e) => s.UpdateBrush());
         }
 
@@ -42,14 +36,14 @@ namespace TgaBuilderAvaloniaUi.Elements
 
             var drawing = new DrawingGroup();
 
-            
+
             drawing.Children.Add(new GeometryDrawing
             {
                 Brush = Brushes.Gray,
                 Geometry = new RectangleGeometry(new Rect(0, 0, density, density))
             });
 
-            
+
             var light = new GeometryGroup();
             light.Children.Add(new RectangleGeometry(new Rect(0, 0, density / 2, density / 2)));
             light.Children.Add(new RectangleGeometry(new Rect(density / 2, density / 2, density / 2, density / 2)));

@@ -51,7 +51,7 @@ namespace TgaBuilderLib.Level
             ReadLevel(_fileName, cancellationToken);
 
             if (_relevantTextureInfos.Count == 0)
-                _useTrTextureRepacking = false; 
+                _useTrTextureRepacking = false;
 
             if (_useTrTextureRepacking)
             {
@@ -74,7 +74,7 @@ namespace TgaBuilderLib.Level
 
         protected override void RepackAtlas(CancellationToken? cancellationToken = null)
         {
-            if (RepackedTexturePositions.Count != _relevantTextureInfos.Count) 
+            if (RepackedTexturePositions.Count != _relevantTextureInfos.Count)
                 throw new ArgumentException("The number of original and repack tiles must be the same.");
 
             int atlasSize = targetPanelHeight * targetPanelWidth * IMPORT_BPP;
@@ -100,7 +100,7 @@ namespace TgaBuilderLib.Level
 
             for (int i = 0; i < height; i++)
             {
-                if (destinationIndex + height * IMPORT_BPP > TargetAtlas!.Length 
+                if (destinationIndex + height * IMPORT_BPP > TargetAtlas!.Length
                     || sourceIndex + height * IMPORT_BPP > _rawAtlas!.Length)
                     continue;
                 Array.Copy(_rawAtlas, sourceIndex, TargetAtlas, destinationIndex, width * IMPORT_BPP);
@@ -117,14 +117,14 @@ namespace TgaBuilderLib.Level
             TargetAtlas = _bytePool.Rent(_rawAtlas.Length);
 
             Buffer.BlockCopy(
-                src:        _rawAtlas,
-                srcOffset:  0,
-                dst:        TargetAtlas,
-                dstOffset:  0,
-                count:      _rawAtlas.Length);
+                src: _rawAtlas,
+                srcOffset: 0,
+                dst: TargetAtlas,
+                dstOffset: 0,
+                count: _rawAtlas.Length);
         }
 
-        private void RearrangeImagePages(CancellationToken? cancellationToken = null)        
+        private void RearrangeImagePages(CancellationToken? cancellationToken = null)
         {
             if (_rawAtlas is null)
                 throw new InvalidOperationException("Raw atlas is not initialized.");
@@ -158,11 +158,11 @@ namespace TgaBuilderLib.Level
                         int dstIndex = (dstY * targetPanelWidth + dstX) * IMPORT_BPP;
 
                         Buffer.BlockCopy(
-                            src:        _rawAtlas, 
-                            srcOffset:  srcIndex, 
-                            dst:        TargetAtlas, 
-                            dstOffset:  dstIndex, 
-                            count:      IMPORT_BPP);
+                            src: _rawAtlas,
+                            srcOffset: srcIndex,
+                            dst: TargetAtlas,
+                            dstOffset: dstIndex,
+                            count: IMPORT_BPP);
                     }
                 }
             }

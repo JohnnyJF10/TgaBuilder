@@ -44,10 +44,10 @@ namespace TgaBuilderLib.ViewModel
 
         public PanelVisualSizeViewModel VisualPanelSize { get; set; }
 
-        public double ContentActualWidth 
+        public double ContentActualWidth
             => Math.Min(_panel.Presenter.PixelWidth * Zoom, VisualPanelSize.ViewportWidth);
 
-        public double ContentActualHeight 
+        public double ContentActualHeight
             => Math.Min(_panel.Presenter.PixelHeight * Zoom, VisualPanelSize.ViewportHeight);
 
         public double OffsetX

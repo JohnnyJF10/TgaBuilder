@@ -27,10 +27,10 @@ namespace TgaBuilderLib.Level
 
             Version = versionMinor switch
             {
-                5       => TenVersion.Version_1_5,
-                6       => TenVersion.Version_1_6,
-                >= 7    => TenVersion.Version_1_7,
-                _       => TenVersion.Unknown
+                5 => TenVersion.Version_1_5,
+                6 => TenVersion.Version_1_6,
+                >= 7 => TenVersion.Version_1_7,
+                _ => TenVersion.Unknown
             };
 
             int systemHash = reader.ReadInt32();
@@ -91,10 +91,10 @@ namespace TgaBuilderLib.Level
         }
 
         private void ReadTexturePages(
-            BinaryReader levelReader, 
-            CancellationToken? cancellationToken = null, 
-            bool discardTextures = false, 
-            bool isSprites = false, 
+            BinaryReader levelReader,
+            CancellationToken? cancellationToken = null,
+            bool discardTextures = false,
+            bool isSprites = false,
             bool isSky = false)
         {
             int size, width, height, bytesRead;
@@ -112,7 +112,7 @@ namespace TgaBuilderLib.Level
 
                 if (discardTextures)
                 {
-                    levelReader.ReadBytes(size); 
+                    levelReader.ReadBytes(size);
                     _texDimsList.Add((0, 0, 0));
                     _texPagesList.Add(Array.Empty<byte>());
                 }
@@ -182,7 +182,7 @@ namespace TgaBuilderLib.Level
                 int uncompressedSize = levelReader.ReadInt32();
                 int compressedSize = levelReader.ReadInt32();
 
-                levelReader.ReadBytes(compressedSize);                        
+                levelReader.ReadBytes(compressedSize);
             }
         }
 
@@ -257,7 +257,7 @@ namespace TgaBuilderLib.Level
                         {
                             texCorners[l * 2] = (int)Math.Round(levelReader.ReadSingle() * pageWidth);   // textureCorners.x
                             texCorners[l * 2 + 1] = (int)Math.Round(levelReader.ReadSingle() * pageHeight); // textureCorners.y
-                        }       
+                        }
 
                         levelReader.ReadBytes(count * 12 * 3); // 3D Info
 
@@ -278,7 +278,7 @@ namespace TgaBuilderLib.Level
 
                 // Read portal data
                 int portalCount = levelReader.ReadInt32();
-                levelReader.ReadBytes(62 * portalCount); 
+                levelReader.ReadBytes(62 * portalCount);
 
                 // Read floor data
                 var zSize = levelReader.ReadInt32(); // room.ZSize
@@ -288,7 +288,7 @@ namespace TgaBuilderLib.Level
                 if (Version < TenVersion.Version_1_7)
                 {
                     // Read room ambient
-                    levelReader.ReadBytes(12); 
+                    levelReader.ReadBytes(12);
                 }
 
                 cancellationToken?.ThrowIfCancellationRequested();

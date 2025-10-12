@@ -11,9 +11,9 @@ namespace TgaBuilderLib.BitmapOperations
             // Create a new bitmap with the desired size
 
             IWriteableBitmap resizedBitmap = _mediaFactory.CreateEmptyBitmap(
-                width:          newWidth, 
-                height:         newHeight, 
-                hasAlpha:       bytesPerPixel == 4);
+                width: newWidth,
+                height: newHeight,
+                hasAlpha: bytesPerPixel == 4);
 
             int sourceStride = sourceBitmap.BackBufferStride;
             int resizedStride = resizedBitmap.BackBufferStride;

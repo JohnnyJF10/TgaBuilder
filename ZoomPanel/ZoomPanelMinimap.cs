@@ -78,8 +78,8 @@ namespace WPFZoomPanel
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _dragBorder     = (Template.FindName("PART_DraggingBorder", this) as Border) ?? new();
-            _sizingBorder   = (Template.FindName("PART_SizingBorder", this) as Border) ?? new();
+            _dragBorder = (Template.FindName("PART_DraggingBorder", this) as Border) ?? new();
+            _sizingBorder = (Template.FindName("PART_SizingBorder", this) as Border) ?? new();
             _viewportCanvas = (Template.FindName("PART_Content", this) as Canvas) ?? new();
             SetBackground(Visual);
         }
@@ -215,8 +215,8 @@ namespace WPFZoomPanel
 
         private ZoomPanel GetZoomAndPanControl()
         {
-            ZoomPanel zoomAndPanControl = (DataContext as ZoomPanel) 
-                ?? (DataContext as ZoomPanelScrollViewer)?.ZoomAndPanContent 
+            ZoomPanel zoomAndPanControl = (DataContext as ZoomPanel)
+                ?? (DataContext as ZoomPanelScrollViewer)?.ZoomAndPanContent
                 ?? new();
             if (zoomAndPanControl == null)
             {

@@ -33,7 +33,7 @@ namespace TgaBuilderLib.Utils
 
                 double average = _measurements.Average();
 
-                Debug.WriteLine($"Measurement #{_counter}: {microseconds:F2} µs | Average: {average:F2} µs");     
+                Debug.WriteLine($"Measurement #{_counter}: {microseconds:F2} µs | Average: {average:F2} µs");
             }
 
             _stopwatch = null;

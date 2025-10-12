@@ -21,7 +21,7 @@ namespace TgaBuilderLib.ViewModel
 
         protected void SetVisualSize(ref double field, double value, [CallerMemberName] string? propertyName = null)
         {
-            if (value == 0 || string.IsNullOrEmpty(propertyName)) 
+            if (value == 0 || string.IsNullOrEmpty(propertyName))
                 return;
 
             field = value;

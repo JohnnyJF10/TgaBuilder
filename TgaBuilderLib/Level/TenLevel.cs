@@ -76,11 +76,11 @@ namespace TgaBuilderLib.Level
                     continue;
 
                 Array.Copy(
-                    sourceArray:        page,
-                    sourceIndex:        sourceIndex,
-                    destinationArray:   TargetAtlas,
-                    destinationIndex:   destinationIndex,
-                    length:             width * IMPORT_BPP);
+                    sourceArray: page,
+                    sourceIndex: sourceIndex,
+                    destinationArray: TargetAtlas,
+                    destinationIndex: destinationIndex,
+                    length: width * IMPORT_BPP);
 
                 destinationIndex += targetPanelWidth * IMPORT_BPP;
                 sourceIndex += pageInfo.width * IMPORT_BPP;
@@ -107,6 +107,6 @@ namespace TgaBuilderLib.Level
             return pixelData; // Format: BGRA (Blue, Green, Red, Alpha)
         }
 
-        public override void ClearTempData() {}
+        public override void ClearTempData() { }
     }
 }

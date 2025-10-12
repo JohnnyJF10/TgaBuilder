@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Navigation;
-using TgaBuilderLib.Abstraction;
 using TgaBuilderWpfUi.Elements;
-using Wpf.Ui.Controls;
 
 namespace TgaBuilderWpfUi.View
 {

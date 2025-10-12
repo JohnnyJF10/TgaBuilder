@@ -84,7 +84,7 @@ namespace TgaBuilderLib.ViewModel
             {
                 if (_autoPaste == value) return;
 
-                AutoCopy = false; 
+                AutoCopy = false;
                 _autoPaste = value;
 
                 OnPropertyChanged(nameof(AutoPaste));
@@ -102,7 +102,7 @@ namespace TgaBuilderLib.ViewModel
 
 
         public void Copy() => _clipboardService.SetImage(Presenter);
-        
+
         public void Paste()
         {
             try
@@ -123,10 +123,10 @@ namespace TgaBuilderLib.ViewModel
             {
                 _logger.LogError(ex);
                 _messageService.SendMessage(
-                    MessageType.ClipboardPasteError, 
-                    "Failed to paste image from clipboard. Please find more details in the log.", 
+                    MessageType.ClipboardPasteError,
+                    "Failed to paste image from clipboard. Please find more details in the log.",
                     ex);
-            }        
+            }
         }
 
         public void SelectionMonoColorFill(Color color)

@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
-using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Utils;
 
 namespace TgaBuilderLib.ViewModel
@@ -24,21 +23,21 @@ namespace TgaBuilderLib.ViewModel
             SelectionShapeViewModel selectionShapeVM
             )
         {
-            _cursorSetter =     cursorSetter;
+            _cursorSetter = cursorSetter;
             _bitmapOperations = bitmapOperations;
-            _eyeDropper =       eyeDropper;
-            _presenter =        presenter;
-            Selection =         SelectionVM;
-            Animation =         AnimationVM;
-            Picker =            pickerVM;
-            AnimSelectShape =   animSelectShapeVM;
-            SelectionShape =    selectionShapeVM;
+            _eyeDropper = eyeDropper;
+            _presenter = presenter;
+            Selection = SelectionVM;
+            Animation = AnimationVM;
+            Picker = pickerVM;
+            AnimSelectShape = animSelectShapeVM;
+            SelectionShape = selectionShapeVM;
         }
 
 #if DEBUG
 #pragma warning disable CS8618
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public TexturePanelViewModelBase() {} // For Designer Tooltip only.
+        public TexturePanelViewModelBase() { } // For Designer Tooltip only.
 #pragma warning restore CS8618 
 #endif
 
@@ -76,7 +75,7 @@ namespace TgaBuilderLib.ViewModel
 
         public string PixelInfo => $"{XPointer}, {YPointer}px";
 
-        public string TileInfo => SelectionShape.IsVisible 
+        public string TileInfo => SelectionShape.IsVisible
             ? $"{SelectionShape.Width / Picker.Size}, {SelectionShape.Height / Picker.Size}"
             : $"{Picker.X / Picker.Size + 1}, {Picker.Y / Picker.Size + 1}";
 
@@ -175,11 +174,11 @@ namespace TgaBuilderLib.ViewModel
         {
             if (ReplaceColorEnabled)
                 Selection.Presenter = _bitmapOperations.CropBitmap(
-                    source:         Presenter,
-                    rectangle:      new PixelRect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height),
-                    replacedColor:  _eyeDropper.Color,
-                    newColor:       Presenter.HasAlpha 
-                                        ? new(0, 0, 0, 0) 
+                    source: Presenter,
+                    rectangle: new PixelRect(SelectionShape.X, SelectionShape.Y, SelectionShape.Width, SelectionShape.Height),
+                    replacedColor: _eyeDropper.Color,
+                    newColor: Presenter.HasAlpha
+                                        ? new(0, 0, 0, 0)
                                         : new(255, 0, 255));
             else
                 Selection.Presenter = _bitmapOperations.CropBitmap(
@@ -214,10 +213,10 @@ namespace TgaBuilderLib.ViewModel
         {
             if (Presenter == null) return;
             var res = _bitmapOperations.ReplaceColor(
-                source:         Presenter,
-                replacedColor:  _eyeDropper.Color,
-                newColor:       Presenter.HasAlpha 
-                                    ? new Color(0, 0, 0, 0) 
+                source: Presenter,
+                replacedColor: _eyeDropper.Color,
+                newColor: Presenter.HasAlpha
+                                    ? new Color(0, 0, 0, 0)
                                     : new Color(255, 0, 255));
             SetPresenter(res);
         }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Buffers;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
@@ -45,9 +39,9 @@ namespace TgaBuilderLib.BitmapBytesIO
                 throw new InvalidOperationException("No image data loaded.");
 
             var wb = _mediaFactory.CreateEmptyBitmap(
-                width:      LoadedWidth,
-                height:     LoadedHeight,
-                hasAlpha:   LoadedHasAlpha);
+                width: LoadedWidth,
+                height: LoadedHeight,
+                hasAlpha: LoadedHasAlpha);
 
             wb.WritePixels(
                 rect: new PixelRect(0, 0, LoadedWidth, LoadedHeight),

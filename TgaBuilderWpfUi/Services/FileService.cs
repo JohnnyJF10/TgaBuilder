@@ -21,7 +21,7 @@ namespace TgaBuilderWpfUi.Services
 
         public string SelectedPath { get; set; } = "";
 
-        public Task <bool> OpenFileDialog(
+        public Task<bool> OpenFileDialog(
             FileTypes types,
             string? initDir = null,
             string? title = null)
@@ -58,8 +58,8 @@ namespace TgaBuilderWpfUi.Services
             }
 
             openFileDialog.Filter = string.Join("|", filterParts);
-            openFileDialog.Filter += "|All Files (*.*)|*.*"; 
-            openFileDialog.DefaultExt = GetDefaultExt(typesList.First()); 
+            openFileDialog.Filter += "|All Files (*.*)|*.*";
+            openFileDialog.DefaultExt = GetDefaultExt(typesList.First());
             openFileDialog.Title = title ?? DEFAULT_OPEN_FILE_TITLE;
 
             if (initDir != null) openFileDialog.InitialDirectory = initDir;
@@ -74,7 +74,7 @@ namespace TgaBuilderWpfUi.Services
 
         public Task<bool> SaveFileDialog(
             FileTypes types,
-            string? initDir = null, 
+            string? initDir = null,
             string? title = null)
         {
             var saveFileDialog = new SaveFileDialog();
@@ -99,7 +99,7 @@ namespace TgaBuilderWpfUi.Services
 
             if (result)
                 SelectedPath = folder!;
-            
+
             return Task.FromResult(result);
         }
 
@@ -139,8 +139,8 @@ namespace TgaBuilderWpfUi.Services
 
                 if (types.HasFlag(type))
                 {
-                    string extension = type.ToString().ToLower(); 
-                    string name = type.ToString().ToUpper();      
+                    string extension = type.ToString().ToLower();
+                    string name = type.ToString().ToUpper();
                     filters.Add($"{name} (*.{extension})|*.{extension}");
                 }
             }
@@ -178,10 +178,10 @@ namespace TgaBuilderWpfUi.Services
 
         private string CheckForSpecificExpressions(FileTypes selectedTypes)
         => selectedTypes switch
-            {
-                DEF_FILE_TYPES => "Image Files",
-                TR_FILE_TYPES => "TR Level Files",
-                _ => "All supported files"
-            };
+        {
+            DEF_FILE_TYPES => "Image Files",
+            TR_FILE_TYPES => "TR Level Files",
+            _ => "All supported files"
+        };
     }
 }

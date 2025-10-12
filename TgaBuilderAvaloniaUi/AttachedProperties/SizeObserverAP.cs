@@ -1,7 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.VisualTree;
-using System.Windows;
 
 namespace TgaBuilderAvaloniaUi.AttachedProperties
 {
@@ -16,9 +14,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
         // --- Activate the observation ---
         public static readonly AttachedProperty<bool> ObserveSizeProperty =
             AvaloniaProperty.RegisterAttached<Control, bool>(
-                name:           "ObserveSize",
-                ownerType:      typeof(SizeObserverAP),
-                defaultValue:   false);
+                name: "ObserveSize",
+                ownerType: typeof(SizeObserverAP),
+                defaultValue: false);
         //public static readonly DependencyProperty ObserveSizeProperty =
         //    DependencyProperty.RegisterAttached(
         //        "ObserveSize",
@@ -47,10 +45,10 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
         // --- Observed Width ---
         public static readonly StyledProperty<double> ObservedWidthProperty =
             AvaloniaProperty.RegisterAttached<Control, double>(
-                name:           "ObservedWidth",
-                ownerType:      typeof(SizeObserverAP),
-                defaultValue:   0.0,
-                inherits:       false);
+                name: "ObservedWidth",
+                ownerType: typeof(SizeObserverAP),
+                defaultValue: 0.0,
+                inherits: false);
         //public static readonly DependencyProperty ObservedWidthProperty =
         //    DependencyProperty.RegisterAttached(
         //        "ObservedWidth",
@@ -67,17 +65,17 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
         // --- Observed Height ---
         public static readonly StyledProperty<double> ObservedHeightProperty =
             AvaloniaProperty.RegisterAttached<Control, double>(
-                name:           "ObservedHeight",
-                ownerType:      typeof(SizeObserverAP),
-                defaultValue:   0.0,
-                inherits:       false);
+                name: "ObservedHeight",
+                ownerType: typeof(SizeObserverAP),
+                defaultValue: 0.0,
+                inherits: false);
         //public static readonly DependencyProperty ObservedHeightProperty =
         //    DependencyProperty.RegisterAttached(
         //        "ObservedHeight",
         //        typeof(double),
         //        typeof(SizeObserverAP),
         //        new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        
+
         public static void SetObservedHeight(Control obj, double value) =>
             obj.SetValue(ObservedHeightProperty, value);
 

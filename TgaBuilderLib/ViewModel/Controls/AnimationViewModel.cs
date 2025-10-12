@@ -15,7 +15,7 @@ namespace TgaBuilderLib.ViewModel
             _mediaFactory = mediaFactory;
             _bitmapOperations = bitmapOperations;
         }
-    
+
         private CancellationTokenSource? _cancellationTokenSource;
 
         private Task? _animationTask;
@@ -122,28 +122,28 @@ namespace TgaBuilderLib.ViewModel
 
         public void SetupAnimation(IReadableBitmap spriteSheet, (int, int) anchor1, (int, int) anchor2, int tileSize)
         {
-                if (IsPlaying && _animationTask != null)
-                {
-                    Stop();
-                }
-
-                _spriteSheet = spriteSheet;
-                int index1 = GetTexIndex(anchor1, tileSize, spriteSheet.PixelWidth);
-                int index2 = GetTexIndex(anchor2, tileSize, spriteSheet.PixelWidth);
-
-                _frameRects = index1 < index2
-                    ? CalcFrameRects(anchor1, index2 - index1, tileSize, spriteSheet.PixelWidth)
-                    : CalcFrameRects(anchor2, index1 - index2, tileSize, spriteSheet.PixelWidth);
-
-                if (_frameRects.Count == 0) return;
-
-                Presenter = _mediaFactory.CreateEmptyBitmap(tileSize, tileSize, spriteSheet.HasAlpha);
-                IsVisible = true;
-                IsPlayVisible = false;
-                IsPauseVisible = true;
-
-                _animationTask = Animate();
+            if (IsPlaying && _animationTask != null)
+            {
+                Stop();
             }
+
+            _spriteSheet = spriteSheet;
+            int index1 = GetTexIndex(anchor1, tileSize, spriteSheet.PixelWidth);
+            int index2 = GetTexIndex(anchor2, tileSize, spriteSheet.PixelWidth);
+
+            _frameRects = index1 < index2
+                ? CalcFrameRects(anchor1, index2 - index1, tileSize, spriteSheet.PixelWidth)
+                : CalcFrameRects(anchor2, index1 - index2, tileSize, spriteSheet.PixelWidth);
+
+            if (_frameRects.Count == 0) return;
+
+            Presenter = _mediaFactory.CreateEmptyBitmap(tileSize, tileSize, spriteSheet.HasAlpha);
+            IsVisible = true;
+            IsPlayVisible = false;
+            IsPauseVisible = true;
+
+            _animationTask = Animate();
+        }
 
         private async Task Animate()
         {
@@ -211,17 +211,17 @@ namespace TgaBuilderLib.ViewModel
 
             IWriteableBitmap scrollTex = _bitmapOperations.CropBitmap(
                 source: src,
-                rectangle:  rect);
+                rectangle: rect);
 
             _bitmapOperations.FillRectBitmapNoConvert(
-                source: scrollTex, 
+                source: scrollTex,
                 target: texScrollingSource,
-                pos: (0,0));
+                pos: (0, 0));
 
             _bitmapOperations.FillRectBitmapNoConvert(
-                source: scrollTex, 
+                source: scrollTex,
                 target: texScrollingSource,
-                pos: (0,rectSize));
+                pos: (0, rectSize));
 
             int offset = 100;
             Presenter = texScrollingSource;
@@ -240,7 +240,7 @@ namespace TgaBuilderLib.ViewModel
                 double deltaY = 1 + 5 * Speed * elapsedSeconds;
 
                 offset -= (int)deltaY;
-                if (offset <= 0) 
+                if (offset <= 0)
                     offset = 100;
 
                 OffsetTop = -offset;
@@ -257,7 +257,7 @@ namespace TgaBuilderLib.ViewModel
             {
                 res.Add(new PixelRect(x, y, tileSize, tileSize));
                 x += tileSize;
-                if (x >= panelWidth)  
+                if (x >= panelWidth)
                 {
                     x = 0;
                     y += tileSize;
