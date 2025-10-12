@@ -12,29 +12,32 @@ namespace TgaBuilderLib.BitmapOperations
             return pixels;
         }
 
-        public unsafe void FillRectArray(IWriteableBitmap bitmap, PixelRect rect, byte[] pixels)
+        public void FillRectArray(IWriteableBitmap bitmap, PixelRect rect, byte[] pixels)
         {
             int bytesPerPixel = bitmap.HasAlpha ? 4 : 3;
 
             int srcStride = rect.Width * bytesPerPixel;
             int dstStride = bitmap.BackBufferStride;
 
-            using var lockBitmap = bitmap.GetLocker();
+            using var lockBitmap = bitmap.GetLocker(requiresRefresh: true);
 
-            byte* backBuffer = (byte*)lockBitmap.BackBuffer;
-            byte* dstBase = backBuffer + rect.Y * dstStride + rect.X * bytesPerPixel;
-
-            fixed (byte* srcPtr = pixels)
+            unsafe
             {
-                byte* srcRow = srcPtr;
-                byte* dstRow = dstBase;
+                byte* backBuffer = (byte*)lockBitmap.BackBuffer;
+                byte* dstBase = backBuffer + rect.Y * dstStride + rect.X * bytesPerPixel;
 
-                for (int y = 0; y < rect.Height; y++)
+                fixed (byte* srcPtr = pixels)
                 {
-                    Buffer.MemoryCopy(srcRow, dstRow, srcStride, srcStride);
+                    byte* srcRow = srcPtr;
+                    byte* dstRow = dstBase;
 
-                    srcRow += srcStride;
-                    dstRow += dstStride;
+                    for (int y = 0; y < rect.Height; y++)
+                    {
+                        Buffer.MemoryCopy(srcRow, dstRow, srcStride, srcStride);
+
+                        srcRow += srcStride;
+                        dstRow += dstStride;
+                    }
                 }
             }
         }
