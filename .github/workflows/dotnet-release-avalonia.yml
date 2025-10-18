@@ -51,7 +51,6 @@ jobs:
           dotnet publish ./TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj `
             -c Release `
             -f net8.0 `
-            -r x64 `
             --self-contained false `
             /p:PublishReadyToRun=true `
             -o publish/net8
