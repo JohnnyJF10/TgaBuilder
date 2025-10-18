@@ -64,14 +64,14 @@ jobs:
 
       - name: Zip .NET 8
         run: |
-          $zipName = "${{ steps.meta.outputs.artifact_name_net8 }}.zip"
+          $zipName = "${{ steps.meta.outputs.artifact_name_net8 }}_AvaloniaUi.zip"
           Compress-Archive -Path publish/net8/* -DestinationPath $zipName
 
       - name: Upload .NET 8 Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.meta.outputs.artifact_name_net8 }}_AvaloniaUi
-          path: ${{ steps.meta.outputs.artifact_name_net8 }}.zip
+          path: ${{ steps.meta.outputs.artifact_name_net8 }}_AvaloniaUi.zip
 
   release:
     needs: build
@@ -97,6 +97,6 @@ jobs:
           name: Release ${{ needs.build.outputs.tag }}
           body: ${{ needs.build.outputs.last-commit-msg }}
           files: |
-            ./artifact/${{ needs.build.outputs.artifact-name-net8 }}.zip
+            ./artifact/${{ needs.build.outputs.artifact-name-net8 }}_AvaloniaUi.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
