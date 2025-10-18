@@ -87,7 +87,7 @@ jobs:
       - name: Download .NET 8 Artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build.outputs.artifact-name-net8 }}
+          name: ${{ needs.build.outputs.artifact-name-net8 }}_AvaloniaUi
           path: ./artifact
 
       - name: Create GitHub Release and upload assets
