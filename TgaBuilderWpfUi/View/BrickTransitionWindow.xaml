@@ -103,7 +103,6 @@
                 Padding="5"
                 HorizontalAlignment="Center"
                 Command="{Binding LoadImage1Command}"
-                CommandParameter="1"
                 Content="From Selection"/>
 
             <ui:SymbolIcon
@@ -134,7 +133,6 @@
                 Padding="5"
                 HorizontalAlignment="Center"
                 Command="{Binding LoadImage2Command}"
-                CommandParameter="2"
                 Content="From Selection"/>
 
             <ui:SymbolIcon
@@ -166,7 +164,6 @@
                 Padding="5"
                 HorizontalAlignment="Center"
                 Command="{Binding MixCommand}"
-                CommandParameter="2"
                 Content="Mix"/>
 
             <!-- Controls -->
