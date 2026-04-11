@@ -8,7 +8,12 @@ namespace TgaBuilderWpfUi.Services
 {
     public partial class MessageService : IMessageService
     {
+        public MessageService(bool whetherSendSuccessMessage) 
+            => _whetherSendSuccessMessage = whetherSendSuccessMessage;
+
         private const int MAX_NUM_PAGES = 128;
+
+        private bool _whetherSendSuccessMessage = false;
 
         public void SendMessage(MessageType message,
             string additionalInfo = "",
@@ -31,6 +36,9 @@ namespace TgaBuilderWpfUi.Services
             }
 
             var uiMessage = _messageDict[message];
+
+            if (!_whetherSendSuccessMessage && uiMessage.Appearance == ControlAppearance.Success)
+                return;
 
             if (!string.IsNullOrEmpty(additionalInfo))
                 uiMessage.Message = additionalInfo;

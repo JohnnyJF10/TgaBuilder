@@ -87,6 +87,9 @@ namespace TgaBuilderLib.ViewModel
         private bool _panelInfoVisible;
         private bool _tileInfoVisible = true;
 
+        private IView? _smoothTransitionView;
+        private IView? _brickTransitionView;
+
         private string _pixelInfo = string.Empty;
         private string _tileInfo = string.Empty;
         private string _panelInfo = string.Empty;
@@ -95,6 +98,8 @@ namespace TgaBuilderLib.ViewModel
 
         private PanelMouseCommand? _mousePanelCommand;
         private AsyncCommand? _batchLoaderCommand;
+        private AsyncCommand? _smoothTransitionCommand;
+        private AsyncCommand? _brickTransitionCommand;
         private RelayCommand? _aboutCommand;
         private RelayCommand? _entireToSourceCommand;
         private AsyncCommand? _entireToTargetCommand;
@@ -196,6 +201,12 @@ namespace TgaBuilderLib.ViewModel
 
         public ICommand BatchLoaderCommand => _batchLoaderCommand
             ??= new(SourceIO.BatchLoader);
+
+        public ICommand SmoothTransitionCommand => _smoothTransitionCommand
+            ??= new(OpenSmoothTransitionHelper);
+
+        public ICommand BrickTransitionCommand => _brickTransitionCommand
+            ??= new(OpenBrickTransitionHelper);
 
         public ICommand AboutCommand => _aboutCommand
             ??= new(About);
@@ -392,6 +403,34 @@ namespace TgaBuilderLib.ViewModel
             var aboutView = _getViewCallback(ViewIndex.About);
 
             aboutView.ShowDialogAsync();
+        }
+
+        private async Task OpenSmoothTransitionHelper()
+        {
+            if (_smoothTransitionView is not null)
+                return;
+
+            _smoothTransitionView = _getViewCallback(ViewIndex.SmoothTransition);
+            if (_smoothTransitionView.DataContext is not SmoothTransitionViewModel smoothTransitionVM)
+                return;
+
+            await _smoothTransitionView.ShowAsync();
+
+            //Put result to selection
+        }
+
+        private async Task OpenBrickTransitionHelper()
+        {
+            if (_brickTransitionView is not null)
+                return;
+
+            _brickTransitionView = _getViewCallback(ViewIndex.BrickTransition);
+            if (_brickTransitionView.DataContext is not BrickTransitionViewModel brickTransitionVM)
+                return;
+
+            await _brickTransitionView.ShowAsync();
+
+            //Put result to selection
         }
 
         public void EnterPanel(bool isTargetPanel)

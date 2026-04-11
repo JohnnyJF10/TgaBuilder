@@ -10,6 +10,7 @@ namespace TgaBuilderLib.Level
             Version_1_5,
             Version_1_6,
             Version_1_7,
+            Version_1_10
         }
 
         protected override void ReadLevel(string fileName, CancellationToken? cancellationToken = null)
@@ -29,24 +30,38 @@ namespace TgaBuilderLib.Level
             {
                 5 => TenVersion.Version_1_5,
                 6 => TenVersion.Version_1_6,
-                >= 7 => TenVersion.Version_1_7,
+                7 => TenVersion.Version_1_7,
+                10 => TenVersion.Version_1_10,
                 _ => TenVersion.Unknown
             };
 
             int systemHash = reader.ReadInt32();
             int levelHash = reader.ReadInt32();
 
-            if (Version == TenVersion.Unknown)
-                throw new NotSupportedException($"Unsupported TEN version. " +
-                    $"File version: {versionMajor}.{versionMinor}.{versionBuild}.{versionRevision}");
+            switch (Version)
+            {
 
-            if (Version < TenVersion.Version_1_7)
-                ReadTenData_pre_1_7(reader, cancellationToken);
-            else
-                ReadTenData(reader, cancellationToken);
+                case TenVersion.Version_1_5:
+                case TenVersion.Version_1_6:
+                    ReadTenData_pre_1_7(reader, cancellationToken);
+                    break;
+
+                case TenVersion.Version_1_7:
+                    ReadTenData_1_7(reader, cancellationToken);
+                    break;
+
+                case TenVersion.Version_1_10:
+                    ReadTenData_1_10(reader, cancellationToken);
+                    break;
+
+                case TenVersion.Unknown:
+                default:
+                    throw new NotSupportedException($"Unsupported TEN version. " + 
+                        $"File version: {versionMajor}.{versionMinor}.{versionBuild}.{versionRevision}");
+                }
         }
 
-        private void ReadTenData(BinaryReader reader, CancellationToken? cancellationToken = null)
+        private void ReadTenData_1_7(BinaryReader reader, CancellationToken? cancellationToken = null)
         {
             uint mediaUncompressedSize = reader.ReadUInt32();
             uint mediaCompressedSize = reader.ReadUInt32();
@@ -62,6 +77,28 @@ namespace TgaBuilderLib.Level
             uint geometryCompressedSize = reader.ReadUInt32();
 
             using (var geometryStream = DecompressStream(reader.BaseStream, geometryCompressedSize))
+            using (var geometryReader = new BinaryReader(geometryStream))
+            {
+                ReadStaticRoomData(geometryReader, cancellationToken);
+            }
+        }
+
+        private void ReadTenData_1_10(BinaryReader reader, CancellationToken? cancellationToken = null)
+        {
+            uint mediaUncompressedSize = reader.ReadUInt32();
+            uint mediaCompressedSize = reader.ReadUInt32();
+
+            using (var mediaStream = DecompressStreamLZ4(reader.BaseStream, mediaUncompressedSize))
+            using (var mediaReader = new BinaryReader(mediaStream))
+            {
+                ReadTextures(mediaReader, cancellationToken);
+                ReadSamples(mediaReader, cancellationToken);
+            }
+
+            uint geometryUncompressedSize = reader.ReadUInt32();
+            uint geometryCompressedSize = reader.ReadUInt32();
+
+            using (var geometryStream = DecompressStreamLZ4(reader.BaseStream, geometryUncompressedSize))
             using (var geometryReader = new BinaryReader(geometryStream))
             {
                 ReadStaticRoomData(geometryReader, cancellationToken);
@@ -100,6 +137,8 @@ namespace TgaBuilderLib.Level
             int size, width, height, bytesRead;
 
             bool hasNormalMap;
+            bool hasORSHMap;
+            bool hasEmissiveMap;
 
             int numRoomTextures = isSky ? 1 : levelReader.ReadInt32();
             for (int i = 0; i < numRoomTextures; i++)
@@ -145,6 +184,23 @@ namespace TgaBuilderLib.Level
                 {
                     size = levelReader.ReadInt32();
                     levelReader.ReadBytes(size); //Normal map data
+                }
+
+                if (Version != TenVersion.Version_1_10)
+                    continue;
+
+                hasORSHMap = levelReader.ReadByte() == 1;
+                if (hasORSHMap)
+                {
+                    size = levelReader.ReadInt32();
+                    levelReader.ReadBytes(size); // ORSH map data
+                }
+
+                hasEmissiveMap = levelReader.ReadByte() == 1;
+                if (hasEmissiveMap)
+                {
+                    size = levelReader.ReadInt32();
+                    levelReader.ReadBytes(size); // Emissive map data
                 }
             }
         }

@@ -1,0 +1,78 @@
+﻿<elements:AsyncWindow 
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    x:Class="TgaBuilderWpfUi.View.BrickTransitionWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:TgaBuilderWpfUi.View" 
+    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib" 
+    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+    xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel" 
+    xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
+    xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters"
+    mc:Ignorable="d"
+    ExtendsContentIntoTitleBar="True"
+    WindowBackdropType="Mica"
+    WindowCornerPreference="Round"
+    WindowStartupLocation="CenterScreen"
+    Title="MainWindow"
+    Height="550"
+    MinHeight="550"
+    Width="600"
+    MinWidth="560"
+    d:Background="Black"
+    d:DataContext="{d:DesignInstance Type=viewmodel:BrickTransitionViewModel, IsDesignTimeCreatable=False}"
+    >
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/CheckerBrush.xaml"/>
+                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter"/>
+            <sys:Boolean x:Key="True">True</sys:Boolean>
+            <sys:Boolean x:Key="False">False</sys:Boolean>
+            <Style TargetType="{x:Type elements:ContextMenuButton}"
+                    BasedOn="{StaticResource {x:Type ui:Button}}"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel
+            Grid.ColumnSpan="2"
+            >
+            <ui:TitleBar
+                DockPanel.Dock="Right"
+                Width="133"
+                Style="{StaticResource TitleBarNavigationAreaStyle}"
+                />
+
+            <ui:TitleBar
+                Title="Brick Transition Helper"
+                ShowMinimize="False"
+                ShowMaximize="False"
+                ShowClose="False"
+                Margin="3,3,0,0"
+                Grid.ColumnSpan="2">
+                <ui:TitleBar.Icon>
+                    <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
+                </ui:TitleBar.Icon>
+            </ui:TitleBar>
+        </DockPanel>
+
+    </Grid>
+</elements:AsyncWindow>

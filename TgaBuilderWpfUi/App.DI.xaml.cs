@@ -7,6 +7,7 @@ using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Level;
 using TgaBuilderLib.Messaging;
+using TgaBuilderLib.Transitions;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
 using TgaBuilderLib.ViewModel;
@@ -93,12 +94,14 @@ namespace TgaBuilderWpfUi
         private void AddUIServicesToProvider(IServiceCollection services)
         {
             services.AddSingleton<IMediaFactory, MediaFactory>();
+            services.AddSingleton<ITransitionHelper, TransitionHelper>();
             services.AddSingleton<IClipboardService, ClipboardService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<ICursorSetter, CursorSetter>(sp => new CursorSetter(
                     new(Application.GetResourceStream(
                         new Uri("Resources/eyedropper.cur", UriKind.Relative)).Stream)));
-            services.AddSingleton<IMessageService, MessageService>();
+            services.AddSingleton<IMessageService, MessageService>(sp => new MessageService(
+                    whetherSendSuccessMessage: sp.GetRequiredService<IUsageData>().WetherSendSuccessMessage));
             services.AddSingleton<IMessageBoxService, MessageBoxService>();
             services.AddSingleton<IDispatcherService, DispatcherService>();
         }
@@ -268,6 +271,12 @@ namespace TgaBuilderWpfUi
 
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
+            services.AddTransient(sp => new SmoothTransitionViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                mainViewModel: sp.GetRequiredService<MainViewModel>()));
+            services.AddTransient(sp => new BrickTransitionViewModel());
+
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),
 
@@ -316,6 +325,14 @@ namespace TgaBuilderWpfUi
             services.AddTransient<IView, AboutWindow>(
                 sp => new AboutWindow(
                     viewModel: sp.GetRequiredService<AboutViewModel>()));
+
+            services.AddTransient<IView, SmoothTransitionWindow>(
+                sp => new SmoothTransitionWindow(
+                    viewModel: sp.GetRequiredService<SmoothTransitionViewModel>()));
+
+            services.AddTransient<IView, BrickTransitionWindow>(
+                sp => new BrickTransitionWindow(
+                    viewModel: sp.GetRequiredService<BrickTransitionViewModel>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)
