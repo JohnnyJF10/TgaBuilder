@@ -1,8 +1,11 @@
 ﻿
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
+using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
 {
@@ -27,5 +30,26 @@ namespace TgaBuilderAvaloniaUi.View
 
         public void SetPanelFromImage(Image image) 
             => CurrentPanel = GetPanelFromImage(image);
+
+        public void RegisterZoomBorderCallbacks(ViewTabViewModel viewTab, ZoomBorder panel)
+        {
+            viewTab.ApplyTransformCallback = (zoom, translateX, translateY) =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    var matrix = Matrix.CreateScale(zoom, zoom) *
+                                 Matrix.CreateTranslation(translateX, translateY);
+                    panel.SetMatrix(matrix);
+                });
+            };
+
+            viewTab.PanStepCallback = (deltaX, deltaY) =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    panel.SetMatrix(panel.Matrix * Matrix.CreateTranslation(deltaX, deltaY));
+                });
+            };
+        }
     }
 }

@@ -250,12 +250,14 @@ namespace TgaBuilderAvaloniaUi
             services.AddTransient(sp => new ViewTabViewModel(
                 visualPanelSize: sp.GetServices<PanelVisualSizeViewModel>()
                                         .ElementAt((int)PresenterType.Source),
-                panel: sp.GetRequiredService<SourceTexturePanelViewModel>()));
+                panel: sp.GetRequiredService<SourceTexturePanelViewModel>(),
+                readOnlyZoomAndOffsets: true));
 
             services.AddTransient(sp => new ViewTabViewModel(
                 visualPanelSize: sp.GetServices<PanelVisualSizeViewModel>()
                                         .ElementAt((int)PresenterType.Target),
-                panel: sp.GetRequiredService<TargetTexturePanelViewModel>()));
+                panel: sp.GetRequiredService<TargetTexturePanelViewModel>(),
+                readOnlyZoomAndOffsets: true));
         }
 
         private void AddViewVMsToProvider(IServiceCollection services)

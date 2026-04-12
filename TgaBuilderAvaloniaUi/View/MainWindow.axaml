@@ -430,9 +430,6 @@
                         x:Name="SourcePanel"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        ap:PanelAttributesAP.OffsetXAtr="{Binding MultipliedOffsetX}"
-                        ap:PanelAttributesAP.OffsetYAtr="{Binding MultipliedOffsetY}"
-                        ap:PanelAttributesAP.ZoomAtr="{Binding Zoom}"
                         ap:PanelMouseAP.ScrollCommand="{Binding ScrollCommand}"
                         ap:SizeObserverAP.ObserveSize="True"
                         ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
@@ -448,8 +445,6 @@
                         PanButton="Middle"
                         Stretch="None"
                         ZoomSpeed="1.5"
-                        OffsetX="{Binding MultipliedOffsetX, Mode=OneWayToSource}"
-                        OffsetY="{Binding MultipliedOffsetY, Mode=OneWayToSource}"
                         ZoomX="{Binding Zoom, Mode=OneWayToSource}"
                         ZoomY="{Binding Zoom, Mode=OneWayToSource}">
                       
@@ -1083,9 +1078,6 @@
                         x:Name="TargetPanel"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        ap:PanelAttributesAP.OffsetXAtr="{Binding MultipliedOffsetX}"
-                        ap:PanelAttributesAP.OffsetYAtr="{Binding MultipliedOffsetY}"
-                        ap:PanelAttributesAP.ZoomAtr="{Binding Zoom}"
                         ap:PanelMouseAP.ScrollCommand="{Binding ScrollCommand}"
                         ap:SizeObserverAP.ObserveSize="True"
                         ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, Mode=OneWayToSource}"
@@ -1101,8 +1093,6 @@
                         PanButton="Middle"
                         Stretch="None"
                         ZoomSpeed="1.5"
-                        OffsetX="{Binding MultipliedOffsetX, Mode=OneWayToSource}"
-                        OffsetY="{Binding MultipliedOffsetY, Mode=OneWayToSource}"
                         ZoomX="{Binding Zoom, Mode=OneWayToSource}"
                         ZoomY="{Binding Zoom, Mode=OneWayToSource}">
                         <Canvas
