@@ -22,7 +22,7 @@ namespace TgaBuilderLib.ViewModel
             VisualPanelSize.PropertyChanged += (_, _) => OnContentActualSizeChanged();
         }
 
-        private const int SCROLL_SPEED_PIX_PER_SEC = 420;
+        private const int SCROLL_SPEED_PIX_PER_SEC = 150;
         private const int DRAG_THRESHOLD = 10;
         private const int SCROLLING_THRESHOLD = 30;
         private const double ZOOM_STEP_FACTOR = 1.2;
