@@ -127,6 +127,8 @@ public class SmoothTransitionViewModel : ViewModelBase
         set => SetCallerProperty(ref _resultImage, value);
     }
 
+    public IVisualInvalidator? VisualInvalidator { get; set; }
+
     public TransitionMode TransitionMode
     {
         get => _transitionMode;
@@ -305,6 +307,8 @@ public class SmoothTransitionViewModel : ViewModelBase
                     new PixelRect(0, 0, ResultImage.PixelWidth, ResultImage.PixelHeight),
                     resultPixels,
                     ResultImage.PixelWidth * (Image1.HasAlpha ? 4 : 3));
+
+                VisualInvalidator?.InvalidateVisual();
             }
         }
         catch (TaskCanceledException)

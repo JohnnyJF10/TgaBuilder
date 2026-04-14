@@ -123,6 +123,7 @@
             VerticalAlignment="Stretch"
             Background="Transparent">
             <Image
+                x:Name="ResultImage"
                 Margin="0,4,0,0"
                 RenderOptions.BitmapInterpolationMode="None"
                 Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
