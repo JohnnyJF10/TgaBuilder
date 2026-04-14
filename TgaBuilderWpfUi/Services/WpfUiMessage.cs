@@ -11,10 +11,10 @@ namespace TgaBuilderWpfUi.Services
         internal TimeSpan timeout { get; set; }
 
         internal WpfUiMessage(
-            string title, 
-            string message, 
-            ControlAppearance appearance, 
-            SymbolIcon icon, 
+            string title,
+            string message,
+            ControlAppearance appearance,
+            SymbolIcon icon,
             TimeSpan timeoutTimeSpan)
         {
             Title = title;

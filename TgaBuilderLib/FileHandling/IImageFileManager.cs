@@ -18,7 +18,7 @@ namespace TgaBuilderLib.FileHandling
         public int TrImportHorPageNum { get; set; }
 
         void LoadImageFile(
-            string fileName, 
+            string fileName,
             ResizeMode mode = ResizeMode.SourceResize,
             CancellationToken? cancellationToken = null);
 

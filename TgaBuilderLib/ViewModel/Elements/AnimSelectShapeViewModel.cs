@@ -1,10 +1,8 @@
-﻿using System.Diagnostics;
-
-namespace TgaBuilderLib.ViewModel
+﻿namespace TgaBuilderLib.ViewModel
 {
     public class AnimSelectShapeViewModel : ViewModelBase
     {
-        public AnimSelectShapeViewModel() {}
+        public AnimSelectShapeViewModel() { }
 
         public AnimSelectShapeViewModel(int panelWidth, int stepSize)
         {

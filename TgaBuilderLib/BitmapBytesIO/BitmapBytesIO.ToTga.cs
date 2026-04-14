@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {
@@ -105,7 +99,7 @@ namespace TgaBuilderLib.BitmapBytesIO
 
                         bw.Write(LoadedBytes[index + 2]);
                         bw.Write(LoadedBytes[index + 1]);
-                        bw.Write(LoadedBytes[index    ]);
+                        bw.Write(LoadedBytes[index]);
                     }
                 }
                 WriteTrTGaFooter(bw);

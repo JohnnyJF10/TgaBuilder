@@ -2,10 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
-using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Windows;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.View;
 
@@ -20,9 +17,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
         public static readonly AttachedProperty<ICommand?> PanelMouseCommandProperty =
             AvaloniaProperty.RegisterAttached<Control, ICommand?>(
-                name:           "PanelMouseCommand",
-                ownerType:      typeof(PanelMouseAP),
-                defaultValue:   null);
+                name: "PanelMouseCommand",
+                ownerType: typeof(PanelMouseAP),
+                defaultValue: null);
 
         public static void SetPanelMouseCommand(Control element, ICommand value)
         {
@@ -93,7 +90,7 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
             }
         }
 
-        internal static void OnPointerExited(Image image) 
+        internal static void OnPointerExited(Image image)
         {
             bool isDestination = GetIsTargetPanel(image);
 
@@ -112,9 +109,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
         public static readonly AttachedProperty<ICommand?> LeavePanelCommandProperty =
             AvaloniaProperty.RegisterAttached<Control, ICommand?>(
-                name:           "LeavePanelCommand",
-                ownerType:      typeof(PanelMouseAP),
-                defaultValue:   null);
+                name: "LeavePanelCommand",
+                ownerType: typeof(PanelMouseAP),
+                defaultValue: null);
 
         public static void SetLeavePanelCommand(Control element, ICommand value)
         {
@@ -127,9 +124,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
         public static readonly AttachedProperty<ICommand?> EnterPanelCommandProperty =
             AvaloniaProperty.RegisterAttached<Control, ICommand?>(
-                name:           "EnterPanelCommand",
-                ownerType:      typeof(PanelMouseAP),
-                defaultValue:   null);
+                name: "EnterPanelCommand",
+                ownerType: typeof(PanelMouseAP),
+                defaultValue: null);
 
         public static void SetEnterPanelCommand(Control element, ICommand value)
         {
@@ -142,9 +139,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
         public static readonly AttachedProperty<bool> IsTargetPanelProperty =
             AvaloniaProperty.RegisterAttached<Control, bool>(
-                name:           "IsTargetPanel",
-                ownerType:      typeof(PanelMouseAP),
-                defaultValue:   false);
+                name: "IsTargetPanel",
+                ownerType: typeof(PanelMouseAP),
+                defaultValue: false);
 
         public static void SetIsTargetPanel(Control element, bool value)
         {
@@ -157,9 +154,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
         public static readonly AttachedProperty<ICommand?> ScrollCommandProperty =
             AvaloniaProperty.RegisterAttached<Control, ICommand?>(
-                name:           "ScrollCommand",
-                ownerType:      typeof(PanelMouseAP),
-                defaultValue:   null);
+                name: "ScrollCommand",
+                ownerType: typeof(PanelMouseAP),
+                defaultValue: null);
 
         public static void SetScrollCommand(Control element, ICommand value)
         {
@@ -173,9 +170,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
         public static readonly AttachedProperty<ICommand?> WheelShiftCommandProperty =
             AvaloniaProperty.RegisterAttached<Control, ICommand?>(
-                name:           "WheelShiftCommand",
-                ownerType:      typeof(PanelMouseAP),
-                defaultValue:   null);
+                name: "WheelShiftCommand",
+                ownerType: typeof(PanelMouseAP),
+                defaultValue: null);
 
         public static void SetWheelShiftCommand(Control element, ICommand value)
         {

@@ -5,7 +5,7 @@ using System;
 namespace TgaBuilderAvaloniaUi.Converters
 {
     internal class BrushToColorStruct : IValueConverter
-        {
+    {
         public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
         {
             if (value is ISolidColorBrush brush)

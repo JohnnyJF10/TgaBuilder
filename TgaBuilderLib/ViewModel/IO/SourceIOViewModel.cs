@@ -1,5 +1,4 @@
 ﻿using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.Commands;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
@@ -18,7 +17,7 @@ namespace TgaBuilderLib.ViewModel
             IUsageData usageData,
             IDispatcherService dispatcherService,
             TexturePanelViewModelBase panel)
-            : base(getViewCallback, fileService, messageService, imageManager, logger, usageData, dispatcherService, panel) {}
+            : base(getViewCallback, fileService, messageService, imageManager, logger, usageData, dispatcherService, panel) { }
 
         private const FileTypes DEF_FILE_TYPES =
             FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
@@ -81,12 +80,12 @@ namespace TgaBuilderLib.ViewModel
         public async Task BatchLoader()
         {
             var batchLoaderView = _getViewCallback(ViewIndex.BatchLoader);
-            if (batchLoaderView.DataContext is not BatchLoaderViewModel batchLoaderVM) 
+            if (batchLoaderView.DataContext is not BatchLoaderViewModel batchLoaderVM)
                 return;
 
             await batchLoaderView.ShowDialogAsync();
 
-            if (batchLoaderView.DialogResult != true) 
+            if (batchLoaderView.DialogResult != true)
                 return;
 
             _panel.SetPresenter(batchLoaderVM.Presenter);
@@ -152,7 +151,7 @@ namespace TgaBuilderLib.ViewModel
 
                 _panel.Presenter = _imageManager.GetLoadedBitmap();
             }
-            catch (OperationCanceledException) 
+            catch (OperationCanceledException)
             {
                 _messageService.SendMessage(MessageType.SourceOpenCancelledByUser);
                 return;
@@ -260,7 +259,7 @@ namespace TgaBuilderLib.ViewModel
                 _previousFile = LastFolderFileNames[LastFolderFileNames.Count - 1];
             else
                 _previousFile = LastFolderFileNames[currentIndex - 1];
-            
+
             if (currentIndex < 0 || currentIndex >= LastFolderFileNames.Count - 1)
                 _nextFile = LastFolderFileNames[0];
             else

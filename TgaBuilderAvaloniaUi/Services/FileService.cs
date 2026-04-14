@@ -2,17 +2,12 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
-using static System.Drawing.PSD.ResolutionInfo;
 
 namespace TgaBuilderAvaloniaUi.Services
 {

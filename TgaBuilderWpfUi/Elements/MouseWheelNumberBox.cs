@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace TgaBuilderWpfUi.Elements
 {
@@ -16,7 +11,7 @@ namespace TgaBuilderWpfUi.Elements
 
         private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (!IsMouseOver) 
+            if (!IsMouseOver)
                 return;
 
             if (e.Delta > 0)

@@ -8,7 +8,12 @@ namespace TgaBuilderWpfUi.Services
 {
     public partial class MessageService : IMessageService
     {
+        public MessageService(bool whetherSendSuccessMessage) 
+            => _whetherSendSuccessMessage = whetherSendSuccessMessage;
+
         private const int MAX_NUM_PAGES = 128;
+
+        private bool _whetherSendSuccessMessage = false;
 
         public void SendMessage(MessageType message,
             string additionalInfo = "",
@@ -32,6 +37,9 @@ namespace TgaBuilderWpfUi.Services
 
             var uiMessage = _messageDict[message];
 
+            if (!_whetherSendSuccessMessage && uiMessage.Appearance == ControlAppearance.Success)
+                return;
+
             if (!string.IsNullOrEmpty(additionalInfo))
                 uiMessage.Message = additionalInfo;
 
@@ -39,11 +47,11 @@ namespace TgaBuilderWpfUi.Services
                 uiMessage.Message += $" Error: {ex.Message} - Please find more information in the log file.";
 
             snackbarService.Show(
-                title:      uiMessage.Title,
-                message:    uiMessage.Message,
+                title: uiMessage.Title,
+                message: uiMessage.Message,
                 appearance: uiMessage.Appearance,
-                icon:       uiMessage.Icon,
-                timeout:    uiMessage.timeout);
+                icon: uiMessage.Icon,
+                timeout: uiMessage.timeout);
         }
     }
 }

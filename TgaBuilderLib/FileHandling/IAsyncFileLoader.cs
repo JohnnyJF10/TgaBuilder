@@ -1,8 +1,4 @@
-﻿
-using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.Enums;
-
-namespace TgaBuilderLib.FileHandling
+﻿namespace TgaBuilderLib.FileHandling
 {
     public interface IAsyncFileLoader
     {

@@ -27,12 +27,12 @@ namespace TgaBuilderLib.BitmapBytesIO
             CancellationToken? cancellationToken = null);
 
         void FromPfim(
-            string filePath, 
+            string filePath,
             ResizeMode mode = ResizeMode.SourceResize,
             CancellationToken? cancellationToken = null);
 
         void FromPsd(
-            string filePath, 
+            string filePath,
             ResizeMode mode = ResizeMode.SourceResize,
             CancellationToken? cancellationToken = null);
 

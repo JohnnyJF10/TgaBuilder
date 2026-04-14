@@ -68,7 +68,8 @@
     <h2 id="description">Description</h2>
     <p><img src="/TgaBuilder/Screenshots/Overview.png" alt="Overview" /></p>
     <p>TgaBuilder is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture
-      panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF by me.
+      panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF for
+      Windows and Avalonia UI (cross-platform, experimental).
     </p>
 
     <p>If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It
@@ -86,32 +87,52 @@
 
     <h2 id="installation">Installation</h2>
     <p>Move over to <a href="https://github.com/JohnnyJF10/TgaBuilder/releases">GitHub Releases</a>.</p>
+
+    <p><strong>Windows:</strong></p>
     <p>For the latest releases there are two tool versions per release: The <em>.NET 6.0</em> version of the tool and
       the <em>.NET 8.0</em> version of the tool.</p>
     <ul>
       <li>
-        Download the <strong>.NET 6.0</strong> version of the tool (TgaBuilder-dotnet6),
-        if you already have Tomb Editor Version 1.9 installed on your system and you do not wish to install another .NET
-        runtime
-        (as Tomb Editor Version 1.9 is using <em>.NET 6.0</em> runtime as well)
+        Download the <strong>.NET 6.0</strong> version of the tool (<code>TgaBuilder-dotnet6</code>), if you already
+        have Tomb Editor Version 1.9 installed on your system and you do not wish to install another .NET runtime (as
+        Tomb Editor Version 1.9 is using <em>.NET 6.0</em> runtime as well)
       </li>
       <li>
-        Download the <strong>.NET 8.0</strong> version of the tool (TgaBuilder-dotnet8),
-        if you have the <em>.NET 8.0</em> runtime installed or do not mind to install it.
-        This version has the slightly better performance.
+        Download the <strong>.NET 8.0</strong> version of the tool (<code>TgaBuilder-dotnet8</code>), if you have the
+        <em>.NET 8.0</em> runtime installed or do not mind to install it. This version has the slightly better
+        performance.
       </li>
     </ul>
     <p>Extract the files and start <em>TgaBuilder.exe</em>.</p>
 
+    <p><strong>Linux:</strong></p>
+    <p>There is also an experimental cross-platform version of the tool based on Avalonia UI instead of WPF. It has been
+      tested only on Linux Mint (and Windows) currently.
+      Please note that this version is highly experimental and contains bugs with zoom panel and some controls. They
+      will be fixed in future when there is realy need for TRLE building tools on other platforms than Windows. For any
+      productive purposes, use the regular versions of TgaBuilder for Windows.</p>
+
+    <p>To run the Avalonia UI version on Linux, move over to the directory where you extracted the files and run:</p>
+
+    <pre><code>dotnet TgaBuilderAvaloniaUi.dll
+</code></pre>
+
     <h3 id="requirements">Requirements</h3>
     <ul>
       <li>Windows 10/11</li>
-      <li><em>.NET 6.0</em> or <em>.NET 8.0</em> runtime installed (with Tomb Editor Version 1.9, you have the <em>.NET 6.0</em> runtime already installed).</li>
+      <li>64-bit architecture</li>
+      <li><em>.NET 6</em> or <em>.NET 8</em> runtime installed (with Tomb Editor Version 1.9, you have the <em>.NET
+          6</em> runtime already installed)</li>
     </ul>
 
-    <p>Please note that, as a .net WPF tool, TgaBuilder has significantly higher system resource requirements,
+    <p>Please note that, as a .NET WPF tool, TgaBuilder has significantly higher system resource requirements,
       particularly for RAM, than TBuilder, which was written in Delphi. If you are still satisfied using TBuilder,
       please continue using it. TgaBuilder is not intended as a substitute for it.</p>
+
+    <p>For the experimental Avalonia UI version for Linux:</p>
+    <ul>
+      <li><em>.NET 8</em> runtime on the target device.</li>
+    </ul>
 
     <h2 id="usage">Usage</h2>
 
@@ -384,7 +405,8 @@
       <li>Current supported destination texture panel widths: <strong>256, 512, 1024, 2048, 4096 px</strong>
         (corresponding to 1, 2, 4, 8, and 16 pages).</li>
       <li>Current supported picker sizes: <strong>8, 16, 32, 64, 128, 256 px</strong></li>
-      <li>Image files that do not meet these requirements will be <strong>automatically expanded or cropped.</strong> But you will always be able to open them.
+      <li>Image files that do not meet these requirements will be <strong>automatically expanded or cropped.</strong>
+        But you will always be able to open them.
       </li>
     </ul>
 
@@ -449,6 +471,34 @@
           <td>MIT</td>
           <td><a href="https://github.com/icsharpcode/SharpZipLib">GitHub</a></td>
         </tr>
+        <tr>
+          <td><em>For the Avalonia UI Port:</em></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Avalonia UI</td>
+          <td>11.3.7</td>
+          <td>Avalonia UI</td>
+          <td>MIT</td>
+          <td><a href="https://avaloniaui.net/">Avalonia UI</a></td>
+        </tr>
+        <tr>
+          <td>PanAndZoom</td>
+          <td>11.3.6</td>
+          <td>NuGet</td>
+          <td>MIT</td>
+          <td><a href="https://github.com/wieslawsoltes/PanAndZoom">GitHub</a></td>
+        </tr>
+        <tr>
+          <td>Notification.Avalonia</td>
+          <td>2.1.0</td>
+          <td>NuGet</td>
+          <td>MIT</td>
+          <td><a href="https://github.com/AvaloniaCommunity/Notification.Avalonia">GitHub</a></td>
+        </tr>
       </tbody>
     </table>
 
@@ -466,12 +516,6 @@
     <h2 id="support">Support</h2>
     <p>If you have any issues, please open a <a href="https://github.com/JohnnyJF10/TgaBuilder/issues">GitHub Issue</a>.
     </p>
-
-    <h2 id="to-do-list">To Do List</h2>
-    <ul>
-      <li>Fix bugs</li>
-      <li>Migrate from WPF to Win UI 3 or Avalonia</li>
-    </ul>
 
 
 

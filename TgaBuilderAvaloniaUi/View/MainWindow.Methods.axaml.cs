@@ -28,7 +28,7 @@ namespace TgaBuilderAvaloniaUi.View
             }
         }
 
-        public void SetPanelFromImage(Image image) 
+        public void SetPanelFromImage(Image image)
             => CurrentPanel = GetPanelFromImage(image);
 
         public void RegisterZoomBorderCallbacks(ReadOnlyViewTabViewModel viewTab, ZoomBorder panel)

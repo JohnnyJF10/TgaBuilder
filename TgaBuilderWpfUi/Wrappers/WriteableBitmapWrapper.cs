@@ -1,11 +1,6 @@
-using System;
-using System.Windows.Media.Imaging;
 using System.Windows;
-using System.Windows.Media;
-
+using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;
-using System.IO;
-using TgaBuilderLib.Enums;
 
 namespace TgaBuilderWpfUi.Wrappers
 {
@@ -46,7 +41,7 @@ namespace TgaBuilderWpfUi.Wrappers
             Int32Rect? rect = null;
 
             if (requiresRefresh)
-                rect = new Int32Rect(0, 0, 
+                rect = new Int32Rect(0, 0,
                     _innerWriteableBitmap.PixelWidth, _innerWriteableBitmap.PixelHeight);
 
             return new BitmapLocker(_innerWriteableBitmap, requiresRefresh, rect);

@@ -14,9 +14,9 @@ namespace TgaBuilderLib.BitmapOperations
             int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
 
             IWriteableBitmap target = _mediaFactory.CreateEmptyBitmap(
-                width:          recWidth,
-                height:         recHeight,
-                hasAlpha:       source.HasAlpha);
+                width: recWidth,
+                height: recHeight,
+                hasAlpha: source.HasAlpha);
 
             int sourceStride = source.BackBufferStride;
             int targetStride = target.BackBufferStride;
@@ -47,7 +47,7 @@ namespace TgaBuilderLib.BitmapOperations
 
             return target;
         }
-        
+
         public IReadableBitmap CropIReadableBitmap(IReadableBitmap source, PixelRect rectangle, byte[]? pixelbuffer = null)
         {
             int bytesPerPixel = source.HasAlpha ? 4 : 3;
@@ -56,10 +56,10 @@ namespace TgaBuilderLib.BitmapOperations
             int rectY = Math.Max(0, rectangle.Y);
             int recWidth = Math.Min(rectangle.Width, source.PixelWidth - rectX);
             int recHeight = Math.Min(rectangle.Height, source.PixelHeight - rectY);
-        
+
             if (recWidth <= 0 || recHeight <= 0)
                 throw new ArgumentException("The specified rectangle is out of the bounds of the source bitmap.");
-        
+
             int stride = recWidth * bytesPerPixel;
 
             byte[] pixelData = pixelbuffer is not null && pixelbuffer.Length >= recHeight * stride
@@ -71,7 +71,7 @@ namespace TgaBuilderLib.BitmapOperations
                 pixelData,
                 stride,
                 0);
-        
+
             return _mediaFactory.CreateBitmapFromRaw(
                 recWidth,
                 recHeight,

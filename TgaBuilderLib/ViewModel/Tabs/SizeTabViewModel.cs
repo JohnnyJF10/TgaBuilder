@@ -56,7 +56,7 @@ namespace TgaBuilderLib.ViewModel
         {
             var newValue = CalculateNewPageXValue(value, _numPagesX);
 
-            if (newValue == _numPagesX) 
+            if (newValue == _numPagesX)
                 return;
 
             SetNewPageNumAndResize(ref _numPagesX, newValue, nameof(NumPagesX));
@@ -66,7 +66,7 @@ namespace TgaBuilderLib.ViewModel
         {
             var newValue = Math.Clamp(value, 1, MAX_NUM_PAGES);
 
-            if (newValue == _numPagesY) 
+            if (newValue == _numPagesY)
                 return;
 
             SetNewPageNumAndResize(ref _numPagesY, newValue, nameof(NumPagesY));
@@ -101,7 +101,7 @@ namespace TgaBuilderLib.ViewModel
 
             bool isSortedResizing = _sortedResizing && propertyName == nameof(NumPagesX);
 
-            if (isSortedResizing )
+            if (isSortedResizing)
             {
                 float widthRatio = value / (float)_numPagesX;
                 if ((int)(_numPagesY / widthRatio) > MAX_NUM_PAGES)

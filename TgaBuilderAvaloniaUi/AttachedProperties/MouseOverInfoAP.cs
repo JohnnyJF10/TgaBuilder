@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
-using System;
 using System.Diagnostics;
 using TgaBuilderAvaloniaUi.View;
 
@@ -18,15 +17,15 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
         public static readonly AttachedProperty<string?> InfoTextProperty =
             AvaloniaProperty.RegisterAttached<Control, string?>(
-                name:           "InfoText",
-                ownerType:      typeof(MouseOverInfoAP),
-                defaultValue:   string.Empty);
+                name: "InfoText",
+                ownerType: typeof(MouseOverInfoAP),
+                defaultValue: string.Empty);
 
         public static readonly AttachedProperty<bool> EnableMouseUpdatesProperty =
             AvaloniaProperty.RegisterAttached<Control, bool>(
-                name:           "EnableMouseUpdates",
-                ownerType:      typeof(MouseOverInfoAP),
-                defaultValue:   false);
+                name: "EnableMouseUpdates",
+                ownerType: typeof(MouseOverInfoAP),
+                defaultValue: false);
 
         public static string? GetInfoText(AvaloniaObject obj)
             => obj.GetValue(InfoTextProperty);
@@ -55,9 +54,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
                     control.PointerMoved += Control_PointerMoved;
 
                     control.AddHandler(
-                        routedEvent:        InputElement.PointerWheelChangedEvent,
-                        handler:            Control_PointerWheelChanged, 
-                        handledEventsToo:   true);
+                        routedEvent: InputElement.PointerWheelChangedEvent,
+                        handler: Control_PointerWheelChanged,
+                        handledEventsToo: true);
 
                     control.PointerReleased += Control_PointerReleased;
                 }
@@ -69,8 +68,8 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
                     control.PointerMoved -= Control_PointerMoved;
 
                     control.RemoveHandler(
-                        routedEvent:    InputElement.PointerWheelChangedEvent,
-                        handler:        Control_PointerWheelChanged);
+                        routedEvent: InputElement.PointerWheelChangedEvent,
+                        handler: Control_PointerWheelChanged);
 
                     control.PointerReleased -= Control_PointerReleased;
                 }

@@ -17,7 +17,7 @@ namespace TgaBuilderLib.BitmapOperations
             int stride = bitmap.BackBufferStride;
 
 
-            
+
 
             byte b, g, r, a;
 

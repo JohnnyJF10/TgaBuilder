@@ -1,11 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TgaBuilderLib.Abstraction;
 
@@ -19,7 +15,7 @@ namespace TgaBuilderAvaloniaUi.Elements
             set => base.DataContext = value;
         }
 
-        
+
 
         private bool? _dialogResult;
 
@@ -29,7 +25,7 @@ namespace TgaBuilderAvaloniaUi.Elements
             set
             {
                 _dialogResult = value;
-                Close(value); 
+                Close(value);
             }
         }
 

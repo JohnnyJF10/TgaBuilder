@@ -34,9 +34,9 @@ namespace TgaBuilderLib.BitmapOperations
 
             // Create a new bitmap with the desired size
             IWriteableBitmap newBitmap = _mediaFactory.CreateEmptyBitmap(
-                width:          newWidth,
-                height:         newHeight,
-                hasAlpha:       bytesPerPixel == 4);
+                width: newWidth,
+                height: newHeight,
+                hasAlpha: bytesPerPixel == 4);
 
             int oldStride = oldBitmap.BackBufferStride;
             int newStride = newBitmap.BackBufferStride;
@@ -84,7 +84,7 @@ namespace TgaBuilderLib.BitmapOperations
                 res.Add((oldx, oldy, newx, newy));
                 oldx += tileSize;
                 newx += tileSize;
-                if (oldx >= oldPanelWidth)  
+                if (oldx >= oldPanelWidth)
                 {
                     oldx = 0;
                     oldy += tileSize;

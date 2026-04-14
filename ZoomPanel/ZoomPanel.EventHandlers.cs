@@ -80,7 +80,7 @@ namespace WPFZoomPanel
             SaveZoom();
             AnimatedZoomTo(FitZoomValue);
             RaiseCanExecuteChanged();
-        }, 
+        },
             () => !InternalViewportZoom.IsWithinOnePercent(FitZoomValue) && FitZoomValue >= MinimumZoomClamped));
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace WPFZoomPanel
         {
             DelayedSaveZoom1500Miliseconds();
             ZoomOut(new Point(ContentZoomFocusX, ContentZoomFocusY));
-        }, 
+        },
             () => InternalViewportZoom > MinimumZoomClamped));
 
         /// <summary>

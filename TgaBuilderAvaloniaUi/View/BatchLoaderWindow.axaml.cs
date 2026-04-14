@@ -1,10 +1,7 @@
-﻿using Avalonia.Controls.PanAndZoom;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
-using System.Linq;
 using TgaBuilderAvaloniaUi.Elements;
-using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View

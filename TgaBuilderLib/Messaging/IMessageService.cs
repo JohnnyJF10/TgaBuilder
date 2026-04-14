@@ -1,5 +1,5 @@
 ﻿namespace TgaBuilderLib.Messaging
-{    
+{
     public interface IMessageService
     {
         void SendMessage(

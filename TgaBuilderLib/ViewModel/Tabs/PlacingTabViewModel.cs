@@ -51,7 +51,7 @@ namespace TgaBuilderLib.ViewModel
 
         private void SetOpacity(double value)
         {
-            if (Opacity == value) 
+            if (Opacity == value)
                 return;
 
 
@@ -89,7 +89,7 @@ namespace TgaBuilderLib.ViewModel
 
         private void SetPickerSize(int value)
         {
-            if (_destination.Picker.Size == value) 
+            if (_destination.Picker.Size == value)
                 return;
 
             _destination.Picker.Size = value;

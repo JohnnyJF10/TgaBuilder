@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 using Wpf.Ui.Controls;
 
 namespace TgaBuilderWpfUi.Elements
@@ -22,7 +17,7 @@ namespace TgaBuilderWpfUi.Elements
             set => base.DialogResult = value;
         }
 
-        
+
 
         public Task ShowAsync()
         {

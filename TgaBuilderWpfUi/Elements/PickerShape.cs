@@ -6,21 +6,21 @@ namespace TgaBuilderWpfUi.Elements
     public class PickerShape : FrameworkElement
     {
         public static readonly DependencyProperty SizeProperty = DependencyProperty.Register(
-            "Size", 
-            typeof(int), 
-            typeof(PickerShape), 
+            "Size",
+            typeof(int),
+            typeof(PickerShape),
             new PropertyMetadata(64, OnSizeChanged));
 
         public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(
-            "Stroke", 
-            typeof(Brush), 
-            typeof(PickerShape), 
+            "Stroke",
+            typeof(Brush),
+            typeof(PickerShape),
             new PropertyMetadata(Brushes.Red, OnStrokeChanged));
 
         public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register(
-            "StrokeThickness", 
-            typeof(double), 
-            typeof(PickerShape), 
+            "StrokeThickness",
+            typeof(double),
+            typeof(PickerShape),
             new PropertyMetadata(1.0, OnStrokeThicknessChanged));
 
         public int Size
@@ -69,21 +69,21 @@ namespace TgaBuilderWpfUi.Elements
                 // +-----------+---------+---------------+------------------------------+
                 // |           |         | LineTo 1      | LineTo 2                     |
                 // +-----------+---------+---------------+------------------------------+
-                ctx.BeginFigure(new Point(0,              Size * 0.3),     false, false);
-                ctx.LineTo     (new Point(0,              0),              true,  false);
-                ctx.LineTo     (new Point(Size * 0.3,     0),              true,  false);
-                
-                ctx.BeginFigure(new Point(Size * 0.7,     0),              false, false);
-                ctx.LineTo     (new Point(Size,           0),              true,  false);
-                ctx.LineTo     (new Point(Size,           Size * 0.3),     true,  false);
-                
-                ctx.BeginFigure(new Point(Size,           Size * 0.7),     false, false);
-                ctx.LineTo     (new Point(Size,           Size),           true,  false);
-                ctx.LineTo     (new Point(Size * 0.7,     Size),           true,  false);
-                
-                ctx.BeginFigure(new Point(Size * 0.3,     Size),           false, false);
-                ctx.LineTo     (new Point(0,              Size),           true,  false);
-                ctx.LineTo     (new Point(0,              Size * 0.7),     true,  false);
+                ctx.BeginFigure(new Point(0, Size * 0.3), false, false);
+                ctx.LineTo(new Point(0, 0), true, false);
+                ctx.LineTo(new Point(Size * 0.3, 0), true, false);
+
+                ctx.BeginFigure(new Point(Size * 0.7, 0), false, false);
+                ctx.LineTo(new Point(Size, 0), true, false);
+                ctx.LineTo(new Point(Size, Size * 0.3), true, false);
+
+                ctx.BeginFigure(new Point(Size, Size * 0.7), false, false);
+                ctx.LineTo(new Point(Size, Size), true, false);
+                ctx.LineTo(new Point(Size * 0.7, Size), true, false);
+
+                ctx.BeginFigure(new Point(Size * 0.3, Size), false, false);
+                ctx.LineTo(new Point(0, Size), true, false);
+                ctx.LineTo(new Point(0, Size * 0.7), true, false);
                 // +-----------+---------+---------------+------------------------------+
             }
 

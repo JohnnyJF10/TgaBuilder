@@ -7,12 +7,12 @@ namespace TgaBuilderWpfUi.Services
     {
         public CursorSetter(
             Cursor eyedropperCursor
-            ) 
+            )
         {
             _eyedropperCursor = eyedropperCursor;
         }
 
-        private Cursor _eyedropperCursor; 
+        private Cursor _eyedropperCursor;
 
         public void SetEyedropperCursor()
             => Mouse.OverrideCursor = _eyedropperCursor;

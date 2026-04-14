@@ -14,9 +14,9 @@ namespace TgaBuilderLib.BitmapOperations
 
             // Create a new IWriteableBitmap with BGRA32 format
             var targetBitmap = _mediaFactory.CreateEmptyBitmap(
-                width:          sourceBitmap.PixelWidth,
-                height:         sourceBitmap.PixelHeight,
-                hasAlpha:       true);
+                width: sourceBitmap.PixelWidth,
+                height: sourceBitmap.PixelHeight,
+                hasAlpha: true);
 
             var targetDirtyRect = new PixelRect(0, 0, targetBitmap.PixelWidth, targetBitmap.PixelHeight);
 
@@ -46,7 +46,7 @@ namespace TgaBuilderLib.BitmapOperations
                             srcIdx = (y * srcStride) + (x * 3);
 
                             // Read RGB values from the source bitmap
-                            r = srcPtr[srcIdx    ];
+                            r = srcPtr[srcIdx];
                             g = srcPtr[srcIdx + 1];
                             b = srcPtr[srcIdx + 2];
 
@@ -54,7 +54,7 @@ namespace TgaBuilderLib.BitmapOperations
 
                             if ((r, g, b) != (255, 0, 255)) // Write BGRA values to the target bitmap if not magenta
                             {
-                                dstPtr[dstIdx    ] = b;   // B
+                                dstPtr[dstIdx] = b;   // B
                                 dstPtr[dstIdx + 1] = g;   // G
                                 dstPtr[dstIdx + 2] = r;   // R
                                 dstPtr[dstIdx + 3] = 255; // A (fully opaque)
@@ -65,7 +65,7 @@ namespace TgaBuilderLib.BitmapOperations
             }
 
 
-                return targetBitmap;
+            return targetBitmap;
         }
 
         public IWriteableBitmap ConvertBGRA32ToRGB24(IWriteableBitmap sourceBitmap)
@@ -74,12 +74,12 @@ namespace TgaBuilderLib.BitmapOperations
                 throw new ArgumentNullException(nameof(sourceBitmap), "Source bitmap cannot be null.");
             if (!sourceBitmap.HasAlpha)
                 throw new ArgumentException("Source bitmap must be in BGRA32 format.", nameof(sourceBitmap));
-            
+
             // Create a new IWriteableBitmap with RGB24 format
             var targetBitmap = _mediaFactory.CreateEmptyBitmap(
-                width:          sourceBitmap.PixelWidth,
-                height:         sourceBitmap.PixelHeight,
-                hasAlpha:       false);
+                width: sourceBitmap.PixelWidth,
+                height: sourceBitmap.PixelHeight,
+                hasAlpha: false);
 
             var targetDirtyRect = new PixelRect(0, 0, targetBitmap.PixelWidth, targetBitmap.PixelHeight);
 
@@ -108,7 +108,7 @@ namespace TgaBuilderLib.BitmapOperations
                         {
                             srcIdx = (y * srcStride) + (x * 4);
                             // Read BGRA values from the source bitmap
-                            b = srcPtr[srcIdx    ];
+                            b = srcPtr[srcIdx];
                             g = srcPtr[srcIdx + 1];
                             r = srcPtr[srcIdx + 2];
                             a = srcPtr[srcIdx + 3];
@@ -117,19 +117,19 @@ namespace TgaBuilderLib.BitmapOperations
 
                             if (a == 0) // If fully transparent, write magegenta
                             {
-                                dstPtr[dstIdx    ] = 255;   // R
+                                dstPtr[dstIdx] = 255;   // R
                                 dstPtr[dstIdx + 1] = 0;     // G
                                 dstPtr[dstIdx + 2] = 255;   // B
                             }
                             else if (a < 255) // If semi-transparent, blend with black
                             {
-                                dstPtr[dstIdx    ] = (byte)(r * a / 255);   // R
+                                dstPtr[dstIdx] = (byte)(r * a / 255);   // R
                                 dstPtr[dstIdx + 1] = (byte)(g * a / 255);   // G
                                 dstPtr[dstIdx + 2] = (byte)(b * a / 255);   // B
                             }
                             else // Write RGB values to the target bitmap
                             {
-                                dstPtr[dstIdx    ] = r;   // R
+                                dstPtr[dstIdx] = r;   // R
                                 dstPtr[dstIdx + 1] = g;   // G
                                 dstPtr[dstIdx + 2] = b;   // B                        
                             }

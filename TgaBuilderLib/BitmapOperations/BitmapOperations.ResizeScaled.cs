@@ -18,7 +18,7 @@ namespace TgaBuilderLib.BitmapOperations
             int sourceBytesPerPixel = source.HasAlpha ? 4 : 3;
             int targetBytesPerPixel = sourceBytesPerPixel;
 
-            int sourceStride = (sourceWidth * sourceBytesPerPixel + 3) & ~3; 
+            int sourceStride = (sourceWidth * sourceBytesPerPixel + 3) & ~3;
             int targetStride = (targetWidth * targetBytesPerPixel + 3) & ~3;
 
             byte[] sourcePixels = new byte[sourceStride * sourceHeight];
@@ -71,9 +71,9 @@ namespace TgaBuilderLib.BitmapOperations
 
             // Output fotmat remains the same as source
             IWriteableBitmap targetBitmap = _mediaFactory.CreateEmptyBitmap(
-                width:          targetWidth,
-                height:         targetHeight,
-                hasAlpha:       source.HasAlpha);
+                width: targetWidth,
+                height: targetHeight,
+                hasAlpha: source.HasAlpha);
 
             targetBitmap.WritePixels(new PixelRect(0, 0, targetWidth, targetHeight),
                 pixels: targetPixels,

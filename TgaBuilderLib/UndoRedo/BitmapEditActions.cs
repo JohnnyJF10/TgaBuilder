@@ -29,8 +29,8 @@ namespace TgaBuilderLib.UndoRedo
 
         private readonly bool ownsMemory;
 
-        private  Action<PixelRect, byte[]> _placingCallback;
-        private  Action<byte[]> _returnArrayCallback;
+        private Action<PixelRect, byte[]> _placingCallback;
+        private Action<byte[]> _returnArrayCallback;
 
         public long SizeInBytes => (OldPixels?.Length ?? 0) + (NewPixels?.Length ?? 0);
 

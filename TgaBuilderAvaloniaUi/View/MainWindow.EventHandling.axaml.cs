@@ -1,11 +1,7 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using System;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
@@ -90,7 +86,8 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Window_PointerReleased(object? sender, PointerReleasedEventArgs e)
         {
-            if (CurrentImage == null) return;
+            if (CurrentImage == null)
+                return;
 
             if (e.InitialPressMouseButton == MouseButton.Middle)
                 return;
@@ -106,15 +103,15 @@ namespace TgaBuilderAvaloniaUi.View
             if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((x, y, isDestination, MouseAction.DragEnd, _modifier));
 
-            e.Pointer.Capture(null);
-            _modifier = MouseModifier.None;
-
             CurrentImage.InvalidateVisual();
 
             var hit = this.GetVisualsAt(e.GetPosition(this));
 
             if (hit.Count() > 0 && hit.ElementAt(0) != CurrentImage)
                 PanelMouseAP.OnPointerExited(CurrentImage);
+
+            e.Pointer.Capture(null);
+            _modifier = MouseModifier.None;
         }
 
         private void DestinationFormatSwitch_Click(object? sender, RoutedEventArgs e)

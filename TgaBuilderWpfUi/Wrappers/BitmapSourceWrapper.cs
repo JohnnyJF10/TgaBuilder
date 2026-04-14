@@ -1,6 +1,5 @@
 using System.IO;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using TgaBuilderLib.Abstraction;
@@ -45,9 +44,9 @@ public class BitmapSourceWrapper : IReadableBitmap
     {
         BitmapEncoder encoder = encoderType switch
         {
-            EncoderType.Png     => new PngBitmapEncoder(),
-            EncoderType.Jpeg    => new JpegBitmapEncoder(),
-            EncoderType.Bmp     => new BmpBitmapEncoder(),
+            EncoderType.Png => new PngBitmapEncoder(),
+            EncoderType.Jpeg => new JpegBitmapEncoder(),
+            EncoderType.Bmp => new BmpBitmapEncoder(),
             _ => throw new ArgumentOutOfRangeException(nameof(encoderType), encoderType, null)
         };
 

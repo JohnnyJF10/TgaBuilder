@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TgaBuilderLib.Abstraction
+﻿namespace TgaBuilderLib.Abstraction
 {
     public interface IClipboardService
     {

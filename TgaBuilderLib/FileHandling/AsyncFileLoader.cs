@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Threading;
-using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.Enums;
+﻿using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.FileHandling
 {
@@ -20,7 +17,7 @@ namespace TgaBuilderLib.FileHandling
         public int LoadedStride => LoadedWidth * (LoadedHasAlpha ? 4 : 3);
         public bool LoadedHasAlpha { get; private set; }
 
-        public HashSet<string> SupportedExtensions 
+        public HashSet<string> SupportedExtensions
             => new(StringComparer.OrdinalIgnoreCase)
             {
                 ".dds", ".tga", ".png", ".jpg", ".jpeg", ".bmp"

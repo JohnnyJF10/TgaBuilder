@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using TgaBuilderLib.Abstraction;
 using TgaBuilderWpfUi.Elements;
 using TgaBuilderWpfUi.Services;
 using Wpf.Ui.Controls;
