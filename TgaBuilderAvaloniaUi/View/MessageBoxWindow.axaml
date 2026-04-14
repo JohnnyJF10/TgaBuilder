@@ -12,42 +12,54 @@
         x:Class="TgaBuilderAvaloniaUi.View.MessageBoxWindow"
         CanResize="False"
         CanMinimize="False"
-        Width="400" 
-        Height="200"
+        Width="420" 
+        Height="210"
         Title="{Binding Header}"
+        Background="{DynamicResource DialogBackgroundGradient}"
         Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
         >
-  <Border Padding="16">
+
+  <Window.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Styles/AppTheme.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Window.Resources>
+
+  <Border Padding="20">
     <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
       <!-- Header -->
       <TextBlock Text="{Binding Header}"
                  FontSize="18" FontWeight="Bold"
-                 Margin="0,0,0,8"/>
+                 Margin="0,0,0,10"/>
 
       <!-- Message -->
       <TextBlock Grid.Row="1" Text="{Binding Message}"
-                 TextWrapping="Wrap" />
+                 TextWrapping="Wrap"
+                 LineHeight="20"
+                 Opacity="0.9" />
 
       <!-- Buttons -->
       <StackPanel Grid.Row="2" Orientation="Horizontal"
-                  HorizontalAlignment="Right" Spacing="8" Margin="0,16,0,0">
+                  HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
 
         <Button x:Name="OkButton" 
                 HorizontalContentAlignment="Center"
                 Content="OK" 
-                MinWidth="80"/>
+                MinWidth="84"/>
         <Button x:Name="CancelButton" 
                 HorizontalContentAlignment="Center"
                 Content="Cancel" 
-                MinWidth="80"/>
+                MinWidth="84"/>
         <Button x:Name="YesButton" 
                 HorizontalContentAlignment="Center"
                 Content="Yes" 
-                MinWidth="80"/>
+                MinWidth="84"/>
         <Button x:Name="NoButton" 
                 HorizontalContentAlignment="Center"
                 Content="No" 
-                MinWidth="80"/>
+                MinWidth="84"/>
       </StackPanel>
     </Grid>
   </Border>

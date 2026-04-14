@@ -9,57 +9,76 @@
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen"
     SizeToContent="Height"
-    Width="300"
-    MinWidth="300"
-    Height="420"
-    MinHeight="400"
+    Width="320"
+    MinWidth="320"
+    Height="440"
+    MinHeight="420"
     CanResize="False"
     CanMinimize="False"
-    Background="{DynamicResource SystemChromeMediumColor}"
+    Background="{DynamicResource DialogBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
     Title="About"
     >
 
+  <Window.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Styles/AppTheme.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Window.Resources>
+
   <Grid RowDefinitions="Auto,*,60"
         Margin="0,10,0,0">
     <Border Grid.Row="0"/>
 
-    <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10,0">
+    <StackPanel Grid.Row="1" Orientation="Vertical" Margin="16,0">
       <StackPanel Orientation="Horizontal">
 
-        <Image Source="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_picture.png" Width="64" Height="64" Margin="10,0"/>
-        <StackPanel>
+        <Border CornerRadius="12"
+                Margin="8,0"
+                ClipToBounds="True"
+                BoxShadow="0 2 8 0 #20000000">
+          <Image Source="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_picture.png" Width="64" Height="64" />
+        </Border>
+        <StackPanel VerticalAlignment="Center">
           <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" TextWrapping="Wrap"/>
-          <TextBlock Text="{Binding Subtitle}" FontSize="16" TextWrapping="Wrap"/>
-          <TextBlock Text="{Binding DotNetInfo}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,0"/>
+          <TextBlock Text="{Binding Subtitle}" FontSize="15" Opacity="0.8" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding DotNetInfo}" FontSize="11" Opacity="0.6" TextWrapping="Wrap" Margin="0,4,0,0"/>
         </StackPanel>
       </StackPanel>
 
-      <TextBlock Text="{Binding AboutText}" FontSize="14" TextWrapping="Wrap" Margin="0,5"/>
+      <Border Margin="0,12,0,8"
+              Height="1"
+              Background="{DynamicResource SeparatorBrush}" />
 
-      <DockPanel>
+      <TextBlock Text="{Binding AboutText}" FontSize="14" TextWrapping="Wrap" Margin="0,0,0,8" LineHeight="20"/>
+
+      <DockPanel Margin="0,4,0,0">
         <HyperlinkButton FontSize="10" 
-                         Margin="5" 
+                         Margin="0" 
                          DockPanel.Dock="Left"
                          NavigateUri="https://github.com/JohnnyJF10/TgaBuilder/tree/master"
                          Content="Github"
                          />
         <HyperlinkButton FontSize="10" 
-                         Margin="5" 
+                         Margin="0" 
                          HorizontalAlignment="Right"
                          Content="License: MIT"
                          NavigateUri="https://github.com/JohnnyJF10/TgaBuilder/blob/master/LICENSE.txt"/>
       </DockPanel>
     </StackPanel>
 
-    <Button Grid.Row="2"
-            Content="Close"
-            Command="{Binding CloseCommand}"
-            CommandParameter="{Binding $parent[Window]}"
-            HorizontalAlignment="Right"
-            Margin="0,0,15,0"
-            HorizontalContentAlignment="Center"
-            Width="75" Height="30"/>
+    <Border Grid.Row="2"
+            Margin="16,0,16,12">
+      <Button Grid.Row="2"
+              Content="Close"
+              Command="{Binding CloseCommand}"
+              CommandParameter="{Binding $parent[Window]}"
+              HorizontalAlignment="Right"
+              HorizontalContentAlignment="Center"
+              Width="80" Height="32"/>
+    </Border>
   </Grid>
 </elements:AsyncWindow>
