@@ -15,7 +15,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
-        Background="{DynamicResource SystemChromeMediumColor}"
+        Background="{DynamicResource WindowBackgroundGradient}"
         Foreground="{DynamicResource SystemBaseHighColor}"
         Title="Batch File Loader"
         Height="550"
@@ -31,6 +31,7 @@
     <ResourceDictionary.MergedDictionaries>
       <ResourceInclude Source="/Styles/IconDictionary.axaml" />
       <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+      <ResourceInclude Source="/Styles/AppTheme.axaml" />
     </ResourceDictionary.MergedDictionaries>
     <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
     <sys:Boolean x:Key="True">True</sys:Boolean>
@@ -212,8 +213,9 @@
                FontSize="24"
                IsVisible="{Binding IsDropHintVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
 
-    <!-- Bottom actions area (was Border with DockPanel) -->
-    <Border Grid.Row="4" Grid.Column="1" Padding="12" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" BorderThickness="0,1,0,0" BorderBrush="Transparent">
+    <!-- Bottom actions area -->
+    <Border Grid.Row="4" Grid.Column="1" Padding="12" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+            BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SeparatorBrush}">
       <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
 
         <Button Content="Import"

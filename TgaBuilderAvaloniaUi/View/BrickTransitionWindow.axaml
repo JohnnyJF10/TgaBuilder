@@ -11,7 +11,7 @@
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen"
     UseLayoutRounding="True"
-    Background="{DynamicResource SystemChromeMediumColor}"
+    Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Brick Transition Helper"
     Height="550"
@@ -22,6 +22,9 @@
 
     <Window.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/AppTheme.axaml" />
+            </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
     </Window.Resources>
@@ -291,13 +294,15 @@
                 Margin="-10,0,-10,-10"
                 VerticalAlignment="Stretch"
                 IsHitTestVisible="False"
-                Background="{DynamicResource SystemChromeMediumColor}"/>
+                Background="{DynamicResource StatusBarBackground}"
+                BorderBrush="{DynamicResource SeparatorBrush}"
+                BorderThickness="0,1,0,0"/>
             <StackPanel
                 HorizontalAlignment="Right"
                 Orientation="Horizontal">
                 <Button
-                    Width="75"
-                    Height="30"
+                    Width="80"
+                    Height="32"
                     Margin="0,0,15,0"
                     HorizontalAlignment="Right"
                     HorizontalContentAlignment="Center"
@@ -305,8 +310,8 @@
                     CommandParameter="{Binding $parent[Window]}"
                     Content="Cancel"/>
                 <Button
-                    Width="75"
-                    Height="30"
+                    Width="80"
+                    Height="32"
                     Margin="0,0,15,0"
                     HorizontalAlignment="Right"
                     HorizontalContentAlignment="Center"

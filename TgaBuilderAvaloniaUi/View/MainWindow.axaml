@@ -22,7 +22,7 @@
     ap:PanelMouseAP.PanelMouseCommand="{Binding MousePanelCommand}"
     ap:PanelMouseAP.WheelShiftCommand="{Binding WheelShiftCommand}"
     x:DataType="viewmodel:MainViewModel"
-    Background="{DynamicResource SystemChromeMediumColor}"
+    Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen"
@@ -51,6 +51,7 @@
                 <ResourceInclude Source="/Styles/IconDictionary.axaml" />
                 <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+                <ResourceInclude Source="/Styles/AppTheme.axaml" />
             </ResourceDictionary.MergedDictionaries>
             <converter:BitmapSourceConverter x:Key="BitmapSourceConverter" />
             <converter:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
@@ -76,6 +77,16 @@
             <ColumnDefinition Width="*" MinWidth="315" />
         </Grid.ColumnDefinitions>
 
+        <!-- Toolbar background strip -->
+        <Border Grid.Row="0" Grid.ColumnSpan="3"
+                Background="{DynamicResource ToolbarBackground}"
+                BorderBrush="{DynamicResource SeparatorBrush}"
+                BorderThickness="0,0,0,1" />
+
+        <!-- Middle column background -->
+        <Border Grid.Row="1" Grid.Column="1"
+                Background="{DynamicResource MiddleColumnBackground}"
+                CornerRadius="0" />
 
         <DockPanel>
             <Border Margin="3,3,0,0" />
@@ -95,7 +106,7 @@
                           >
                         <SplitButton.Content>
                           <Path
-                              Fill="Black"
+                              Fill="{DynamicResource IconFillBrush}"
                               Data="{StaticResource folder_open}"
                               Width="16"
                               Height="13"
@@ -105,7 +116,6 @@
                         <SplitButton.Flyout>
                           <MenuFlyout
                             ItemsSource="{Binding SourceIO.RecentSourceFileNames}"
-                            
                             >
                             <MenuFlyout.ItemTemplate>
                               <DataTemplate>
@@ -181,7 +191,7 @@
                           >
                         <SplitButton.Content>
                           <Path
-                              Fill="Black"
+                              Fill="{DynamicResource IconFillBrush}"
                               Data="{StaticResource folder_open}" 
                               Width="16"
                               Height="13"
@@ -869,13 +879,13 @@
                             IsChecked="{Binding OverlayTransparentModeSelected, Mode=OneWayToSource}" />
                         <Path 
                             Margin="5,5,0,0" 
-                            Fill="Black"
+                            Fill="{DynamicResource IconFillBrush}"
                             Data="{StaticResource slide_hide}" 
                             />
                         <Path 
                             Margin="0,5,0,0" 
                             DockPanel.Dock="Right"
-                            Fill="Black"
+                            Fill="{DynamicResource IconFillBrush}"
                             Data="{StaticResource slide_add}" />
                         <Slider
                             Margin="5,0"
@@ -1273,10 +1283,15 @@
             </DockPanel>
         </Grid>
 
-        <DockPanel
+        <Border
             Grid.Row="4"
             Grid.Column="0"
-            Grid.ColumnSpan="3">
+            Grid.ColumnSpan="3"
+            Background="{DynamicResource StatusBarBackground}"
+            BorderBrush="{DynamicResource SeparatorBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="4,2">
+        <DockPanel>
 
             <StackPanel
                 Margin="5,0"
@@ -1285,7 +1300,7 @@
                 Orientation="Horizontal">
                 <Path 
                   Margin="0,2,0,0" 
-                  Fill="Black"
+                  Fill="{DynamicResource IconFillBrush}"
                   Data="{StaticResource cursor}"
                   />
                 <TextBlock
@@ -1298,14 +1313,14 @@
                   Height="20"
                   Stretch="Fill"
                   IsVisible="{Binding TileInfoVisible, UpdateSourceTrigger=PropertyChanged}"
-                  Fill="Black"
+                  Fill="{DynamicResource IconFillBrush}"
                   Data="{StaticResource screenshot_simple}" />
                 <Path 
                   Width="20"
                   Height="20"
                   Stretch="Fill"
                   IsVisible="{Binding SelectionInfoVisible, UpdateSourceTrigger=PropertyChanged}" 
-                  Fill="Black"
+                  Fill="{DynamicResource IconFillBrush}"
                   Data="{StaticResource square_simple}" />
                 <TextBlock
                     Width="60"
@@ -1316,13 +1331,18 @@
                   Height="20"
                   Stretch="Fill"
                   Margin="0,2,0,0" 
-                  Fill="Black"
+                  Fill="{DynamicResource IconFillBrush}"
                   Data="{StaticResource image}" />
                 <TextBlock 
                   Margin="5,5,5,0" 
                   Text="{Binding PanelInfo}" />
 
             </StackPanel>
+            <elements:IconButton
+                x:Name="ThemeToggleButton"
+                DockPanel.Dock="Right"
+                Icon="{StaticResource dark_theme}"
+                ToolTip.Tip="Toggle Dark / Light Mode" />
             <elements:IconButton
                 Command="{Binding AboutCommand}"
                 DockPanel.Dock="Right"
@@ -1341,6 +1361,7 @@
                 TextTrimming="CharacterEllipsis"
                 TextWrapping="NoWrap" />
         </DockPanel>
+        </Border>
       <notif:NotificationMessageContainer
         Manager="{Binding Manager, ElementName=MainWin}"
         Grid.Row="1"
