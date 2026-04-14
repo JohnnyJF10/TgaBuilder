@@ -275,7 +275,10 @@ namespace TgaBuilderWpfUi
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
-            services.AddTransient(sp => new BrickTransitionViewModel());
+            services.AddTransient(sp => new BrickTransitionViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),
