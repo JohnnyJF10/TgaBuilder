@@ -41,5 +41,7 @@ namespace TgaBuilderWpfUi.Elements
         {
             return Task.FromResult<bool?>(base.ShowDialog());
         }
+
+
     }
 }

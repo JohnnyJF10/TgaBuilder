@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TgaBuilderLib.ViewModel;
 using TgaBuilderWpfUi.Elements;
 using TgaBuilderWpfUi.Services;
 using Wpf.Ui.Controls;
@@ -27,6 +28,14 @@ namespace TgaBuilderWpfUi.View
         {
             InitializeComponent();
             base.DataContext = viewModel;
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            if (DataContext is BrickTransitionViewModel vm)
+                vm.MarkFinishedCommand.Execute(null);
         }
 
         public SnackbarPresenter SnackbarPresenter => MessageSnackbarPresenter;

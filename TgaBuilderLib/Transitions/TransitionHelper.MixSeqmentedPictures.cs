@@ -7,8 +7,8 @@ namespace TgaBuilderLib.Transitions
     {
                     // Draws segmented tile pixels over a background according to transition progress and edge constraints.
           public byte[] MixSmartTilesPixels(
-            byte[] bgPixels,
-            byte[] tilePixels)
+            byte[] tilePixels,
+            byte[] bgPixels)
         {
             if (bgPixels.Length != tilePixels.Length)
                 throw new ArgumentException("Pixel arrays must have same length.");
