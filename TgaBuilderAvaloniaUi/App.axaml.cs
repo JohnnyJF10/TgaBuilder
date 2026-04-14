@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -46,6 +47,8 @@ namespace TgaBuilderAvaloniaUi
                 _ = mainViewModel.DestinationViewTab.DefferedFill();
             };
 
+            mainWindow.ThemeToggleButton.Click += (_, _) => ToggleTheme();
+
             mainWindow.Show();
 
             mainWindow.Closed += (_, _) =>
@@ -57,6 +60,17 @@ namespace TgaBuilderAvaloniaUi
             };
 
             base.OnFrameworkInitializationCompleted();
+        }
+
+        public void ToggleTheme()
+        {
+            if (Current == null) return;
+
+            var currentVariant = Current.ActualThemeVariant;
+
+            Current.RequestedThemeVariant = currentVariant == ThemeVariant.Dark
+                ? ThemeVariant.Light
+                : ThemeVariant.Dark;
         }
     }
 }
