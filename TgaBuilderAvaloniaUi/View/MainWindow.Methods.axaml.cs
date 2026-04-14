@@ -31,7 +31,7 @@ namespace TgaBuilderAvaloniaUi.View
         public void SetPanelFromImage(Image image) 
             => CurrentPanel = GetPanelFromImage(image);
 
-        public void RegisterZoomBorderCallbacks(ViewTabViewModel viewTab, ZoomBorder panel)
+        public void RegisterZoomBorderCallbacks(ReadOnlyViewTabViewModel viewTab, ZoomBorder panel)
         {
             viewTab.ApplyTransformCallback = (zoom, translateX, translateY) =>
             {
@@ -48,6 +48,30 @@ namespace TgaBuilderAvaloniaUi.View
                 Dispatcher.UIThread.Post(() =>
                 {
                     panel.SetMatrix(panel.Matrix * Matrix.CreateTranslation(deltaX, deltaY));
+                });
+            };
+
+            viewTab.ZoomStepCallback = (zoomDelta) =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    var currentMatrix = panel.Matrix;
+                    double centerX = panel.Bounds.Width / 2;
+                    double centerY = panel.Bounds.Height / 2;
+
+                    var matrix = currentMatrix *
+                                 Matrix.CreateTranslation(-centerX, -centerY) *
+                                 Matrix.CreateScale(zoomDelta, zoomDelta) *
+                                 Matrix.CreateTranslation(centerX, centerY);
+                    panel.SetMatrix(matrix);
+                });
+            };
+
+            viewTab.ResetViewCallback = () =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    panel.ResetMatrix();
                 });
             };
         }

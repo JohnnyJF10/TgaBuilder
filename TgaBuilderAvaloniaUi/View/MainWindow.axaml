@@ -422,10 +422,6 @@
                 ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ClipToBounds="True"
                 DropCommand="{Binding FileDropSourceCommand}">
-                <ScrollViewer
-                  VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Auto"
-                  >
                     <paz:ZoomBorder
                         x:Name="SourcePanel"
                         HorizontalAlignment="Stretch"
@@ -517,7 +513,6 @@
                                 StrokeThickness="{Binding StrokeThickness}" />
                         </Canvas>
                     </paz:ZoomBorder>
-                </ScrollViewer>
             </elements:FileDropBorder>
             <TextBlock
                 Grid.Row="1"
@@ -573,30 +568,16 @@
                     DataContext="{Binding Source}"
                     DockPanel.Dock="Right"
                     Value="{Binding SelectedPickerSize, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                <Path
-                  Margin="0,5,0,0"
-                    Fill="Black"
-                    Data="{StaticResource zoom_out}"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    DockPanel.Dock="Left"
-                      />
-                <Path
-                    Margin="0,5,10,0"
-                    Fill="Black"
-                    Data="{StaticResource zoom_in}"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    DockPanel.Dock="Right"
-                      />
-                <Slider
-                    MinWidth="3"
-                    Margin="5,0"
-                    Padding="0,-10"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    Maximum="10"
-                    Minimum="0.1"
-                    Value="{Binding SourceViewTab.Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <elements:IconButton
+                    Icon="{StaticResource zoom_out}"
+                    ap:MouseOverInfoAP.InfoText="Zoom out (Ctrl + Mouse Wheel on the panel)"
+                    Command="{Binding SourceViewTab.ZoomOutCommand}"
+                    DockPanel.Dock="Left" />
+                <elements:IconButton
+                    Icon="{StaticResource zoom_in}"
+                    ap:MouseOverInfoAP.InfoText="Zoom in (Ctrl + Mouse Wheel on the panel)"
+                    Command="{Binding SourceViewTab.ZoomInCommand}"
+                    DockPanel.Dock="Left" />
             </DockPanel>
         </Grid>
 
@@ -1070,10 +1051,6 @@
                 ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ClipToBounds="True"
                 DropCommand="{Binding FileDropDestinationCommand}">
-                <ScrollViewer
-                  VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Auto"
-                  >
                     <paz:ZoomBorder
                         x:Name="TargetPanel"
                         HorizontalAlignment="Stretch"
@@ -1207,7 +1184,6 @@
                         </Canvas>
 
                     </paz:ZoomBorder>
-                </ScrollViewer>
             </elements:FileDropBorder>
             <TextBlock
                 Grid.Row="1"
@@ -1262,30 +1238,16 @@
                     DataContext="{Binding Destination}"
                     DockPanel.Dock="Right"
                     Value="{Binding SelectedPickerSize, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                <Path
-                  Margin="0,5,0,0"
-                    Fill="Black"
-                    Data="{StaticResource zoom_out}"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    DockPanel.Dock="Left"
-                    />
-                <Path
-                    Margin="0,5,10,0"
-                    Fill="Black"
-                    Data="{StaticResource zoom_in}"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    DockPanel.Dock="Right"
-                    />
-                <Slider
-                    MinWidth="3"
-                    Margin="5,0"
-                    Padding="0,-10"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-                    Maximum="10"
-                    Minimum="0.1"
-                    Value="{Binding DestinationViewTab.Zoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <elements:IconButton
+                    Icon="{StaticResource zoom_out}"
+                    ap:MouseOverInfoAP.InfoText="Zoom out (Ctrl + Mouse Wheel on the panel)"
+                    Command="{Binding DestinationViewTab.ZoomOutCommand}"
+                    DockPanel.Dock="Left" />
+                <elements:IconButton
+                    Icon="{StaticResource zoom_in}"
+                    ap:MouseOverInfoAP.InfoText="Zoom in (Ctrl + Mouse Wheel on the panel)"
+                    Command="{Binding DestinationViewTab.ZoomInCommand}"
+                    DockPanel.Dock="Left" />
             </DockPanel>
         </Grid>
 

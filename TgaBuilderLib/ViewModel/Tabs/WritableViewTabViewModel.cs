@@ -1,19 +1,21 @@
 ﻿using System.Diagnostics;
-
 using System.Windows.Input;
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Commands;
 
 namespace TgaBuilderLib.ViewModel
 {
-    public class ViewTabViewModel : ViewModelBase
+    /// <summary>
+    /// View tab implementation for WPF where zoom and offsets are writable
+    /// via two-way property bindings to the zoom panel control.
+    /// </summary>
+    public class WritableViewTabViewModel : ViewModelBase, IViewTabViewModel
     {
-        public ViewTabViewModel(
+        public WritableViewTabViewModel(
             PanelVisualSizeViewModel visualPanelSize,
-            TexturePanelViewModelBase panel,
-            bool readOnlyZoomAndOffsets = false)
+            TexturePanelViewModelBase panel)
         {
             _panel = panel;
-            _readOnlyZoomAndOffsets = readOnlyZoomAndOffsets;
             VisualPanelSize = visualPanelSize;
 
             _panel.PresenterChanged += (_, _) => _ = DefferedFill();
@@ -27,7 +29,6 @@ namespace TgaBuilderLib.ViewModel
         public bool IsScrolling { get; set; } = false;
         private (double X, double Y) _scrollDirection;
 
-        private readonly bool _readOnlyZoomAndOffsets;
         private TexturePanelViewModelBase _panel;
 
         private double _offsetX;
@@ -40,6 +41,8 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _FillCommand;
         private RelayCommand? _FitCommand;
         private RelayCommand? _100PercentCommand;
+        private RelayCommand? _zoomInCommand;
+        private RelayCommand? _zoomOutCommand;
         private RelayCommand<(double X, double Y)>? _scrollCommand;
 
         double maxX;
@@ -47,10 +50,10 @@ namespace TgaBuilderLib.ViewModel
 
         public PanelVisualSizeViewModel VisualPanelSize { get; set; }
 
-        public double ContentActualWidth 
+        public double ContentActualWidth
             => Math.Min(_panel.Presenter.PixelWidth * Zoom, VisualPanelSize.ViewportWidth);
 
-        public double ContentActualHeight 
+        public double ContentActualHeight
             => Math.Min(_panel.Presenter.PixelHeight * Zoom, VisualPanelSize.ViewportHeight);
 
         public double OffsetX
@@ -101,22 +104,8 @@ namespace TgaBuilderLib.ViewModel
         public ICommand FitCommand => _FitCommand ??= new RelayCommand(Fit);
         public ICommand Zoom100Command => _100PercentCommand ??= new RelayCommand(Zoom100);
         public ICommand ScrollCommand => _scrollCommand ??= new(DoPanelScrolling);
-
-        /// <summary>
-        /// Callback to apply a full view transformation (zoom + translate).
-        /// Parameters: (zoom, translateX, translateY) in screen-space coordinates.
-        /// Used when zoom and offsets are read-only (e.g. Avalonia PanAndZoom).
-        /// </summary>
-        public Action<double, double, double>? ApplyTransformCallback { get; set; }
-
-        /// <summary>
-        /// Callback to apply an incremental pan step.
-        /// Parameters: (deltaX, deltaY) in screen-space coordinates.
-        /// Used when zoom and offsets are read-only (e.g. Avalonia PanAndZoom).
-        /// </summary>
-        public Action<double, double>? PanStepCallback { get; set; }
-
-
+        public ICommand ZoomInCommand => _zoomInCommand ??= new RelayCommand(() => Zoom *= 1.2);
+        public ICommand ZoomOutCommand => _zoomOutCommand ??= new RelayCommand(() => Zoom /= 1.2);
 
         // A makeshift workaround to avoid a race condition when the panel is resized.
         // WPF seemingly requires time to set everything up appropriately.
@@ -124,7 +113,8 @@ namespace TgaBuilderLib.ViewModel
         {
             await Task.Delay(20);
 
-            var zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
+            Zoom = 1;
+            Zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
             ? Math.Max(
                 VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
                 VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight)
@@ -132,30 +122,17 @@ namespace TgaBuilderLib.ViewModel
                 VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
                 VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight);
 
-            if (_readOnlyZoomAndOffsets)
-            {
-                _panel.Zoom = zoom;
-                OnPropertyChanged(nameof(Zoom));
-                OnContentActualSizeChanged();
-                await Task.Delay(20);
-                ApplyTransformCallback?.Invoke(zoom, 0, 0);
-            }
-            else
-            {
-                Zoom = 1;
-                Zoom = zoom;
+            await Task.Delay(20);
+            OffsetY -= 1000;
+            OffsetY = 0;
 
-                await Task.Delay(20);
-                OffsetY -= 1000;
-                OffsetY = 0;
-
-                Debug.WriteLine("DefferedFill called, OffsetY reset to 0");
-            }
+            Debug.WriteLine("DefferedFill called, OffsetY reset to 0");
         }
 
         public void Fill()
         {
-            var zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
+            Zoom = 1.0;
+            Zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
             ? Math.Max(
                 VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
                 VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight)
@@ -163,68 +140,31 @@ namespace TgaBuilderLib.ViewModel
                 VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
                 VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight);
 
-            if (_readOnlyZoomAndOffsets)
-            {
-                _panel.Zoom = zoom;
-                OnPropertyChanged(nameof(Zoom));
-                OnContentActualSizeChanged();
-                ApplyTransformCallback?.Invoke(zoom, 0, 0);
-            }
-            else
-            {
-                Zoom = 1.0;
-                Zoom = zoom;
-
-                OffsetX = 0;
-                OffsetY = 0;
-                OnPropertyChanged(nameof(MultipliedOffsetX));
-                OnPropertyChanged(nameof(MultipliedOffsetY));
-            }
+            OffsetX = 0;
+            OffsetY = 0;
+            OnPropertyChanged(nameof(MultipliedOffsetX));
+            OnPropertyChanged(nameof(MultipliedOffsetY));
         }
 
         public void Fit()
         {
-            var zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
+            Zoom = 1.0;
+            Zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
                 ? Math.Min(
                     VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
                     VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight)
                 : Math.Max(
                     VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
                     VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight);
-
-            if (_readOnlyZoomAndOffsets)
-            {
-                _panel.Zoom = zoom;
-                OnPropertyChanged(nameof(Zoom));
-                OnContentActualSizeChanged();
-                ApplyTransformCallback?.Invoke(zoom, 0, 0);
-            }
-            else
-            {
-                Zoom = 1.0;
-                Zoom = zoom;
-            }
         }
 
         public void Zoom100()
         {
-            if (_readOnlyZoomAndOffsets)
-            {
-                _panel.Zoom = 1.0;
-                OnPropertyChanged(nameof(Zoom));
-                OnContentActualSizeChanged();
-                double offsetX = (_panel.Presenter.PixelWidth - VisualPanelSize.ViewportWidth) / 2;
-                double offsetY = (_panel.Presenter.PixelHeight - VisualPanelSize.ViewportHeight) / 2;
-                ApplyTransformCallback?.Invoke(1.0, -offsetX, -offsetY);
-            }
-            else
-            {
-                Zoom = 1.0;
-                OffsetX = (_panel.Presenter.PixelWidth - VisualPanelSize.ViewportWidth) / 2;
-                OffsetY = (_panel.Presenter.PixelHeight - VisualPanelSize.ViewportHeight) / 2;
-                OnPropertyChanged(nameof(MultipliedOffsetX));
-                OnPropertyChanged(nameof(MultipliedOffsetY));
-            }
+            Zoom = 1.0;
+            OffsetX = (_panel.Presenter.PixelWidth - VisualPanelSize.ViewportWidth) / 2;
+            OffsetY = (_panel.Presenter.PixelHeight - VisualPanelSize.ViewportHeight) / 2;
+            OnPropertyChanged(nameof(MultipliedOffsetX));
+            OnPropertyChanged(nameof(MultipliedOffsetY));
         }
 
         private void SetPanelZoom(double zoom)
@@ -282,46 +222,33 @@ namespace TgaBuilderLib.ViewModel
         {
             IsScrolling = true;
 
-            if (_readOnlyZoomAndOffsets)
+            Stopwatch stopwatch = _stopwatch ?? new();
+            stopwatch.Start();
+
+            long lastTicks = stopwatch.ElapsedTicks;
+
+            while (IsScrolling)
             {
-                while (IsScrolling)
-                {
-                    double deltaX = -_scrollDirection.X * SCROLL_SPEED_PIX_PER_SEC;
-                    double deltaY = -_scrollDirection.Y * SCROLL_SPEED_PIX_PER_SEC;
-                    PanStepCallback?.Invoke(deltaX, deltaY);
-                    await Task.Delay(1000);
-                }
-            }
-            else
-            {
-                Stopwatch stopwatch = _stopwatch ?? new();
-                stopwatch.Start();
+                long nowTicks = stopwatch.ElapsedTicks;
+                double elapsedSeconds = (nowTicks - lastTicks) / (double)Stopwatch.Frequency;
+                lastTicks = nowTicks;
 
-                long lastTicks = stopwatch.ElapsedTicks;
+                double deltaX = _scrollDirection.X * SCROLL_SPEED_PIX_PER_SEC * elapsedSeconds / Zoom;
+                double deltaY = _scrollDirection.Y * SCROLL_SPEED_PIX_PER_SEC * elapsedSeconds / Zoom;
 
-                while (IsScrolling)
-                {
-                    long nowTicks = stopwatch.ElapsedTicks;
-                    double elapsedSeconds = (nowTicks - lastTicks) / (double)Stopwatch.Frequency;
-                    lastTicks = nowTicks;
+                OffsetX += deltaX;
+                OffsetY += deltaY;
 
-                    double deltaX = _scrollDirection.X * SCROLL_SPEED_PIX_PER_SEC * elapsedSeconds / Zoom;
-                    double deltaY = _scrollDirection.Y * SCROLL_SPEED_PIX_PER_SEC * elapsedSeconds / Zoom;
+                OnPropertyChanged(nameof(MultipliedOffsetX));
+                OnPropertyChanged(nameof(MultipliedOffsetY));
 
-                    OffsetX += deltaX;
-                    OffsetY += deltaY;
+                maxX = Math.Max(0, _panel.Presenter.PixelWidth - (VisualPanelSize.ViewportWidth / Zoom));
+                maxY = Math.Max(0, _panel.Presenter.PixelHeight - (VisualPanelSize.ViewportHeight / Zoom));
 
-                    OnPropertyChanged(nameof(MultipliedOffsetX));
-                    OnPropertyChanged(nameof(MultipliedOffsetY));
+                OffsetX = Math.Clamp(OffsetX, 0, maxX);
+                OffsetY = Math.Clamp(OffsetY, 0, maxY);
 
-                    maxX = Math.Max(0, _panel.Presenter.PixelWidth - (VisualPanelSize.ViewportWidth / Zoom));
-                    maxY = Math.Max(0, _panel.Presenter.PixelHeight - (VisualPanelSize.ViewportHeight / Zoom));
-
-                    OffsetX = Math.Clamp(OffsetX, 0, maxX);
-                    OffsetY = Math.Clamp(OffsetY, 0, maxY);
-
-                    await Task.Delay(3);
-                }
+                await Task.Delay(3);
             }
         }
     }

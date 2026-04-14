@@ -247,17 +247,15 @@ namespace TgaBuilderAvaloniaUi
                 panel: sp.GetRequiredService<TargetTexturePanelViewModel>(),
                 messageBoxService: sp.GetRequiredService<IMessageBoxService>()));
 
-            services.AddTransient(sp => new ViewTabViewModel(
+            services.AddTransient<IViewTabViewModel>(sp => new ReadOnlyViewTabViewModel(
                 visualPanelSize: sp.GetServices<PanelVisualSizeViewModel>()
                                         .ElementAt((int)PresenterType.Source),
-                panel: sp.GetRequiredService<SourceTexturePanelViewModel>(),
-                readOnlyZoomAndOffsets: true));
+                panel: sp.GetRequiredService<SourceTexturePanelViewModel>()));
 
-            services.AddTransient(sp => new ViewTabViewModel(
+            services.AddTransient<IViewTabViewModel>(sp => new ReadOnlyViewTabViewModel(
                 visualPanelSize: sp.GetServices<PanelVisualSizeViewModel>()
                                         .ElementAt((int)PresenterType.Target),
-                panel: sp.GetRequiredService<TargetTexturePanelViewModel>(),
-                readOnlyZoomAndOffsets: true));
+                panel: sp.GetRequiredService<TargetTexturePanelViewModel>()));
         }
 
         private void AddViewVMsToProvider(IServiceCollection services)
@@ -302,9 +300,9 @@ namespace TgaBuilderAvaloniaUi
                                             .ElementAt((int)PresenterType.Target),
 
 
-                sourceViewTab: sp.GetServices<ViewTabViewModel>()
+                sourceViewTab: sp.GetServices<IViewTabViewModel>()
                                             .ElementAt((int)PresenterType.Source),
-                destinationViewTab: sp.GetServices<ViewTabViewModel>()
+                destinationViewTab: sp.GetServices<IViewTabViewModel>()
                                             .ElementAt((int)PresenterType.Target),
 
                 usageData: sp.GetRequiredService<IUsageData>()));

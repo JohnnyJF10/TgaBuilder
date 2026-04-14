@@ -47,10 +47,10 @@ namespace TgaBuilderAvaloniaUi.View
                 {
                     var sourcePanel = this.FindControl<ZoomBorder>("SourcePanel");
                     var targetPanel = this.FindControl<ZoomBorder>("TargetPanel");
-                    if (sourcePanel != null)
-                        RegisterZoomBorderCallbacks(vm.SourceViewTab, sourcePanel);
-                    if (targetPanel != null)
-                        RegisterZoomBorderCallbacks(vm.DestinationViewTab, targetPanel);
+                    if (sourcePanel != null && vm.SourceViewTab is ReadOnlyViewTabViewModel sourceVm)
+                        RegisterZoomBorderCallbacks(sourceVm, sourcePanel);
+                    if (targetPanel != null && vm.DestinationViewTab is ReadOnlyViewTabViewModel targetVm)
+                        RegisterZoomBorderCallbacks(targetVm, targetPanel);
                 };
             }
         }

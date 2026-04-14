@@ -1,10 +1,8 @@
 ﻿
 using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Enums;
-using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
@@ -30,8 +28,8 @@ namespace TgaBuilderLib.ViewModel
             SourceIOViewModel sourceIO,
             TargetIOViewModel destinationIO,
 
-            ViewTabViewModel sourceViewTab,
-            ViewTabViewModel destinationViewTab,
+            IViewTabViewModel sourceViewTab,
+            IViewTabViewModel destinationViewTab,
 
             PlacingTabViewModel placing,
             EditTabViewModel edits,
@@ -140,8 +138,8 @@ namespace TgaBuilderLib.ViewModel
         public FormatTabViewModel SourceFormatTab { get; set; }
         public FormatTabViewModel DestinationFormatTab { get; set; }
 
-        public ViewTabViewModel SourceViewTab { get; set; }
-        public ViewTabViewModel DestinationViewTab { get; set; }
+        public IViewTabViewModel SourceViewTab { get; set; }
+        public IViewTabViewModel DestinationViewTab { get; set; }
 
         public SelectionViewModel Selection { get; set; }
         public AnimationViewModel Animation { get; set; }
