@@ -1,8 +1,11 @@
 ﻿
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
+using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
 {
@@ -27,5 +30,50 @@ namespace TgaBuilderAvaloniaUi.View
 
         public void SetPanelFromImage(Image image)
             => CurrentPanel = GetPanelFromImage(image);
+
+        public void RegisterZoomBorderCallbacks(ReadOnlyViewTabViewModel viewTab, ZoomBorder panel)
+        {
+            viewTab.ApplyTransformCallback = (zoom, translateX, translateY) =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    var matrix = Matrix.CreateScale(zoom, zoom) *
+                                 Matrix.CreateTranslation(translateX, translateY);
+                    panel.SetMatrix(matrix);
+                });
+            };
+
+            viewTab.PanStepCallback = (deltaX, deltaY) =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    panel.SetMatrix(panel.Matrix * Matrix.CreateTranslation(deltaX, deltaY));
+                });
+            };
+
+            viewTab.ZoomStepCallback = (zoomDelta) =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    var currentMatrix = panel.Matrix;
+                    double centerX = panel.Bounds.Width / 2;
+                    double centerY = panel.Bounds.Height / 2;
+
+                    var matrix = currentMatrix *
+                                 Matrix.CreateTranslation(-centerX, -centerY) *
+                                 Matrix.CreateScale(zoomDelta, zoomDelta) *
+                                 Matrix.CreateTranslation(centerX, centerY);
+                    panel.SetMatrix(matrix);
+                });
+            };
+
+            viewTab.ResetViewCallback = () =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    panel.ResetMatrix();
+                });
+            };
+        }
     }
 }

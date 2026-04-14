@@ -36,6 +36,19 @@ namespace TgaBuilderAvaloniaUi.View
 
             InitializeComponent();
             base.DataContext = mainViewModel;
+
+            if (mainViewModel is MainViewModel vm)
+            {
+                this.Opened += (_, _) =>
+                {
+                    var sourcePanel = this.FindControl<ZoomBorder>("SourcePanel");
+                    var targetPanel = this.FindControl<ZoomBorder>("TargetPanel");
+                    if (sourcePanel != null && vm.SourceViewTab is ReadOnlyViewTabViewModel sourceVm)
+                        RegisterZoomBorderCallbacks(sourceVm, sourcePanel);
+                    if (targetPanel != null && vm.DestinationViewTab is ReadOnlyViewTabViewModel targetVm)
+                        RegisterZoomBorderCallbacks(targetVm, targetPanel);
+                };
+            }
         }
 
         [Obsolete("For designer use only")]

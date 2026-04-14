@@ -2,6 +2,7 @@
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
@@ -77,7 +78,10 @@ namespace TgaBuilderAvaloniaUi.View
             if (CurrentPanel != null && PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand)
             {
                 var panelPos = e.GetPosition(CurrentPanel);
-                scrollCommand.Execute((panelPos.X, panelPos.Y));
+                var imagePos = e.GetPosition(CurrentImage);
+                if (imagePos.X > 0 && imagePos.Y > 0 && imagePos.X < CurrentImage.Bounds.Width && imagePos.Y < CurrentImage.Bounds.Height)
+                    scrollCommand.Execute((panelPos.X, panelPos.Y));
+                
             }
 
             if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)

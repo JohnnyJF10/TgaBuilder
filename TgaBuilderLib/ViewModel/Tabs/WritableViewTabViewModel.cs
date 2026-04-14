@@ -1,13 +1,17 @@
 ﻿using System.Diagnostics;
-
 using System.Windows.Input;
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Commands;
 
 namespace TgaBuilderLib.ViewModel
 {
-    public class ViewTabViewModel : ViewModelBase
+    /// <summary>
+    /// View tab implementation for WPF where zoom and offsets are writable
+    /// via two-way property bindings to the zoom panel control.
+    /// </summary>
+    public class WritableViewTabViewModel : ViewModelBase, IViewTabViewModel
     {
-        public ViewTabViewModel(
+        public WritableViewTabViewModel(
             PanelVisualSizeViewModel visualPanelSize,
             TexturePanelViewModelBase panel)
         {
@@ -37,6 +41,8 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _FillCommand;
         private RelayCommand? _FitCommand;
         private RelayCommand? _100PercentCommand;
+        private RelayCommand? _zoomInCommand;
+        private RelayCommand? _zoomOutCommand;
         private RelayCommand<(double X, double Y)>? _scrollCommand;
 
         double maxX;
@@ -98,8 +104,8 @@ namespace TgaBuilderLib.ViewModel
         public ICommand FitCommand => _FitCommand ??= new RelayCommand(Fit);
         public ICommand Zoom100Command => _100PercentCommand ??= new RelayCommand(Zoom100);
         public ICommand ScrollCommand => _scrollCommand ??= new(DoPanelScrolling);
-
-
+        public ICommand ZoomInCommand => _zoomInCommand ??= new RelayCommand(() => Zoom *= 1.2);
+        public ICommand ZoomOutCommand => _zoomOutCommand ??= new RelayCommand(() => Zoom /= 1.2);
 
         // A makeshift workaround to avoid a race condition when the panel is resized.
         // WPF seemingly requires time to set everything up appropriately.
