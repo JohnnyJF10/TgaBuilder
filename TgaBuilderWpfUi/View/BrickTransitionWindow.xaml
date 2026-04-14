@@ -41,49 +41,65 @@
                     BasedOn="{StaticResource {x:Type ui:Button}}"/>
         </ResourceDictionary>
     </Window.Resources>
+    <!-- Outer Grid: 4 Rows -->
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Title Bar -->
+        <DockPanel Grid.Row="0">
+            <ui:TitleBar
+                DockPanel.Dock="Right"
+                Width="133"
+                Style="{StaticResource TitleBarNavigationAreaStyle}"/>
+
+            <ui:TitleBar
+                Title="Brick Transition Helper"
+                ShowMinimize="False"
+                ShowMaximize="False"
+                ShowClose="False"
+                Margin="3,3,0,0">
+                <ui:TitleBar.Icon>
+                    <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
+                </ui:TitleBar.Icon>
+            </ui:TitleBar>
+        </DockPanel>
+
+        <!-- Row 1: Image Area (Sub Table) -->
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="35"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="35"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition>
+                    <ColumnDefinition.Style>
+                        <Style TargetType="ColumnDefinition">
+                            <Setter Property="Width" Value="0"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsChecked, ElementName=LabelMapToggle}" Value="True">
+                                    <Setter Property="Width" Value="*"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ColumnDefinition.Style>
+                </ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="5*"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
-            <DockPanel Grid.ColumnSpan="5">
-                <ui:TitleBar
-                    DockPanel.Dock="Right"
-                    Width="133"
-                    Style="{StaticResource TitleBarNavigationAreaStyle}"/>
-
-                <ui:TitleBar
-                    Title="Brick Transition Helper"
-                    ShowMinimize="False"
-                    ShowMaximize="False"
-                    ShowClose="False"
-                    Margin="3,3,0,0"
-                    Grid.ColumnSpan="2">
-                    <ui:TitleBar.Icon>
-                        <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
-                    </ui:TitleBar.Icon>
-                </ui:TitleBar>
-            </DockPanel>
 
             <!-- Image 1 -->
             <Border
-                Grid.Row="1"
                 Grid.Column="0"
+                Grid.Row="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 AllowDrop="True"
@@ -97,23 +113,24 @@
             </Border>
             <Button
                 x:Name="BtnLoad1"
-                Grid.Row="2"
                 Grid.Column="0"
+                Grid.Row="1"
                 Margin="10"
                 Padding="5"
                 HorizontalAlignment="Center"
                 Command="{Binding LoadImage1Command}"
                 Content="From Selection"/>
 
+            <!-- Symbol: + -->
             <ui:SymbolIcon
-                Grid.Row="1"
                 Grid.Column="1"
+                Grid.Row="0"
                 Symbol="Add24"/>
 
             <!-- Image 2 -->
             <Border
-                Grid.Row="1"
                 Grid.Column="2"
+                Grid.Row="0"
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -127,23 +144,24 @@
             </Border>
             <Button
                 x:Name="BtnLoad2"
-                Grid.Row="2"
                 Grid.Column="2"
+                Grid.Row="1"
                 Margin="10"
                 Padding="5"
                 HorizontalAlignment="Center"
                 Command="{Binding LoadImage2Command}"
                 Content="From Selection"/>
 
+            <!-- Symbol: → -->
             <ui:SymbolIcon
-                Grid.Row="1"
                 Grid.Column="3"
+                Grid.Row="0"
                 Symbol="ArrowRight24"/>
 
             <!-- Result Image -->
             <Border
-                Grid.Row="1"
                 Grid.Column="4"
+                Grid.Row="0"
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -155,133 +173,160 @@
                     Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform"/>
             </Border>
-
             <Button
                 x:Name="BtnResult"
-                Grid.Row="2"
                 Grid.Column="4"
+                Grid.Row="1"
                 Margin="10"
                 Padding="5"
                 HorizontalAlignment="Center"
                 Command="{Binding MixCommand}"
                 Content="Mix"/>
 
-            <!-- Controls -->
-            <Grid Grid.Row="3" Grid.ColumnSpan="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <!-- Toggle button for Label Map -->
+            <ToggleButton
+                x:Name="LabelMapToggle"
+                Grid.Column="5"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                VerticalAlignment="Center"
+                IsChecked="{Binding IsLabelMapExpanded}"
+                Width="20"
+                Height="60"
+                Padding="0">
+                <ToggleButton.Content>
+                    <ui:SymbolIcon Symbol="ChevronLeft24"/>
+                </ToggleButton.Content>
+            </ToggleButton>
 
-                <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10"/>
+            <!-- Label Map (Expandable 4th Image) -->
+            <Border
+                Grid.Column="6"
+                Grid.Row="0"
+                Margin="10"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Visibility="{Binding IsLabelMapExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                Background="Transparent">
+                <Image
+                    Margin="0,4,0,0"
+                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                    Stretch="Uniform"/>
+            </Border>
+        </Grid>
 
-                <!-- Pivot Slider -->
+        <!-- Row 2: Controls (Sub Table) -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10"/>
+
+            <!-- Pivot Slider -->
+            <Label
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Content="Pivot"
+                TextBlock.FontStyle="Italic"/>
+
+            <Slider
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="5"
+                VerticalAlignment="Center"
+                AutoToolTipPlacement="BottomRight"
+                AutoToolTipPrecision="2"
+                Maximum="1"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding PivotValue}"/>
+
+            <!-- Marker Radius Slider -->
+            <Label
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Content="Marker Radius"
+                TextBlock.FontStyle="Italic"/>
+
+            <Slider
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="5"
+                VerticalAlignment="Center"
+                AutoToolTipPlacement="BottomRight"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="20"
+                Minimum="1"
+                SmallChange="1"
+                Value="{Binding MarkerRadius}"/>
+
+            <!-- Expected Region Count Slider with Toggle -->
+            <StackPanel
+                Grid.Column="3"
+                Orientation="Horizontal"
+                VerticalAlignment="Center">
                 <Label
-                    Grid.Column="1"
                     VerticalAlignment="Center"
-                    Content="Pivot"
+                    Content="Region Count"
                     TextBlock.FontStyle="Italic"/>
-
-                <Slider
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Margin="5"
-                    VerticalAlignment="Center"
-                    AutoToolTipPlacement="BottomRight"
-                    AutoToolTipPrecision="2"
-                    Maximum="1"
-                    Minimum="0"
-                    SmallChange="0.01"
-                    Value="{Binding PivotValue}"/>
-
-                <!-- Marker Radius Slider -->
-                <Label
-                    Grid.Column="2"
-                    VerticalAlignment="Center"
-                    Content="Marker Radius"
-                    TextBlock.FontStyle="Italic"/>
-
-                <Slider
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    Margin="5"
-                    VerticalAlignment="Center"
-                    AutoToolTipPlacement="BottomRight"
-                    IsSnapToTickEnabled="True"
-                    TickFrequency="1"
-                    Maximum="20"
-                    Minimum="1"
-                    SmallChange="1"
-                    Value="{Binding MarkerRadius}"/>
-
-                <!-- Expected Region Count Slider with Toggle -->
-                <StackPanel
-                    Grid.Column="3"
-                    Orientation="Horizontal"
-                    VerticalAlignment="Center">
-                    <Label
-                        VerticalAlignment="Center"
-                        Content="Region Count"
-                        TextBlock.FontStyle="Italic"/>
-                    <ToggleButton
-                        VerticalAlignment="Center"
-                        IsChecked="{Binding UseExpectedRegionCount}"
-                        Margin="3,0,0,0"
-                        Padding="4,2"
-                        Content="On"/>
-                </StackPanel>
-
-                <Slider
-                    Grid.Row="1"
-                    Grid.Column="3"
-                    Margin="5"
-                    VerticalAlignment="Center"
-                    AutoToolTipPlacement="BottomRight"
-                    IsSnapToTickEnabled="True"
-                    TickFrequency="1"
-                    Maximum="32"
-                    Minimum="2"
-                    SmallChange="1"
-                    IsEnabled="{Binding UseExpectedRegionCount}"
-                    Value="{Binding ExpectedRegionCount}"/>
-
-                <!-- Reverse Pivot Toggle -->
-                <Label
-                    Grid.Column="4"
-                    VerticalAlignment="Center"
-                    Content="Reverse Pivot"
-                    TextBlock.FontStyle="Italic"/>
-
                 <ToggleButton
-                    Grid.Row="1"
-                    Grid.Column="4"
-                    Margin="5"
                     VerticalAlignment="Center"
-                    HorizontalAlignment="Left"
-                    IsChecked="{Binding ReversePivot}"
-                    Padding="8,4"
-                    Content="Rev"/>
-            </Grid>
+                    IsChecked="{Binding UseExpectedRegionCount}"
+                    Margin="3,0,0,0"
+                    Padding="4,2"
+                    Content="On"/>
+            </StackPanel>
 
-            <!-- Bottom Bar -->
+            <Slider
+                Grid.Row="1"
+                Grid.Column="3"
+                Margin="5"
+                VerticalAlignment="Center"
+                AutoToolTipPlacement="BottomRight"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="32"
+                Minimum="2"
+                SmallChange="1"
+                IsEnabled="{Binding UseExpectedRegionCount}"
+                Value="{Binding ExpectedRegionCount}"/>
+
+            <!-- Reverse Pivot Toggle -->
+            <Label
+                Grid.Column="4"
+                VerticalAlignment="Center"
+                Content="Reverse Pivot"
+                TextBlock.FontStyle="Italic"/>
+
+            <ToggleButton
+                Grid.Row="1"
+                Grid.Column="4"
+                Margin="5"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                IsChecked="{Binding ReversePivot}"
+                Padding="8,4"
+                Content="Rev"/>
+        </Grid>
+
+        <!-- Row 3: OK/Cancel Buttons -->
+        <Grid Grid.Row="3">
             <ui:Card
-                Grid.Row="4"
-                Grid.ColumnSpan="5"
                 Margin="-10,0,-10,-10"
                 VerticalAlignment="Stretch"
                 IsHitTestVisible="False"/>
             <StackPanel
-                Grid.Row="4"
-                Grid.ColumnSpan="5"
                 HorizontalAlignment="Right"
                 Orientation="Horizontal">
                 <ui:Button
@@ -302,52 +347,5 @@
                     Content="OK"/>
             </StackPanel>
         </Grid>
-
-        <!-- Expandable Label Map Panel (right side) -->
-        <Border
-            Grid.Column="1"
-            Width="Auto"
-            VerticalAlignment="Stretch">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Toggle button to expand/collapse -->
-                <ToggleButton
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    IsChecked="{Binding IsLabelMapExpanded}"
-                    Width="20"
-                    Height="60"
-                    Padding="0">
-                    <ToggleButton.Content>
-                        <ui:SymbolIcon Symbol="ChevronLeft24"/>
-                    </ToggleButton.Content>
-                </ToggleButton>
-
-                <!-- Expandable content -->
-                <Border
-                    Grid.Column="1"
-                    Visibility="{Binding IsLabelMapExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Margin="5"
-                    MinWidth="120"
-                    MaxWidth="250">
-                    <StackPanel>
-                        <Label
-                            Content="Label Map"
-                            HorizontalAlignment="Center"
-                            FontWeight="SemiBold"
-                            Margin="0,5,0,5"/>
-                        <Image
-                            RenderOptions.BitmapScalingMode="NearestNeighbor"
-                            Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
-                            Stretch="Uniform"
-                            Margin="5"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
-        </Border>
     </Grid>
 </elements:AsyncWindow>
