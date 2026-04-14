@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
 namespace TgaBuilderLib.BitmapOperations
 {
@@ -23,10 +18,10 @@ namespace TgaBuilderLib.BitmapOperations
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private PixelAction DecidePixelAction(
-            int alpha, 
-            bool srcHasAlpha, 
-            bool tgtHasAlpha, 
-            bool isTransparencyColor, 
+            int alpha,
+            bool srcHasAlpha,
+            bool tgtHasAlpha,
+            bool isTransparencyColor,
             bool overlayTransparent)
         {
             // -------------------------------------------

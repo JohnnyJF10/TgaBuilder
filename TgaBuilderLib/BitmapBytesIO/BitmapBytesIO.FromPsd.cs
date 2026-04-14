@@ -1,11 +1,4 @@
-﻿using Pfim;
-using System;
-using System.Collections.Generic;
-using System.Drawing.PSD;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing.PSD;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapBytesIO

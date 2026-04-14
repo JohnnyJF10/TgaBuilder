@@ -8,10 +8,6 @@ https://api-docs.avaloniaui.net/docs/T_Avalonia_Media_Imaging_IWriteableBitmap
 
 */
 
-
-using System.Data;
-using System.IO;
-
 namespace TgaBuilderLib.Abstraction
 {
     public interface IWriteableBitmap : IReadableBitmap
@@ -25,7 +21,7 @@ namespace TgaBuilderLib.Abstraction
         public void Refresh();
 
         public void Freeze();
-    
+
         public void WritePixels(PixelRect rect, IntPtr pixels, int stride, int offset = 0);
 
         public void WritePixels(PixelRect rect, Array pixels, int stride, int offset = 0);

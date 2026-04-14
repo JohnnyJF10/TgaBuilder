@@ -512,16 +512,16 @@ namespace TgaBuilderLib.Level
                 for (var j = 0; j < numQuads; j++)
                 {
                     cancellationToken?.ThrowIfCancellationRequested();
-                
+
                     levelReader.ReadBytes(8); // Vertices
                     _rectTexIndices.Add(levelReader.ReadUInt16()); // Texture
                     levelReader.ReadUInt16(); // Zero padding
                 }
-                
+
                 for (var j = 0; j < numTriangles; j++)
                 {
                     cancellationToken?.ThrowIfCancellationRequested();
-                
+
                     levelReader.ReadBytes(6); // Vertices
                     _triagTexIndices.Add(levelReader.ReadUInt16()); // Texture
                     levelReader.ReadUInt16(); // Zero padding
@@ -739,7 +739,7 @@ namespace TgaBuilderLib.Level
 
                     _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 2] << 2); // r
                     _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val + 1] << 2); // g
-                    _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val    ] << 2); // b
+                    _rawAtlas[index++] = (byte)(_paletteTr1[3 * atlas8val] << 2); // b
                     _rawAtlas[index++] = (byte)(atlas8val == 0 ? 0 : 255); // a
                 }
             }
@@ -772,9 +772,9 @@ namespace TgaBuilderLib.Level
             int pixelCount = _numPages * ORIGINAL_PAGE_PIXEL_COUNT;
 
             // 8-bit palette indices not required for TR2-3
-            reader.ReadBytes(pixelCount); 
+            reader.ReadBytes(pixelCount);
 
-            _rawAtlas = _bytePool.Rent(pixelCount * IMPORT_BPP); 
+            _rawAtlas = _bytePool.Rent(pixelCount * IMPORT_BPP);
 
             int index = 0;
             for (int i = 0; i < pixelCount; i++)
@@ -829,7 +829,7 @@ namespace TgaBuilderLib.Level
         {
             var bufferSize = 81920; // 80 KB 
             byte[] rentedBuffer = _bytePool.Rent(bufferSize);
-            byte[] decompressedBuffer = _bytePool.Rent(compressedData.Length * 4); 
+            byte[] decompressedBuffer = _bytePool.Rent(compressedData.Length * 4);
             int totalRead = 0;
 
             try
@@ -877,7 +877,7 @@ namespace TgaBuilderLib.Level
                 throw new ArgumentNullException(nameof(_trngDecrypter), "TRNG decrypter is not initialized.");
 
             string levelName = Path.Combine(
-                Path.GetDirectoryName(fileName)!, 
+                Path.GetDirectoryName(fileName)!,
                 Path.GetFileNameWithoutExtension(fileName) + "_decrypted.temp");
 
             if (!_trngDecrypter.DecryptLevel(fileName, levelName))

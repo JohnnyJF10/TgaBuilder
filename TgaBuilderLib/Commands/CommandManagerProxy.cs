@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TgaBuilderLib.Commands
+﻿namespace TgaBuilderLib.Commands
 {
     public static class CommandManagerProxy
     {
@@ -24,8 +18,8 @@ namespace TgaBuilderLib.Commands
 
         public static event EventHandler? RequerySuggested
         {
-            add => _implementation!.RequerySuggested += value; 
-            remove => _implementation!.RequerySuggested -= value; 
+            add => _implementation!.RequerySuggested += value;
+            remove => _implementation!.RequerySuggested -= value;
         }
 
     }

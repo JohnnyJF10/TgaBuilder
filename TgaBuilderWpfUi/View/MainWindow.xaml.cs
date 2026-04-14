@@ -1,14 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
-using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderWpfUi.Elements;
 using TgaBuilderWpfUi.Services;
-using Wpf.Ui.Appearance;
 using WPFZoomPanel;
 using Application = System.Windows.Application;
 using Cursor = System.Windows.Input.Cursor;
-using FluentWindow = Wpf.Ui.Controls.FluentWindow;
 using Image = System.Windows.Controls.Image;
 
 namespace TgaBuilderWpfUi.View

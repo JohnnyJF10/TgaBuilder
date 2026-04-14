@@ -1,0 +1,102 @@
+name: dotnet-release-avalonia
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      artifact-name-net8: ${{ steps.meta.outputs.artifact_name_net8 }}_AvaloniaUi
+      last-commit-msg: ${{ steps.commit.outputs.message }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Extract version and title from csproj
+        id: meta
+        shell: pwsh
+        run: |
+          [xml]$csproj = Get-Content ./TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj
+          $title = $csproj.Project.PropertyGroup.AssemblyTitle
+          $version = $csproj.Project.PropertyGroup.AssemblyVersion
+          $shortVersion = ($version -split '\.')[0..2] -join '.'
+          $tag = "v$shortVersion"
+          $artifactNameNet8 = "${title}-dotnet8-V${shortVersion}"
+          echo "tag=$tag" >> $env:GITHUB_OUTPUT
+          echo "artifact_name_net8=$artifactNameNet8" >> $env:GITHUB_OUTPUT
+
+      - name: Get last commit message
+        id: commit
+        shell: pwsh
+        run: |
+          $msg = git log -1 --pretty=format:"%s"
+          echo "message=$msg" >> $env:GITHUB_OUTPUT
+
+      # Build for .NET 8
+      - name: Publish .NET 8
+        run: |
+          dotnet publish ./TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj `
+            -c Release `
+            -f net8.0 `
+            --self-contained false `
+            /p:PublishReadyToRun=true `
+            -o publish/net8
+
+      - name: Remove .pdb files (.NET 8)
+        run: |
+          $publishDir = "publish/net8"
+          if (Test-Path $publishDir) {
+            Get-ChildItem $publishDir -Recurse -Filter *.pdb | Remove-Item -Force
+          }
+
+      - name: Zip .NET 8
+        run: |
+          $zipName = "${{ steps.meta.outputs.artifact_name_net8 }}_AvaloniaUi.zip"
+          Compress-Archive -Path publish/net8/* -DestinationPath $zipName
+
+      - name: Upload .NET 8 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name_net8 }}_AvaloniaUi
+          path: ${{ steps.meta.outputs.artifact_name_net8 }}_AvaloniaUi.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download .NET 8 Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name-net8 }}
+          path: ./artifact
+
+      - name: Create GitHub Release and upload assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.build.outputs.tag }}
+          name: Release ${{ needs.build.outputs.tag }}
+          body: ${{ needs.build.outputs.last-commit-msg }}
+          files: |
+            ./artifact/${{ needs.build.outputs.artifact-name-net8 }}_AvaloniaUi.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,113 @@
+﻿<UserControl x:Class="TgaBuilderWpfUi.View.TransitionModeUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TgaBuilderWpfUi.View"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d" 
+             d:DesignHeight="40" 
+             d:DesignWidth="350">
+    <StackPanel
+    Orientation="Horizontal"
+    >
+
+        <ToggleButton
+        IsChecked="{Binding TransistionTopChecked, Mode=TwoWay}"
+        Margin="0,0,5,0" >
+            <ToggleButton.Content>
+                <Grid Width="20" Height="20">
+                    <!-- Quadrat -->
+                    <Path Data="M0,0 L20,0 L20,20 L0,20 Z"
+                    Fill="Transparent"
+                    Stroke="{DynamicResource TextFillColorPrimaryBrush}"/>
+
+                    <!-- Obere Kante rot -->
+                    <Path Data="M0,0 L20,0"
+                    Stroke="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                    StrokeThickness="2"/>
+                </Grid>
+            </ToggleButton.Content>
+        </ToggleButton>
+        <ToggleButton
+        IsChecked="{Binding TransistionRightChecked, Mode=TwoWay}"
+        Margin="0,0,5,0" >
+            <ToggleButton.Content>
+                <Grid Width="20" Height="20">
+                    <!-- Quadrat -->
+                    <Path Data="M0,0 L20,0 L20,20 L0,20 Z"
+                    Fill="Transparent"
+                    Stroke="{DynamicResource TextFillColorPrimaryBrush}"/>
+
+                    <Path Data="M20,0 L20,20"
+                    Stroke="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                    StrokeThickness="2"/>
+                </Grid>
+            </ToggleButton.Content>
+        </ToggleButton>
+        <ToggleButton
+        IsChecked="{Binding TransistionBottomChecked, Mode=TwoWay}"
+        Margin="0,0,5,0" >
+            <ToggleButton.Content>
+                <Grid Width="20" Height="20">
+                    <!-- Quadrat -->
+                    <Path Data="M0,0 L20,0 L20,20 L0,20 Z"
+                    Fill="Transparent"
+                    Stroke="{DynamicResource TextFillColorPrimaryBrush}"/>
+
+                    <Path Data="M0,20 L20,20"
+                    Stroke="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                    StrokeThickness="2"/>
+                </Grid>
+            </ToggleButton.Content>
+        </ToggleButton>
+        <ToggleButton
+        IsChecked="{Binding TransistionLeftChecked, Mode=TwoWay}"
+        Margin="0,0,5,0" >
+            <ToggleButton.Content>
+                <Grid Width="20" Height="20">
+                    <!-- Quadrat -->
+                    <Path Data="M0,0 L20,0 L20,20 L0,20 Z"
+                    Fill="Transparent"
+                    Stroke="{DynamicResource TextFillColorPrimaryBrush}"/>
+
+                    <Path Data="M0,0 L0,20"
+                    Stroke="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                    StrokeThickness="2"/>
+                </Grid>
+            </ToggleButton.Content>
+        </ToggleButton>
+        <ToggleButton
+        IsChecked="{Binding TransistionDiagonalTopLeftChecked, Mode=TwoWay}"
+        Margin="0,0,5,0" >
+            <ToggleButton.Content>
+                <Grid Width="20" Height="20">
+                    <!-- Quadrat -->
+                    <Path Data="M0,0 L20,0 L20,20 L0,20 Z"
+                    Fill="Transparent"
+                    Stroke="{DynamicResource TextFillColorPrimaryBrush}"/>
+
+                    <Path Data="M0,0 L20,20"
+                    Stroke="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                    StrokeThickness="2"/>
+                </Grid>
+            </ToggleButton.Content>
+        </ToggleButton>
+        <ToggleButton
+        IsChecked="{Binding TransistionDiagonalTopRightChecked, Mode=TwoWay}"
+        Margin="0,0,5,0" >
+            <ToggleButton.Content>
+                <Grid Width="20" Height="20">
+                    <!-- Quadrat -->
+                    <Path Data="M0,0 L20,0 L20,20 L0,20 Z"
+                    Fill="Transparent"
+                    Stroke="{DynamicResource TextFillColorPrimaryBrush}"/>
+
+                    <Path Data="M0,20 L20,0"
+                    Stroke="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                    StrokeThickness="2"/>
+                </Grid>
+            </ToggleButton.Content>
+        </ToggleButton>
+    </StackPanel>
+</UserControl>

@@ -229,7 +229,7 @@ namespace WPFZoomPanel
             base.OnApplyTemplate();
 
             if (Template.FindName("PART_ZoomAndPanControl", this) is not ZoomPanel ZoomAndPanContent)
-                return; 
+                return;
 
             OnPropertyChanged(new DependencyPropertyChangedEventArgs(ZoomAndPanContentProperty, null, ZoomAndPanContent));
             RefreshProperties();

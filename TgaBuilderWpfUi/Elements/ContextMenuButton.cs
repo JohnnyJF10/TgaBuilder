@@ -19,9 +19,9 @@ namespace TgaBuilderWpfUi.Elements
 
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.Register(
-                nameof(ItemsSource), 
-                typeof(IEnumerable), 
-                typeof(ContextMenuButton), 
+                nameof(ItemsSource),
+                typeof(IEnumerable),
+                typeof(ContextMenuButton),
                 new PropertyMetadata(null));
 
         public IEnumerable ItemsSource
@@ -32,9 +32,9 @@ namespace TgaBuilderWpfUi.Elements
 
         public static readonly DependencyProperty ItemCommandProperty =
             DependencyProperty.Register(
-                nameof(ItemCommand), 
-                typeof(ICommand), 
-                typeof(ContextMenuButton), 
+                nameof(ItemCommand),
+                typeof(ICommand),
+                typeof(ContextMenuButton),
                 new PropertyMetadata(null));
 
         public ICommand ItemCommand
@@ -45,9 +45,9 @@ namespace TgaBuilderWpfUi.Elements
 
         public static readonly DependencyProperty CommandParameterSelectorProperty =
             DependencyProperty.Register(
-                nameof(CommandParameterSelector), 
-                typeof(Func<object, object>), 
-                typeof(ContextMenuButton), 
+                nameof(CommandParameterSelector),
+                typeof(Func<object, object>),
+                typeof(ContextMenuButton),
                 new PropertyMetadata(null));
 
         public Func<object, object> CommandParameterSelector

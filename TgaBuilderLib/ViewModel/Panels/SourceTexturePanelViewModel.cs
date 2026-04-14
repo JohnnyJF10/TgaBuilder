@@ -23,22 +23,22 @@ namespace TgaBuilderLib.ViewModel
 
             VisualGridViewModel visualGridVM)
             : base(
-                  cursorSetter:         cursorSetter,
-                  bitmapOperations:     bitmapOperations,
-                  eyeDropper:           eyeDropper,
+                  cursorSetter: cursorSetter,
+                  bitmapOperations: bitmapOperations,
+                  eyeDropper: eyeDropper,
 
-                  presenter:            presenter,
+                  presenter: presenter,
 
-                  SelectionVM:          SelectionVM,
-                  AnimationVM:          AnimationVM,
+                  SelectionVM: SelectionVM,
+                  AnimationVM: AnimationVM,
 
-                  pickerVM:             pickerVM,
-                  animSelectShapeVM:    animSelectShapeVM,
-                  selectionShapeVM:     selectionShapeVM)
+                  pickerVM: pickerVM,
+                  animSelectShapeVM: animSelectShapeVM,
+                  selectionShapeVM: selectionShapeVM)
         {
             VisualGrid = visualGridVM;
         }
-        
+
         private bool _isGridDragging;
         private double _zoom = 1.0;
 
@@ -55,7 +55,7 @@ namespace TgaBuilderLib.ViewModel
             set => SetZoom(value);
         }
 
-        internal override bool CanScroll 
+        internal override bool CanScroll
             => IsDragging || IsRightDragging || _eyeDropper.IsActive;
 
 
@@ -100,7 +100,7 @@ namespace TgaBuilderLib.ViewModel
             ThicknessUpdate(zoom);
         }
 
-        public override void MouseEnter() 
+        public override void MouseEnter()
         {
             if (_eyeDropper.IsActive)
                 _cursorSetter.SetEyedropperCursor();
@@ -111,7 +111,7 @@ namespace TgaBuilderLib.ViewModel
         public override void MouseMove()
         {
             int x = VisualGrid.OffsetX > 0
-                ? Math.Clamp(XPointer, VisualGrid.OffsetX, Presenter.PixelWidth - 2 * VisualGrid.CellSize + VisualGrid.OffsetX) 
+                ? Math.Clamp(XPointer, VisualGrid.OffsetX, Presenter.PixelWidth - 2 * VisualGrid.CellSize + VisualGrid.OffsetX)
                 : XPointer;
 
             int y = VisualGrid.OffsetY > 0
@@ -196,7 +196,7 @@ namespace TgaBuilderLib.ViewModel
             }
             IsDragging = false;
             IsGridlessMode = false;
-            
+
             SelectionShape.IsVisible = false;
             if (SelectionShape.Width == 0 || SelectionShape.Height == 0) return;
             SetSelection();
@@ -274,15 +274,15 @@ namespace TgaBuilderLib.ViewModel
         private void SetSelectionSizeWithOffsetHor()
         {
             SelectionShape.Width = _xGrid > Picker.X
-                ? Math.Clamp(Picker.Size + _xGrid - Picker.X, 
+                ? Math.Clamp(Picker.Size + _xGrid - Picker.X,
                 0, Presenter.PixelWidth - Picker.X - Picker.Size + VisualGrid.OffsetX)
-                : Math.Clamp(Picker.Size + Picker.X - _xGrid, 
+                : Math.Clamp(Picker.Size + Picker.X - _xGrid,
                 0, Picker.X - VisualGrid.OffsetX + Picker.Size);
 
             SelectionShape.X = _xGrid > Picker.X
-                ? Math.Clamp(Picker.X, 
+                ? Math.Clamp(Picker.X,
                 VisualGrid.OffsetX, Presenter.PixelWidth - 2 * Picker.Size + VisualGrid.OffsetX)
-                : Math.Clamp(Picker.Size + Picker.X - SelectionShape.Width, 
+                : Math.Clamp(Picker.Size + Picker.X - SelectionShape.Width,
                 VisualGrid.OffsetX, Presenter.PixelWidth - 2 * Picker.Size + VisualGrid.OffsetX);
         }
 

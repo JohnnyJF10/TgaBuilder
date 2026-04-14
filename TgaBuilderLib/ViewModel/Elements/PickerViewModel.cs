@@ -58,10 +58,10 @@
 
         private void SetMaxSize(int value)
         {
-            if (value == _maxSize) 
+            if (value == _maxSize)
                 return;
 
-            if (value > PICKER_MAX_SIZE) 
+            if (value > PICKER_MAX_SIZE)
                 value = PICKER_MAX_SIZE;
 
             _maxSize = value;

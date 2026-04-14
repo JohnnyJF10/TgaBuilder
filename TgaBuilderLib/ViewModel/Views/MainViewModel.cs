@@ -1,10 +1,8 @@
 ﻿
 using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Enums;
-using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
@@ -75,7 +73,7 @@ namespace TgaBuilderLib.ViewModel
             DestinationFormatTab.EyedroppingRequested += (_, _)
                 => _currnetlyEyedroppingTab = DestinationFormatTab;
 
-            SourceIO.LoadedSuccessfully += (_, _) 
+            SourceIO.LoadedSuccessfully += (_, _)
                 => OnSourceLoadedSuccessfully();
         }
 
@@ -89,6 +87,9 @@ namespace TgaBuilderLib.ViewModel
         private bool _panelInfoVisible;
         private bool _tileInfoVisible = true;
 
+        private IView? _smoothTransitionView;
+        private IView? _brickTransitionView;
+
         private string _pixelInfo = string.Empty;
         private string _tileInfo = string.Empty;
         private string _panelInfo = string.Empty;
@@ -97,6 +98,8 @@ namespace TgaBuilderLib.ViewModel
 
         private PanelMouseCommand? _mousePanelCommand;
         private AsyncCommand? _batchLoaderCommand;
+        private AsyncCommand? _smoothTransitionCommand;
+        private AsyncCommand? _brickTransitionCommand;
         private RelayCommand? _aboutCommand;
         private RelayCommand? _entireToSourceCommand;
         private AsyncCommand? _entireToTargetCommand;
@@ -152,8 +155,8 @@ namespace TgaBuilderLib.ViewModel
             set => SetCallerProperty(ref _panelInfoVisible, value);
         }
 
-        public bool TileInfoVisible 
-        { 
+        public bool TileInfoVisible
+        {
             get => _tileInfoVisible;
             set
             {
@@ -193,84 +196,90 @@ namespace TgaBuilderLib.ViewModel
 #endif
 
 
-        public ICommand MousePanelCommand  => _mousePanelCommand 
+        public ICommand MousePanelCommand => _mousePanelCommand
             ??= new(HandleMouseOnPanel);
 
-        public ICommand BatchLoaderCommand => _batchLoaderCommand 
+        public ICommand BatchLoaderCommand => _batchLoaderCommand
             ??= new(SourceIO.BatchLoader);
 
-        public ICommand AboutCommand => _aboutCommand 
+        public ICommand SmoothTransitionCommand => _smoothTransitionCommand
+            ??= new(OpenSmoothTransitionHelper);
+
+        public ICommand BrickTransitionCommand => _brickTransitionCommand
+            ??= new(OpenBrickTransitionHelper);
+
+        public ICommand AboutCommand => _aboutCommand
             ??= new(About);
 
         public ICommand EntireToSourceCommand => _entireToSourceCommand
             ??= new(() => SourceIO.CopyEntire(Destination.Presenter));
 
-        public ICommand EntireToTargetCommand => _entireToTargetCommand 
+        public ICommand EntireToTargetCommand => _entireToTargetCommand
             ??= new(() => TargetIO.CopyEntire(Source.Presenter));
 
-        public ICommand NewCommand => _newCommand 
+        public ICommand NewCommand => _newCommand
             ??= new(TargetIO.NewFile);
 
-        public ICommand OpenSourceCommand => _openSourceCommand 
+        public ICommand OpenSourceCommand => _openSourceCommand
             ??= new(() => SourceIO.SetupOpenTask());
 
-        public ICommand OpenPreviousSourceCommand => _openPreviousSourceCommand 
+        public ICommand OpenPreviousSourceCommand => _openPreviousSourceCommand
             ??= new(() => SourceIO.OpenPreviosFile(), () => SourceIO.LastFolderFileNames.Count > 0);
 
-        public ICommand OpenNextSourceCommand => _openNextSourceCommand 
+        public ICommand OpenNextSourceCommand => _openNextSourceCommand
             ??= new(() => SourceIO.OpenNextFile(), () => SourceIO.LastFolderFileNames.Count > 0);
 
-        public ICommand OpenSourceTrCommand => _openSourceTrCommand 
+        public ICommand OpenSourceTrCommand => _openSourceTrCommand
             ??= new(SourceIO.OpenTr);
 
-        public ICommand ReloadSourceCommand => _reloadSourceCommand 
+        public ICommand ReloadSourceCommand => _reloadSourceCommand
             ??= new(SourceIO.SetupReloadTask, () => SourceIO.LastFolderFileNames.Count > 0);
 
-        public ICommand OpenRecentSourceCommand => _openRecentSourceCommand 
+        public ICommand OpenRecentSourceCommand => _openRecentSourceCommand
             ??= new(fn => SourceIO.SetupOpenTask(fn));
 
-        public ICommand OpenRecentDestinationCommand => _openRecentDestinationCommand 
+        public ICommand OpenRecentDestinationCommand => _openRecentDestinationCommand
             ??= new(fn => TargetIO.SetupOpenTask(fn));
 
-        public ICommand FileDropSourceCommand => _fileDropSourceCommand 
-            ??= new ( files => SourceIO.SetupOpenTask(files.FirstOrDefault()));
+        public ICommand FileDropSourceCommand => _fileDropSourceCommand
+            ??= new(files => SourceIO.SetupOpenTask(files.FirstOrDefault()));
 
-        public ICommand SaveCommand => _saveCommand 
+        public ICommand SaveCommand => _saveCommand
             ??= new(TargetIO.SaveCurrent);
 
-        public ICommand SaveAsCommand => _saveAsCommand 
+        public ICommand SaveAsCommand => _saveAsCommand
             ??= new(() => TargetIO.SetupSaveTask());
 
         public ICommand OpenDestinationCommand
-            => _openDestinationCommand 
+            => _openDestinationCommand
             ??= new(() => TargetIO.SetupOpenTask());
 
-        public ICommand FileDropDestinationCommand => _fileDropDestinationCommand 
+        public ICommand FileDropDestinationCommand => _fileDropDestinationCommand
             ??= new(files => TargetIO.SetupOpenTask(files.FirstOrDefault()));
 
-        public ICommand CancelSourceIOCommand => _cancelSourceIOCommand 
+        public ICommand CancelSourceIOCommand => _cancelSourceIOCommand
             ??= new(SourceIO.CancelOpen);
 
-        public ICommand CancelDestinationIOCommand => _cancelDestinationIOCommand 
+        public ICommand CancelDestinationIOCommand => _cancelDestinationIOCommand
             ??= new(TargetIO.CancelOpen);
 
-        public ICommand UndoCommand => _undoCommand 
+        public ICommand UndoCommand => _undoCommand
             ??= new(Undo, () => _undoRedoManager.CanUndo);
 
-        public ICommand RedoCommand => _redoCommand 
+        public ICommand RedoCommand => _redoCommand
             ??= new(Redo, () => _undoRedoManager.CanRedo);
 
-        public ICommand CopyCommand => _copyCommand 
+        public ICommand CopyCommand => _copyCommand
             ??= new(Selection.Copy);
 
-        public ICommand PasteCommand => _pasteCommand 
+        public ICommand PasteCommand => _pasteCommand
             ??= new(Selection.Paste);
 
-        public ICommand EnterPanelCommand => _enterPanelCommand 
+        public ICommand EnterPanelCommand => _enterPanelCommand
             ??= new(EnterPanel);
 
-        public ICommand LeavePanelCommand => _leavePanelCommand 
-            ??= new (LeavePanel);
+        public ICommand LeavePanelCommand => _leavePanelCommand
+            ??= new(LeavePanel);
 
         public ICommand WheelShiftCommand => _wheelShiftCommand
             ??= new(args => WheelShift(args.Item1, args.Item2));
@@ -292,7 +301,7 @@ namespace TgaBuilderLib.ViewModel
             panel.XPointer = x;
             panel.YPointer = y;
 
-            switch (action, modifier) 
+            switch (action, modifier)
             {
                 case (MouseAction.DragStart, MouseModifier.Left):
                     TileInfoVisible = false;
@@ -372,9 +381,9 @@ namespace TgaBuilderLib.ViewModel
             PixelInfo = panel.PixelInfo;
             TileInfo = panel.TileInfo;
             PanelInfo = panel.PanelInfo;
-            PanelHelp = isTarget 
-                ? Selection.IsPlacing 
-                    ? PanelHelpType.DestinationOnPanelPlacingInfo 
+            PanelHelp = isTarget
+                ? Selection.IsPlacing
+                    ? PanelHelpType.DestinationOnPanelPlacingInfo
                     : PanelHelpType.DestinationOnPanelPickingInfo
                 : PanelHelpType.SourceOnPanelInfo;
 
@@ -394,6 +403,34 @@ namespace TgaBuilderLib.ViewModel
             var aboutView = _getViewCallback(ViewIndex.About);
 
             aboutView.ShowDialogAsync();
+        }
+
+        private async Task OpenSmoothTransitionHelper()
+        {
+            if (_smoothTransitionView is not null)
+                return;
+
+            _smoothTransitionView = _getViewCallback(ViewIndex.SmoothTransition);
+            if (_smoothTransitionView.DataContext is not SmoothTransitionViewModel smoothTransitionVM)
+                return;
+
+            await _smoothTransitionView.ShowAsync();
+
+            //Put result to selection
+        }
+
+        private async Task OpenBrickTransitionHelper()
+        {
+            if (_brickTransitionView is not null)
+                return;
+
+            _brickTransitionView = _getViewCallback(ViewIndex.BrickTransition);
+            if (_brickTransitionView.DataContext is not BrickTransitionViewModel brickTransitionVM)
+                return;
+
+            await _brickTransitionView.ShowAsync();
+
+            //Put result to selection
         }
 
         public void EnterPanel(bool isTargetPanel)

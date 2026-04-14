@@ -1,17 +1,8 @@
 ﻿using Avalonia;
-using Avalonia.Controls.Shapes;
 using Avalonia.Media.Imaging;
-using Avalonia.Skia.Lottie;
-using SkiaSharp;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.Enums;
 
 using PixelRect = TgaBuilderLib.Abstraction.PixelRect;
 
@@ -95,19 +86,19 @@ namespace TgaBuilderAvaloniaUi.Wrappers
             }
         }
 
-        private WriteableBitmap GetWriteableBitmap (Bitmap source)
+        private WriteableBitmap GetWriteableBitmap(Bitmap source)
         {
             using (var ms = new MemoryStream())
             {
-                
+
                 source.Save(ms);
                 ms.Position = 0;
-                
+
                 using (var temp = new Bitmap(ms))
                 {
                     var size = temp.Size;
                     var pixelSize = new PixelSize((int)size.Width, (int)size.Height);
-                    var dpi = new Vector(96, 96); 
+                    var dpi = new Vector(96, 96);
 
                     var writeable = new WriteableBitmap(
                         pixelSize,
@@ -121,8 +112,8 @@ namespace TgaBuilderAvaloniaUi.Wrappers
                     {
                         temp.CopyPixels(
                             rect,
-                            targetLock.Address, 
-                            targetLock.RowBytes * targetLock.Size.Height, 
+                            targetLock.Address,
+                            targetLock.RowBytes * targetLock.Size.Height,
                             targetLock.RowBytes);
                     }
 

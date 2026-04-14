@@ -1,10 +1,7 @@
-using System;
-using System.Windows.Media.Imaging;
-using System.Windows;
-using System.Runtime.InteropServices;
-
-using TgaBuilderLib.Abstraction;
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderWpfUi.Wrappers
 {
@@ -17,7 +14,7 @@ namespace TgaBuilderWpfUi.Wrappers
         private readonly WriteableBitmap _bitmap;
         private bool _disposed;
 
-    
+
         public IntPtr BackBuffer { get; }
 
         public Int32Rect DirtyRect { get; }
@@ -35,8 +32,8 @@ namespace TgaBuilderWpfUi.Wrappers
                 DirtyRect.X + DirtyRect.Width > bitmap.PixelWidth ||
                 DirtyRect.Y + DirtyRect.Height > bitmap.PixelHeight)
             {
-                Debug.WriteLine(false, "CAUTION: DirtyRect is out of bounds. Fallback to full bitmap."+
-                    $"Violated Conditions: " + 
+                Debug.WriteLine(false, "CAUTION: DirtyRect is out of bounds. Fallback to full bitmap." +
+                    $"Violated Conditions: " +
                     $"DirtyRect.X < 0: {DirtyRect.X < 0}, " +
                     $"DirtyRect.Y < 0: {DirtyRect.Y < 0}, " +
                     $"DirtyRect.Width <= 0: {DirtyRect.Width <= 0}, " +
@@ -50,20 +47,20 @@ namespace TgaBuilderWpfUi.Wrappers
             RequiresRefresh = requiresRefresh;
 
             _bitmap.Lock();
-    
+
             BackBuffer = _bitmap.BackBuffer;
         }
-    
+
         public void Dispose()
         {
-            if (_disposed) 
+            if (_disposed)
                 return;
 
             if (RequiresRefresh)
                 _bitmap.AddDirtyRect(DirtyRect);
 
             _bitmap.Unlock();
-    
+
             _disposed = true;
         }
     }

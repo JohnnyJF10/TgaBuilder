@@ -5,10 +5,10 @@ namespace TgaBuilderLib.BitmapOperations
     public partial class BitmapOperations
     {
         public IWriteableBitmap ReplaceColor(IWriteableBitmap source, Color replacedColor, Color newColor)
-            => source.HasAlpha 
-            ? ReplaceColor32(source, replacedColor, newColor) 
+            => source.HasAlpha
+            ? ReplaceColor32(source, replacedColor, newColor)
             : ReplaceColor24(source, replacedColor, newColor);
-        
+
 
         private IWriteableBitmap ReplaceColor24(IWriteableBitmap source, Color replacedColor, Color newColor)
         {
@@ -18,9 +18,9 @@ namespace TgaBuilderLib.BitmapOperations
             int targetStride = width * 3;
 
             IWriteableBitmap result = _mediaFactory.CreateEmptyBitmap(
-                width:          width,
-                height:         height,
-                hasAlpha:       false);
+                width: width,
+                height: height,
+                hasAlpha: false);
 
 
             using var sourceLocker = source.GetLocker();
@@ -85,7 +85,7 @@ namespace TgaBuilderLib.BitmapOperations
             using var resultLocker = result.GetLocker(requiresRefresh: true);
 
             byte r, g, b, a = 255;
-            
+
             unsafe
             {
                 byte* srcPtr = (byte*)sourceLocker.BackBuffer;

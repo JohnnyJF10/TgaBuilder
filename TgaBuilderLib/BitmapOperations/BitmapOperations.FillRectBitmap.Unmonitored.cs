@@ -104,11 +104,11 @@ namespace TgaBuilderLib.BitmapOperations
                         isTransparencyColor = (r, g, b) == (255, 0, 255);
 
                         action = DecidePixelAction(
-                            alpha:                  a,
-                            srcHasAlpha:            source.HasAlpha,
-                            tgtHasAlpha:            false,
-                            isTransparencyColor:    isTransparencyColor,
-                            overlayTransparent:     OverlayTransparent);
+                            alpha: a,
+                            srcHasAlpha: source.HasAlpha,
+                            tgtHasAlpha: false,
+                            isTransparencyColor: isTransparencyColor,
+                            overlayTransparent: OverlayTransparent);
 
                         switch (action)
                         {
@@ -228,11 +228,11 @@ namespace TgaBuilderLib.BitmapOperations
                         isTransparencyColor = (r, g, b) == (255, 0, 255);
 
                         action = DecidePixelAction(
-                            alpha:                  a,
-                            srcHasAlpha:            source.HasAlpha,
-                            tgtHasAlpha:            true,
-                            isTransparencyColor:    isTransparencyColor,
-                            overlayTransparent:     OverlayTransparent);
+                            alpha: a,
+                            srcHasAlpha: source.HasAlpha,
+                            tgtHasAlpha: true,
+                            isTransparencyColor: isTransparencyColor,
+                            overlayTransparent: OverlayTransparent);
 
                         switch (action)
                         {

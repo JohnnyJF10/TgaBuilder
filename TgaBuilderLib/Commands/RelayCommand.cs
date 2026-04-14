@@ -45,7 +45,7 @@ namespace TgaBuilderLib.Commands
                 return false;
 
             if (parameter is T tParam)
-                return _canExecute?.Invoke(tParam) ?? true; 
+                return _canExecute?.Invoke(tParam) ?? true;
             else
                 return true;
         }
@@ -68,7 +68,7 @@ namespace TgaBuilderLib.Commands
         //}
 
         public void RaiseCanExecuteChanged()
-        {             
+        {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
             CommandManagerProxy.InvalidateRequerySuggested();
         }

@@ -10,7 +10,7 @@ namespace TgaBuilderLib.ViewModel
         protected void OnPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        protected void OnCallerPropertyChanged([CallerMemberName]string? propertyName = null)
+        protected void OnCallerPropertyChanged([CallerMemberName] string? propertyName = null)
             => OnPropertyChanged(propertyName ?? "");
 
         protected void SetProperty<T>(ref T field, T value, string propertyName)

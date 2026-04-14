@@ -33,7 +33,7 @@ namespace TgaBuilderLib.FileHandling
 
 
         public void LoadImageFile(
-            string fileName, 
+            string fileName,
             ResizeMode mode = ResizeMode.SourceResize,
             CancellationToken? cancellationToken = null)
         {
@@ -95,7 +95,7 @@ namespace TgaBuilderLib.FileHandling
 
                 default:
                     throw new NotSupportedException($"Filetype '{extension}' is not supported.");
-                }
+            }
         }
 
         public void SaveImageFile(string fileName, IReadableBitmap bitmap)

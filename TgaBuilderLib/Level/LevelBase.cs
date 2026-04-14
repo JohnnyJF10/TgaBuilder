@@ -1,7 +1,8 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-
+using K4os.Compression.LZ4;
 using System.Buffers;
 using System.Runtime.InteropServices;
+using System.Text;
 using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Level
@@ -126,7 +127,7 @@ namespace TgaBuilderLib.Level
                 yOffset += rowHeight;
             }
 
-            targetPanelHeight = NextHigherMultiple(yOffset, ORIGINAL_PAGE_SIZE); 
+            targetPanelHeight = NextHigherMultiple(yOffset, ORIGINAL_PAGE_SIZE);
 
             return positions.ToList();
         }
@@ -135,6 +136,46 @@ namespace TgaBuilderLib.Level
         {
             var limitedStream = new SubStream(baseStream, compressedSize);
             return new InflaterInputStream(limitedStream);
+        }
+
+        protected Stream DecompressStreamLZ4(Stream baseStream, ulong totalUncompressedSize)
+        {
+            var outputStream = new MemoryStream((int)totalUncompressedSize);
+            
+            using (var reader = new BinaryReader(baseStream, Encoding.UTF8, leaveOpen: true))
+            {
+                uint numChunks = reader.ReadUInt32();
+
+                uint totalDecompressed = 0;
+
+                for (uint i = 0; i < numChunks; i++)
+                {
+                    uint chunkUncompressed = reader.ReadUInt32();
+                    uint chunkCompressed = reader.ReadUInt32();
+
+                    byte[] compressedData = reader.ReadBytes((int)chunkCompressed);
+                    if (compressedData.Length != chunkCompressed)
+                        throw new EndOfStreamException($"Chunk {i}: expected {chunkCompressed}, got {compressedData.Length}");
+
+                    byte[] decompressedData = new byte[chunkUncompressed];
+
+                    int result = LZ4Codec.Decode(
+                        compressedData, 0, (int)chunkCompressed,
+                        decompressedData, 0, (int)chunkUncompressed);
+
+                    if (result != chunkUncompressed)
+                        throw new InvalidDataException($"Chunk {i} failed");
+
+                    outputStream.Write(decompressedData, 0, (int)chunkUncompressed);
+                    totalDecompressed += chunkUncompressed;
+                }
+
+                if (totalDecompressed != totalUncompressedSize)
+                    throw new InvalidDataException($"Expected {totalUncompressedSize} bytes, got {totalDecompressed}");
+            }
+            
+            outputStream.Position = 0;
+            return outputStream;
         }
 
         public IWriteableBitmap GetResultBitmap()
@@ -155,9 +196,9 @@ namespace TgaBuilderLib.Level
 
             // IWriteableBitmap with capped height
             IWriteableBitmap IWriteableBitmap = _mediaFactory.CreateEmptyBitmap(
-                width:      targetPanelWidth,
-                height:     actualHeight,
-                hasAlpha:   true);
+                width: targetPanelWidth,
+                height: actualHeight,
+                hasAlpha: true);
 
             var dirtyRect = new PixelRect(0, 0, targetPanelWidth, actualHeight);
 
@@ -165,10 +206,10 @@ namespace TgaBuilderLib.Level
 
             // Only visible area
             Marshal.Copy(
-                source:         TargetAtlas, 
-                startIndex:     0, 
-                destination:    locker.BackBuffer, 
-                length:         croppedSize);
+                source: TargetAtlas,
+                startIndex: 0,
+                destination: locker.BackBuffer,
+                length: croppedSize);
 
             return IWriteableBitmap;
         }

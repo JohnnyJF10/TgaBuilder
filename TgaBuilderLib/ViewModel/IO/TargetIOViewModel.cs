@@ -1,5 +1,4 @@
 ﻿using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.Commands;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Messaging;
@@ -221,7 +220,7 @@ namespace TgaBuilderLib.ViewModel
             if (String.IsNullOrEmpty(fileName) || !IsFileWriteable(fileName))
             {
                 var dialogResult = await _fileService.SaveFileDialog(WRITEABLE_FILE_TYPES);
-                
+
                 if (dialogResult == true)
                     fileName = _fileService.SelectedPath;
                 else return false;
@@ -237,7 +236,7 @@ namespace TgaBuilderLib.ViewModel
                 _imageManager.SaveImageFile(
                     fileName: fileName,
                     bitmap: _panel.Presenter);
-                
+
                 await Task.Run(() => _imageManager.WriteImageFile(fileName, token));
             }
             catch (OperationCanceledException)

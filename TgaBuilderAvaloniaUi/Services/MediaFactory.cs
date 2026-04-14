@@ -1,13 +1,8 @@
 ﻿using Avalonia;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TgaBuilderAvaloniaUi.Wrappers;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
@@ -21,7 +16,7 @@ namespace TgaBuilderAvaloniaUi.Services
             if (source is not BitmapWrapper wrapper)
                 throw new ArgumentException("Bitmap is not a BitmapSource", nameof(source));
 
-            var bitmap = wrapper.InnerBitmap;   
+            var bitmap = wrapper.InnerBitmap;
 
             return new WriteableBitmapWrapper(bitmap);
         }
@@ -40,12 +35,12 @@ namespace TgaBuilderAvaloniaUi.Services
                     IntPtr ptr = (IntPtr)p;
 
                     bitmap = new(
-                        format:         hasAlpha ? PixelFormats.Bgra8888 : PixelFormats.Rgb24,
-                        alphaFormat:    AlphaFormat.Unpremul,
-                        data:           ptr,
-                        size:           new PixelSize(pixelWidth, pixelHeight),
-                        dpi:            new Vector(96, 96),
-                        stride:         stride);
+                        format: hasAlpha ? PixelFormats.Bgra8888 : PixelFormats.Rgb24,
+                        alphaFormat: AlphaFormat.Unpremul,
+                        data: ptr,
+                        size: new PixelSize(pixelWidth, pixelHeight),
+                        dpi: new Vector(96, 96),
+                        stride: stride);
                 }
             }
 
@@ -55,10 +50,10 @@ namespace TgaBuilderAvaloniaUi.Services
         public IWriteableBitmap CreateEmptyBitmap(int width, int height, bool hasAlpha)
         {
             WriteableBitmap writeableBitmap = new WriteableBitmap(
-                size:           new PixelSize(width, height),
-                dpi:            new Vector(96, 96),
-                format:         hasAlpha ? PixelFormats.Bgra8888 : PixelFormats.Rgb24,
-                alphaFormat:    AlphaFormat.Unpremul);
+                size: new PixelSize(width, height),
+                dpi: new Vector(96, 96),
+                format: hasAlpha ? PixelFormats.Bgra8888 : PixelFormats.Rgb24,
+                alphaFormat: AlphaFormat.Unpremul);
 
             return new WriteableBitmapWrapper(writeableBitmap);
         }
@@ -76,15 +71,15 @@ namespace TgaBuilderAvaloniaUi.Services
 
             var interpolationMode = scalingMode switch
             {
-                BitmapScalingMode.NearestNeighbor   => BitmapInterpolationMode.None,
-                BitmapScalingMode.Linear            => BitmapInterpolationMode.MediumQuality,
-                BitmapScalingMode.Fant              => BitmapInterpolationMode.HighQuality,
+                BitmapScalingMode.NearestNeighbor => BitmapInterpolationMode.None,
+                BitmapScalingMode.Linear => BitmapInterpolationMode.MediumQuality,
+                BitmapScalingMode.Fant => BitmapInterpolationMode.HighQuality,
                 _ => BitmapInterpolationMode.None,
             };
 
             var scaled = bitmap.CreateScaledBitmap(
-                destinationSize:    new PixelSize(newWidth, newHeight),
-                interpolationMode:  interpolationMode);
+                destinationSize: new PixelSize(newWidth, newHeight),
+                interpolationMode: interpolationMode);
 
 
             return new WriteableBitmapWrapper(scaled);

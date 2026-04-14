@@ -15,26 +15,26 @@ namespace TgaBuilderLib.ViewModel
             {
                 nameof(RegularModeSelected),
                 TargetMode.Default
-            },            
+            },
             {
                 nameof(RotateModeSelected),
                 TargetMode.ClockwiseRotating
             },
             {
                 nameof(MirrorHorizontalModeSelected),
-                TargetMode.MirrorHorizontal 
+                TargetMode.MirrorHorizontal
             },
             {
                 nameof(MirrorVerticalModeSelected),
-                TargetMode.MirrorVertical 
+                TargetMode.MirrorVertical
             },
             {
                 nameof(TileSwapModeSelected),
-                TargetMode.TileSwapping 
+                TargetMode.TileSwapping
             },
             {
                 nameof(MoveModeSelected),
-                TargetMode.TileMoving 
+                TargetMode.TileMoving
             }
         };
 
@@ -51,13 +51,13 @@ namespace TgaBuilderLib.ViewModel
             get => CheckIfSelected();
             set => ApplySelection(value);
         }
-        
+
         public bool MirrorHorizontalModeSelected
         {
             get => CheckIfSelected();
             set => ApplySelection(value);
         }
-        
+
         public bool MirrorVerticalModeSelected
         {
             get => CheckIfSelected();
@@ -82,17 +82,17 @@ namespace TgaBuilderLib.ViewModel
             if (_keyValuePairs.TryGetValue(propertyName ?? "", out TargetMode lMode))
                 _destination.mode = lMode;
         }
-        
-        private string? GetSelectedMode() 
+
+        private string? GetSelectedMode()
             => _keyValuePairs.FirstOrDefault(x => x.Value == _destination.mode).Key;
-        
+
         private bool CheckIfSelected([CallerMemberName] string? propertyName = null)
         {
             if (_keyValuePairs.TryGetValue(propertyName ?? "", out TargetMode lMode))
                 return _destination.mode == lMode;
             return false;
         }
-        
+
         private void ApplySelection(bool value, [CallerMemberName] string? propertyName = null)
         {
             if (!value)

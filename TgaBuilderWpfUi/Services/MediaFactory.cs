@@ -23,14 +23,14 @@ namespace TgaBuilderWpfUi.Services
         public IReadableBitmap CreateBitmapFromRaw(int pixelWidth, int pixelHeight, bool hasAlpha, Array pixels, int stride)
         {
             BitmapSource bitmapSource = BitmapSource.Create(
-                pixelWidth:     pixelWidth,
-                pixelHeight:    pixelHeight,
-                dpiX:           96, 
-                dpiY:           96, 
-                pixelFormat:    hasAlpha ? PixelFormats.Bgra32 : PixelFormats.Rgb24,
-                palette:        null, 
-                pixels:         pixels,
-                stride:         stride);
+                pixelWidth: pixelWidth,
+                pixelHeight: pixelHeight,
+                dpiX: 96,
+                dpiY: 96,
+                pixelFormat: hasAlpha ? PixelFormats.Bgra32 : PixelFormats.Rgb24,
+                palette: null,
+                pixels: pixels,
+                stride: stride);
 
             return new BitmapSourceWrapper(bitmapSource);
         }
@@ -38,20 +38,20 @@ namespace TgaBuilderWpfUi.Services
         public IWriteableBitmap CreateEmptyBitmap(int width, int height, bool hasAlpha)
         {
             WriteableBitmap writeableBitmap = new WriteableBitmap(
-                pixelWidth:     width,
-                pixelHeight:    height,
-                dpiX:           96,
-                dpiY:           96,
-                pixelFormat:    hasAlpha ? PixelFormats.Bgra32 : PixelFormats.Rgb24,
-                palette:        null);
+                pixelWidth: width,
+                pixelHeight: height,
+                dpiX: 96,
+                dpiY: 96,
+                pixelFormat: hasAlpha ? PixelFormats.Bgra32 : PixelFormats.Rgb24,
+                palette: null);
 
             return new WriteableBitmapWrapper(writeableBitmap);
         }
 
         public IWriteableBitmap CreateRescaledBitmap(
-            IWriteableBitmap source, 
-            int newWidth, 
-            int newHeight, 
+            IWriteableBitmap source,
+            int newWidth,
+            int newHeight,
             TgaBuilderLib.Enums.BitmapScalingMode scalingMode = TgaBuilderLib.Enums.BitmapScalingMode.Linear)
         {
             if (source is not WriteableBitmapWrapper wrapper)
@@ -80,11 +80,11 @@ namespace TgaBuilderWpfUi.Services
             }
 
             var resized = new RenderTargetBitmap(
-                pixelWidth:     newWidth,
-                pixelHeight:    newHeight,
-                dpiX:           96,
-                dpiY:           96,
-                pixelFormat:    PixelFormats.Pbgra32);
+                pixelWidth: newWidth,
+                pixelHeight: newHeight,
+                dpiX: 96,
+                dpiY: 96,
+                pixelFormat: PixelFormats.Pbgra32);
 
             resized.Render(drawingVisual);
 

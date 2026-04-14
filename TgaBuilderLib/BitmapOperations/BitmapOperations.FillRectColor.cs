@@ -5,19 +5,19 @@ namespace TgaBuilderLib.BitmapOperations
 {
     public partial class BitmapOperations
     {
-        public void FillRectColor(IWriteableBitmap bitmap, PixelRect rect , Color? fillColor = null)
+        public void FillRectColor(IWriteableBitmap bitmap, PixelRect rect, Color? fillColor = null)
         {
             if (bitmap == null)
                 throw new ArgumentNullException(nameof(bitmap));
 
-            Color ColorToFill = fillColor ?? new(0,0,0,0);
+            Color ColorToFill = fillColor ?? new(0, 0, 0, 0);
 
             int x = Math.Max(0, rect.X);
             int y = Math.Max(0, rect.Y);
             int width = Math.Min(bitmap.PixelWidth - x, rect.Width);
             int height = Math.Min(bitmap.PixelHeight - y, rect.Height);
 
-            if (width <= 0 || height <= 0) 
+            if (width <= 0 || height <= 0)
                 return;
 
             int bytesPerPixel = bitmap.HasAlpha ? 4 : 3;
@@ -26,8 +26,8 @@ namespace TgaBuilderLib.BitmapOperations
 
             byte[] colorBytes;
 
-            colorBytes = bitmap.HasAlpha 
-                ? new byte[] { ColorToFill.B, ColorToFill.G, ColorToFill.R, ColorToFill.A ?? 255 } 
+            colorBytes = bitmap.HasAlpha
+                ? new byte[] { ColorToFill.B, ColorToFill.G, ColorToFill.R, ColorToFill.A ?? 255 }
                 : new byte[] { ColorToFill.R, ColorToFill.G, ColorToFill.B };
 
             for (int i = 0; i < pixelData.Length; i += bytesPerPixel)

@@ -1,10 +1,7 @@
 ﻿using Avalonia.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderAvaloniaUi.View;
 using TgaBuilderAvaloniaUi.Wrappers;
@@ -29,7 +26,7 @@ namespace TgaBuilderAvaloniaUi
 
     public partial class App
     {
-		private const int PAGE_SIZE = 256;
+        private const int PAGE_SIZE = 256;
         private const int PANEL_WIDTH_INIT = 256;
         private const int PANEL_HEIGHT_INIT = 1536;
         private const int APP_DEFAULT_DPI = 96;
@@ -64,18 +61,18 @@ namespace TgaBuilderAvaloniaUi
             services.AddSingleton<Func<string, int, bool, LevelBase>>(sp =>
                 (fileName, trTexturePanelHorPagesNum, useTrTextureRepacking) =>
                     new TrLevel(
-                        mediaFactory:               sp.GetRequiredService<IMediaFactory>(),
-                        fileName:                   fileName,
-                        trTexturePanelHorPagesNum:  trTexturePanelHorPagesNum,
-                        useTrTextureRepacking:      useTrTextureRepacking,
-                        trngDecrypter:              sp.GetRequiredService<ITrngDecrypter>()));
+                        mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                        fileName: fileName,
+                        trTexturePanelHorPagesNum: trTexturePanelHorPagesNum,
+                        useTrTextureRepacking: useTrTextureRepacking,
+                        trngDecrypter: sp.GetRequiredService<ITrngDecrypter>()));
 
             services.AddSingleton<Func<string, int, LevelBase>>(sp =>
                 (fileName, trTexturePanelHorPagesNum) =>
                     new TenLevel(
-                        mediaFactory:               sp.GetRequiredService<IMediaFactory>(),
-                        fileName:                   fileName,
-                        trTexturePanelHorPagesNum:  trTexturePanelHorPagesNum));
+                        mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                        fileName: fileName,
+                        trTexturePanelHorPagesNum: trTexturePanelHorPagesNum));
         }
 
         private void AddCoreServicesToProvider(IServiceCollection services)

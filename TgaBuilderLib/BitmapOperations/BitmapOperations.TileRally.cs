@@ -30,7 +30,7 @@ namespace TgaBuilderLib.BitmapOperations
                 RequiredPositions.Last().Y - RequiredPositions.First().Y + tileSize);
 
             using var locker = bitmap.GetLocker(dirtyRect);
-            { 
+            {
                 unsafe
                 {
                     byte* originPtr = (byte*)locker.BackBuffer;
@@ -89,7 +89,7 @@ namespace TgaBuilderLib.BitmapOperations
             {
                 res.Add((x, y));
                 x += tileSize;
-                if (x >= panelWidth)  
+                if (x >= panelWidth)
                 {
                     x = 0;
                     y += tileSize;

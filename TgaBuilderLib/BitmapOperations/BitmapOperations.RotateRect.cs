@@ -15,9 +15,9 @@ namespace TgaBuilderLib.BitmapOperations
                 throw new ArgumentException("Rectangle width and height must be greater than zero.");
 
             IWriteableBitmap tempBitmap = _mediaFactory.CreateEmptyBitmap(
-                width:          width, 
-                height:         height, 
-                hasAlpha:       bytesPerPixel == 4);
+                width: width,
+                height: height,
+                hasAlpha: bytesPerPixel == 4);
 
             int bitmapStride = bitmap.BackBufferStride;
             int tempStride = tempBitmap.BackBufferStride;

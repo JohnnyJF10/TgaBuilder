@@ -14,8 +14,8 @@ namespace WPFZoomPanel.Helpers
         /// Cancel any animations that are running on the specified dependency property.
         /// </summary>
         public static void CancelAnimation(
-            UIElement animatableElement, 
-            DependencyProperty dependencyProperty) 
+            UIElement animatableElement,
+            DependencyProperty dependencyProperty)
             => animatableElement.BeginAnimation(dependencyProperty, null);
 
         /// <summary>
@@ -23,8 +23,8 @@ namespace WPFZoomPanel.Helpers
         /// dependency property.
         /// </summary>
         public static void StartAnimation(
-            UIElement animatableElement, 
-            DependencyProperty dependencyProperty, double toValue, double animationDurationSeconds, bool useAnimations) 
+            UIElement animatableElement,
+            DependencyProperty dependencyProperty, double toValue, double animationDurationSeconds, bool useAnimations)
             => StartAnimation(animatableElement, dependencyProperty, toValue, animationDurationSeconds, (_, _) => { }, useAnimations);
 
         /// <summary>
@@ -33,8 +33,8 @@ namespace WPFZoomPanel.Helpers
         /// the animation has completed.
         /// </summary>
         public static void StartAnimation(
-            UIElement animatableElement, 
-            DependencyProperty dependencyProperty, double toValue, double animationDurationSeconds, 
+            UIElement animatableElement,
+            DependencyProperty dependencyProperty, double toValue, double animationDurationSeconds,
             EventHandler completedEvent, bool useAnimations)
         {
             if (useAnimations)

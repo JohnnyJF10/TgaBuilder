@@ -1,9 +1,4 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using System.Threading.Tasks;
 using TgaBuilderAvaloniaUi.Elements;
-using Tmds.DBus.Protocol;
 
 namespace TgaBuilderAvaloniaUi.View;
 
@@ -66,7 +61,7 @@ public partial class MessageBoxWindow : AsyncWindow
         Close();
     }
 
-    public MessageBoxWindow() 
+    public MessageBoxWindow()
     {
         InitializeComponent();
         Header = "Header";

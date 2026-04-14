@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapOperations
@@ -11,10 +10,10 @@ namespace TgaBuilderLib.BitmapOperations
         public int PlacedSize { get; set; }
 
         public void FillRectBitmap(
-            IWriteableBitmap source, 
+            IWriteableBitmap source,
             IWriteableBitmap target,
-            (int X, int Y) pos, 
-            byte[] undoPixels, 
+            (int X, int Y) pos,
+            byte[] undoPixels,
             byte[] redoPixels,
             double opacity = 1.0,
             PlacingMode placingMode = PlacingMode.Default)
@@ -329,8 +328,8 @@ namespace TgaBuilderLib.BitmapOperations
         }
 
         public void FillRectBitmapNoConvert(
-            IWriteableBitmap source, 
-            IWriteableBitmap target, 
+            IWriteableBitmap source,
+            IWriteableBitmap target,
             (int X, int Y) pos)
         {
             int bytesPerPixel = source.HasAlpha ? 4 : 3;

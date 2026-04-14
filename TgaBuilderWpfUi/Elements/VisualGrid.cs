@@ -17,7 +17,7 @@ namespace TgaBuilderWpfUi.Elements
             DependencyProperty.Register("GridOffsetY", typeof(int), typeof(VisualGrid),
                 new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public static readonly DependencyProperty StrokeThicknessProperty = 
+        public static readonly DependencyProperty StrokeThicknessProperty =
             DependencyProperty.Register("StrokeThickness", typeof(double), typeof(VisualGrid),
                 new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender));
 
@@ -59,20 +59,20 @@ namespace TgaBuilderWpfUi.Elements
 
         public int CellSize
         {
-            get => (int)GetValue(CellSizeProperty); 
-            set => SetValue(CellSizeProperty, value); 
+            get => (int)GetValue(CellSizeProperty);
+            set => SetValue(CellSizeProperty, value);
         }
 
         public int GridOffsetX
         {
-            get => (int)GetValue(GridOffsetXProperty); 
-            set => SetValue(GridOffsetXProperty, value); 
+            get => (int)GetValue(GridOffsetXProperty);
+            set => SetValue(GridOffsetXProperty, value);
         }
 
         public int GridOffsetY
         {
-            get => (int)GetValue(GridOffsetYProperty); 
-            set => SetValue(GridOffsetYProperty, value); 
+            get => (int)GetValue(GridOffsetYProperty);
+            set => SetValue(GridOffsetYProperty, value);
         }
 
         public VisualGrid()

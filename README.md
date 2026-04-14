@@ -13,7 +13,7 @@
 
 
 ![Overview](Screenshots/Overview.png)
-TgaBuilder is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF by me. 
+TgaBuilder is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF for Windows and Avalonia UI (cross-platform, experimental). 
 
 If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It should cover most of the features TBuilder also has and introduces a few things more, most prominently:
 - Texture Panel Panning and Zooming
@@ -29,17 +29,33 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 ## Installation
 Move over to [GitHub Releases](https://github.com/JohnnyJF10/TgaBuilder/releases). 
 
+**Windows**: 
+
 For the latest releases there are two tool versions per release: The *.NET 6.0* version of the tool and the *.NET 8.0* version of the tool.
 - Download the ***.NET 6.0*** version of the tool (TgaBuilder-dotnet6), if you already have Tomb Editor Version 1.9 installed on your system and you do not wish to install another .NET runtime (as Tomb Editor Version 1.9 is using *.NET 6.0* runtime as well)
 - Download the ***.NET 8.0*** version of the tool (TgaBuilder-dotnet8), if you have the *.NET 8.0* runtime installed or do not mind to install it. This version has the slightly better performance.
 
 Extract the files and start *TgaBuilder.exe*.
 
+**Linux**: 
+
+There is also an experimental cross-platform version of the tool based on Avalonia UI instead of WPF. It has been tested only on Linux Mint (and Windows) currently.
+Please note that this version is highly experimental and contains bugs with zoom panel and some controls. They will be fixed in future when there is realy need for TRLE building tools on other platforms than Windows. For any productive purposes, use the regular versions of TgaBuilder for Windows.
+
+
+To run the Avalonia UI version on Linux, move ober to the directory where you extracted the files and run:
+
+`dotnet TgaBuilderAvaloniaUi.dll`
+
 ### Requirements
 - Windows 10/11
+- 64-bit architecture
 - *.NET 6* or *.NET 8* runtime installed (with Tomb Editor Version 1.9, you have the *.NET 6* runtime already installed)
 
 Please note that, as a .net WPF tool, TgaBuilder has significantly higher system resource requirements, particularly for RAM, than TBuilder, which was written in Delphi. If you are still satisfied using TBuilder, please continue using it. TgaBuilder is not intended as a substitute for it.
+
+For the experimental Avalonia UI version for Linux: 
+- *.NET 8* runtime on the target device.
 
 ## Usage
 
@@ -263,14 +279,18 @@ This project is licensed under the MIT License.
 
 For WPFZoomPanel I did some custom modifications and adapted it to .net 8. This modified project is included in this reporsitory as well.
 
-| Package                          | Version | Source | License               | Project URL                                               |
-|----------------------------------|---------|--------|-----------------------|-----------------------------------------------------------|
-| WPFZoomPanel                     | -       | GitHub | MIT                   | [GitHub](https://github.com/Moravuscz/WPFZoomPanel)       |
-| Pfim                             | 0.11.3  | NuGet  | MIT                   | [GitHub](https://github.com/nickbabcock/Pfim)             |
-| bzPSD                            | 0.1.0   | NuGet  | BSD-3-Clause license  | [GitHub](https://github.com/DsonKing/System.Drawing.PSD)  |
-| WPF UI                           | 4.0.3   | NuGet  | MIT                   | [GitHub](https://github.com/lepoco/wpfui)                 |
-| Microsoft Dependency Injection   | 9.0.6   | NuGet  | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)          |
-| SharpZipLib                      | 1.4.2   | NuGet  | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)      |
+| Package                          | Version | Source      | License               | Project URL                                                          |
+|----------------------------------|---------|-------------|-----------------------|----------------------------------------------------------------------|
+| WPFZoomPanel                     | -       | GitHub      | MIT                   | [GitHub](https://github.com/Moravuscz/WPFZoomPanel)                  |
+| Pfim                             | 0.11.3  | NuGet       | MIT                   | [GitHub](https://github.com/nickbabcock/Pfim)                        |
+| bzPSD                            | 0.1.0   | NuGet       | BSD-3-Clause license  | [GitHub](https://github.com/DsonKing/System.Drawing.PSD)             |
+| WPF UI                           | 4.0.3   | NuGet       | MIT                   | [GitHub](https://github.com/lepoco/wpfui)                            |
+| Microsoft Dependency Injection   | 9.0.6   | NuGet       | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
+| SharpZipLib                      | 1.4.2   | NuGet       | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
+| *For the Avalonia UI Port:*      |         |             |                       |                                                                      |
+| Avalonia UI                      | 11.3.7  | Avalonia UI | MIT                   | [Avalonia UI](https://avaloniaui.net/)                               |
+| PanAndZoom                       | 11.3.6  | NuGet       | MIT                   | [GitHub](https://github.com/wieslawsoltes/PanAndZoom)                |
+| Notification.Avalonia            | 2.1.0   | NuGet       | MIT                   | [GitHub](https://github.com/AvaloniaCommunity/Notification.Avalonia) |
 
 I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their imppressive public contributions immensely helped me understanding the TR level file format. 
 
@@ -280,8 +300,3 @@ If you want to contribute code, feel free to fork the repository and create a pu
 
 ## Support
 If you have any issues, please open a [GitHub Issue](https://github.com/JohnnyJF10/TgaBuilder/issues).  
-
-## To Do List:
-
-- Fix bugs
-- Migrate from WPF to Win UI 3 or Avalonia

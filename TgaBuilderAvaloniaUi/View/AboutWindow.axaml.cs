@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using TgaBuilderAvaloniaUi.Elements;
-using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.ViewModel.Views;
 
 namespace TgaBuilderAvaloniaUi.View
