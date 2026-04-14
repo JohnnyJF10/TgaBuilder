@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using TgaBuilderAvaloniaUi.Elements;
+using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
@@ -11,11 +12,12 @@ namespace TgaBuilderAvaloniaUi.View
     {
         private ColumnDefinition? _labelMapColumn;
 
-        public BrickTransitionWindow(INotifyPropertyChanged viewModel)
+        public BrickTransitionWindow(INotifyPropertyChanged viewModel, IVisualInvalidatorFactory? visualInvalidatorFactory = null)
         {
             InitializeComponent();
             base.DataContext = viewModel;
             SubscribeToLabelMapExpanded(viewModel);
+            InitializeVisualInvalidator(viewModel, visualInvalidatorFactory);
         }
 
         [Obsolete("For designer use only")]
@@ -28,6 +30,12 @@ namespace TgaBuilderAvaloniaUi.View
             InitializeComponent();
             base.DataContext = vm;
             SubscribeToLabelMapExpanded(vm);
+        }
+
+        private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel, IVisualInvalidatorFactory? factory)
+        {
+            if (factory is not null && viewModel is BrickTransitionViewModel vm)
+                vm.VisualInvalidator = factory.Create(ResultImage);
         }
 
         private void SubscribeToLabelMapExpanded(INotifyPropertyChanged viewModel)

@@ -109,6 +109,7 @@ namespace TgaBuilderAvaloniaUi
             services.AddSingleton<IMessageService, MessageService>();
             services.AddSingleton<IMessageBoxService, MessageBoxService>();
             services.AddSingleton<IDispatcherService, DispatcherService>();
+            services.AddSingleton<IVisualInvalidatorFactory, VisualInvalidatorFactory>();
         }
 
         private void AddBitmapFactoryProvider(IServiceCollection services)
@@ -335,11 +336,13 @@ namespace TgaBuilderAvaloniaUi
 
             services.AddTransient<IView, SmoothTransitionWindow>(
                 sp => new SmoothTransitionWindow(
-                    viewModel: sp.GetRequiredService<SmoothTransitionViewModel>()));
+                    viewModel: sp.GetRequiredService<SmoothTransitionViewModel>(),
+                    visualInvalidatorFactory: sp.GetRequiredService<IVisualInvalidatorFactory>()));
 
             services.AddTransient<IView, BrickTransitionWindow>(
                 sp => new BrickTransitionWindow(
-                    viewModel: sp.GetRequiredService<BrickTransitionViewModel>()));
+                    viewModel: sp.GetRequiredService<BrickTransitionViewModel>(),
+                    visualInvalidatorFactory: sp.GetRequiredService<IVisualInvalidatorFactory>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)

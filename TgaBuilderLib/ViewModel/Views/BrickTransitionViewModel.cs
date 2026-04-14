@@ -104,6 +104,8 @@ public class BrickTransitionViewModel : ViewModelBase
         set => SetCallerProperty(ref _resultImage, value);
     }
 
+    public IVisualInvalidator? VisualInvalidator { get; set; }
+
     public IWriteableBitmap? LabelMapImage
     {
         get => _labelMapImage;
@@ -323,6 +325,8 @@ public class BrickTransitionViewModel : ViewModelBase
                     ResultImage.PixelWidth * (Image1.HasAlpha ? 4 : 3));
 
                 UpdateLabelMapImage();
+
+                VisualInvalidator?.InvalidateVisual();
             }
         }
         catch (TaskCanceledException)
