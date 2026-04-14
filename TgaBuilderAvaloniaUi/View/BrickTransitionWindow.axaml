@@ -1,0 +1,319 @@
+<elements:AsyncWindow
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
+    xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    x:Class="TgaBuilderAvaloniaUi.View.BrickTransitionWindow"
+    x:DataType="viewmodel:BrickTransitionViewModel"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterScreen"
+    UseLayoutRounding="True"
+    Background="{DynamicResource SystemChromeMediumColor}"
+    Foreground="{DynamicResource SystemBaseHighColor}"
+    Title="Brick Transition Helper"
+    Height="550"
+    MinHeight="550"
+    Width="750"
+    MinWidth="700"
+    Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <!-- Outer Grid: 4 Rows -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Image Area -->
+        <Grid Grid.Row="0" x:Name="ImageAreaGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="35"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="35"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="0"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Image 1 (Bricks) -->
+            <Border
+                Grid.Column="0"
+                Grid.Row="0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent">
+                <Image
+                    x:Name="Image1"
+                    Margin="10"
+                    RenderOptions.BitmapInterpolationMode="None"
+                    Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                    Stretch="Uniform"/>
+            </Border>
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                Grid.Column="0"
+                Grid.Row="1"
+                Margin="10">
+                <TextBlock
+                    Margin="0,5,0,0"
+                    VerticalAlignment="Center"
+                    Text="Bricks"/>
+                <Button
+                    Margin="10"
+                    Padding="5"
+                    HorizontalAlignment="Center"
+                    Command="{Binding LoadImage1Command}"
+                    Content="From Selection"/>
+            </StackPanel>
+
+            <!-- + symbol and swap -->
+            <StackPanel
+                VerticalAlignment="Center"
+                Grid.Column="1"
+                Grid.Row="0"
+                Margin="0,38,0,0">
+                <PathIcon Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                          Width="16" Height="16" />
+                <Button
+                    Margin="0,9,0,0"
+                    Command="{Binding SwapImagesCommand}"
+                    ToolTip.Tip="Swap images">
+                    <PathIcon Data="M21,9L17,5V8H10V10H17V13M7,11L3,15L7,19V16H14V14H7V11Z"
+                              Width="16" Height="16" />
+                </Button>
+            </StackPanel>
+
+            <!-- Image 2 (Background) -->
+            <Border
+                Grid.Column="2"
+                Grid.Row="0"
+                Margin="10"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent">
+                <Image
+                    x:Name="Image2"
+                    RenderOptions.BitmapInterpolationMode="None"
+                    Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                    Stretch="Uniform"/>
+            </Border>
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                Grid.Column="2"
+                Grid.Row="1"
+                Margin="10">
+                <TextBlock
+                    Margin="0,5,0,0"
+                    VerticalAlignment="Center"
+                    Text="Background"/>
+                <Button
+                    Margin="10"
+                    Padding="5"
+                    HorizontalAlignment="Center"
+                    Command="{Binding LoadImage2Command}"
+                    Content="From Selection"/>
+            </StackPanel>
+
+            <!-- Arrow → symbol -->
+            <PathIcon
+                Grid.Column="3"
+                Grid.Row="0"
+                VerticalAlignment="Center"
+                Data="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"
+                Width="16" Height="16" />
+
+            <!-- Result Image -->
+            <Border
+                Grid.Column="4"
+                Grid.Row="0"
+                Margin="10"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent">
+                <Image
+                    Margin="0,4,0,0"
+                    RenderOptions.BitmapInterpolationMode="None"
+                    Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                    Stretch="Uniform"/>
+            </Border>
+            <Button
+                Grid.Column="4"
+                Grid.Row="1"
+                Margin="10"
+                Padding="5"
+                HorizontalAlignment="Center"
+                Command="{Binding MixCommand}"
+                Content="Mix"/>
+
+            <!-- Toggle button for Label Map -->
+            <ToggleButton
+                x:Name="LabelMapToggle"
+                Grid.Column="5"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                VerticalAlignment="Center"
+                IsChecked="{Binding IsLabelMapExpanded}"
+                Width="20"
+                Height="60"
+                Padding="0">
+                <PathIcon Data="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"
+                          Width="12" Height="12" />
+            </ToggleButton>
+
+            <!-- Label Map (Expandable 4th Image) -->
+            <Border
+                Grid.Column="6"
+                Grid.Row="0"
+                Margin="10"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                IsVisible="{Binding IsLabelMapExpanded}"
+                Background="Transparent">
+                <Image
+                    Margin="0,4,0,0"
+                    RenderOptions.BitmapInterpolationMode="None"
+                    Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                    Stretch="Uniform"/>
+            </Border>
+        </Grid>
+
+        <!-- Row 1: Controls -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10"/>
+
+            <!-- Pivot Slider -->
+            <StackPanel
+                Orientation="Horizontal"
+                Grid.Column="1">
+                <TextBlock
+                    Margin="0,5,0,0"
+                    VerticalAlignment="Center"
+                    Text="Pivot"
+                    FontStyle="Italic"/>
+                <ToggleSwitch
+                    Margin="5"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
+                    IsChecked="{Binding ReversePivot}"
+                    Content="Reverse"/>
+            </StackPanel>
+
+            <Slider
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="5"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding PivotValue}"
+                Maximum="1"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding PivotValue}"/>
+
+            <!-- Marker Radius Slider -->
+            <TextBlock
+                Margin="0,5,0,0"
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Text="Marker Radius"
+                HorizontalAlignment="Center"
+                FontStyle="Italic"/>
+
+            <Slider
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="5"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding MarkerRadius}"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="20"
+                Minimum="1"
+                SmallChange="1"
+                Value="{Binding MarkerRadius}"/>
+
+            <!-- Expected Region Count Slider with Toggle -->
+            <ToggleSwitch
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                IsChecked="{Binding UseExpectedRegionCount}"
+                Margin="3,0,0,0"
+                Content="Region Count"/>
+
+            <Slider
+                Grid.Row="1"
+                Grid.Column="3"
+                Margin="5"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding ExpectedRegionCount}"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="32"
+                Minimum="2"
+                SmallChange="1"
+                IsEnabled="{Binding UseExpectedRegionCount}"
+                Value="{Binding ExpectedRegionCount}"/>
+        </Grid>
+
+        <!-- Row 2: Spacer -->
+
+        <!-- Row 3: OK/Cancel Buttons -->
+        <Grid Grid.Row="3">
+            <Border
+                Margin="-10,0,-10,-10"
+                VerticalAlignment="Stretch"
+                IsHitTestVisible="False"
+                Background="{DynamicResource SystemChromeMediumColor}"/>
+            <StackPanel
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+                <Button
+                    Width="75"
+                    Height="30"
+                    Margin="0,0,15,0"
+                    HorizontalAlignment="Right"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding CancelCommand}"
+                    CommandParameter="{Binding $parent[Window]}"
+                    Content="Cancel"/>
+                <Button
+                    Width="75"
+                    Height="30"
+                    Margin="0,0,15,0"
+                    HorizontalAlignment="Right"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding OKCommand}"
+                    CommandParameter="{Binding $parent[Window]}"
+                    Content="OK"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</elements:AsyncWindow>

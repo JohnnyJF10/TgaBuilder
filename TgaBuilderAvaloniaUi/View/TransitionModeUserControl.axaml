@@ -1,0 +1,92 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionModeUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:CompileBindings="False">
+    <StackPanel Orientation="Horizontal">
+        <!-- Top edge -->
+        <ToggleButton
+            IsChecked="{Binding TransistionTopChecked, Mode=TwoWay}"
+            Margin="0,0,5,0">
+            <Panel Width="20" Height="20">
+                <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
+                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Width="20" Height="20"/>
+                <Line StartPoint="0,0" EndPoint="20,0"
+                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      StrokeThickness="2"/>
+            </Panel>
+        </ToggleButton>
+
+        <!-- Right edge -->
+        <ToggleButton
+            IsChecked="{Binding TransistionRightChecked, Mode=TwoWay}"
+            Margin="0,0,5,0">
+            <Panel Width="20" Height="20">
+                <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
+                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Width="20" Height="20"/>
+                <Line StartPoint="20,0" EndPoint="20,20"
+                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      StrokeThickness="2"/>
+            </Panel>
+        </ToggleButton>
+
+        <!-- Bottom edge -->
+        <ToggleButton
+            IsChecked="{Binding TransistionBottomChecked, Mode=TwoWay}"
+            Margin="0,0,5,0">
+            <Panel Width="20" Height="20">
+                <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
+                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Width="20" Height="20"/>
+                <Line StartPoint="0,20" EndPoint="20,20"
+                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      StrokeThickness="2"/>
+            </Panel>
+        </ToggleButton>
+
+        <!-- Left edge -->
+        <ToggleButton
+            IsChecked="{Binding TransistionLeftChecked, Mode=TwoWay}"
+            Margin="0,0,5,0">
+            <Panel Width="20" Height="20">
+                <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
+                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Width="20" Height="20"/>
+                <Line StartPoint="0,0" EndPoint="0,20"
+                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      StrokeThickness="2"/>
+            </Panel>
+        </ToggleButton>
+
+        <!-- Diagonal top-left -->
+        <ToggleButton
+            IsChecked="{Binding TransistionDiagonalTopLeftChecked, Mode=TwoWay}"
+            Margin="0,0,5,0">
+            <Panel Width="20" Height="20">
+                <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
+                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Width="20" Height="20"/>
+                <Line StartPoint="0,20" EndPoint="20,0"
+                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      StrokeThickness="2"/>
+            </Panel>
+        </ToggleButton>
+
+        <!-- Diagonal top-right -->
+        <ToggleButton
+            IsChecked="{Binding TransistionDiagonalTopRightChecked, Mode=TwoWay}"
+            Margin="0,0,5,0">
+            <Panel Width="20" Height="20">
+                <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
+                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Width="20" Height="20"/>
+                <Line StartPoint="0,0" EndPoint="20,20"
+                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      StrokeThickness="2"/>
+            </Panel>
+        </ToggleButton>
+    </StackPanel>
+</UserControl>
