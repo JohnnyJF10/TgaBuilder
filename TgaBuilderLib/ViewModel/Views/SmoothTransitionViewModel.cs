@@ -84,8 +84,10 @@ public class SmoothTransitionViewModel : ViewModelBase
 
     private RelayCommand? _loadImage1Command;
     private RelayCommand? _loadImage2Command;
+    private RelayCommand? _swapImagesCommand;
     private RelayCommand? _mixCommand;
 
+    private RelayCommand? _markFinishedCommand;
     private RelayCommand<IView>? _cancelCommand;
     private RelayCommand<IView>? _oKCommand;
 
@@ -96,6 +98,10 @@ public class SmoothTransitionViewModel : ViewModelBase
         ??= new RelayCommand(LoadImage1);
     public ICommand LoadImage2Command => _loadImage2Command
         ??= new RelayCommand(LoadImage2);
+    public ICommand SwapImagesCommand => _swapImagesCommand
+    ??= new RelayCommand(SwapImages);
+    public ICommand MarkFinishedCommand => _markFinishedCommand
+        ??= new RelayCommand(MarkFinished);
     public ICommand CancelCommand => _cancelCommand
      ??= new RelayCommand<IView>(Cancel);
     public ICommand OKCommand => _oKCommand
@@ -225,6 +231,18 @@ public class SmoothTransitionViewModel : ViewModelBase
         Image2.CopyPixels(_pixels2, Image2.PixelWidth * (Image2.HasAlpha ? 4 : 3), 0);
     }
 
+    private void SwapImages()
+    {
+        var tempImage = Image1;
+        Image1 = Image2;
+        Image2 = tempImage;
+        var tempPixels = _pixels1;
+        _pixels1 = _pixels2;
+        _pixels2 = tempPixels;
+
+        TriggerRecalculation();
+    }
+
     private void Mix()
     {
         if (!CompareInputSpecs())
@@ -327,13 +345,25 @@ public class SmoothTransitionViewModel : ViewModelBase
         }
     }
 
+    private void MarkFinished()
+    {
+        _transitionHelper.CleanUp();
+        _mainViewModel.IsTransitionViewOpen = false;
+    }
+
     private void OK(IView view)
     {
+        _mainViewModel.Selection.Presenter = _mediaFactory.CloneBitmap(ResultImage);
+        MarkFinished();
+
         view.CloseAsync();
     }
 
     private void Cancel(IView view)
     {
+        _mainViewModel.IsTransitionViewOpen = false;
+        MarkFinished();
+
         view.CloseAsync();
     }
 }

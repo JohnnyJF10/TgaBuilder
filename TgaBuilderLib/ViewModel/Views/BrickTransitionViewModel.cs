@@ -65,7 +65,9 @@ public class BrickTransitionViewModel : ViewModelBase
 
     private RelayCommand? _loadImage1Command;
     private RelayCommand? _loadImage2Command;
+    private RelayCommand? _swapImagesCommand;
     private RelayCommand? _mixCommand;
+    private RelayCommand? _markFinishedCommand;
     private RelayCommand<IView>? _cancelCommand;
     private RelayCommand<IView>? _oKCommand;
 
@@ -75,6 +77,10 @@ public class BrickTransitionViewModel : ViewModelBase
         ??= new RelayCommand(LoadImage1);
     public ICommand LoadImage2Command => _loadImage2Command
         ??= new RelayCommand(LoadImage2);
+    public ICommand SwapImagesCommand => _swapImagesCommand
+        ??= new RelayCommand(SwapImages);
+    public ICommand MarkFinishedCommand => _markFinishedCommand
+        ??= new RelayCommand(MarkFinished);
     public ICommand CancelCommand => _cancelCommand
         ??= new RelayCommand<IView>(Cancel);
     public ICommand OKCommand => _oKCommand
@@ -113,7 +119,7 @@ public class BrickTransitionViewModel : ViewModelBase
     public float PivotValue
     {
         get => _pivotValue;
-        set => SetPropertyTriggerRecalculation(ref _pivotValue, value);
+        set => SetPivotTriggerRecalculation(ref _pivotValue, value);
     }
 
     public int MarkerRadius
@@ -237,6 +243,18 @@ public class BrickTransitionViewModel : ViewModelBase
         Image2.CopyPixels(_pixels2, Image2.PixelWidth * (Image2.HasAlpha ? 4 : 3), 0);
     }
 
+    private void SwapImages()
+    {
+        var tempImage = Image1;
+        Image1 = Image2;
+        Image2 = tempImage;
+        var tempPixels = _pixels1;
+        _pixels1 = _pixels2;
+        _pixels2 = tempPixels;
+
+        TriggerRecalculation();
+    }
+
     private void Mix()
     {
         if (!CompareInputSpecs())
@@ -266,7 +284,7 @@ public class BrickTransitionViewModel : ViewModelBase
         UpdateLabelMapImage();
     }
 
-    private async void TriggerRecalculation()
+    private async void TriggerRecalculation(bool requiresAnalysis = true)
     {
         _cts?.Cancel();
         var cts = new CancellationTokenSource();
@@ -289,7 +307,9 @@ public class BrickTransitionViewModel : ViewModelBase
 
             var resultPixels = await Task.Run(() =>
             {
-                _transitionHelper.AnalyzeTilesWatershed(_pixels1);
+                if (requiresAnalysis || _transitionHelper.LastAnalysisMap == Array.Empty<byte>())
+                    _transitionHelper.AnalyzeTilesWatershed(_pixels1);
+
                 return _transitionHelper.MixSmartTilesPixels(
                     _pixels1,
                     _pixels2);
@@ -310,6 +330,7 @@ public class BrickTransitionViewModel : ViewModelBase
             // ignored
         }
     }
+
 
     private void UpdateLabelMapImage()
     {
@@ -353,6 +374,16 @@ public class BrickTransitionViewModel : ViewModelBase
         _transitionHelper.ExpectedRegionCount = ExpectedRegionCount;
     }
 
+    private void SetPivotTriggerRecalculation<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (!EqualityComparer<T>.Default.Equals(field, value))
+        {
+            field = value;
+            OnPropertyChanged(propertyName ?? "");
+            TriggerRecalculation(false);
+        }
+    }
+
     protected void SetPropertyTriggerRecalculation<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (!EqualityComparer<T>.Default.Equals(field, value))
@@ -374,13 +405,23 @@ public class BrickTransitionViewModel : ViewModelBase
         return false;
     }
 
+    private void MarkFinished()
+    {
+        _transitionHelper.CleanUp();
+        _mainViewModel.IsTransitionViewOpen = false;
+    }
     private void OK(IView view)
     {
+        _mainViewModel.Selection.Presenter = _mediaFactory.CloneBitmap(ResultImage);
+        MarkFinished();
+
         view.CloseAsync();
     }
 
     private void Cancel(IView view)
     {
+        MarkFinished();
+
         view.CloseAsync();
     }
 }

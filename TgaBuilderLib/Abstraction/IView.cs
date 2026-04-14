@@ -15,5 +15,7 @@
         object? DataContext { get; set; }
 
         bool IsLoaded { get; }
+
+        bool Topmost { get; set; }
     }
 }

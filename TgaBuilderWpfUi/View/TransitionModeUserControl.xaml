@@ -87,7 +87,7 @@
                     Fill="Transparent"
                     Stroke="{DynamicResource TextFillColorPrimaryBrush}"/>
 
-                    <Path Data="M0,0 L20,20"
+                    <Path Data="M0,20 L20,0"
                     Stroke="{DynamicResource AccentTextFillColorTertiaryBrush}"
                     StrokeThickness="2"/>
                 </Grid>
@@ -103,7 +103,7 @@
                     Fill="Transparent"
                     Stroke="{DynamicResource TextFillColorPrimaryBrush}"/>
 
-                    <Path Data="M0,20 L20,0"
+                    <Path Data="M0,0 L20,20"
                     Stroke="{DynamicResource AccentTextFillColorTertiaryBrush}"
                     StrokeThickness="2"/>
                 </Grid>

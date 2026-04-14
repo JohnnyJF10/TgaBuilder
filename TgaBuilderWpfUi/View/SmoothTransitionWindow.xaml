@@ -102,10 +102,17 @@
             CommandParameter="1"
             Content="From Selection" />
 
-        <ui:SymbolIcon
-            Grid.Row="1"
-            Grid.Column="1"
-            Symbol="Add24" />
+        <StackPanel
+                VerticalAlignment="Center"
+                Grid.Column="1"
+                Grid.Row="1" Margin="0,38,0,0">
+            <ui:SymbolIcon
+                    Symbol="Add24"/>
+            <ui:Button
+                    Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
+                    Command="{Binding SwapImagesCommand}"
+                    />
+        </StackPanel>
 
         <!--  Image 2  -->
         <Border

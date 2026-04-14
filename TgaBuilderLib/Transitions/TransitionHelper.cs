@@ -24,8 +24,22 @@ namespace TgaBuilderLib.Transitions
 
 
         public bool ReversePivot { get; set; } = false;
-        public bool AlwaysDrawEdgeTiles { get; set; } = true;
         public int MarkerRadius { get; set; } = 3;
         public int ExpectedRegionCount { get; set; } = -1;
+
+        public void CleanUp()
+        {
+            LastAnalysisMap = Array.Empty<byte>();
+            LastAnalysisWidth = 0;
+            LastAnalysisHeight = 0;
+            Labels = Array.Empty<int>();
+            TileData.Clear();
+            Hardness = 0.5f;
+            Pivot = 0.5f;
+            MarkerRadius = 3; 
+            ExpectedRegionCount = 0;
+            ReversePivot = false;
+
+        }
     }
 }
