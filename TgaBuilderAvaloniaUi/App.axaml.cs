@@ -68,6 +68,8 @@ namespace TgaBuilderAvaloniaUi
 
             var currentVariant = Current.ActualThemeVariant;
 
+            // ActualThemeVariant resolves Default to the actual system theme,
+            // so it will be either Light or Dark at runtime.
             Current.RequestedThemeVariant = currentVariant == ThemeVariant.Dark
                 ? ThemeVariant.Light
                 : ThemeVariant.Dark;
