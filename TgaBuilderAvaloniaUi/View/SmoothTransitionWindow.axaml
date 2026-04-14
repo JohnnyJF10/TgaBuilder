@@ -1,0 +1,220 @@
+<elements:AsyncWindow
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
+    xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    x:Class="TgaBuilderAvaloniaUi.View.SmoothTransitionWindow"
+    x:DataType="viewmodel:SmoothTransitionViewModel"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterScreen"
+    UseLayoutRounding="True"
+    Background="{DynamicResource SystemChromeMediumColor}"
+    Foreground="{DynamicResource SystemBaseHighColor}"
+    Title="Smooth Transition Helper"
+    Width="600"
+    Height="400"
+    MinWidth="560"
+    MinHeight="350"
+    Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="35" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="35" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="60" />
+        </Grid.RowDefinitions>
+
+        <!-- Image 1 -->
+        <Border
+            Grid.Row="0"
+            Grid.Column="0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Background="Transparent">
+            <Image
+                x:Name="Image1"
+                Margin="10"
+                RenderOptions.BitmapInterpolationMode="None"
+                Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                Stretch="Uniform" />
+        </Border>
+        <Button
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="10"
+            Padding="5"
+            HorizontalAlignment="Center"
+            Command="{Binding LoadImage1Command}"
+            Content="From Selection" />
+
+        <!-- + symbol and swap -->
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Margin="0,38,0,0">
+            <PathIcon Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                      Width="16" Height="16" />
+            <Button
+                Margin="0,9,0,0"
+                Command="{Binding SwapImagesCommand}"
+                ToolTip.Tip="Swap images">
+                <PathIcon Data="M21,9L17,5V8H10V10H17V13M7,11L3,15L7,19V16H14V14H7V11Z"
+                          Width="16" Height="16" />
+            </Button>
+        </StackPanel>
+
+        <!-- Image 2 -->
+        <Border
+            Grid.Row="0"
+            Grid.Column="2"
+            Margin="10"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Background="Transparent">
+            <Image
+                x:Name="Image2"
+                RenderOptions.BitmapInterpolationMode="None"
+                Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                Stretch="Uniform" />
+        </Border>
+        <Button
+            Grid.Row="1"
+            Grid.Column="2"
+            Margin="10"
+            Padding="5"
+            HorizontalAlignment="Center"
+            Command="{Binding LoadImage2Command}"
+            Content="From Selection" />
+
+        <!-- Arrow → symbol -->
+        <PathIcon
+            Grid.Row="0"
+            Grid.Column="3"
+            Data="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"
+            Width="16" Height="16" />
+
+        <!-- Result Image -->
+        <Border
+            Grid.Row="0"
+            Grid.Column="4"
+            Margin="10"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Background="Transparent">
+            <Image
+                Margin="0,4,0,0"
+                RenderOptions.BitmapInterpolationMode="None"
+                Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                Stretch="Uniform" />
+        </Border>
+        <Button
+            Grid.Row="1"
+            Grid.Column="4"
+            Margin="10"
+            Padding="5"
+            HorizontalAlignment="Center"
+            Command="{Binding MixCommand}"
+            Content="Mix" />
+
+        <!-- Controls Row -->
+        <Grid Grid.Row="2" Grid.ColumnSpan="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10" />
+
+            <TextBlock
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Text="Hardness"
+                FontStyle="Italic" />
+
+            <Slider
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="5"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding BlendHardnessValue}"
+                Maximum="1"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding BlendHardnessValue}" />
+
+            <TextBlock
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Text="Pivot"
+                FontStyle="Italic" />
+
+            <Slider
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="5"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding PivotValue}"
+                Maximum="1"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding PivotValue}" />
+        </Grid>
+
+        <!-- Bottom OK/Cancel bar -->
+        <Border
+            Grid.Row="3"
+            Grid.ColumnSpan="5"
+            Margin="-10,0,-10,-10"
+            VerticalAlignment="Stretch"
+            IsHitTestVisible="False"
+            Background="{DynamicResource SystemChromeMediumColor}"
+            CornerRadius="0" />
+        <StackPanel
+            Grid.Row="3"
+            Grid.ColumnSpan="5"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <Button
+                Width="75"
+                Height="30"
+                Margin="0,0,15,0"
+                HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center"
+                Command="{Binding CancelCommand}"
+                CommandParameter="{Binding $parent[Window]}"
+                Content="Cancel" />
+            <Button
+                Width="75"
+                Height="30"
+                Margin="0,0,15,0"
+                HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center"
+                Command="{Binding OKCommand}"
+                CommandParameter="{Binding $parent[Window]}"
+                Content="OK" />
+        </StackPanel>
+    </Grid>
+</elements:AsyncWindow>
