@@ -436,15 +436,20 @@ namespace TgaBuilderLib.Transitions
             tile.SumY += y;
         }
 
-        // Slices corner tiles along the topological line so that each piece gets its own label.
+        // Slices corner tiles along an oriented line through the corner pixel.
+        // The cut angle is derived from the pivot: angle = 10° + Pivot * 70°
+        // (Pivot=0 → 10°, Pivot=0.5 → 45°, Pivot=1.0 → 80°).
         // Corner tiles are tiles containing any of the four image corner pixels.
-        // Each corner tile is split by evaluating the topological value (from ComputeTopologicy)
-        // per pixel. Pixels are classified into two sides (v > 0.5 vs v <= 0.5).
         // Within each side, connected component analysis is run to handle star-shaped tiles
         // that may produce multiple disconnected fragments.
         private void SliceCornerTilesAlongTopology(List<TileSegment> tiles, int[] labels, int width, int height)
         {
-            // Identify corner pixel indices
+            // Compute pivot-based slice angle: 10° + Pivot * 70° maps [0,1] → [10°, 80°]
+            float angleDeg = 10f + Pivot * 70f;
+            float angleRad = angleDeg * MathF.PI / 180f;
+            float tanAngle = MathF.Tan(angleRad);
+
+            // Corner pixel indices and their (cx, cy) coordinates
             int[] cornerPixelIndices = new int[]
             {
                 0,                                      // top-left (0,0)
@@ -453,17 +458,25 @@ namespace TgaBuilderLib.Transitions
                 (height - 1) * width + (width - 1)      // bottom-right (W-1, H-1)
             };
 
-            // Collect unique corner labels
-            var cornerLabels = new HashSet<int>();
-            foreach (int cornerIdx in cornerPixelIndices)
+            (int cx, int cy)[] cornerCoords = new (int, int)[]
             {
-                int label = labels[cornerIdx];
-                if (label > 0)
-                    cornerLabels.Add(label);
+                (0, 0),
+                (width - 1, 0),
+                (0, height - 1),
+                (width - 1, height - 1)
+            };
+
+            // Map each unique corner tile label to the first corner coordinate it contains
+            var tileToCornersMap = new Dictionary<int, (int cx, int cy)>();
+            for (int i = 0; i < cornerPixelIndices.Length; i++)
+            {
+                int label = labels[cornerPixelIndices[i]];
+                if (label > 0 && !tileToCornersMap.ContainsKey(label))
+                    tileToCornersMap[label] = cornerCoords[i];
             }
 
             // Process each corner tile
-            foreach (int cornerLabel in cornerLabels)
+            foreach (var (cornerLabel, (cornerX, cornerY)) in tileToCornersMap)
             {
                 int tileIndex = cornerLabel - 1;
                 if (tileIndex < 0 || tileIndex >= tiles.Count)
@@ -473,8 +486,11 @@ namespace TgaBuilderLib.Transitions
                 if (tile.PixelOffsets.Count == 0)
                     continue;
 
-                // Classify each pixel in the tile by its topological side
-                // side = true means v > 0.5 (closer to texture 2), false means v <= 0.5 (closer to texture 1)
+                // Classify each pixel by which side of the angle-based line it falls on.
+                // For pixel (px, py), compute dx = |px - cornerX|, dy = |py - cornerY|.
+                // The cut line from the corner is: dy = dx * tanAngle.
+                // side = true  → dy < dx * tanAngle  (closer to the horizontal edge from corner)
+                // side = false → dy >= dx * tanAngle (closer to the vertical edge from corner)
                 var pixelSides = new List<(int offset, int x, int y, bool side)>(tile.PixelOffsets.Count);
 
                 bool hasHighSide = false;
@@ -485,17 +501,10 @@ namespace TgaBuilderLib.Transitions
                     int py = offset / Stride;
                     int px = (offset % Stride) / Bpp;
 
-                    float nx = (float)px / (width - 1);
-                    float ny = (float)py / (height - 1);
+                    float dx = Math.Abs(px - cornerX);
+                    float dy = Math.Abs(py - cornerY);
 
-                    var (distToT1, distToT2) = ComputeTopologicy(Mode, nx, ny);
-
-                    float v;
-                    if (distToT2 <= 0.00001f) v = 1.0f;
-                    else if (distToT1 <= 0.00001f) v = 0.0f;
-                    else v = distToT1 / (distToT1 + distToT2);
-
-                    bool side = v > 0.5f;
+                    bool side = dy < dx * tanAngle;
                     pixelSides.Add((offset, px, py, side));
 
                     if (side) hasHighSide = true;
