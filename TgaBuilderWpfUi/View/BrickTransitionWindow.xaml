@@ -255,6 +255,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -341,6 +342,16 @@
                 IsEnabled="{Binding UseExpectedRegionCount}"
                 Value="{Binding ExpectedRegionCount}"/>
 
+            <!-- Slice Corner Tiles Toggle -->
+            <ui:ToggleSwitch
+                    Grid.Column="4"
+                    Grid.Row="1"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding SliceCornerTiles}"
+                    Margin="3,0,0,0"
+                    Padding="4,2"
+                    TextBlock.FontStyle="Italic"
+                    Content="Slice Corners"/>
 
 
         </Grid>

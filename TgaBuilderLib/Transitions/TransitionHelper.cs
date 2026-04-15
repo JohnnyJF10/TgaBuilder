@@ -25,6 +25,7 @@ namespace TgaBuilderLib.Transitions
 
 
         public bool ReversePivot { get; set; } = false;
+        public bool SliceCornerTiles { get; set; } = false;
         public int MarkerRadius { get; set; } = 3;
         public int ExpectedRegionCount { get; set; } = -1;
 
@@ -40,6 +41,7 @@ namespace TgaBuilderLib.Transitions
             MarkerRadius = 3; 
             ExpectedRegionCount = 0;
             ReversePivot = false;
+            SliceCornerTiles = false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
