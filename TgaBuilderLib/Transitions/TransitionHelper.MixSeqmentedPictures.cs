@@ -143,7 +143,7 @@ namespace TgaBuilderLib.Transitions
             // --- Topological logic excerpt ---
             float distToT1 = 0, distToT2 = 0;
 
-            (distToT1, distToT2) = ComputeTopologicalLogic(mode, nx, ny);
+            (distToT1, distToT2) = ComputeTopologicy(mode, nx, ny);
 
             float v;
             if (distToT2 <= 0.00001f) v = 1.0f;
@@ -151,44 +151,5 @@ namespace TgaBuilderLib.Transitions
             else v = distToT1 / (distToT1 + distToT2);
             return v;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // Computes directional distances to texture domains for the selected transition mode.
-        private  (float distToT1, float distToT2) ComputeTopologicalLogic(TransitionMode mode, float nx, float ny)
-            => mode switch
-            {
-                TransitionMode.Top => (
-                    Math.Min(nx, Math.Min(1.0f - nx, 1.0f - ny)),
-                    ny
-                ),
-
-                TransitionMode.Bottom => (
-                    Math.Min(nx, Math.Min(1.0f - nx, ny)),
-                    1.0f - ny
-                ),
-
-                TransitionMode.Left => (
-                    Math.Min(ny, Math.Min(1.0f - ny, 1.0f - nx)),
-                    nx
-                ),
-
-                TransitionMode.Right => (
-                    Math.Min(ny, Math.Min(1.0f - ny, nx)),
-                    1.0f - nx
-                ),
-
-                TransitionMode.DiagonalTopLeft => (
-                    Math.Min(1.0f - nx, 1.0f - ny),
-                    Math.Min(nx, ny)
-                ),
-
-                TransitionMode.DiagonalTopRight => (
-                    Math.Min(nx, 1.0f - ny),
-                    Math.Min(1.0f - nx, ny)
-                ),
-
-                _ => (0f, 0f)
-            };
-
     }
 }

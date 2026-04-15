@@ -43,6 +43,11 @@
 
       <!-- Middle column background -->
       <SolidColorBrush x:Key="MiddleColumnBackground" Color="#08000000" />
+
+      <!-- Checkerboard Brushes -->
+      <SolidColorBrush x:Key="CheckerboardPrimaryBrush" Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="CheckerboardSecondaryBrush" Color="#FFE0E0E0" />
+
     </ResourceDictionary>
 
     <!-- ═══════════════ DARK THEME ═══════════════ -->
@@ -80,6 +85,11 @@
 
       <!-- Middle column background -->
       <SolidColorBrush x:Key="MiddleColumnBackground" Color="#10FFFFFF" />
+
+      <!-- Checkerboard Brushes -->
+      <SolidColorBrush x:Key="CheckerboardPrimaryBrush" Color="#FF2B2B3C" />
+      <SolidColorBrush x:Key="CheckerboardSecondaryBrush" Color="#FF1E1E2E" />
+
     </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>

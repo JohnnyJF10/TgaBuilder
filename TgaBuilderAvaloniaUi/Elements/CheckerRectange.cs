@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 
@@ -37,22 +38,25 @@ namespace TgaBuilderAvaloniaUi.Elements
             var drawing = new DrawingGroup();
 
 
-            drawing.Children.Add(new GeometryDrawing
+            var backgroundDrawing = new GeometryDrawing
             {
-                Brush = Brushes.Gray,
                 Geometry = new RectangleGeometry(new Rect(0, 0, density, density))
-            });
+            };
+            
+            backgroundDrawing.Bind(GeometryDrawing.BrushProperty, this.GetResourceObservable("CheckerboardSecondaryBrush"));
+            drawing.Children.Add(backgroundDrawing);
 
+            var lightGroup = new GeometryGroup();
+            lightGroup.Children.Add(new RectangleGeometry(new Rect(0, 0, density / 2, density / 2)));
+            lightGroup.Children.Add(new RectangleGeometry(new Rect(density / 2, density / 2, density / 2, density / 2)));
 
-            var light = new GeometryGroup();
-            light.Children.Add(new RectangleGeometry(new Rect(0, 0, density / 2, density / 2)));
-            light.Children.Add(new RectangleGeometry(new Rect(density / 2, density / 2, density / 2, density / 2)));
-
-            drawing.Children.Add(new GeometryDrawing
+            var foregroundDrawing = new GeometryDrawing
             {
-                Brush = Brushes.LightGray,
-                Geometry = light
-            });
+                Geometry = lightGroup
+            };
+
+            foregroundDrawing.Bind(GeometryDrawing.BrushProperty, this.GetResourceObservable("CheckerboardPrimaryBrush"));
+            drawing.Children.Add(foregroundDrawing);
 
             _checkerBrush = new DrawingBrush
             {

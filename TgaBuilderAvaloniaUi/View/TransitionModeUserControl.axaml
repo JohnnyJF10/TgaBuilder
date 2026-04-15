@@ -11,10 +11,10 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Foreground="{DynamicResource SystemAccentColorDark1}"
                           Width="20" Height="20"/>
                 <Line StartPoint="0,0" EndPoint="20,0"
-                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
         </ToggleButton>
@@ -25,10 +25,10 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Foreground="{DynamicResource SystemAccentColorDark1}"
                           Width="20" Height="20"/>
                 <Line StartPoint="20,0" EndPoint="20,20"
-                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
         </ToggleButton>
@@ -39,10 +39,10 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Foreground="{DynamicResource SystemAccentColorDark1}"
                           Width="20" Height="20"/>
                 <Line StartPoint="0,20" EndPoint="20,20"
-                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
         </ToggleButton>
@@ -53,10 +53,10 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Foreground="{DynamicResource SystemAccentColorDark1}"
                           Width="20" Height="20"/>
                 <Line StartPoint="0,0" EndPoint="0,20"
-                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
         </ToggleButton>
@@ -67,10 +67,10 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Foreground="{DynamicResource SystemAccentColorDark1}"
                           Width="20" Height="20"/>
                 <Line StartPoint="0,20" EndPoint="20,0"
-                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
         </ToggleButton>
@@ -81,10 +81,10 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          Foreground="{DynamicResource SystemAccentColorDark1}"
                           Width="20" Height="20"/>
                 <Line StartPoint="0,0" EndPoint="20,20"
-                      Stroke="{DynamicResource SystemAccentColorDark1}"
+                      Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
         </ToggleButton>
