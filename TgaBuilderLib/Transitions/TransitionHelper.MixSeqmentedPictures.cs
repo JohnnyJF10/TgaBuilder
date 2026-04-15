@@ -42,11 +42,13 @@ namespace TgaBuilderLib.Transitions
 
                         // 2. Edge condition (check edge tiles)
 
+                        // Avoid background touching edges tiles being drawn
                         if(shouldDraw)
                         {
                             shouldDraw = !DoesTileTouchRequiredEdge(tile, !checkTop, !checkBottom, !checkLeft, !checkRight);
                         }
 
+                        // Make sure tile touching edges are drawn
                         if (!shouldDraw)
                         {
                             shouldDraw = DoesTileTouchRequiredEdge(tile, checkTop, checkBottom, checkLeft, checkRight);
@@ -120,15 +122,27 @@ namespace TgaBuilderLib.Transitions
         // Checks whether a tile touches any of the requested image edges.
         private  bool DoesTileTouchRequiredEdge(TileSegment tile, bool top, bool bottom, bool left, bool right)
         {
+            int touchPixCount = 0;
+
             foreach (int offset in tile.PixelOffsets)
             {
                 int y = offset / Stride;
                 int x = (offset % Stride) / Bpp;
 
-                if (top && y == 0) return true;
-                if (bottom && y == Height - 1) return true;
-                if (left && x == 0) return true;
-                if (right && x == Width - 1) return true;
+                if (top && y == 0)
+                    touchPixCount++;
+
+                if (bottom && y == Height - 1)
+                    touchPixCount++;
+
+                if (left && x == 0)
+                    touchPixCount++;
+
+                if (right && x == Width - 1)
+                    touchPixCount++;
+
+                if (touchPixCount > 1)
+                    return true;
             }
             return false;
         }

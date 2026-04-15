@@ -168,7 +168,13 @@ namespace TgaBuilderLib.Transitions
                 tiles = consolidatedTiles; // Replace list
             }
 
-            // 8. Centroids
+            // 8. Optional corner tile slicing
+            if (SliceCornerTiles)
+            {
+                SliceCornerTilesAlongTopology(tiles, labels, Width, Height);
+            }
+
+            // 9. Centroids
             foreach (var tile in tiles)
             {
                 if (tile.PixelOffsets.Count > 0)
@@ -178,7 +184,7 @@ namespace TgaBuilderLib.Transitions
                 }
             }
 
-            // 9. Generate label map
+            // 10. Generate label map
             GenerateLabelMap(Width, Height, labels, tiles.Count);
 
             // Assign labels to the class property
@@ -428,6 +434,186 @@ namespace TgaBuilderLib.Transitions
             tile.PixelOffsets.Add((y * Stride) + (x * Bpp));
             tile.SumX += x;
             tile.SumY += y;
+        }
+
+        // Slices corner tiles along an oriented line through the corner pixel.
+        // The cut angle is pivot-driven and adjusted per mode and corner position:
+        //   Left / Right modes        : angle = 10° + Pivot×70°  (Pivot=0→10°, 0.5→45°, 1→80°)
+        //   Top  / Bottom modes       : angle = 80° − Pivot×70°  (reversed)
+        //   Diagonal modes, top corner: reversed; bottom corner: original
+        // Corner tiles are tiles containing any of the four image corner pixels.
+        // Within each side, connected component analysis is run to handle star-shaped tiles
+        // that may produce multiple disconnected fragments.
+        private void SliceCornerTilesAlongTopology(List<TileSegment> tiles, int[] labels, int width, int height)
+        {
+            // Corner pixel indices and their coordinates
+            int[] cornerPixelIndices = new int[]
+            {
+                0,                                      // top-left (0,0)
+                width - 1,                              // top-right (W-1, 0)
+                (height - 1) * width,                   // bottom-left (0, H-1)
+                (height - 1) * width + (width - 1)      // bottom-right (W-1, H-1)
+            };
+
+            (int cx, int cy)[] cornerCoords = new (int, int)[]
+            {
+                (0, 0),
+                (width - 1, 0),
+                (0, height - 1),
+                (width - 1, height - 1)
+            };
+
+            // Map each unique corner tile label to the first corner coordinate it contains
+            var tileToCornersMap = new Dictionary<int, (int cx, int cy)>();
+            for (int i = 0; i < cornerPixelIndices.Length; i++)
+            {
+                int label = labels[cornerPixelIndices[i]];
+                if (label > 0 && !tileToCornersMap.ContainsKey(label))
+                    tileToCornersMap[label] = cornerCoords[i];
+            }
+
+            // Process each corner tile
+            foreach (var (cornerLabel, (cornerX, cornerY)) in tileToCornersMap)
+            {
+                int tileIndex = cornerLabel - 1;
+                if (tileIndex < 0 || tileIndex >= tiles.Count)
+                    continue;
+
+                var tile = tiles[tileIndex];
+                if (tile.PixelOffsets.Count == 0)
+                    continue;
+
+                // Determine whether to reverse the pivot-to-angle mapping for this corner.
+                // Top/Bottom modes always reverse; Diagonal modes reverse only for top corners.
+                bool reverseAngle = Mode switch
+                {
+                    TransitionMode.Top => true,
+                    TransitionMode.Bottom => true,
+                    TransitionMode.DiagonalTopLeft => cornerY == 0,
+                    TransitionMode.DiagonalTopRight => cornerY == 0,
+                    _ => false   // Left, Right: original mapping
+                };
+
+                // Original: Pivot=0→10°, 0.5→45°, 1.0→80°
+                // Reversed: Pivot=0→80°, 0.5→45°, 1.0→10°
+                float angleDeg = reverseAngle ? 80f - Pivot * 70f : 10f + Pivot * 70f;
+                float tanAngle = MathF.Tan(angleDeg * MathF.PI / 180f);
+
+                // Classify each pixel by which side of the angle-based line it falls on.
+                // For pixel (px, py), compute dx = |px - cornerX|, dy = |py - cornerY|.
+                // The cut line from the corner is: dy = dx * tanAngle.
+                // side = true  → dy < dx * tanAngle  (closer to the horizontal edge from corner)
+                // side = false → dy >= dx * tanAngle (closer to the vertical edge from corner)
+                var pixelSides = new List<(int offset, int x, int y, bool side)>(tile.PixelOffsets.Count);
+
+                bool hasHighSide = false;
+                bool hasLowSide = false;
+
+                foreach (int offset in tile.PixelOffsets)
+                {
+                    int py = offset / Stride;
+                    int px = (offset % Stride) / Bpp;
+
+                    float dx = Math.Abs(px - cornerX);
+                    float dy = Math.Abs(py - cornerY);
+
+                    bool side = dy < dx * tanAngle;
+                    pixelSides.Add((offset, px, py, side));
+
+                    if (side) hasHighSide = true;
+                    else hasLowSide = true;
+                }
+
+                // If all pixels fall on the same side, no split needed
+                if (!hasHighSide || !hasLowSide)
+                    continue;
+
+                // Build a pixel lookup for connected component analysis within this tile
+                var pixelMap = new Dictionary<(int x, int y), (int offset, bool side)>(pixelSides.Count);
+                foreach (var (offset, px, py, side) in pixelSides)
+                {
+                    pixelMap[(px, py)] = (offset, side);
+                }
+
+                // Run connected component analysis within the tile, respecting the side boundary
+                var visited = new HashSet<(int x, int y)>(pixelSides.Count);
+                var components = new List<List<(int offset, int x, int y)>>();
+
+                foreach (var (offset, px, py, side) in pixelSides)
+                {
+                    if (visited.Contains((px, py)))
+                        continue;
+
+                    // BFS within the same side
+                    var component = new List<(int offset, int x, int y)>();
+                    var queue = new Queue<(int x, int y)>();
+                    queue.Enqueue((px, py));
+                    visited.Add((px, py));
+
+                    while (queue.Count > 0)
+                    {
+                        var (cx, cy) = queue.Dequeue();
+                        var (co, cs) = pixelMap[(cx, cy)];
+                        component.Add((co, cx, cy));
+
+                        // Check 4-connected neighbors
+                        int[] dxArr = { 0, 0, -1, 1 };
+                        int[] dyArr = { -1, 1, 0, 0 };
+
+                        for (int d = 0; d < 4; d++)
+                        {
+                            int nnx = cx + dxArr[d];
+                            int nny = cy + dyArr[d];
+
+                            if (!visited.Contains((nnx, nny)) &&
+                                pixelMap.TryGetValue((nnx, nny), out var neighbor) &&
+                                neighbor.side == side)
+                            {
+                                visited.Add((nnx, nny));
+                                queue.Enqueue((nnx, nny));
+                            }
+                        }
+                    }
+
+                    components.Add(component);
+                }
+
+                // If only one component, no actual split happened
+                if (components.Count <= 1)
+                    continue;
+
+                // Rewrite the original tile with the first component, create new tiles for the rest
+                tile.PixelOffsets.Clear();
+                tile.SumX = 0;
+                tile.SumY = 0;
+
+                foreach (var (co, cx, cy) in components[0])
+                {
+                    tile.PixelOffsets.Add(co);
+                    tile.SumX += cx;
+                    tile.SumY += cy;
+                }
+
+                // Create new tiles for remaining components
+                for (int c = 1; c < components.Count; c++)
+                {
+                    var newTile = new TileSegment();
+                    int newLabel = tiles.Count + 1;
+
+                    foreach (var (co, cx, cy) in components[c])
+                    {
+                        newTile.PixelOffsets.Add(co);
+                        newTile.SumX += cx;
+                        newTile.SumY += cy;
+
+                        // Update the label array
+                        int pixelIdx = cy * width + cx;
+                        labels[pixelIdx] = newLabel;
+                    }
+
+                    tiles.Add(newTile);
+                }
+            }
         }
     }
 }

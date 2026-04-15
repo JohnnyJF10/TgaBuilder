@@ -27,6 +27,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private int _expectedRegionCount = -1;
     private bool _useExpectedRegionCount;
     private bool _reversePivot;
+    private bool _sliceCornerTiles;
     private bool _isLabelMapExpanded;
 
     public IWriteableBitmap? LabelMapImage
@@ -68,13 +69,19 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _reversePivot, value);
     }
 
+    public bool SliceCornerTiles
+    {
+        get => _sliceCornerTiles;
+        set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value);
+    }
+
     public bool IsLabelMapExpanded
     {
         get => _isLabelMapExpanded;
         set => SetCallerProperty(ref _isLabelMapExpanded, value);
     }
 
-    protected override bool RequiresFullAnalysisOnPivotChange => false;
+    protected override bool RequiresFullAnalysisOnPivotChange => SliceCornerTiles;
 
     protected override byte[] CreateMixedPixels(bool requiresAnalysis)
     {
@@ -87,6 +94,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     protected override void ConfigureTransitionHelperCore()
     {
         TransitionHelper.ReversePivot = ReversePivot;
+        TransitionHelper.SliceCornerTiles = SliceCornerTiles;
         TransitionHelper.MarkerRadius = MarkerRadius;
         TransitionHelper.ExpectedRegionCount = ExpectedRegionCount;
     }
