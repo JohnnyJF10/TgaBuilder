@@ -80,6 +80,10 @@
       <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" />
     </Style>
 
+    <Style Selector="^:disabled">
+      <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}" />
+    </Style>
+
     <Style Selector="^:disabled /template/ Border#PART_Border">
       <Setter Property="Background" Value="{DynamicResource ButtonBackgroundDisabled}" />
       <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />

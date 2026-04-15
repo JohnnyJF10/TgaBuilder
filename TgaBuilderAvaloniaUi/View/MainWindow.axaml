@@ -13,10 +13,10 @@
     xmlns:notif="clr-namespace:Avalonia.Notification.Controls;assembly=Notification.Avalonia"
     x:Name="MainWin"
     Title="MainWindow"
-    Width="810"
+    Width="870"
     Height="570"
-    MinWidth="800"
-    MinHeight="570"
+    MinWidth="850"
+    MinHeight="620"
     ap:PanelMouseAP.EnterPanelCommand="{Binding EnterPanelCommand}"
     ap:PanelMouseAP.LeavePanelCommand="{Binding LeavePanelCommand}"
     ap:PanelMouseAP.PanelMouseCommand="{Binding MousePanelCommand}"
@@ -72,9 +72,9 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MinWidth="315" />
+            <ColumnDefinition Width="*" MinWidth="370" />
             <ColumnDefinition Width="120" />
-            <ColumnDefinition Width="*" MinWidth="315" />
+            <ColumnDefinition Width="*" MinWidth="370" />
         </Grid.ColumnDefinitions>
 
         <!-- Toolbar background strip -->
@@ -100,6 +100,7 @@
                         Spacing="5">
                       <SplitButton
                           Width="70"
+                          Background="Transparent"
                           Height="36"
                           ap:MouseOverInfoAP.InfoText="Open Source Panels (Ctrl + E)"
                           Command="{Binding OpenSourceCommand}"
@@ -130,16 +131,19 @@
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.ReloadFileText}"
+                            Background="Transparent"
                             Command="{Binding ReloadSourceCommand}"
                             Icon="{StaticResource arrow_clockwise}" />
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.PreviousFileOpenText}"
+                            Background="Transparent"
                             Command="{Binding OpenPreviousSourceCommand}"
                             Icon="{StaticResource arrow_up}" />
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.NextFileOpenText}"
+                            Background="Transparent"
                             Command="{Binding OpenNextSourceCommand}"
                             Icon="{StaticResource arrow_down}" />
 
@@ -152,12 +156,14 @@
             <StackPanel Orientation="Horizontal">
                 <elements:IconButton
                     x:Name="UndoButton"
+                    Background="Transparent"
                     Margin="19,0,5,0"
                     ap:MouseOverInfoAP.InfoText="Undo (Ctrl + Z)"
                     Command="{Binding UndoCommand}"
                     Icon="{StaticResource arrow_undo}" />
                 <elements:IconButton
                     x:Name="RedoButton"
+                    Background="Transparent"
                     Margin="5,0,0,0"
                     ap:MouseOverInfoAP.InfoText="Redo (Ctrl + Y)"
                     BorderThickness="0"
@@ -179,6 +185,7 @@
                         >
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="New File (Ctrl + N)"
+                            Background="Transparent"
                             Command="{Binding NewCommand}"
                             Icon="{StaticResource document_add}" />
 
@@ -186,6 +193,7 @@
                       <SplitButton
                           Width="70"
                           Height="36"
+                          Background="Transparent"
                           ap:MouseOverInfoAP.InfoText="Open Destination Panels (Ctrl + D)"
                           Command="{Binding OpenDestinationCommand}"
                           >
@@ -216,10 +224,12 @@
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="Save File (Ctrl + S)"
+                            Background="Transparent"
                             Command="{Binding SaveCommand}"
                             Icon="{StaticResource save}" />
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="Save As (Ctrl + Shift + S)"
+                            Background="Transparent"
                             Command="{Binding SaveAsCommand}"
                             Icon="{StaticResource save_as} " />
 
@@ -443,8 +453,8 @@
                         Background="Transparent"
                         ClipToBounds="True"
                         DataContext="{Binding SourceViewTab}"
-                        EnableConstrains="True"
-                        EnableGestures="True"
+                        EnableConstrains="False"
+                        EnableGestures="False"
                         EnablePan="True"
                         EnableZoom="True"
                         Focusable="True"
@@ -562,8 +572,8 @@
 
             <DockPanel
                 Grid.Row="2"
-                Width="{Binding ElementName=TargetPanel, Path=Bounds.Width}"
-                Margin="3,3,0,0">
+                Margin="3,3,0,0"
+                HorizontalAlignment="Stretch">
                 <TextBlock
                     Margin="0,3,10,0"
                     HorizontalAlignment="Center"
@@ -683,10 +693,9 @@
                     Command="{Binding SelectionMonoColorFillCommand}"
                     CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
                 <Grid>
-                    <Rectangle
+                    <elements:CheckerRectangle
                         Width="30"
-                        Height="30"
-                        Fill="{StaticResource CheckerBrush}" />
+                        Height="30" />
                     <Button
                         Width="30"
                         Height="30"
@@ -708,10 +717,9 @@
                 BorderThickness="1"
                 Command="{Binding SwitchToDestinationPlacingModeCommand}">
                 <Grid Width="100" Height="100">
-                    <Rectangle
+                    <elements:CheckerRectangle
                         Width="{Binding ElementName=SelectionImage, Path=Bounds.Width}"
-                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}"
-                        Fill="{StaticResource CheckerBrush}" />
+                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}" />
                     <Image x:Name="SelectionImage"
                            RenderOptions.BitmapInterpolationMode="None"
                            Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
@@ -772,10 +780,9 @@
                     ap:MouseOverInfoAP.InfoText="Animation View"
                     BorderThickness="0">
                     <Canvas x:Name="AnimCanvas" ClipToBounds="True">
-                        <Rectangle
+                        <elements:CheckerRectangle
                             Width="100"
-                            Height="100"
-                            Fill="{StaticResource CheckerBrush}" />
+                            Height="100" />
                         <Image
                             Name="AnimImage"
                             RenderOptions.BitmapInterpolationMode="None"
@@ -1094,8 +1101,8 @@
                         Background="Transparent"
                         ClipToBounds="True"
                         DataContext="{Binding DestinationViewTab}"
-                        EnableConstrains="True"
-                        EnableGestures="True"
+                        EnableConstrains="False"
+                        EnableGestures="False"
                         EnablePan="True"
                         EnableZoom="True"
                         Focusable="True"
@@ -1340,10 +1347,12 @@
             </StackPanel>
             <elements:IconButton
                 x:Name="ThemeToggleButton"
+                Classes="flat"
                 DockPanel.Dock="Right"
                 Icon="{StaticResource dark_theme}"
                 ToolTip.Tip="Toggle Dark / Light Mode" />
             <elements:IconButton
+                Classes="flat"
                 Command="{Binding AboutCommand}"
                 DockPanel.Dock="Right"
                 Icon="{StaticResource info}" />

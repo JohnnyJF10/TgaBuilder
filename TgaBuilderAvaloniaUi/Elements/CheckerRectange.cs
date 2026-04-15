@@ -1,7 +1,9 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
+using Avalonia.Styling;
 
 namespace TgaBuilderAvaloniaUi.Elements
 {
@@ -27,6 +29,23 @@ namespace TgaBuilderAvaloniaUi.Elements
         }
 
         public CheckerRectangle()
+        {
+            UpdateBrush();
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            ActualThemeVariantChanged += OnThemeChanged;
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            ActualThemeVariantChanged -= OnThemeChanged;
+            base.OnDetachedFromVisualTree(e);
+        }
+
+        private void OnThemeChanged(object? sender, EventArgs e)
         {
             UpdateBrush();
         }
@@ -66,9 +85,6 @@ namespace TgaBuilderAvaloniaUi.Elements
                 DestinationRect = new RelativeRect(0, 0, density, density, RelativeUnit.Absolute),
                 Drawing = drawing
             };
-
-            //Debug.WriteLine($"Zoom: {TileDensity}");
-            //Debug.WriteLine($"Claculated TileDensity: {density}");  
 
             Fill = _checkerBrush;
         }
