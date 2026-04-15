@@ -562,8 +562,8 @@
 
             <DockPanel
                 Grid.Row="2"
-                Width="{Binding ElementName=TargetPanel, Path=Bounds.Width}"
-                Margin="3,3,0,0">
+                Margin="3,3,0,0"
+                HorizontalAlignment="Stretch">
                 <TextBlock
                     Margin="0,3,10,0"
                     HorizontalAlignment="Center"
@@ -683,10 +683,9 @@
                     Command="{Binding SelectionMonoColorFillCommand}"
                     CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
                 <Grid>
-                    <Rectangle
+                    <elements:CheckerRectangle
                         Width="30"
-                        Height="30"
-                        Fill="{StaticResource CheckerBrush}" />
+                        Height="30" />
                     <Button
                         Width="30"
                         Height="30"
@@ -708,10 +707,9 @@
                 BorderThickness="1"
                 Command="{Binding SwitchToDestinationPlacingModeCommand}">
                 <Grid Width="100" Height="100">
-                    <Rectangle
+                    <elements:CheckerRectangle
                         Width="{Binding ElementName=SelectionImage, Path=Bounds.Width}"
-                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}"
-                        Fill="{StaticResource CheckerBrush}" />
+                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}" />
                     <Image x:Name="SelectionImage"
                            RenderOptions.BitmapInterpolationMode="None"
                            Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
@@ -772,10 +770,9 @@
                     ap:MouseOverInfoAP.InfoText="Animation View"
                     BorderThickness="0">
                     <Canvas x:Name="AnimCanvas" ClipToBounds="True">
-                        <Rectangle
+                        <elements:CheckerRectangle
                             Width="100"
-                            Height="100"
-                            Fill="{StaticResource CheckerBrush}" />
+                            Height="100" />
                         <Image
                             Name="AnimImage"
                             RenderOptions.BitmapInterpolationMode="None"
@@ -1340,10 +1337,12 @@
             </StackPanel>
             <elements:IconButton
                 x:Name="ThemeToggleButton"
+                Classes="flat"
                 DockPanel.Dock="Right"
                 Icon="{StaticResource dark_theme}"
                 ToolTip.Tip="Toggle Dark / Light Mode" />
             <elements:IconButton
+                Classes="flat"
                 Command="{Binding AboutCommand}"
                 DockPanel.Dock="Right"
                 Icon="{StaticResource info}" />
