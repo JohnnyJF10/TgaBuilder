@@ -437,19 +437,16 @@ namespace TgaBuilderLib.Transitions
         }
 
         // Slices corner tiles along an oriented line through the corner pixel.
-        // The cut angle is derived from the pivot: angle = 10° + Pivot * 70°
-        // (Pivot=0 → 10°, Pivot=0.5 → 45°, Pivot=1.0 → 80°).
+        // The cut angle is pivot-driven and adjusted per mode and corner position:
+        //   Left / Right modes        : angle = 10° + Pivot×70°  (Pivot=0→10°, 0.5→45°, 1→80°)
+        //   Top  / Bottom modes       : angle = 80° − Pivot×70°  (reversed)
+        //   Diagonal modes, top corner: reversed; bottom corner: original
         // Corner tiles are tiles containing any of the four image corner pixels.
         // Within each side, connected component analysis is run to handle star-shaped tiles
         // that may produce multiple disconnected fragments.
         private void SliceCornerTilesAlongTopology(List<TileSegment> tiles, int[] labels, int width, int height)
         {
-            // Compute pivot-based slice angle: 10° + Pivot * 70° maps [0,1] → [10°, 80°]
-            float angleDeg = 10f + Pivot * 70f;
-            float angleRad = angleDeg * MathF.PI / 180f;
-            float tanAngle = MathF.Tan(angleRad);
-
-            // Corner pixel indices and their (cx, cy) coordinates
+            // Corner pixel indices and their coordinates
             int[] cornerPixelIndices = new int[]
             {
                 0,                                      // top-left (0,0)
@@ -485,6 +482,22 @@ namespace TgaBuilderLib.Transitions
                 var tile = tiles[tileIndex];
                 if (tile.PixelOffsets.Count == 0)
                     continue;
+
+                // Determine whether to reverse the pivot-to-angle mapping for this corner.
+                // Top/Bottom modes always reverse; Diagonal modes reverse only for top corners.
+                bool reverseAngle = Mode switch
+                {
+                    TransitionMode.Top => true,
+                    TransitionMode.Bottom => true,
+                    TransitionMode.DiagonalTopLeft => cornerY == 0,
+                    TransitionMode.DiagonalTopRight => cornerY == 0,
+                    _ => false   // Left, Right: original mapping
+                };
+
+                // Original: Pivot=0→10°, 0.5→45°, 1.0→80°
+                // Reversed: Pivot=0→80°, 0.5→45°, 1.0→10°
+                float angleDeg = reverseAngle ? 80f - Pivot * 70f : 10f + Pivot * 70f;
+                float tanAngle = MathF.Tan(angleDeg * MathF.PI / 180f);
 
                 // Classify each pixel by which side of the angle-based line it falls on.
                 // For pixel (px, py), compute dx = |px - cornerX|, dy = |py - cornerY|.
