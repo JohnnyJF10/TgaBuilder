@@ -48,21 +48,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _expectedRegionCount, value);
     }
 
-    public bool UseExpectedRegionCount
-    {
-        get => _useExpectedRegionCount;
-        set
-        {
-            if (SetCallerPropertyReturn(ref _useExpectedRegionCount, value))
-            {
-                if (!value)
-                    ExpectedRegionCount = -1;
-                else if (_expectedRegionCount < 0)
-                    ExpectedRegionCount = 4;
-            }
-        }
-    }
-
     public bool ReversePivot
     {
         get => _reversePivot;
