@@ -96,7 +96,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         TransitionHelper.ReversePivot = ReversePivot;
         TransitionHelper.SliceCornerTiles = SliceCornerTiles;
         TransitionHelper.MarkerRadius = MarkerRadius;
-        TransitionHelper.ExpectedRegionCount = ExpectedRegionCount;
     }
 
     protected override void OnResultUpdated()

@@ -14,10 +14,10 @@
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Brick Transition Helper"
-    Height="550"
-    MinHeight="550"
     Width="750"
-    MinWidth="700"
+    Height="400"
+    MinWidth="750"
+    MinHeight="350"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
     <Window.Resources>
@@ -265,32 +265,11 @@
                 SmallChange="1"
                 Value="{Binding MarkerRadius}"/>
 
-            <!-- Expected Region Count Slider with Toggle -->
-            <ToggleSwitch
-                Grid.Column="3"
-                VerticalAlignment="Center"
-                IsChecked="{Binding UseExpectedRegionCount}"
-                Margin="3,0,0,0"
-                Content="Region Count"/>
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="3"
-                Margin="5"
-                VerticalAlignment="Center"
-                ToolTip.Tip="{Binding ExpectedRegionCount}"
-                IsSnapToTickEnabled="True"
-                TickFrequency="1"
-                Maximum="32"
-                Minimum="2"
-                SmallChange="1"
-                IsEnabled="{Binding UseExpectedRegionCount}"
-                Value="{Binding ExpectedRegionCount}"/>
-
             <!-- Slice Corner Tiles Toggle -->
             <ToggleSwitch
-                Grid.Column="4"
-                Grid.Row="1"
+                Grid.Column="3"
+                Grid.Row="0"
+                Grid.RowSpan="2"
                 VerticalAlignment="Center"
                 IsChecked="{Binding SliceCornerTiles}"
                 Margin="3,0,0,0"

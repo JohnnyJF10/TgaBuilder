@@ -18,10 +18,10 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     Title="MainWindow"
-    Height="550"
-    MinHeight="550"
     Width="750"
+    Height="400"
     MinWidth="700"
+    MinHeight="350"
     d:Background="Black"
     d:DataContext="{d:DesignInstance Type=viewmodel:BrickTransitionViewModel, IsDesignTimeCreatable=False}"
     >
@@ -131,7 +131,7 @@
                     Command="{Binding LoadImage1Command}"
                     Content="From Selection"/>
             </StackPanel>
-            
+
 
             <!-- Symbol: + -->
 
@@ -255,7 +255,6 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -319,33 +318,10 @@
                 Value="{Binding MarkerRadius}"/>
 
             <!-- Expected Region Count Slider with Toggle -->
-            <ui:ToggleSwitch
-                    Grid.Column="3"
-                    VerticalAlignment="Center"
-                    IsChecked="{Binding UseExpectedRegionCount}"
-                    Margin="3,0,0,0"
-                    Padding="4,2"
-                    TextBlock.FontStyle="Italic"
-                    Content="Region Count"/>
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="3"
-                Margin="5"
-                VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
-                IsSnapToTickEnabled="True"
-                TickFrequency="1"
-                Maximum="32"
-                Minimum="2"
-                SmallChange="1"
-                IsEnabled="{Binding UseExpectedRegionCount}"
-                Value="{Binding ExpectedRegionCount}"/>
 
             <!-- Slice Corner Tiles Toggle -->
             <ui:ToggleSwitch
-                    Grid.Column="4"
-                    Grid.Row="1"
+                    Grid.Column="3"
                     VerticalAlignment="Center"
                     IsChecked="{Binding SliceCornerTiles}"
                     Margin="3,0,0,0"

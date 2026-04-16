@@ -27,7 +27,6 @@ namespace TgaBuilderLib.Transitions
         public bool ReversePivot { get; set; } = false;
         public bool SliceCornerTiles { get; set; } = false;
         public int MarkerRadius { get; set; } = 3;
-        public int ExpectedRegionCount { get; set; } = -1;
 
         public void CleanUp()
         {
@@ -39,7 +38,6 @@ namespace TgaBuilderLib.Transitions
             Hardness = 0.5f;
             Pivot = 0.5f;
             MarkerRadius = 3; 
-            ExpectedRegionCount = 0;
             ReversePivot = false;
             SliceCornerTiles = false;
         }

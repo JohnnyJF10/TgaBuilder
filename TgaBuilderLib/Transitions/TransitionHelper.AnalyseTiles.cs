@@ -136,45 +136,13 @@ namespace TgaBuilderLib.Transitions
             // 6. Final fill (remaining pixels)
             FinalFill(labels, tiles);
 
-            // 7. NEW: post-processing region merging
-            if (ExpectedRegionCount > 0 && tiles.Count > ExpectedRegionCount)
-            {
-                MergeSmallestRegions(tiles, labels, Width, Height, ExpectedRegionCount);
-
-                // After merging, clean up the list and remap labels to a contiguous range
-                var consolidatedTiles = new List<TileSegment>(ExpectedRegionCount);
-                int[] newLabelMap = new int[tiles.Count + 1];
-                int currentNewLabel = 1;
-
-                for (int i = 0; i < tiles.Count; i++)
-                {
-                    if (tiles[i].PixelOffsets.Count > 0)
-                    {
-                        consolidatedTiles.Add(tiles[i]);
-                        newLabelMap[i + 1] = currentNewLabel;
-                        currentNewLabel++;
-                    }
-                }
-
-                // Rewrite the full label array using the new contiguous IDs
-                for (int i = 0; i < labels.Length; i++)
-                {
-                    if (labels[i] > 0)
-                    {
-                        labels[i] = newLabelMap[labels[i]];
-                    }
-                }
-
-                tiles = consolidatedTiles; // Replace list
-            }
-
-            // 8. Optional corner tile slicing
+            // 7. Optional corner tile slicing
             if (SliceCornerTiles)
             {
                 SliceCornerTilesAlongTopology(tiles, labels, Width, Height);
             }
 
-            // 9. Centroids
+            // 8. Centroids
             foreach (var tile in tiles)
             {
                 if (tile.PixelOffsets.Count > 0)
@@ -184,7 +152,7 @@ namespace TgaBuilderLib.Transitions
                 }
             }
 
-            // 10. Generate label map
+            // 9. Generate label map
             GenerateLabelMap(Width, Height, labels, tiles.Count);
 
             // Assign labels to the class property
