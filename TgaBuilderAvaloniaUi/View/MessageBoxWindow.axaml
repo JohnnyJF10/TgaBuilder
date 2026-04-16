@@ -19,14 +19,6 @@
         Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
         >
 
-  <Window.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="/Styles/AppTheme.axaml" />
-      </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
-  </Window.Resources>
-
   <Border Padding="20">
     <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
       <!-- Header -->
