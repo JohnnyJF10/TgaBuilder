@@ -12,7 +12,7 @@
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
     xmlns:notif="clr-namespace:Avalonia.Notification.Controls;assembly=Notification.Avalonia"
     x:Name="MainWin"
-    Title="MainWindow"
+    Title="TgaBuilder"
     Width="870"
     Height="570"
     MinWidth="850"
@@ -575,7 +575,7 @@
                 Margin="3,3,0,0"
                 HorizontalAlignment="Stretch">
                 <TextBlock
-                    Margin="0,3,10,0"
+                    Margin="0,10,10,0"
                     HorizontalAlignment="Center"
                     DockPanel.Dock="Left"
                     FontWeight="DemiBold"

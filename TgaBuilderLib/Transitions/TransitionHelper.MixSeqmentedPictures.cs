@@ -69,7 +69,7 @@ namespace TgaBuilderLib.Transitions
                             isLabelDrawn[labelID] = true;
                             foreach (int offset in tile.PixelOffsets)
                             {
-                                for (int b = 0; b < Bpp; b++) { pRes[offset + b] = pTile[offset + b]; }
+                                for (int b = 0; b < TRANSITIONS_BPP; b++) { pRes[offset + b] = pTile[offset + b]; }
                                 drawnPixelsOffsets.Add(offset);
                             }
                         }
@@ -79,7 +79,7 @@ namespace TgaBuilderLib.Transitions
                     foreach (int offset in drawnPixelsOffsets)
                     {
                         int y = offset / Stride;
-                        int x = (offset % Stride) / Bpp;
+                        int x = (offset % Stride) / TRANSITIONS_BPP;
                         int backgroundNeighbors = 0;
 
                         // Check neighbors in the labels array
@@ -97,7 +97,7 @@ namespace TgaBuilderLib.Transitions
 
                         if (backgroundNeighbors > 0)
                         {
-                            for (int b = 0; b < Bpp; b++)
+                            for (int b = 0; b < TRANSITIONS_BPP; b++)
                                 pRes[offset + b] = (byte)((pTile[offset + b] + pBg[offset + b]) >> 1);
                         }
                     }
@@ -137,7 +137,7 @@ namespace TgaBuilderLib.Transitions
             foreach (int offset in tile.PixelOffsets)
             {
                 int y = offset / Stride;
-                int x = (offset % Stride) / Bpp;
+                int x = (offset % Stride) / TRANSITIONS_BPP;
 
                 if (top && y == 0)
                     touchPixCount++;
@@ -151,7 +151,7 @@ namespace TgaBuilderLib.Transitions
                 if (right && x == Width - 1)
                     touchPixCount++;
 
-                if (touchPixCount > 1)
+                if (touchPixCount > 2)
                     return true;
             }
             return false;

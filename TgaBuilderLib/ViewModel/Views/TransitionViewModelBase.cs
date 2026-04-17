@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
 
@@ -16,10 +17,12 @@ public abstract class TransitionViewModelBase : ViewModelBase
     protected TransitionViewModelBase(
         IMediaFactory mediaFactory,
         ITransitionHelper transitionHelper,
+        IBitmapOperations bitmapOperations,
         MainViewModel mainViewModel)
     {
         MediaFactory = mediaFactory;
         TransitionHelper = transitionHelper;
+        BitmapOperations = bitmapOperations;
         MainViewModel = mainViewModel;
 
         _image1 = MediaFactory.CreateEmptyBitmap(64, 64, true);
@@ -34,10 +37,14 @@ public abstract class TransitionViewModelBase : ViewModelBase
     protected ITransitionHelper TransitionHelper { get; }
     protected MainViewModel MainViewModel { get; }
 
+    protected IBitmapOperations BitmapOperations { get; }
+
     protected byte[] Pixels1 => _pixels1;
     protected byte[] Pixels2 => _pixels2;
 
     private CancellationTokenSource? _cts;
+
+    private const int TRANSITIONS_BPP = 4;
 
     private readonly Dictionary<string, TransitionMode> _keyValuePairs = new()
     {
@@ -187,7 +194,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
             if (!CompareResultsSpecs())
                 return;
 
-            ConfigureTransitionHelper(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha ? 4 : 3);
+            ConfigureTransitionHelper(Image1.PixelWidth, Image1.PixelHeight);
 
             var resultPixels = await Task.Run(() => CreateMixedPixels(requiresAnalysis), cts.Token);
 
@@ -196,7 +203,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
                 ResultImage.WritePixels(
                     new PixelRect(0, 0, ResultImage.PixelWidth, ResultImage.PixelHeight),
                     resultPixels,
-                    ResultImage.PixelWidth * (Image1.HasAlpha ? 4 : 3));
+                    ResultImage.PixelWidth * TRANSITIONS_BPP);
 
                 OnResultUpdated();
                 VisualInvalidator?.InvalidateVisual();
@@ -251,16 +258,22 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
     private void LoadImage1()
     {
-        Image1 = MediaFactory.CloneBitmap(MainViewModel.Selection.Presenter);
-        _pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * (Image1.HasAlpha ? 4 : 3)];
-        Image1.CopyPixels(_pixels1, Image1.PixelWidth * (Image1.HasAlpha ? 4 : 3), 0);
+        Image1 = MainViewModel.Selection.Presenter.HasAlpha 
+            ? MediaFactory.CloneBitmap(MainViewModel.Selection.Presenter)
+            : BitmapOperations.ConvertRGB24ToBGRA32(MainViewModel.Selection.Presenter);
+
+        _pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
+        Image1.CopyPixels(_pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
     }
 
     private void LoadImage2()
     {
-        Image2 = MediaFactory.CloneBitmap(MainViewModel.Selection.Presenter);
-        _pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * (Image2.HasAlpha ? 4 : 3)];
-        Image2.CopyPixels(_pixels2, Image2.PixelWidth * (Image2.HasAlpha ? 4 : 3), 0);
+        Image2 = MainViewModel.Selection.Presenter.HasAlpha
+            ? MediaFactory.CloneBitmap(MainViewModel.Selection.Presenter)
+            : BitmapOperations.ConvertRGB24ToBGRA32(MainViewModel.Selection.Presenter);
+        
+        _pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
+        Image2.CopyPixels(_pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
     }
 
     private void SwapImages()
@@ -281,7 +294,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
         if (!CompareInputSpecs())
             return;
 
-        ConfigureTransitionHelper(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha ? 4 : 3);
+        ConfigureTransitionHelper(Image1.PixelWidth, Image1.PixelHeight);
 
         var resultPixels = CreateMixedPixels(requiresAnalysis: true);
 
@@ -289,7 +302,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
         ResultImage.WritePixels(
             new PixelRect(0, 0, ResultImage.PixelWidth, ResultImage.PixelHeight),
             resultPixels,
-            ResultImage.PixelWidth * (Image1.HasAlpha ? 4 : 3));
+            ResultImage.PixelWidth * TRANSITIONS_BPP);
 
         OnResultUpdated();
     }
@@ -304,12 +317,11 @@ public abstract class TransitionViewModelBase : ViewModelBase
            ResultImage.PixelHeight == Image1.PixelHeight &&
            ResultImage.HasAlpha == Image1.HasAlpha;
 
-    private void ConfigureTransitionHelper(int width, int height, int bpp)
+    private void ConfigureTransitionHelper(int width, int height)
     {
         TransitionHelper.Width = width;
         TransitionHelper.Height = height;
-        TransitionHelper.Bpp = bpp;
-        TransitionHelper.Stride = width * bpp;
+        TransitionHelper.Stride = width * TRANSITIONS_BPP;
 
         TransitionHelper.Mode = _transitionMode;
         TransitionHelper.Pivot = PivotValue;

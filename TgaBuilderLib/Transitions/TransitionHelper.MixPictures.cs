@@ -42,11 +42,11 @@ namespace TgaBuilderLib.Transitions
 
                             float weight = ComputeWeight(Mode, Pivot, lower, upper, isHardCut, nx, ny);
 
-                            byte* px1 = row1 + x * Bpp;
-                            byte* px2 = row2 + x * Bpp;
-                            byte* pxR = rowR + x * Bpp;
+                            byte* px1 = row1 + x * TRANSITIONS_BPP;
+                            byte* px2 = row2 + x * TRANSITIONS_BPP;
+                            byte* pxR = rowR + x * TRANSITIONS_BPP;
 
-                            for (int b = 0; b < Bpp; b++)
+                            for (int b = 0; b < TRANSITIONS_BPP; b++)
                             {
                                 pxR[b] = (byte)(px1[b] * (1.0f - weight) + px2[b] * weight);
                             }

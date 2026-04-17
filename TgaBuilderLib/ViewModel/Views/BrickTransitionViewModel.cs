@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
 
@@ -17,8 +18,9 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public BrickTransitionViewModel(
         IMediaFactory mediaFactory,
         ITransitionHelper transitionHelper,
+        IBitmapOperations bitmapOperations,
         MainViewModel mainViewModel)
-        : base(mediaFactory, transitionHelper, mainViewModel)
+        : base(mediaFactory, transitionHelper, bitmapOperations, mainViewModel)
     {
     }
 

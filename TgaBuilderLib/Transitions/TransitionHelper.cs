@@ -7,6 +7,7 @@ namespace TgaBuilderLib.Transitions
 {
     public partial class TransitionHelper : ITransitionHelper
     {
+        private const int TRANSITIONS_BPP = 4; // Assuming RGBA format
         public byte[] LastAnalysisMap { get; private set; } = Array.Empty<byte>();
         public int LastAnalysisWidth { get; private set; }
         public int LastAnalysisHeight { get; private set; }
@@ -16,7 +17,6 @@ namespace TgaBuilderLib.Transitions
         public int Width { get; set; }
         public int Height { get; set; }
         public int Stride { get; set; }
-        public int Bpp { get; set; }
         public TransitionMode Mode { get; set; }
 
         public List<TileSegment> TileData { get; set; } = new List<TileSegment>();

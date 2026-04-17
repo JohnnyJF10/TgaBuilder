@@ -2,7 +2,6 @@
 {
     public interface ITransitionHelper
     {
-        int Bpp { get; set; }
         float Hardness { get; set; }
         int Height { get; set; }
         int[] Labels { get; }

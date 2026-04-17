@@ -85,6 +85,34 @@
       <li>and others…</li>
     </ul>
 
+    <h3 id="new-in-version-220">New in Version 2.2.0</h3>
+
+    <ul>
+      <li>
+        New <strong>Transition Helper Windows</strong> to generate blend-ready transition tiles directly from
+        selections:
+
+        <ul>
+          <li>
+            <strong>Smooth Transition Helper</strong> for soft directional transitions with adjustable
+            <strong>Pivot</strong> and <strong>Hardness</strong>.
+            <br>
+            <video src="Screenshots/SmoothTransition.mp4" autoplay loop muted playsinline width="600">
+            </video>
+          </li>
+
+          <li>
+            <strong>Brick Transition Helper</strong> for marker-based brick/background transitions based on a watershed
+            algorithm with <strong>Pivot</strong>, <strong>Reverse Pivot</strong>, <strong>Marker Radius</strong>,
+            optional <strong>Slice Corners</strong>, and expandable label-map preview.
+            <br>
+            <video src="Screenshots/BrickTransition.mp4" autoplay loop muted playsinline width="600">
+            </video>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
     <h2 id="installation">Installation</h2>
     <p>Move over to <a href="https://github.com/JohnnyJF10/TgaBuilder/releases">GitHub Releases</a>.</p>
 
@@ -224,6 +252,41 @@
       <li>Paste clipboard into selection (<code>Ctrl + V</code>)</li>
       <li>Auto-copy new selections to clipboard</li>
       <li>Auto-paste clipboard into selection when it has new image data</li>
+      <li>Open <strong>Smooth Transition Helper</strong> and <strong>Brick Transition Helper</strong> from the center
+        action buttons to combine two selections and generate transition results quickly</li>
+    </ul>
+
+    <h3 id="transition-helpers-new-in-220">Transition Helpers (New in 2.2.0)</h3>
+    <p>The transition helper tools open in separate windows and allow you to build transition textures from two input
+      selections.</p>
+
+    <h4 id="smooth-transition-helper">Smooth Transition Helper</h4>
+    <ul>
+      <li>Load two source selections and preview the blended result in real time</li>
+      <li>Choose transition direction: <strong>Top, Right, Bottom, Left, Diagonal Top-Left, Diagonal Top-Right</strong>
+      </li>
+      <li>Fine-tune blend behavior with:
+        <ul>
+          <li><strong>Hardness</strong> (blend sharpness)</li>
+          <li><strong>Pivot</strong> (transition center)</li>
+        </ul>
+      </li>
+      <li>Press <strong>OK</strong> to apply the generated result</li>
+    </ul>
+
+    <h4 id="brick-transition-helper">Brick Transition Helper</h4>
+    <ul>
+      <li>Load two source selections as <strong>Bricks</strong> and <strong>Background</strong></li>
+      <li>Generate structured transitions with the same transition-direction controls</li>
+      <li>Tune the result with:
+        <ul>
+          <li><strong>Pivot</strong> and <strong>Reverse Pivot</strong></li>
+          <li><strong>Marker Radius</strong></li>
+          <li><strong>Slice Corners</strong> toggle</li>
+        </ul>
+      </li>
+      <li>Optional expandable <strong>Label Map</strong> preview for debugging marker regions</li>
+      <li>Press <strong>OK</strong> to apply the generated result</li>
     </ul>
 
     <h3 id="animationarea">Animation Area</h3>

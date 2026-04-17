@@ -23,7 +23,7 @@
   <ControlTheme x:Key="{x:Type elements:IconButton}" TargetType="elements:IconButton">
     <Setter Property="MinHeight" Value="36" />
     <Setter Property="MinWidth" Value="36" />
-    <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
+    <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
     <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
     <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThemeThickness}" />

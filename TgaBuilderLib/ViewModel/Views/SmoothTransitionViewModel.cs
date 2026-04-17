@@ -1,5 +1,6 @@
 ﻿using System;
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Transitions;
 
 namespace TgaBuilderLib.ViewModel;
@@ -9,8 +10,9 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
     public SmoothTransitionViewModel(
         IMediaFactory mediaFactory,
         ITransitionHelper transitionHelper,
+        IBitmapOperations bitmapOperations,
         MainViewModel mainViewModel)
-        : base(mediaFactory, transitionHelper, mainViewModel)
+        : base(mediaFactory, transitionHelper, bitmapOperations, mainViewModel)
     {
     }
 

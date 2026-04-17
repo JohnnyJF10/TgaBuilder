@@ -25,6 +25,12 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 - Imported texture repacking to remove TE compiled atlas padding
 - and others…
 
+### New in Version 2.2.0
+
+- New **Transition Helper Windows** to generate blend-ready transition tiles directly from selections:
+  - **Smooth Transition Helper** for soft directional transitions with adjustable **Pivot** and **Hardness**.
+  - **Brick Transition Helper** for marker-based brick/background transitions with **Pivot**, **Reverse Pivot**, **Marker Radius**, optional **Slice Corners**, and expandable label-map preview.
+
 
 ## Installation
 Move over to [GitHub Releases](https://github.com/JohnnyJF10/TgaBuilder/releases). 
@@ -133,6 +139,31 @@ For the experimental Avalonia UI version for Linux:
 - Paste clipboard into selection (`Ctrl + V`)
 - Auto-copy new selections to clipboard
 - Auto-paste clipboard into selection when it has new image data
+- Open **Smooth Transition Helper** and **Brick Transition Helper** from the center action buttons to combine two selections and generate transition results quickly
+
+### Transition Helpers (New in 2.2.0)
+
+The transition helper tools open in separate windows and allow you to build transition textures from two input selections.
+
+#### Smooth Transition Helper
+
+- Load two source selections and preview the blended result in real time
+- Choose transition direction: **Top, Right, Bottom, Left, Diagonal Top-Left, Diagonal Top-Right**
+- Fine-tune blend behavior with:
+  - **Hardness** (blend sharpness)
+  - **Pivot** (transition center)
+- Press **OK** to apply the generated result
+
+#### Brick Transition Helper
+
+- Load two source selections as **Bricks** and **Background**
+- Generate structured transitions with the same transition-direction controls
+- Tune the result with:
+  - **Pivot** and **Reverse Pivot**
+  - **Marker Radius**
+  - **Slice Corners** toggle
+- Optional expandable **Label Map** preview for debugging marker regions
+- Press **OK** to apply the generated result
 
 ### AnimationArea
 

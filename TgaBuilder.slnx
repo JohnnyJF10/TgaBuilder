@@ -1,0 +1,23 @@
+<Solution>
+  <Configurations>
+    <Configuration Name="Debug" Platform="x64" />
+    <Configuration Name="Release" Platform="x64" />
+    <Platform Name="x64" />
+  </Configurations>
+
+  <Projects>
+  </Projects>
+
+  <ProjectConfigurations>
+  </ProjectConfigurations>
+  <Project Path="TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj" />
+  <Project Path="TgaBuilderLib/TgaBuilderLib.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="TgaBuilderWpfUi/TgaBuilderWpfUi.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ZoomPanel/ZoomPanel.csproj">
+    <Platform Project="x64" />
+  </Project>
+</Solution>

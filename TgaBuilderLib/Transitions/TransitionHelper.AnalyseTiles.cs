@@ -24,7 +24,7 @@ namespace TgaBuilderLib.Transitions
             {
                 for (int i = 0; i < totalPixels; i++)
                 {
-                    byte* px = p + (i * Bpp);
+                    byte* px = p + (i * TRANSITIONS_BPP);
                     gray[i] = px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f;
                 }
             }
@@ -206,7 +206,7 @@ namespace TgaBuilderLib.Transitions
                     if (l != 0)
                     {
                         labels[i] = l;
-                        tiles[l - 1].PixelOffsets.Add((i / Width) * Stride + (i % Width) * Bpp);
+                        tiles[l - 1].PixelOffsets.Add((i / Width) * Stride + (i % Width) * TRANSITIONS_BPP);
                         // Centroid sums can optionally be updated here as well
                     }
                 }
@@ -258,7 +258,7 @@ namespace TgaBuilderLib.Transitions
                     // Update the 1D label array efficiently (only affected pixels)
                     foreach (int offset in tileToMerge.PixelOffsets)
                     {
-                        int pixelIdx = offset / Bpp;
+                        int pixelIdx = offset / TRANSITIONS_BPP;
                         labels[pixelIdx] = bestNeighborLabel;
                     }
 
@@ -282,7 +282,7 @@ namespace TgaBuilderLib.Transitions
 
             foreach (int offset in tile.PixelOffsets)
             {
-                int pixelIdx = offset / Bpp;
+                int pixelIdx = offset / TRANSITIONS_BPP;
 
                 // Check 4 neighbors: up, down, left, right
                 if (pixelIdx >= width)
@@ -326,10 +326,10 @@ namespace TgaBuilderLib.Transitions
         // Creates a colored debug map from label data and stores analysis dimensions.
         private unsafe void GenerateLabelMap(int width, int height, int[] labels, int labelCount)
         {
-            int stride = width * Bpp;
+            int stride = width * TRANSITIONS_BPP;
 
             // Create target array
-            byte[] map = new byte[width * height * Bpp];
+            byte[] map = new byte[width * height * TRANSITIONS_BPP];
 
             LastAnalysisMap = map;
             LastAnalysisWidth = width;
@@ -360,7 +360,7 @@ namespace TgaBuilderLib.Transitions
                     for (int x = 0; x < width; x++)
                     {
                         int label = pLabels[labelRow + x];
-                        int offset = rowOffset + x * Bpp;
+                        int offset = rowOffset + x * TRANSITIONS_BPP;
 
                         uint color = (label == 0) ? 0xFF000000 : colors[label];
 
@@ -399,7 +399,7 @@ namespace TgaBuilderLib.Transitions
         // Adds a pixel to a tile and updates centroid accumulation sums.
         private void AddPixelToTile(TileSegment tile, int x, int y)
         {
-            tile.PixelOffsets.Add((y * Stride) + (x * Bpp));
+            tile.PixelOffsets.Add((y * Stride) + (x * TRANSITIONS_BPP));
             tile.SumX += x;
             tile.SumY += y;
         }
@@ -480,7 +480,7 @@ namespace TgaBuilderLib.Transitions
                 foreach (int offset in tile.PixelOffsets)
                 {
                     int py = offset / Stride;
-                    int px = (offset % Stride) / Bpp;
+                    int px = (offset % Stride) / TRANSITIONS_BPP;
 
                     float dx = Math.Abs(px - cornerX);
                     float dy = Math.Abs(py - cornerY);
