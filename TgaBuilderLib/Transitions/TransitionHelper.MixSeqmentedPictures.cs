@@ -3,17 +3,27 @@ using System.Runtime.CompilerServices;
 
 namespace TgaBuilderLib.Transitions
 {
-      partial class TransitionHelper
+    partial class TransitionHelper
     {
-                    // Draws segmented tile pixels over a background according to transition progress and edge constraints.
-          public byte[] MixSmartTilesPixels(
-            byte[] tilePixels,
-            byte[] bgPixels)
+        // Draws segmented tile pixels over a background according to transition progress and edge constraints.
+        public byte[] MixSmartTilesPixels(
+          byte[] tilePixels,
+          byte[] bgPixels)
         {
             if (bgPixels.Length != tilePixels.Length)
                 throw new ArgumentException("Pixel arrays must have same length.");
 
-            bool[] isLabelDrawn = new bool[TileData.Count + 1];
+            var currentTileData = new List<TileSegment>(TileData.Count);
+            foreach (var tile in TileData)         
+                currentTileData.Add((TileSegment)tile.Clone());
+
+            var currentLabels = new int[Labels.Length];
+            Array.Copy(Labels, currentLabels, Labels.Length);
+
+            if (currentLabels.Max() > currentTileData.Count)
+                return bgPixels; // Fallback in case of race condition
+
+            bool[] isLabelDrawn = new bool[currentTileData.Count + 1];
             List<int> drawnPixelsOffsets = new List<int>(Width * Height);
             byte[] result = new byte[bgPixels.Length];
 
@@ -31,9 +41,9 @@ namespace TgaBuilderLib.Transitions
                     // Copy the background first
                     Buffer.MemoryCopy(pBg, pRes, Height * Stride, Height * Stride);
 
-                    for (int i = 0; i < TileData.Count; i++)
+                    for (int i = 0; i < currentTileData.Count; i++)
                     {
-                        var tile = TileData[i];
+                        var tile = currentTileData[i];
                         int labelID = i + 1;
 
                         // 1. Pivot condition (v is the computed progress value of this tile)
@@ -43,7 +53,7 @@ namespace TgaBuilderLib.Transitions
                         // 2. Edge condition (check edge tiles)
 
                         // Avoid background touching edges tiles being drawn
-                        if(shouldDraw)
+                        if (shouldDraw)
                         {
                             shouldDraw = !DoesTileTouchRequiredEdge(tile, !checkTop, !checkBottom, !checkLeft, !checkRight);
                         }
@@ -73,16 +83,16 @@ namespace TgaBuilderLib.Transitions
                         int backgroundNeighbors = 0;
 
                         // Check neighbors in the labels array
-                        if (y > 0 && !isLabelDrawn[Labels[(y - 1) * Width + x]]) 
+                        if (y > 0 && !isLabelDrawn[currentLabels[(y - 1) * Width + x]])
                             backgroundNeighbors++;
 
-                        if (y < Height - 1 && !isLabelDrawn[Labels[(y + 1) * Width + x]]) 
+                        if (y < Height - 1 && !isLabelDrawn[currentLabels[(y + 1) * Width + x]])
                             backgroundNeighbors++;
 
-                        if (x > 0 && !isLabelDrawn[Labels[y * Width + (x - 1)]]) 
+                        if (x > 0 && !isLabelDrawn[currentLabels[y * Width + (x - 1)]])
                             backgroundNeighbors++;
 
-                        if (x < Width - 1 && !isLabelDrawn[Labels[y * Width + (x + 1)]]) 
+                        if (x < Width - 1 && !isLabelDrawn[currentLabels[y * Width + (x + 1)]])
                             backgroundNeighbors++;
 
                         if (backgroundNeighbors > 0)
@@ -98,7 +108,7 @@ namespace TgaBuilderLib.Transitions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // Returns which outer edges are required for drawing in the current transition direction.
-        private  (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) GetDrawnEdgeTilesBools(
+        private (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) GetDrawnEdgeTilesBools(
             TransitionMode mode,
             bool reversePivot)
             => (mode, reversePivot) switch
@@ -120,7 +130,7 @@ namespace TgaBuilderLib.Transitions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // Checks whether a tile touches any of the requested image edges.
-        private  bool DoesTileTouchRequiredEdge(TileSegment tile, bool top, bool bottom, bool left, bool right)
+        private bool DoesTileTouchRequiredEdge(TileSegment tile, bool top, bool bottom, bool left, bool right)
         {
             int touchPixCount = 0;
 
@@ -149,7 +159,7 @@ namespace TgaBuilderLib.Transitions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // Computes a normalized focus value for a tile based on its centroid.
-        private  float ComputeFocusV(TransitionMode mode, TileSegment tile)
+        private float ComputeFocusV(TransitionMode mode, TileSegment tile)
         {
             float nx = tile.CentroidX;
             float ny = tile.CentroidY;

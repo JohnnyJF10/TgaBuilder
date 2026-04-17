@@ -25,7 +25,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private IWriteableBitmap? _labelMapImage;
     private int _markerRadius = 3;
     private int _expectedRegionCount = -1;
-    private bool _useExpectedRegionCount;
     private bool _reversePivot;
     private bool _sliceCornerTiles;
     private bool _isLabelMapExpanded;
