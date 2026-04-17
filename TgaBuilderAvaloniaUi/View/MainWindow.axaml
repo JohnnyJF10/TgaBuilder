@@ -48,10 +48,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
                 <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
-                <ResourceInclude Source="/Styles/IconDictionary.axaml" />
                 <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
-                <ResourceInclude Source="/Styles/AppTheme.axaml" />
             </ResourceDictionary.MergedDictionaries>
             <converter:BitmapSourceConverter x:Key="BitmapSourceConverter" />
             <converter:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
@@ -306,20 +304,16 @@
                                 Command="{Binding ResetCommand}"
                                 />
 
-                            <ToggleButton
-                                Width="36"
-                                Height="36"
+                            <elements:IconToggleButton
+                                Icon="{StaticResource grid}"
                                 Margin="5,0,5,0"
                                 ap:MouseOverInfoAP.InfoText="Display Grid"
-                                Content="Grid24"
                                 DockPanel.Dock="Left"
                                 IsChecked="{Binding GridVisibleSelected, UpdateSourceTrigger=PropertyChanged}" />
 
-                            <ToggleButton
-                                Width="36"
-                                Height="36"
+                            <elements:IconToggleButton
+                                Icon="{StaticResource square_hint}"
                                 ap:MouseOverInfoAP.InfoText="Change between grid designs"
-                                Content="SquareHint24"
                                 DockPanel.Dock="Left"
                                 IsChecked="{Binding GridPointedSelected, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -655,7 +649,7 @@
                     Padding="0"
                     ap:MouseOverInfoAP.InfoText="Open Smooth Transition Helper"
                     Command="{Binding SmoothTransitionCommand}">
-                    <PathIcon Data="M21,16.5C21,16.88 20.79,17.21 20.47,17.38L12.57,21.82C12.41,21.94 12.21,22 12,22C11.79,22 11.59,21.94 11.43,21.82L3.53,17.38C3.21,17.21 3,16.88 3,16.5V7.5C3,7.12 3.21,6.79 3.53,6.62L11.43,2.18C11.59,2.06 11.79,2 12,2C12.21,2 12.41,2.06 12.57,2.18L20.47,6.62C20.79,6.79 21,7.12 21,7.5V16.5Z"
+                    <PathIcon Data="{StaticResource smooth_transition}"
                               Width="18" Height="18" />
                 </Button>
                 <Button
@@ -665,7 +659,7 @@
                     Padding="0"
                     ap:MouseOverInfoAP.InfoText="Open Brick Transition Helper"
                     Command="{Binding BrickTransitionCommand}">
-                    <PathIcon Data="M3,3H11V5H3V3M13,3H21V5H13V3M3,7H11V9H3V7M13,7H21V9H13V7M3,11H11V13H3V11M13,11H21V13H13V11M3,15H11V17H3V15M13,15H21V17H13V15M3,19H11V21H3V19M13,19H21V21H13V19Z"
+                    <PathIcon Data="{StaticResource brick_transition}"
                               Width="18" Height="18" />
                 </Button>
             </StackPanel>
@@ -818,7 +812,7 @@
                             
                             IsVisible="{Binding IsPlayVisible, UpdateSourceTrigger=PropertyChanged}" />
                         <elements:IconButton
-                            Icon="{StaticResource stop}"
+                            Icon="{StaticResource pause}"
                             Margin="5"
                             HorizontalAlignment="Right"
                             ap:MouseOverInfoAP.InfoText="Pause Animation"
@@ -948,18 +942,14 @@
                             ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"
                             IsChecked="{Binding RotateModeSelected}" />
 
-                        <ToggleButton
-                            Width="36"
-                            Height="36"
+                        <elements:IconToggleButton
+                            Icon="{StaticResource flip_horizontal}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Mirror Horizontal Mode"
-                            Content="↔️"
                             IsChecked="{Binding MirrorHorizontalModeSelected}" />
-                        <ToggleButton
-                            Width="36"
-                            Height="36"
+                        <elements:IconToggleButton
+                            Icon="{StaticResource flip_vertical}"
                             ap:MouseOverInfoAP.InfoText="Mirror Vertical Mode"
-                            Content=" ↕️"
                             IsChecked="{Binding MirrorVerticalModeSelected}" />
                         <Rectangle Width="10" Height="10" />
                         <elements:IconToggleButton

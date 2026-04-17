@@ -22,9 +22,6 @@
 
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Styles/AppTheme.axaml" />
-            </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
     </Window.Resources>
@@ -92,13 +89,13 @@
                 Grid.Column="1"
                 Grid.Row="0"
                 Margin="0,38,0,0">
-                <PathIcon Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                <PathIcon Data="{StaticResource add}"
                           Width="16" Height="16" />
                 <Button
                     Margin="0,9,0,0"
                     Command="{Binding SwapImagesCommand}"
                     ToolTip.Tip="Swap images">
-                    <PathIcon Data="M21,9L17,5V8H10V10H17V13M7,11L3,15L7,19V16H14V14H7V11Z"
+                    <PathIcon Data="{StaticResource arrow_swap}"
                               Width="16" Height="16" />
                 </Button>
             </StackPanel>
@@ -140,7 +137,7 @@
                 Grid.Column="3"
                 Grid.Row="0"
                 VerticalAlignment="Center"
-                Data="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"
+                Data="{StaticResource arrow_forward}"
                 Width="16" Height="16" />
 
             <!-- Result Image -->
@@ -178,7 +175,7 @@
                 Width="20"
                 Height="60"
                 Padding="0">
-                <PathIcon Data="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"
+                <PathIcon Data="{StaticResource chevron_left}"
                           Width="12" Height="12" />
             </ToggleButton>
 

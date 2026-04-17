@@ -29,9 +29,7 @@
   <Window.Resources>
     <ResourceDictionary>
     <ResourceDictionary.MergedDictionaries>
-      <ResourceInclude Source="/Styles/IconDictionary.axaml" />
       <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
-      <ResourceInclude Source="/Styles/AppTheme.axaml" />
     </ResourceDictionary.MergedDictionaries>
     <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
     <sys:Boolean x:Key="True">True</sys:Boolean>
