@@ -10,12 +10,12 @@
   <DrawingBrush x:Key="CheckerBrush" TileMode="Tile" SourceRect="0,0,16,16" DestinationRect="0,0,16,16" Stretch="None" >
     <DrawingBrush.Drawing>
       <DrawingGroup>
-        <GeometryDrawing Brush="Gray">
+        <GeometryDrawing Brush="{DynamicResource CheckerboardPrimaryBrush}">
           <GeometryDrawing.Geometry>
             <RectangleGeometry Rect="0,0,16,16"/>
           </GeometryDrawing.Geometry>
         </GeometryDrawing>
-        <GeometryDrawing Brush="LightGray">
+        <GeometryDrawing Brush="{DynamicResource CheckerboardSecondaryBrush}">
           <GeometryDrawing.Geometry>
             <GeometryGroup>
               <RectangleGeometry Rect="0,0,8,8"/>

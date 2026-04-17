@@ -2,9 +2,16 @@
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Name="TgaBuilderAvaloniaUi"
-             RequestedThemeVariant="Light">
+             RequestedThemeVariant="Default">
   <Application.Styles>
     <FluentTheme />
-    <StyleInclude Source="avares://Notification.Avalonia/Themes/Generic.xaml" />
   </Application.Styles>
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Styles/AppTheme.axaml" />
+        <ResourceInclude Source="/Styles/IconDictionary.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
 </Application>

@@ -12,17 +12,17 @@
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
     xmlns:notif="clr-namespace:Avalonia.Notification.Controls;assembly=Notification.Avalonia"
     x:Name="MainWin"
-    Title="MainWindow"
-    Width="810"
+    Title="TgaBuilder"
+    Width="870"
     Height="570"
-    MinWidth="800"
-    MinHeight="570"
+    MinWidth="850"
+    MinHeight="620"
     ap:PanelMouseAP.EnterPanelCommand="{Binding EnterPanelCommand}"
     ap:PanelMouseAP.LeavePanelCommand="{Binding LeavePanelCommand}"
     ap:PanelMouseAP.PanelMouseCommand="{Binding MousePanelCommand}"
     ap:PanelMouseAP.WheelShiftCommand="{Binding WheelShiftCommand}"
     x:DataType="viewmodel:MainViewModel"
-    Background="{DynamicResource SystemChromeMediumColor}"
+    Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen"
@@ -48,7 +48,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
                 <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
-                <ResourceInclude Source="/Styles/IconDictionary.axaml" />
                 <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -71,11 +70,21 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MinWidth="315" />
+            <ColumnDefinition Width="*" MinWidth="370" />
             <ColumnDefinition Width="120" />
-            <ColumnDefinition Width="*" MinWidth="315" />
+            <ColumnDefinition Width="*" MinWidth="370" />
         </Grid.ColumnDefinitions>
 
+        <!-- Toolbar background strip -->
+        <Border Grid.Row="0" Grid.ColumnSpan="3"
+                Background="{DynamicResource ToolbarBackground}"
+                BorderBrush="{DynamicResource SeparatorBrush}"
+                BorderThickness="0,0,0,1" />
+
+        <!-- Middle column background -->
+        <Border Grid.Row="1" Grid.Column="1"
+                Background="{DynamicResource MiddleColumnBackground}"
+                CornerRadius="0" />
 
         <DockPanel>
             <Border Margin="3,3,0,0" />
@@ -89,13 +98,14 @@
                         Spacing="5">
                       <SplitButton
                           Width="70"
+                          Background="Transparent"
                           Height="36"
                           ap:MouseOverInfoAP.InfoText="Open Source Panels (Ctrl + E)"
                           Command="{Binding OpenSourceCommand}"
                           >
                         <SplitButton.Content>
                           <Path
-                              Fill="Black"
+                              Fill="{DynamicResource IconFillBrush}"
                               Data="{StaticResource folder_open}"
                               Width="16"
                               Height="13"
@@ -105,7 +115,6 @@
                         <SplitButton.Flyout>
                           <MenuFlyout
                             ItemsSource="{Binding SourceIO.RecentSourceFileNames}"
-                            
                             >
                             <MenuFlyout.ItemTemplate>
                               <DataTemplate>
@@ -120,16 +129,19 @@
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.ReloadFileText}"
+                            Background="Transparent"
                             Command="{Binding ReloadSourceCommand}"
                             Icon="{StaticResource arrow_clockwise}" />
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.PreviousFileOpenText}"
+                            Background="Transparent"
                             Command="{Binding OpenPreviousSourceCommand}"
                             Icon="{StaticResource arrow_up}" />
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.NextFileOpenText}"
+                            Background="Transparent"
                             Command="{Binding OpenNextSourceCommand}"
                             Icon="{StaticResource arrow_down}" />
 
@@ -142,12 +154,14 @@
             <StackPanel Orientation="Horizontal">
                 <elements:IconButton
                     x:Name="UndoButton"
+                    Background="Transparent"
                     Margin="19,0,5,0"
                     ap:MouseOverInfoAP.InfoText="Undo (Ctrl + Z)"
                     Command="{Binding UndoCommand}"
                     Icon="{StaticResource arrow_undo}" />
                 <elements:IconButton
                     x:Name="RedoButton"
+                    Background="Transparent"
                     Margin="5,0,0,0"
                     ap:MouseOverInfoAP.InfoText="Redo (Ctrl + Y)"
                     BorderThickness="0"
@@ -169,6 +183,7 @@
                         >
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="New File (Ctrl + N)"
+                            Background="Transparent"
                             Command="{Binding NewCommand}"
                             Icon="{StaticResource document_add}" />
 
@@ -176,12 +191,13 @@
                       <SplitButton
                           Width="70"
                           Height="36"
+                          Background="Transparent"
                           ap:MouseOverInfoAP.InfoText="Open Destination Panels (Ctrl + D)"
                           Command="{Binding OpenDestinationCommand}"
                           >
                         <SplitButton.Content>
                           <Path
-                              Fill="Black"
+                              Fill="{DynamicResource IconFillBrush}"
                               Data="{StaticResource folder_open}" 
                               Width="16"
                               Height="13"
@@ -206,10 +222,12 @@
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="Save File (Ctrl + S)"
+                            Background="Transparent"
                             Command="{Binding SaveCommand}"
                             Icon="{StaticResource save}" />
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="Save As (Ctrl + Shift + S)"
+                            Background="Transparent"
                             Command="{Binding SaveAsCommand}"
                             Icon="{StaticResource save_as} " />
 
@@ -286,20 +304,16 @@
                                 Command="{Binding ResetCommand}"
                                 />
 
-                            <ToggleButton
-                                Width="36"
-                                Height="36"
+                            <elements:IconToggleButton
+                                Icon="{StaticResource grid}"
                                 Margin="5,0,5,0"
                                 ap:MouseOverInfoAP.InfoText="Display Grid"
-                                Content="Grid24"
                                 DockPanel.Dock="Left"
                                 IsChecked="{Binding GridVisibleSelected, UpdateSourceTrigger=PropertyChanged}" />
 
-                            <ToggleButton
-                                Width="36"
-                                Height="36"
+                            <elements:IconToggleButton
+                                Icon="{StaticResource square_hint}"
                                 ap:MouseOverInfoAP.InfoText="Change between grid designs"
-                                Content="SquareHint24"
                                 DockPanel.Dock="Left"
                                 IsChecked="{Binding GridPointedSelected, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -433,8 +447,8 @@
                         Background="Transparent"
                         ClipToBounds="True"
                         DataContext="{Binding SourceViewTab}"
-                        EnableConstrains="True"
-                        EnableGestures="True"
+                        EnableConstrains="False"
+                        EnableGestures="False"
                         EnablePan="True"
                         EnableZoom="True"
                         Focusable="True"
@@ -552,10 +566,10 @@
 
             <DockPanel
                 Grid.Row="2"
-                Width="{Binding ElementName=TargetPanel, Path=Bounds.Width}"
-                Margin="3,3,0,0">
+                Margin="3,3,0,0"
+                HorizontalAlignment="Stretch">
                 <TextBlock
-                    Margin="0,3,10,0"
+                    Margin="0,10,10,0"
                     HorizontalAlignment="Center"
                     DockPanel.Dock="Left"
                     FontWeight="DemiBold"
@@ -627,6 +641,28 @@
                     DockPanel.Dock="Right"
                     IsEnabled="{Binding TargetIO.ControlsEnabled}" />
             </StackPanel>
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Padding="0"
+                    ap:MouseOverInfoAP.InfoText="Open Smooth Transition Helper"
+                    Command="{Binding SmoothTransitionCommand}">
+                    <PathIcon Data="{StaticResource smooth_transition}"
+                              Width="18" Height="18" />
+                </Button>
+                <Button
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Padding="0"
+                    ap:MouseOverInfoAP.InfoText="Open Brick Transition Helper"
+                    Command="{Binding BrickTransitionCommand}">
+                    <PathIcon Data="{StaticResource brick_transition}"
+                              Width="18" Height="18" />
+                </Button>
+            </StackPanel>
             <StackPanel
                 Margin="5"
                 HorizontalAlignment="Center"
@@ -651,10 +687,9 @@
                     Command="{Binding SelectionMonoColorFillCommand}"
                     CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
                 <Grid>
-                    <Rectangle
+                    <elements:CheckerRectangle
                         Width="30"
-                        Height="30"
-                        Fill="{StaticResource CheckerBrush}" />
+                        Height="30" />
                     <Button
                         Width="30"
                         Height="30"
@@ -676,10 +711,9 @@
                 BorderThickness="1"
                 Command="{Binding SwitchToDestinationPlacingModeCommand}">
                 <Grid Width="100" Height="100">
-                    <Rectangle
+                    <elements:CheckerRectangle
                         Width="{Binding ElementName=SelectionImage, Path=Bounds.Width}"
-                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}"
-                        Fill="{StaticResource CheckerBrush}" />
+                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}" />
                     <Image x:Name="SelectionImage"
                            RenderOptions.BitmapInterpolationMode="None"
                            Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
@@ -740,10 +774,9 @@
                     ap:MouseOverInfoAP.InfoText="Animation View"
                     BorderThickness="0">
                     <Canvas x:Name="AnimCanvas" ClipToBounds="True">
-                        <Rectangle
+                        <elements:CheckerRectangle
                             Width="100"
-                            Height="100"
-                            Fill="{StaticResource CheckerBrush}" />
+                            Height="100" />
                         <Image
                             Name="AnimImage"
                             RenderOptions.BitmapInterpolationMode="None"
@@ -779,7 +812,7 @@
                             
                             IsVisible="{Binding IsPlayVisible, UpdateSourceTrigger=PropertyChanged}" />
                         <elements:IconButton
-                            Icon="{StaticResource stop}"
+                            Icon="{StaticResource pause}"
                             Margin="5"
                             HorizontalAlignment="Right"
                             ap:MouseOverInfoAP.InfoText="Pause Animation"
@@ -847,13 +880,13 @@
                             IsChecked="{Binding OverlayTransparentModeSelected, Mode=OneWayToSource}" />
                         <Path 
                             Margin="5,5,0,0" 
-                            Fill="Black"
+                            Fill="{DynamicResource IconFillBrush}"
                             Data="{StaticResource slide_hide}" 
                             />
                         <Path 
                             Margin="0,5,0,0" 
                             DockPanel.Dock="Right"
-                            Fill="Black"
+                            Fill="{DynamicResource IconFillBrush}"
                             Data="{StaticResource slide_add}" />
                         <Slider
                             Margin="5,0"
@@ -909,18 +942,14 @@
                             ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"
                             IsChecked="{Binding RotateModeSelected}" />
 
-                        <ToggleButton
-                            Width="36"
-                            Height="36"
+                        <elements:IconToggleButton
+                            Icon="{StaticResource flip_horizontal}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Mirror Horizontal Mode"
-                            Content="↔️"
                             IsChecked="{Binding MirrorHorizontalModeSelected}" />
-                        <ToggleButton
-                            Width="36"
-                            Height="36"
+                        <elements:IconToggleButton
+                            Icon="{StaticResource flip_vertical}"
                             ap:MouseOverInfoAP.InfoText="Mirror Vertical Mode"
-                            Content=" ↕️"
                             IsChecked="{Binding MirrorVerticalModeSelected}" />
                         <Rectangle Width="10" Height="10" />
                         <elements:IconToggleButton
@@ -1062,8 +1091,8 @@
                         Background="Transparent"
                         ClipToBounds="True"
                         DataContext="{Binding DestinationViewTab}"
-                        EnableConstrains="True"
-                        EnableGestures="True"
+                        EnableConstrains="False"
+                        EnableGestures="False"
                         EnablePan="True"
                         EnableZoom="True"
                         Focusable="True"
@@ -1251,10 +1280,15 @@
             </DockPanel>
         </Grid>
 
-        <DockPanel
+        <Border
             Grid.Row="4"
             Grid.Column="0"
-            Grid.ColumnSpan="3">
+            Grid.ColumnSpan="3"
+            Background="{DynamicResource StatusBarBackground}"
+            BorderBrush="{DynamicResource SeparatorBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="4,2">
+        <DockPanel>
 
             <StackPanel
                 Margin="5,0"
@@ -1263,7 +1297,7 @@
                 Orientation="Horizontal">
                 <Path 
                   Margin="0,2,0,0" 
-                  Fill="Black"
+                  Fill="{DynamicResource IconFillBrush}"
                   Data="{StaticResource cursor}"
                   />
                 <TextBlock
@@ -1276,14 +1310,14 @@
                   Height="20"
                   Stretch="Fill"
                   IsVisible="{Binding TileInfoVisible, UpdateSourceTrigger=PropertyChanged}"
-                  Fill="Black"
+                  Fill="{DynamicResource IconFillBrush}"
                   Data="{StaticResource screenshot_simple}" />
                 <Path 
                   Width="20"
                   Height="20"
                   Stretch="Fill"
                   IsVisible="{Binding SelectionInfoVisible, UpdateSourceTrigger=PropertyChanged}" 
-                  Fill="Black"
+                  Fill="{DynamicResource IconFillBrush}"
                   Data="{StaticResource square_simple}" />
                 <TextBlock
                     Width="60"
@@ -1294,7 +1328,7 @@
                   Height="20"
                   Stretch="Fill"
                   Margin="0,2,0,0" 
-                  Fill="Black"
+                  Fill="{DynamicResource IconFillBrush}"
                   Data="{StaticResource image}" />
                 <TextBlock 
                   Margin="5,5,5,0" 
@@ -1302,6 +1336,13 @@
 
             </StackPanel>
             <elements:IconButton
+                x:Name="ThemeToggleButton"
+                Classes="flat"
+                DockPanel.Dock="Right"
+                Icon="{StaticResource dark_theme}"
+                ToolTip.Tip="Toggle Dark / Light Mode" />
+            <elements:IconButton
+                Classes="flat"
                 Command="{Binding AboutCommand}"
                 DockPanel.Dock="Right"
                 Icon="{StaticResource info}" />
@@ -1319,6 +1360,7 @@
                 TextTrimming="CharacterEllipsis"
                 TextWrapping="NoWrap" />
         </DockPanel>
+        </Border>
       <notif:NotificationMessageContainer
         Manager="{Binding Manager, ElementName=MainWin}"
         Grid.Row="1"

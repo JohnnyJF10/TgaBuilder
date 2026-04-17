@@ -13,6 +13,7 @@ using TgaBuilderLib.Level;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
+using TgaBuilderLib.Transitions;
 using TgaBuilderLib.ViewModel;
 using TgaBuilderLib.ViewModel.Elements;
 using TgaBuilderLib.ViewModel.Views;
@@ -95,6 +96,8 @@ namespace TgaBuilderAvaloniaUi
             services.AddSingleton<IUndoRedoManager, UndoRedoManager>(sp => new UndoRedoManager(
                 maxMemoryBytes: sp.GetRequiredService<IUsageData>().UndoRedoMemoryBytes
             ));
+
+            services.AddSingleton<ITransitionHelper, TransitionHelper>();
         }
 
         private void AddUIServicesToProvider(IServiceCollection services)
@@ -106,6 +109,7 @@ namespace TgaBuilderAvaloniaUi
             services.AddSingleton<IMessageService, MessageService>();
             services.AddSingleton<IMessageBoxService, MessageBoxService>();
             services.AddSingleton<IDispatcherService, DispatcherService>();
+            services.AddSingleton<IVisualInvalidatorFactory, VisualInvalidatorFactory>();
         }
 
         private void AddBitmapFactoryProvider(IServiceCollection services)
@@ -271,6 +275,18 @@ namespace TgaBuilderAvaloniaUi
 
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
+            services.AddTransient(sp => new SmoothTransitionViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
+                mainViewModel: sp.GetRequiredService<MainViewModel>()));
+
+            services.AddTransient(sp => new BrickTransitionViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
+                mainViewModel: sp.GetRequiredService<MainViewModel>()));
+
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),
 
@@ -319,6 +335,16 @@ namespace TgaBuilderAvaloniaUi
             services.AddTransient<IView, AboutWindow>(
                 sp => new AboutWindow(
                     viewModel: sp.GetRequiredService<AboutViewModel>()));
+
+            services.AddTransient<IView, SmoothTransitionWindow>(
+                sp => new SmoothTransitionWindow(
+                    viewModel: sp.GetRequiredService<SmoothTransitionViewModel>(),
+                    visualInvalidatorFactory: sp.GetRequiredService<IVisualInvalidatorFactory>()));
+
+            services.AddTransient<IView, BrickTransitionWindow>(
+                sp => new BrickTransitionWindow(
+                    viewModel: sp.GetRequiredService<BrickTransitionViewModel>(),
+                    visualInvalidatorFactory: sp.GetRequiredService<IVisualInvalidatorFactory>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)

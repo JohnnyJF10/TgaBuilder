@@ -42,11 +42,11 @@ namespace TgaBuilderLib.Transitions
 
                             float weight = ComputeWeight(Mode, Pivot, lower, upper, isHardCut, nx, ny);
 
-                            byte* px1 = row1 + x * Bpp;
-                            byte* px2 = row2 + x * Bpp;
-                            byte* pxR = rowR + x * Bpp;
+                            byte* px1 = row1 + x * TRANSITIONS_BPP;
+                            byte* px2 = row2 + x * TRANSITIONS_BPP;
+                            byte* pxR = rowR + x * TRANSITIONS_BPP;
 
-                            for (int b = 0; b < Bpp; b++)
+                            for (int b = 0; b < TRANSITIONS_BPP; b++)
                             {
                                 pxR[b] = (byte)(px1[b] * (1.0f - weight) + px2[b] * weight);
                             }
@@ -62,41 +62,8 @@ namespace TgaBuilderLib.Transitions
         // Computes the blend weight for one normalized pixel position.
         private  float ComputeWeight(TransitionMode mode, float pivot, float lower, float upper, bool isHardCut, float nx, float ny)
         {
-            float distToT1 = 0; // Distance to edges that must be 100% texture 1
-            float distToT2 = 0; // Distance to edges that must be 100% texture 2
 
-            switch (mode)
-            {
-                case TransitionMode.Top:
-                    distToT2 = ny; // Texture 2 controls the top side (y=0)
-                    distToT1 = Math.Min(nx, Math.Min(1.0f - nx, 1.0f - ny)); // Texture 1 controls left, right, and bottom
-                    break;
-
-                case TransitionMode.Bottom:
-                    distToT2 = 1.0f - ny;
-                    distToT1 = Math.Min(nx, Math.Min(1.0f - nx, ny));
-                    break;
-
-                case TransitionMode.Left:
-                    distToT2 = nx;
-                    distToT1 = Math.Min(ny, Math.Min(1.0f - ny, 1.0f - nx));
-                    break;
-
-                case TransitionMode.Right:
-                    distToT2 = 1.0f - nx;
-                    distToT1 = Math.Min(ny, Math.Min(1.0f - ny, nx));
-                    break;
-
-                case TransitionMode.DiagonalTopLeft:
-                    distToT2 = Math.Min(nx, ny); // Top and left belong to texture 2
-                    distToT1 = Math.Min(1.0f - nx, 1.0f - ny); // Bottom and right belong to texture 1
-                    break;
-
-                case TransitionMode.DiagonalTopRight:
-                    distToT2 = Math.Min(1.0f - nx, ny); // Top and right belong to texture 2
-                    distToT1 = Math.Min(nx, 1.0f - ny); // Bottom and left belong to texture 1
-                    break;
-            }
+            (float distToT1, float distToT2) = ComputeTopologicy(mode, nx, ny);
 
             // 1. Compute the base V field (native 0.0 to 1.0 field)
             float v;

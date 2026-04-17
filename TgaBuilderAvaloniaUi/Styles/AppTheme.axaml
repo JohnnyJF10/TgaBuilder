@@ -1,0 +1,97 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- 
+    Custom application theme resources for Light and Dark modes.
+    These supplement the FluentTheme with app-specific colors and gradients.
+  -->
+
+  <ResourceDictionary.ThemeDictionaries>
+
+    <!-- ═══════════════ LIGHT THEME ═══════════════ -->
+    <ResourceDictionary x:Key="Light">
+      <!-- Window background gradient -->
+      <LinearGradientBrush x:Key="WindowBackgroundGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="#FFF5F5F7" Offset="0.0" />
+        <GradientStop Color="#FFEEF1F8" Offset="0.5" />
+        <GradientStop Color="#FFF0ECF5" Offset="1.0" />
+      </LinearGradientBrush>
+
+      <!-- Dialog/secondary window background gradient -->
+      <LinearGradientBrush x:Key="DialogBackgroundGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="#FFF8F8FA" Offset="0.0" />
+        <GradientStop Color="#FFF2F0F8" Offset="1.0" />
+      </LinearGradientBrush>
+
+      <!-- Toolbar/header area background -->
+      <SolidColorBrush x:Key="ToolbarBackground" Color="#10000000" />
+
+      <!-- Panel section background -->
+      <SolidColorBrush x:Key="PanelSectionBackground" Color="#08000000" />
+
+      <!-- Subtle card border -->
+      <SolidColorBrush x:Key="CardBorderBrush" Color="#15000000" />
+
+      <!-- Status bar background -->
+      <SolidColorBrush x:Key="StatusBarBackground" Color="#0A000000" />
+
+      <!-- Icon fill color (theme-aware) -->
+      <SolidColorBrush x:Key="IconFillBrush" Color="#FF1A1A1A" />
+
+      <!-- Separator line -->
+      <SolidColorBrush x:Key="SeparatorBrush" Color="#15000000" />
+
+      <!-- Middle column background -->
+      <SolidColorBrush x:Key="MiddleColumnBackground" Color="#08000000" />
+
+      <!-- Checkerboard Brushes -->
+      <SolidColorBrush x:Key="CheckerboardPrimaryBrush" Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="CheckerboardSecondaryBrush" Color="#FFE0E0E0" />
+
+    </ResourceDictionary>
+
+    <!-- ═══════════════ DARK THEME ═══════════════ -->
+    <ResourceDictionary x:Key="Dark">
+      <!-- Window background gradient -->
+      <LinearGradientBrush x:Key="WindowBackgroundGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="#FF1E1E2E" Offset="0.0" />
+        <GradientStop Color="#FF1A1B2E" Offset="0.5" />
+        <GradientStop Color="#FF232336" Offset="1.0" />
+      </LinearGradientBrush>
+
+      <!-- Dialog/secondary window background gradient -->
+      <LinearGradientBrush x:Key="DialogBackgroundGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="#FF222233" Offset="0.0" />
+        <GradientStop Color="#FF262638" Offset="1.0" />
+      </LinearGradientBrush>
+
+      <!-- Toolbar/header area background -->
+      <SolidColorBrush x:Key="ToolbarBackground" Color="#15FFFFFF" />
+
+      <!-- Panel section background -->
+      <SolidColorBrush x:Key="PanelSectionBackground" Color="#10FFFFFF" />
+
+      <!-- Subtle card border -->
+      <SolidColorBrush x:Key="CardBorderBrush" Color="#18FFFFFF" />
+
+      <!-- Status bar background -->
+      <SolidColorBrush x:Key="StatusBarBackground" Color="#12FFFFFF" />
+
+      <!-- Icon fill color (theme-aware) -->
+      <SolidColorBrush x:Key="IconFillBrush" Color="#FFE0E0E0" />
+
+      <!-- Separator line -->
+      <SolidColorBrush x:Key="SeparatorBrush" Color="#18FFFFFF" />
+
+      <!-- Middle column background -->
+      <SolidColorBrush x:Key="MiddleColumnBackground" Color="#10FFFFFF" />
+
+      <!-- Checkerboard Brushes -->
+      <SolidColorBrush x:Key="CheckerboardPrimaryBrush" Color="#FF2B2B3C" />
+      <SolidColorBrush x:Key="CheckerboardSecondaryBrush" Color="#FF1E1E2E" />
+
+    </ResourceDictionary>
+
+  </ResourceDictionary.ThemeDictionaries>
+
+</ResourceDictionary>

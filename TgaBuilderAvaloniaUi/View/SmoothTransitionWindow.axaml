@@ -1,45 +1,31 @@
-﻿<elements:AsyncWindow
-    x:Class="TgaBuilderWpfUi.View.SmoothTransitionWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<elements:AsyncWindow
+    xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
-    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
-    xmlns:local="clr-namespace:TgaBuilderWpfUi.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
+    xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-    xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel"
-    Title="MainWindow"
+    x:Class="TgaBuilderAvaloniaUi.View.SmoothTransitionWindow"
+    x:DataType="viewmodel:SmoothTransitionViewModel"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterScreen"
+    UseLayoutRounding="True"
+    Background="{DynamicResource WindowBackgroundGradient}"
+    Foreground="{DynamicResource SystemBaseHighColor}"
+    Title="Smooth Transition Helper"
     Width="600"
     Height="400"
     MinWidth="560"
     MinHeight="350"
-    d:Background="Black"
-    d:DataContext="{d:DesignInstance Type=viewmodel:SmoothTransitionViewModel,
-                                     IsDesignTimeCreatable=False}"
-    ExtendsContentIntoTitleBar="True"
-    WindowBackdropType="Mica"
-    WindowCornerPreference="Round"
-    WindowStartupLocation="CenterScreen"
-    mc:Ignorable="d">
+    Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
+
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml" />
-                <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml" />
-                <ResourceDictionary Source="/Styles/CheckerBrush.xaml" />
-                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
-            <sys:Boolean x:Key="True">True</sys:Boolean>
-            <sys:Boolean x:Key="False">False</sys:Boolean>
-            <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="{x:Type elements:ContextMenuButton}" />
         </ResourceDictionary>
     </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -49,133 +35,112 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="5*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="60" />
-
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <DockPanel Grid.ColumnSpan="5">
-            <ui:TitleBar
-                Width="133"
-                DockPanel.Dock="Right"
-                Style="{StaticResource TitleBarNavigationAreaStyle}" />
 
-            <ui:TitleBar
-                Title="Smooth Transition Helper"
-                Grid.ColumnSpan="2"
-                Margin="3,3,0,0"
-                ShowClose="False"
-                ShowMaximize="False"
-                ShowMinimize="False">
-                <ui:TitleBar.Icon>
-                    <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
-                </ui:TitleBar.Icon>
-            </ui:TitleBar>
-        </DockPanel>
-
-        <!--  Image 1  -->
+        <!-- Image 1 -->
         <Border
-            Grid.Row="1"
+            Grid.Row="0"
             Grid.Column="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            AllowDrop="True"
             Background="Transparent">
             <Image
                 x:Name="Image1"
                 Margin="10"
-                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                RenderOptions.BitmapInterpolationMode="None"
                 Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
                 Stretch="Uniform" />
         </Border>
         <Button
-            x:Name="BtnLoad1"
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="0"
             Margin="10"
             Padding="5"
             HorizontalAlignment="Center"
             Command="{Binding LoadImage1Command}"
-            CommandParameter="1"
             Content="From Selection" />
 
+        <!-- + symbol and swap -->
         <StackPanel
-                VerticalAlignment="Center"
-                Grid.Column="1"
-                Grid.Row="1" Margin="0,38,0,0">
-            <ui:SymbolIcon
-                    Symbol="Add24"/>
-            <ui:Button
-                    Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
-                    Command="{Binding SwapImagesCommand}"
-                    />
+            Grid.Row="0"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Margin="0,38,0,0">
+            <PathIcon Data="{StaticResource add}"
+                      Width="16" Height="16" />
+            <Button
+                Margin="0,9,0,0"
+                Command="{Binding SwapImagesCommand}"
+                ToolTip.Tip="Swap images">
+                <PathIcon Data="{StaticResource arrow_swap}"
+                          Width="16" Height="16" />
+            </Button>
         </StackPanel>
 
-        <!--  Image 2  -->
+        <!-- Image 2 -->
         <Border
-            Grid.Row="1"
+            Grid.Row="0"
             Grid.Column="2"
             Margin="10"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            AllowDrop="True"
             Background="Transparent">
             <Image
                 x:Name="Image2"
-                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                RenderOptions.BitmapInterpolationMode="None"
                 Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
                 Stretch="Uniform" />
         </Border>
         <Button
-            x:Name="BtnLoad2"
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="2"
             Margin="10"
             Padding="5"
             HorizontalAlignment="Center"
             Command="{Binding LoadImage2Command}"
-            CommandParameter="2"
             Content="From Selection" />
 
-        <ui:SymbolIcon
-            Grid.Row="1"
+        <!-- Arrow → symbol -->
+        <PathIcon
+            Grid.Row="0"
             Grid.Column="3"
-            Symbol="ArrowRight24" />
+            Data="{StaticResource arrow_forward}"
+            Width="16" Height="16" />
 
+        <!-- Result Image -->
         <Border
-            Grid.Row="1"
+            Grid.Row="0"
             Grid.Column="4"
             Margin="10"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            AllowDrop="True"
             Background="Transparent">
             <Image
+                x:Name="ResultImage"
                 Margin="0,4,0,0"
-                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                RenderOptions.BitmapInterpolationMode="None"
                 Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                 Stretch="Uniform" />
         </Border>
-
         <Button
-            x:Name="BtnResult"
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="4"
             Margin="10"
             Padding="5"
             HorizontalAlignment="Center"
             Command="{Binding MixCommand}"
-            CommandParameter="2"
             Content="Mix" />
 
-        <Grid Grid.Row="3" Grid.ColumnSpan="5">
+        <!-- Controls Row -->
+        <Grid Grid.Row="2" Grid.ColumnSpan="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -184,72 +149,75 @@
 
             <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10" />
 
-            <Label
+            <TextBlock
                 Grid.Column="1"
                 VerticalAlignment="Center"
-                Content="Hardness"
-                TextBlock.FontStyle="Italic" />
+                Text="Hardness"
+                FontStyle="Italic" />
 
             <Slider
                 Grid.Row="1"
                 Grid.Column="1"
                 Margin="5"
                 VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
-                AutoToolTipPrecision="2"
+                ToolTip.Tip="{Binding BlendHardnessValue}"
                 Maximum="1"
                 Minimum="0"
                 SmallChange="0.01"
                 Value="{Binding BlendHardnessValue}" />
 
-            <Label
+            <TextBlock
                 Grid.Column="2"
                 VerticalAlignment="Center"
-                Content="Pivot"
-                TextBlock.FontStyle="Italic" />
+                Text="Pivot"
+                FontStyle="Italic" />
 
             <Slider
                 Grid.Row="1"
                 Grid.Column="2"
                 Margin="5"
                 VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
-                AutoToolTipPrecision="2"
+                ToolTip.Tip="{Binding PivotValue}"
                 Maximum="1"
                 Minimum="0"
                 SmallChange="0.01"
                 Value="{Binding PivotValue}" />
         </Grid>
 
-        <ui:Card
-            Grid.Row="4"
+        <!-- Bottom OK/Cancel bar -->
+        <Border
+            Grid.Row="3"
             Grid.ColumnSpan="5"
             Margin="-10,0,-10,-10"
             VerticalAlignment="Stretch"
-            IsHitTestVisible="False" />
+            IsHitTestVisible="False"
+            Background="{DynamicResource StatusBarBackground}"
+            BorderBrush="{DynamicResource SeparatorBrush}"
+            BorderThickness="0,1,0,0"
+            CornerRadius="0" />
         <StackPanel
-            Grid.Row="4"
+            Grid.Row="3"
             Grid.ColumnSpan="5"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
-            <ui:Button
-                Width="75"
-                Height="30"
+            <Button
+                Width="80"
+                Height="32"
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center"
                 Command="{Binding CancelCommand}"
-                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                CommandParameter="{Binding $parent[Window]}"
                 Content="Cancel" />
-            <ui:Button
-                Width="75"
-                Height="30"
+            <Button
+                Width="80"
+                Height="32"
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center"
                 Command="{Binding OKCommand}"
-                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                CommandParameter="{Binding $parent[Window]}"
                 Content="OK" />
         </StackPanel>
-
-
     </Grid>
 </elements:AsyncWindow>

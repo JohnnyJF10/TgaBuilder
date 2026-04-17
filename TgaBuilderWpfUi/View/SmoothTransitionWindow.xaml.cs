@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TgaBuilderLib.ViewModel;
 using TgaBuilderWpfUi.Elements;
 using TgaBuilderWpfUi.Services;
 using Wpf.Ui.Controls;
@@ -27,6 +29,14 @@ namespace TgaBuilderWpfUi.View
         {
             InitializeComponent();
             base.DataContext = viewModel;
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            if (DataContext is SmoothTransitionViewModel vm)
+                vm.MarkFinishedCommand.Execute(null);
         }
 
         public SnackbarPresenter SnackbarPresenter => MessageSnackbarPresenter;

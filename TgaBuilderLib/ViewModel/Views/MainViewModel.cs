@@ -87,9 +87,6 @@ namespace TgaBuilderLib.ViewModel
         private bool _panelInfoVisible;
         private bool _tileInfoVisible = true;
 
-        private IView? _smoothTransitionView;
-        private IView? _brickTransitionView;
-
         private string _pixelInfo = string.Empty;
         private string _tileInfo = string.Empty;
         private string _panelInfo = string.Empty;
@@ -148,6 +145,10 @@ namespace TgaBuilderLib.ViewModel
 
         public SelectionViewModel Selection { get; set; }
         public AnimationViewModel Animation { get; set; }
+
+
+        public bool IsTransitionViewOpen {  get; set; }
+
 
         public bool PanelInfoVisible
         {
@@ -407,31 +408,38 @@ namespace TgaBuilderLib.ViewModel
 
         private async Task OpenSmoothTransitionHelper()
         {
-            if (_smoothTransitionView is not null)
+            if (IsTransitionViewOpen)
                 return;
 
-            _smoothTransitionView = _getViewCallback(ViewIndex.SmoothTransition);
-            if (_smoothTransitionView.DataContext is not SmoothTransitionViewModel smoothTransitionVM)
+            var smoothTransitionView = _getViewCallback(ViewIndex.SmoothTransition);
+            if (smoothTransitionView.DataContext is not SmoothTransitionViewModel smoothTransitionVM)
                 return;
 
-            await _smoothTransitionView.ShowAsync();
+            smoothTransitionView.Topmost = true;
+            IsTransitionViewOpen = true;
+
+            await smoothTransitionView.ShowAsync();
 
             //Put result to selection
         }
 
         private async Task OpenBrickTransitionHelper()
         {
-            if (_brickTransitionView is not null)
+            if (IsTransitionViewOpen)
                 return;
 
-            _brickTransitionView = _getViewCallback(ViewIndex.BrickTransition);
-            if (_brickTransitionView.DataContext is not BrickTransitionViewModel brickTransitionVM)
+            var brickTransitionView = _getViewCallback(ViewIndex.BrickTransition);
+            if (brickTransitionView.DataContext is not BrickTransitionViewModel brickTransitionVM)
                 return;
 
-            await _brickTransitionView.ShowAsync();
+            brickTransitionView.Topmost = true;
+            IsTransitionViewOpen = true;
+
+            await brickTransitionView.ShowAsync();
 
             //Put result to selection
         }
+
 
         public void EnterPanel(bool isTargetPanel)
         {

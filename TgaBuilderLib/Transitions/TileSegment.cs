@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TgaBuilderLib.Transitions
 {
-    public class TileSegment
+    public class TileSegment : ICloneable
     {
         public float CentroidX { get; set; }
         public float CentroidY { get; set; }
@@ -13,5 +13,23 @@ namespace TgaBuilderLib.Transitions
         // Hilfsvariablen für die Berechnung
         internal long SumX;
         internal long SumY;
+
+        public object Clone()
+        {
+            var pixelOffsets = new List<int>(this.PixelOffsets);
+            foreach (var offset in this.PixelOffsets)
+            {
+                pixelOffsets.Add(offset);
+            }
+
+            return new TileSegment
+            {
+                CentroidX = this.CentroidX,
+                CentroidY = this.CentroidY,
+                PixelOffsets = pixelOffsets,
+                SumX = this.SumX,
+                SumY = this.SumY
+            };
+        }
     }
 }

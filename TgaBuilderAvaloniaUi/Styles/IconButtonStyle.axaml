@@ -23,7 +23,7 @@
   <ControlTheme x:Key="{x:Type elements:IconButton}" TargetType="elements:IconButton">
     <Setter Property="MinHeight" Value="36" />
     <Setter Property="MinWidth" Value="36" />
-    <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
+    <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
     <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
     <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThemeThickness}" />
@@ -81,6 +81,10 @@
       <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" />
     </Style>
 
+    <Style Selector="^:disabled">
+      <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}" />
+    </Style>
+
     <Style Selector="^:disabled /template/ Border#PART_Border">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
@@ -105,6 +109,28 @@
       <Style Selector="^:disabled /template/ Border#PART_Border">
         <Setter Property="Background" Value="{DynamicResource AccentButtonBackgroundDisabled}" />
         <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBorderBrushDisabled}" />
+      </Style>
+    </Style>
+
+    <Style Selector="^.flat">
+      <Style Selector="^ /template/ Border#PART_Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+      </Style>
+
+      <Style Selector="^:pointerover /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+      </Style>
+
+      <Style Selector="^:pressed /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+      </Style>
+
+      <Style Selector="^:disabled /template/ Border#PART_Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
       </Style>
     </Style>
 

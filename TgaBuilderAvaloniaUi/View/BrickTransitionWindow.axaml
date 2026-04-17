@@ -1,76 +1,42 @@
-﻿<elements:AsyncWindow 
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    x:Class="TgaBuilderWpfUi.View.BrickTransitionWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<elements:AsyncWindow
+    xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:TgaBuilderWpfUi.View" 
-    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib" 
-    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
-    xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel" 
-    xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
-    xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
-    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
+    xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    x:Class="TgaBuilderAvaloniaUi.View.BrickTransitionWindow"
+    x:DataType="viewmodel:BrickTransitionViewModel"
     mc:Ignorable="d"
-    ExtendsContentIntoTitleBar="True"
-    WindowBackdropType="Mica"
-    WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
-    Title="MainWindow"
+    UseLayoutRounding="True"
+    Background="{DynamicResource WindowBackgroundGradient}"
+    Foreground="{DynamicResource SystemBaseHighColor}"
+    Title="Brick Transition Helper"
     Width="750"
     Height="400"
-    MinWidth="700"
+    MinWidth="750"
     MinHeight="350"
-    d:Background="Black"
-    d:DataContext="{d:DesignInstance Type=viewmodel:BrickTransitionViewModel, IsDesignTimeCreatable=False}"
-    >
+    Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
+
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml"/>
-                <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml"/>
-                <ResourceDictionary Source="/Styles/CheckerBrush.xaml"/>
-                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-            <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter"/>
-            <sys:Boolean x:Key="True">True</sys:Boolean>
-            <sys:Boolean x:Key="False">False</sys:Boolean>
-            <Style TargetType="{x:Type elements:ContextMenuButton}"
-                    BasedOn="{StaticResource {x:Type ui:Button}}"/>
+            <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
     </Window.Resources>
+
     <!-- Outer Grid: 4 Rows -->
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="5*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
 
-        <!-- Row 0: Title Bar -->
-        <DockPanel Grid.Row="0">
-            <ui:TitleBar
-                DockPanel.Dock="Right"
-                Width="133"
-                Style="{StaticResource TitleBarNavigationAreaStyle}"/>
-
-            <ui:TitleBar
-                Title="Brick Transition Helper"
-                ShowMinimize="False"
-                ShowMaximize="False"
-                ShowClose="False"
-                Margin="3,3,0,0">
-                <ui:TitleBar.Icon>
-                    <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
-                </ui:TitleBar.Icon>
-            </ui:TitleBar>
-        </DockPanel>
-
-        <!-- Row 1: Image Area (Sub Table) -->
-        <Grid Grid.Row="1">
+        <!-- Row 0: Image Area -->
+        <Grid Grid.Row="0" x:Name="ImageAreaGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="35"/>
@@ -78,36 +44,24 @@
                 <ColumnDefinition Width="35"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition>
-                    <ColumnDefinition.Style>
-                        <Style TargetType="ColumnDefinition">
-                            <Setter Property="Width" Value="0"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsChecked, ElementName=LabelMapToggle}" Value="True">
-                                    <Setter Property="Width" Value="*"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ColumnDefinition.Style>
-                </ColumnDefinition>
+                <ColumnDefinition Width="0"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Image 1 -->
+            <!-- Image 1 (Bricks) -->
             <Border
                 Grid.Column="0"
                 Grid.Row="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                AllowDrop="True"
                 Background="Transparent">
                 <Image
                     x:Name="Image1"
                     Margin="10"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    RenderOptions.BitmapInterpolationMode="None"
                     Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform"/>
             </Border>
@@ -116,15 +70,12 @@
                 HorizontalAlignment="Center"
                 Grid.Column="0"
                 Grid.Row="1"
-                Margin="10"
-                >
-                <Label
+                Margin="10">
+                <TextBlock
                     Margin="0,5,0,0"
                     VerticalAlignment="Center"
-                    Content="Bricks"
-                    />
+                    Text="Bricks"/>
                 <Button
-                    x:Name="BtnLoad1"
                     Margin="10"
                     Padding="5"
                     HorizontalAlignment="Center"
@@ -132,33 +83,34 @@
                     Content="From Selection"/>
             </StackPanel>
 
-
-            <!-- Symbol: + -->
-
+            <!-- + symbol and swap -->
             <StackPanel
                 VerticalAlignment="Center"
                 Grid.Column="1"
-                Grid.Row="0" Margin="0,38,0,0">
-                <ui:SymbolIcon
-                    Symbol="Add24"/>
-                <ui:Button
-                    Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
+                Grid.Row="0"
+                Margin="0,38,0,0">
+                <PathIcon Data="{StaticResource add}"
+                          Width="16" Height="16" />
+                <Button
+                    Margin="0,9,0,0"
                     Command="{Binding SwapImagesCommand}"
-                    />
+                    ToolTip.Tip="Swap images">
+                    <PathIcon Data="{StaticResource arrow_swap}"
+                              Width="16" Height="16" />
+                </Button>
             </StackPanel>
 
-            <!-- Image 2 -->
+            <!-- Image 2 (Background) -->
             <Border
                 Grid.Column="2"
                 Grid.Row="0"
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                AllowDrop="True"
                 Background="Transparent">
                 <Image
                     x:Name="Image2"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    RenderOptions.BitmapInterpolationMode="None"
                     Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform"/>
             </Border>
@@ -167,15 +119,12 @@
                 HorizontalAlignment="Center"
                 Grid.Column="2"
                 Grid.Row="1"
-                Margin="10"
-                >
-                <Label
+                Margin="10">
+                <TextBlock
                     Margin="0,5,0,0"
                     VerticalAlignment="Center"
-                    Content="Background"
-                    />
+                    Text="Background"/>
                 <Button
-                    x:Name="BtnLoad2"
                     Margin="10"
                     Padding="5"
                     HorizontalAlignment="Center"
@@ -183,11 +132,13 @@
                     Content="From Selection"/>
             </StackPanel>
 
-            <!-- Symbol: → -->
-            <ui:SymbolIcon
+            <!-- Arrow → symbol -->
+            <PathIcon
                 Grid.Column="3"
                 Grid.Row="0"
-                Symbol="ArrowRight24"/>
+                VerticalAlignment="Center"
+                Data="{StaticResource arrow_forward}"
+                Width="16" Height="16" />
 
             <!-- Result Image -->
             <Border
@@ -196,16 +147,15 @@
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                AllowDrop="True"
                 Background="Transparent">
                 <Image
+                    x:Name="ResultImage"
                     Margin="0,4,0,0"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    RenderOptions.BitmapInterpolationMode="None"
                     Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform"/>
             </Border>
             <Button
-                x:Name="BtnResult"
                 Grid.Column="4"
                 Grid.Row="1"
                 Margin="10"
@@ -225,9 +175,8 @@
                 Width="20"
                 Height="60"
                 Padding="0">
-                <ToggleButton.Content>
-                    <ui:SymbolIcon Symbol="ChevronLeft24"/>
-                </ToggleButton.Content>
+                <PathIcon Data="{StaticResource chevron_left}"
+                          Width="12" Height="12" />
             </ToggleButton>
 
             <!-- Label Map (Expandable 4th Image) -->
@@ -237,23 +186,23 @@
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Visibility="{Binding IsLabelMapExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                IsVisible="{Binding IsLabelMapExpanded}"
                 Background="Transparent">
                 <Image
                     Margin="0,4,0,0"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    RenderOptions.BitmapInterpolationMode="None"
                     Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform"/>
             </Border>
         </Grid>
 
-        <!-- Row 2: Controls (Sub Table) -->
-        <Grid Grid.Row="2">
+        <!-- Row 1: Controls -->
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -266,21 +215,18 @@
             <!-- Pivot Slider -->
             <StackPanel
                 Orientation="Horizontal"
-                Grid.Column="1"
-                >
-                <Label
-                Margin="0,5,0,0"
-                VerticalAlignment="Center"
-                Content="Pivot"
-                TextBlock.FontStyle="Italic"/>
-                <ui:ToggleSwitch
-                Margin="5"
-                TextBlock.FontStyle="Italic"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Left"
-                IsChecked="{Binding ReversePivot}"
-                Padding="8,4"
-                Content="Reverse"/>
+                Grid.Column="1">
+                <TextBlock
+                    Margin="0,5,0,0"
+                    VerticalAlignment="Center"
+                    Text="Pivot"
+                    FontStyle="Italic"/>
+                <CheckBox
+                    Margin="7"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
+                    IsChecked="{Binding ReversePivot}"
+                    Content="Rev"/>
             </StackPanel>
 
             <Slider
@@ -288,28 +234,27 @@
                 Grid.Column="1"
                 Margin="5"
                 VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
-                AutoToolTipPrecision="2"
+                ToolTip.Tip="{Binding PivotValue}"
                 Maximum="1"
                 Minimum="0"
                 SmallChange="0.01"
                 Value="{Binding PivotValue}"/>
 
             <!-- Marker Radius Slider -->
-            <Label
+            <TextBlock
                 Margin="0,5,0,0"
                 Grid.Column="2"
                 VerticalAlignment="Center"
-                Content="Marker Radius"
+                Text="Marker Radius"
                 HorizontalAlignment="Center"
-                TextBlock.FontStyle="Italic"/>
+                FontStyle="Italic"/>
 
             <Slider
                 Grid.Row="1"
                 Grid.Column="2"
                 Margin="5"
                 VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
+                ToolTip.Tip="{Binding MarkerRadius}"
                 IsSnapToTickEnabled="True"
                 TickFrequency="1"
                 Maximum="20"
@@ -317,45 +262,48 @@
                 SmallChange="1"
                 Value="{Binding MarkerRadius}"/>
 
-            <!-- Expected Region Count Slider with Toggle -->
-
             <!-- Slice Corner Tiles Toggle -->
-            <ui:ToggleSwitch
-                    Grid.Column="3"
-                    VerticalAlignment="Center"
-                    IsChecked="{Binding SliceCornerTiles}"
-                    Margin="3,0,0,0"
-                    Padding="4,2"
-                    TextBlock.FontStyle="Italic"
-                    Content="Slice Corners"/>
-
-
+            <ToggleSwitch
+                Grid.Column="3"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                VerticalAlignment="Center"
+                IsChecked="{Binding SliceCornerTiles}"
+                Margin="3,0,0,0"
+                Content="Slice Corners"/>
         </Grid>
+
+        <!-- Row 2: Spacer -->
 
         <!-- Row 3: OK/Cancel Buttons -->
         <Grid Grid.Row="3">
-            <ui:Card
+            <Border
                 Margin="-10,0,-10,-10"
                 VerticalAlignment="Stretch"
-                IsHitTestVisible="False"/>
+                IsHitTestVisible="False"
+                Background="{DynamicResource StatusBarBackground}"
+                BorderBrush="{DynamicResource SeparatorBrush}"
+                BorderThickness="0,1,0,0"/>
             <StackPanel
                 HorizontalAlignment="Right"
                 Orientation="Horizontal">
-                <ui:Button
-                    Width="75"
-                    Height="30"
+                <Button
+                    Width="80"
+                    Height="32"
                     Margin="0,0,15,0"
                     HorizontalAlignment="Right"
+                    HorizontalContentAlignment="Center"
                     Command="{Binding CancelCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding $parent[Window]}"
                     Content="Cancel"/>
-                <ui:Button
-                    Width="75"
-                    Height="30"
+                <Button
+                    Width="80"
+                    Height="32"
                     Margin="0,0,15,0"
                     HorizontalAlignment="Right"
+                    HorizontalContentAlignment="Center"
                     Command="{Binding OKCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding $parent[Window]}"
                     Content="OK"/>
             </StackPanel>
         </Grid>

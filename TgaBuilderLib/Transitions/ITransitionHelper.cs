@@ -2,9 +2,6 @@
 {
     public interface ITransitionHelper
     {
-        bool AlwaysDrawEdgeTiles { get; set; }
-        int Bpp { get; set; }
-        int ExpectedRegionCount { get; set; }
         float Hardness { get; set; }
         int Height { get; set; }
         int[] Labels { get; }
@@ -15,12 +12,15 @@
         TransitionMode Mode { get; set; }
         float Pivot { get; set; }
         bool ReversePivot { get; set; }
+        bool SliceCornerTiles { get; set; }
         int Stride { get; set; }
         List<TileSegment> TileData { get; set; }
         int Width { get; set; }
 
         void AnalyzeTilesWatershed(byte[] pixels);
         byte[] MixPixels(byte[] pixels1, byte[] pixels2);
-        byte[] MixSmartTilesPixels(byte[] bgPixels, byte[] tilePixels);
+        byte[] MixSmartTilesPixels(byte[] tilePixels, byte[] bgPixels);
+
+        void CleanUp();
     }
 }

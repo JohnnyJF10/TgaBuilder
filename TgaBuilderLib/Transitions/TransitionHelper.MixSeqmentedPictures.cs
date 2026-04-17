@@ -3,17 +3,27 @@ using System.Runtime.CompilerServices;
 
 namespace TgaBuilderLib.Transitions
 {
-      partial class TransitionHelper
+    partial class TransitionHelper
     {
-                    // Draws segmented tile pixels over a background according to transition progress and edge constraints.
-          public byte[] MixSmartTilesPixels(
-            byte[] bgPixels,
-            byte[] tilePixels)
+        // Draws segmented tile pixels over a background according to transition progress and edge constraints.
+        public byte[] MixSmartTilesPixels(
+          byte[] tilePixels,
+          byte[] bgPixels)
         {
             if (bgPixels.Length != tilePixels.Length)
                 throw new ArgumentException("Pixel arrays must have same length.");
 
-            bool[] isLabelDrawn = new bool[TileData.Count + 1];
+            var currentTileData = new List<TileSegment>(TileData.Count);
+            foreach (var tile in TileData)         
+                currentTileData.Add((TileSegment)tile.Clone());
+
+            var currentLabels = new int[Labels.Length];
+            Array.Copy(Labels, currentLabels, Labels.Length);
+
+            if (currentLabels.Max() > currentTileData.Count)
+                return bgPixels; // Fallback in case of race condition
+
+            bool[] isLabelDrawn = new bool[currentTileData.Count + 1];
             List<int> drawnPixelsOffsets = new List<int>(Width * Height);
             byte[] result = new byte[bgPixels.Length];
 
@@ -31,9 +41,9 @@ namespace TgaBuilderLib.Transitions
                     // Copy the background first
                     Buffer.MemoryCopy(pBg, pRes, Height * Stride, Height * Stride);
 
-                    for (int i = 0; i < TileData.Count; i++)
+                    for (int i = 0; i < currentTileData.Count; i++)
                     {
-                        var tile = TileData[i];
+                        var tile = currentTileData[i];
                         int labelID = i + 1;
 
                         // 1. Pivot condition (v is the computed progress value of this tile)
@@ -42,11 +52,13 @@ namespace TgaBuilderLib.Transitions
 
                         // 2. Edge condition (check edge tiles)
 
-                        if(shouldDraw)
+                        // Avoid background touching edges tiles being drawn
+                        if (shouldDraw)
                         {
                             shouldDraw = !DoesTileTouchRequiredEdge(tile, !checkTop, !checkBottom, !checkLeft, !checkRight);
                         }
 
+                        // Make sure tile touching edges are drawn
                         if (!shouldDraw)
                         {
                             shouldDraw = DoesTileTouchRequiredEdge(tile, checkTop, checkBottom, checkLeft, checkRight);
@@ -57,7 +69,7 @@ namespace TgaBuilderLib.Transitions
                             isLabelDrawn[labelID] = true;
                             foreach (int offset in tile.PixelOffsets)
                             {
-                                for (int b = 0; b < Bpp; b++) { pRes[offset + b] = pTile[offset + b]; }
+                                for (int b = 0; b < TRANSITIONS_BPP; b++) { pRes[offset + b] = pTile[offset + b]; }
                                 drawnPixelsOffsets.Add(offset);
                             }
                         }
@@ -67,25 +79,25 @@ namespace TgaBuilderLib.Transitions
                     foreach (int offset in drawnPixelsOffsets)
                     {
                         int y = offset / Stride;
-                        int x = (offset % Stride) / Bpp;
+                        int x = (offset % Stride) / TRANSITIONS_BPP;
                         int backgroundNeighbors = 0;
 
                         // Check neighbors in the labels array
-                        if (y > 0 && !isLabelDrawn[Labels[(y - 1) * Width + x]]) 
+                        if (y > 0 && !isLabelDrawn[currentLabels[(y - 1) * Width + x]])
                             backgroundNeighbors++;
 
-                        if (y < Height - 1 && !isLabelDrawn[Labels[(y + 1) * Width + x]]) 
+                        if (y < Height - 1 && !isLabelDrawn[currentLabels[(y + 1) * Width + x]])
                             backgroundNeighbors++;
 
-                        if (x > 0 && !isLabelDrawn[Labels[y * Width + (x - 1)]]) 
+                        if (x > 0 && !isLabelDrawn[currentLabels[y * Width + (x - 1)]])
                             backgroundNeighbors++;
 
-                        if (x < Width - 1 && !isLabelDrawn[Labels[y * Width + (x + 1)]]) 
+                        if (x < Width - 1 && !isLabelDrawn[currentLabels[y * Width + (x + 1)]])
                             backgroundNeighbors++;
 
                         if (backgroundNeighbors > 0)
                         {
-                            for (int b = 0; b < Bpp; b++)
+                            for (int b = 0; b < TRANSITIONS_BPP; b++)
                                 pRes[offset + b] = (byte)((pTile[offset + b] + pBg[offset + b]) >> 1);
                         }
                     }
@@ -96,7 +108,7 @@ namespace TgaBuilderLib.Transitions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // Returns which outer edges are required for drawing in the current transition direction.
-        private  (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) GetDrawnEdgeTilesBools(
+        private (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) GetDrawnEdgeTilesBools(
             TransitionMode mode,
             bool reversePivot)
             => (mode, reversePivot) switch
@@ -118,24 +130,36 @@ namespace TgaBuilderLib.Transitions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // Checks whether a tile touches any of the requested image edges.
-        private  bool DoesTileTouchRequiredEdge(TileSegment tile, bool top, bool bottom, bool left, bool right)
+        private bool DoesTileTouchRequiredEdge(TileSegment tile, bool top, bool bottom, bool left, bool right)
         {
+            int touchPixCount = 0;
+
             foreach (int offset in tile.PixelOffsets)
             {
                 int y = offset / Stride;
-                int x = (offset % Stride) / Bpp;
+                int x = (offset % Stride) / TRANSITIONS_BPP;
 
-                if (top && y == 0) return true;
-                if (bottom && y == Height - 1) return true;
-                if (left && x == 0) return true;
-                if (right && x == Width - 1) return true;
+                if (top && y == 0)
+                    touchPixCount++;
+
+                if (bottom && y == Height - 1)
+                    touchPixCount++;
+
+                if (left && x == 0)
+                    touchPixCount++;
+
+                if (right && x == Width - 1)
+                    touchPixCount++;
+
+                if (touchPixCount > 2)
+                    return true;
             }
             return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // Computes a normalized focus value for a tile based on its centroid.
-        private  float ComputeFocusV(TransitionMode mode, TileSegment tile)
+        private float ComputeFocusV(TransitionMode mode, TileSegment tile)
         {
             float nx = tile.CentroidX;
             float ny = tile.CentroidY;
@@ -143,7 +167,7 @@ namespace TgaBuilderLib.Transitions
             // --- Topological logic excerpt ---
             float distToT1 = 0, distToT2 = 0;
 
-            (distToT1, distToT2) = ComputeTopologicalLogic(mode, nx, ny);
+            (distToT1, distToT2) = ComputeTopologicy(mode, nx, ny);
 
             float v;
             if (distToT2 <= 0.00001f) v = 1.0f;
@@ -151,44 +175,5 @@ namespace TgaBuilderLib.Transitions
             else v = distToT1 / (distToT1 + distToT2);
             return v;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // Computes directional distances to texture domains for the selected transition mode.
-        private  (float distToT1, float distToT2) ComputeTopologicalLogic(TransitionMode mode, float nx, float ny)
-            => mode switch
-            {
-                TransitionMode.Top => (
-                    Math.Min(nx, Math.Min(1.0f - nx, 1.0f - ny)),
-                    ny
-                ),
-
-                TransitionMode.Bottom => (
-                    Math.Min(nx, Math.Min(1.0f - nx, ny)),
-                    1.0f - ny
-                ),
-
-                TransitionMode.Left => (
-                    Math.Min(ny, Math.Min(1.0f - ny, 1.0f - nx)),
-                    nx
-                ),
-
-                TransitionMode.Right => (
-                    Math.Min(ny, Math.Min(1.0f - ny, nx)),
-                    1.0f - nx
-                ),
-
-                TransitionMode.DiagonalTopLeft => (
-                    Math.Min(1.0f - nx, 1.0f - ny),
-                    Math.Min(nx, ny)
-                ),
-
-                TransitionMode.DiagonalTopRight => (
-                    Math.Min(nx, 1.0f - ny),
-                    Math.Min(1.0f - nx, ny)
-                ),
-
-                _ => (0f, 0f)
-            };
-
     }
 }
