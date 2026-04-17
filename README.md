@@ -26,10 +26,17 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 - and others…
 
 ### New in Version 2.2.0
+![SmoothTransitions](Screenshots/TransitionHelperButton.png)
 
-- New **Transition Helper Windows** to generate blend-ready transition tiles directly from selections:
+- New **Transition Helper Windows** to generate blend-ready transition tiles directly from selections.
+
   - **Smooth Transition Helper** for soft directional transitions with adjustable **Pivot** and **Hardness**.
-  - **Brick Transition Helper** for marker-based brick/background transitions with **Pivot**, **Reverse Pivot**, **Marker Radius**, optional **Slice Corners**, and expandable label-map preview.
+
+  <video src="Screenshots/SmoothTransition.mp4" autoplay loop muted playsinline width="600"></video>
+
+  - **Brick Transition Helper** for marker-based brick/background transitions based on a watershed algorithm with **Pivot**, **Reverse Pivot**, **Marker Radius**, optional **Slice Corners**, and expandable label-map preview.
+
+  <video src="Screenshots/BrickTransition.mp4" autoplay loop muted playsinline width="600"></video>
 
 
 ## Installation
