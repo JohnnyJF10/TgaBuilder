@@ -73,6 +73,13 @@ namespace TgaBuilderLib.ViewModel
 
         public event EventHandler? PresenterChanged;
 
+        /// <summary>
+        /// Optional callback invoked at the end of SetPresenter.
+        /// The Avalonia UI version registers this to reset the ZoomBorder matrix
+        /// and invalidate the ScrollViewer layout when the presenter changes.
+        /// </summary>
+        public Action? PresenterChangedCallback { get; set; }
+
         public string PixelInfo => $"{XPointer}, {YPointer}px";
 
         public string TileInfo => SelectionShape.IsVisible
@@ -168,7 +175,10 @@ namespace TgaBuilderLib.ViewModel
         }
 
         protected void OnPresenterChanged()
-            => PresenterChanged?.Invoke(this, EventArgs.Empty);
+        {
+            PresenterChanged?.Invoke(this, EventArgs.Empty);
+            PresenterChangedCallback?.Invoke();
+        }
 
         protected void SetSelectionBase()
         {

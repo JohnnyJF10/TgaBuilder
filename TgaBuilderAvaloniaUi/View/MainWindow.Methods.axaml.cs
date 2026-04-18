@@ -75,5 +75,21 @@ namespace TgaBuilderAvaloniaUi.View
                 });
             };
         }
+
+        public void RegisterPresenterChangedCallback(
+            TexturePanelViewModelBase panelVm,
+            ZoomBorder zoomBorder,
+            ScrollViewer scrollViewer)
+        {
+            panelVm.PresenterChangedCallback = () =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    zoomBorder.ResetMatrix();
+                    scrollViewer.InvalidateMeasure();
+                    scrollViewer.InvalidateArrange();
+                });
+            };
+        }
     }
 }
