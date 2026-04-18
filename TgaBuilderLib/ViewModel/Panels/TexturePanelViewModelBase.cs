@@ -74,7 +74,7 @@ namespace TgaBuilderLib.ViewModel
         public event EventHandler? PresenterChanged;
 
         /// <summary>
-        /// Optional callback invoked at the end of SetPresenter.
+        /// Optional callback invoked when the presenter changes (at the end of OnPresenterChanged).
         /// The Avalonia UI version registers this to reset the ZoomBorder matrix
         /// and invalidate the ScrollViewer layout when the presenter changes.
         /// </summary>
