@@ -436,6 +436,10 @@
                 ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ClipToBounds="True"
                 DropCommand="{Binding FileDropSourceCommand}">
+                <ScrollViewer
+                    x:Name="SourceScrollViewer"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto">
                     <paz:ZoomBorder
                         x:Name="SourcePanel"
                         HorizontalAlignment="Stretch"
@@ -527,6 +531,7 @@
                                 StrokeThickness="{Binding StrokeThickness}" />
                         </Canvas>
                     </paz:ZoomBorder>
+                </ScrollViewer>
             </elements:FileDropBorder>
             <TextBlock
                 Grid.Row="1"
@@ -1080,6 +1085,10 @@
                 ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ClipToBounds="True"
                 DropCommand="{Binding FileDropDestinationCommand}">
+                <ScrollViewer
+                    x:Name="TargetScrollViewer"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto">
                     <paz:ZoomBorder
                         x:Name="TargetPanel"
                         HorizontalAlignment="Stretch"
@@ -1213,6 +1222,7 @@
                         </Canvas>
 
                     </paz:ZoomBorder>
+                </ScrollViewer>
             </elements:FileDropBorder>
             <TextBlock
                 Grid.Row="1"

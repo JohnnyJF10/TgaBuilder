@@ -2,6 +2,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
@@ -74,6 +76,57 @@ namespace TgaBuilderAvaloniaUi.View
                     panel.ResetMatrix();
                 });
             };
+        }
+
+        public void RegisterPresenterChangedCallback(
+            TexturePanelViewModelBase panelVm,
+            ZoomBorder zoomBorder,
+            ScrollViewer scrollViewer)
+        {
+            panelVm.PresenterChangedCallback = () =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    zoomBorder.ResetMatrix();
+                    scrollViewer.InvalidateMeasure();
+                    scrollViewer.InvalidateArrange();
+                });
+            };
+        }
+
+        public void RegisterScrollViewScrollSpeedModification(ScrollViewer scrollViewer)
+        {
+            scrollViewer.AddHandler(InputElement.PointerWheelChangedEvent, (sender, e) =>
+            {
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Control)
+                    || e.KeyModifiers.HasFlag(KeyModifiers.Alt)
+                    || e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                    return;
+
+                if (sender is ScrollViewer sv)
+                {
+                    var delta = e.Delta.Y;
+
+                    double speedFactor = 3.0;
+
+                    sv.Offset = new Vector(
+                        sv.Offset.X,
+                        sv.Offset.Y - delta * 50 * speedFactor
+                    );
+
+                    Window_PointerMoved(this, new PointerEventArgs(
+                        routedEvent: InputElement.PointerMovedEvent,
+                        source: sender,
+                        pointer: e.GetCurrentPoint(sv).Pointer,
+                        rootVisual: sv,
+                        rootVisualPosition: e.GetCurrentPoint(sv).Position,
+                        timestamp: e.Timestamp,
+                        properties: e.GetCurrentPoint(sv).Properties,
+                        modifiers: e.KeyModifiers));
+
+                    e.Handled = true;
+                }
+            }, RoutingStrategies.Tunnel);
         }
     }
 }

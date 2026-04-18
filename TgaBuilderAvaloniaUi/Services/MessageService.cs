@@ -37,6 +37,7 @@ namespace TgaBuilderAvaloniaUi.Services
             if (ex is not null)
                 uiMessage.Message += $" Error: {ex.Message} - Please find more information in the log file.";
 
+            /*
             mainWindow.Manager
                 .CreateMessage()
                 .Accent(uiMessage.Accent)
@@ -47,6 +48,7 @@ namespace TgaBuilderAvaloniaUi.Services
                 .Dismiss().WithButton("x", button => { })
                 .Dismiss().WithDelay(TimeSpan.FromSeconds(uiMessage.timeout))
                 .Queue();
+            */
         }
     }
 }
