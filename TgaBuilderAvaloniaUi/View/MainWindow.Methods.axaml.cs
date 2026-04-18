@@ -114,6 +114,16 @@ namespace TgaBuilderAvaloniaUi.View
                         sv.Offset.Y - delta * 50 * speedFactor
                     );
 
+                    Window_PointerMoved(this, new PointerEventArgs(
+                        routedEvent: InputElement.PointerMovedEvent,
+                        source: sender,
+                        pointer: e.GetCurrentPoint(sv).Pointer,
+                        rootVisual: sv,
+                        rootVisualPosition: e.GetCurrentPoint(sv).Position,
+                        timestamp: e.Timestamp,
+                        properties: e.GetCurrentPoint(sv).Properties,
+                        modifiers: e.KeyModifiers));
+
                     e.Handled = true;
                 }
             }, RoutingStrategies.Tunnel);
