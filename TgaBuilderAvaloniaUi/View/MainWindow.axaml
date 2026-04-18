@@ -413,18 +413,18 @@
                             x:Name="SourceFitButton"
                             Icon="{StaticResource arrow_autofit_width}"
                             ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
-                            Click="SourceFitButton_Click"
+                            Command="{Binding FitCommand}"
                             DockPanel.Dock="Left" />
                       <elements:IconButton
                             Icon="{StaticResource arrow_autofit_height}"
                             Margin="5,0"
                             ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
-                            Click="SourceFillButton_Click"
+                            Command="{Binding FillCommand}"
                             DockPanel.Dock="Left" />
                       <elements:IconButton
                             Icon="{StaticResource scale_fit}"
                             ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"
-                            Click="Source100Button_Click"
+                            Command="{Binding Zoom100Command}"
                             DockPanel.Dock="Left" />
 
                     </DockPanel>
@@ -1062,19 +1062,19 @@
                             Icon="{StaticResource arrow_autofit_width}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
-                            Click="TargetFitButton_Click"
+                            Command="{Binding FitCommand}"
                             DockPanel.Dock="Left" />
                         <elements:IconButton
                             Icon="{StaticResource arrow_autofit_height}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
-                            Click="TargetFillButton_Click"
+                            Command="{Binding FillCommand}"
                             DockPanel.Dock="Left" />
                         <elements:IconButton
                             Icon="{StaticResource scale_fit}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"
-                            Click="Target100Button_Click"
+                            Command="{Binding Zoom100Command}"
                             DockPanel.Dock="Left" />
                     </DockPanel>
                 </TabItem>

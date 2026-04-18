@@ -7,6 +7,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
+using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
@@ -35,47 +36,7 @@ namespace TgaBuilderAvaloniaUi.View
 
         public void RegisterZoomBorderCallbacks(ReadOnlyViewTabViewModel viewTab, ZoomBorder panel)
         {
-            viewTab.ApplyTransformCallback = (zoom, translateX, translateY) =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    var matrix = Matrix.CreateScale(zoom, zoom) *
-                                 Matrix.CreateTranslation(translateX, translateY);
-                    panel.SetMatrix(matrix);
-                });
-            };
-
-            viewTab.PanStepCallback = (deltaX, deltaY) =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    panel.SetMatrix(panel.Matrix * Matrix.CreateTranslation(deltaX, deltaY));
-                });
-            };
-
-            viewTab.ZoomStepCallback = (zoomDelta) =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    var currentMatrix = panel.Matrix;
-                    double centerX = panel.Bounds.Width / 2;
-                    double centerY = panel.Bounds.Height / 2;
-
-                    var matrix = currentMatrix *
-                                 Matrix.CreateTranslation(-centerX, -centerY) *
-                                 Matrix.CreateScale(zoomDelta, zoomDelta) *
-                                 Matrix.CreateTranslation(centerX, centerY);
-                    panel.SetMatrix(matrix);
-                });
-            };
-
-            viewTab.ResetViewCallback = () =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    panel.ResetMatrix();
-                });
-            };
+            viewTab.ZoomBorderProxy = new ZoomBorderProxy(panel);
         }
 
         public void RegisterPresenterChangedCallback(
@@ -127,84 +88,6 @@ namespace TgaBuilderAvaloniaUi.View
                     e.Handled = true;
                 }
             }, RoutingStrategies.Tunnel);
-        }
-
-        public void SourceFitButton_Click(object? sender, RoutedEventArgs e)
-        {
-            var zoom = SourcePanel.Bounds.Width / SourceImage.Bounds.Width;
-
-            var centerX = SourceImage.Bounds.Width / 2;
-
-            var centerY = SourceImage.Bounds.Height > SourcePanel.Bounds.Height
-                ? SourcePanel.Bounds.Height / zoom / 2
-                : SourceImage.Bounds.Height / 2;
-            
-            SourcePanel.CenterOn(new Point(centerX, centerY), zoom);
-        }
-
-        public void SourceFillButton_Click(object? sender, RoutedEventArgs e)
-        {
-            var zoom = SourcePanel.Bounds.Height / SourceImage.Bounds.Height;
-           
-            var centerX = SourceImage.Bounds.Width > SourcePanel.Bounds.Width
-                ? SourcePanel.Bounds.Width / zoom / 2
-                : SourceImage.Bounds.Width / 2;
-
-            var centerY = SourceImage.Bounds.Height / 2;
-
-            SourcePanel.CenterOn(new Point(centerX, centerY), zoom);
-        }
-
-        public void Source100Button_Click(object? sender, RoutedEventArgs e)
-        {
-            var centerX = SourceImage.Bounds.Width > SourcePanel.Bounds.Width
-                ? SourcePanel.Bounds.Width / 2
-                : SourceImage.Bounds.Width / 2;
-
-            var centerY = SourceImage.Bounds.Height > SourcePanel.Bounds.Height
-                ? SourcePanel.Bounds.Height / 2
-                : SourceImage.Bounds.Height / 2;
-
-            SourcePanel.CenterOn(new Point(centerX, centerY), 1);
-        }
-
-        public void TargetFitButton_Click(object? sender, RoutedEventArgs e)
-        {
-            var zoom = TargetPanel.Bounds.Width / TargetImage.Bounds.Width;
-
-            var centerX = TargetImage.Bounds.Width / 2;
-
-            var centerY = TargetImage.Bounds.Height > TargetPanel.Bounds.Height
-                ? TargetPanel.Bounds.Height / zoom / 2
-                : TargetImage.Bounds.Height / 2;
-            
-            TargetPanel.CenterOn(new Point(centerX, centerY), zoom);
-        }
-
-        public void TargetFillButton_Click(object? sender, RoutedEventArgs e)
-        {
-            var zoom = TargetPanel.Bounds.Height / TargetImage.Bounds.Height;
-
-            var centerX = TargetImage.Bounds.Width > TargetPanel.Bounds.Width
-                ? TargetPanel.Bounds.Width / zoom / 2
-                : TargetImage.Bounds.Width / 2;
-
-            var centerY = TargetImage.Bounds.Height / 2;
-
-            TargetPanel.CenterOn(new Point(centerX, centerY), zoom);
-        }
-
-        public void Target100Button_Click(object? sender, RoutedEventArgs e)
-        {
-            var centerX = TargetImage.Bounds.Width > TargetPanel.Bounds.Width
-                ? TargetPanel.Bounds.Width / 2
-                : TargetImage.Bounds.Width / 2;
-
-            var centerY = TargetImage.Bounds.Height > TargetPanel.Bounds.Height
-                ? TargetPanel.Bounds.Height / 2
-                : TargetImage.Bounds.Height / 2;
-
-            TargetPanel.CenterOn(new Point(centerX, centerY), 1);
         }
     }
 }
