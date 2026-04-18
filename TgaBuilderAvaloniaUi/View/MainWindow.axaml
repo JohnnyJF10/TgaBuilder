@@ -410,20 +410,21 @@
                     </TabItem.Header>
                     <DockPanel Margin="5,0,5,0" DataContext="{Binding SourceViewTab}">
                         <elements:IconButton
+                            x:Name="SourceFitButton"
                             Icon="{StaticResource arrow_autofit_width}"
                             ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
-                            Command="{Binding FillCommand}"
+                            Click="SourceFitButton_Click"
                             DockPanel.Dock="Left" />
                       <elements:IconButton
                             Icon="{StaticResource arrow_autofit_height}"
                             Margin="5,0"
                             ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
-                            Command="{Binding FitCommand}"
+                            Click="SourceFillButton_Click"
                             DockPanel.Dock="Left" />
                       <elements:IconButton
                             Icon="{StaticResource scale_fit}"
                             ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"
-                            Command="{Binding Zoom100Command}"
+                            Click="Source100Button_Click"
                             DockPanel.Dock="Left" />
 
                     </DockPanel>
@@ -459,6 +460,7 @@
                         PanButton="Middle"
                         Stretch="None"
                         ZoomSpeed="1.5"
+                        
                         ZoomX="{Binding Zoom, Mode=OneWayToSource}"
                         ZoomY="{Binding Zoom, Mode=OneWayToSource}">
                       
@@ -590,12 +592,12 @@
                 <elements:IconButton
                     Icon="{StaticResource zoom_out}"
                     ap:MouseOverInfoAP.InfoText="Zoom out (Ctrl + Mouse Wheel on the panel)"
-                    Command="{Binding SourceViewTab.ZoomOutCommand}"
+                    Command="{Binding #SourcePanel.ZoomOutCommand}"
                     DockPanel.Dock="Left" />
                 <elements:IconButton
                     Icon="{StaticResource zoom_in}"
                     ap:MouseOverInfoAP.InfoText="Zoom in (Ctrl + Mouse Wheel on the panel)"
-                    Command="{Binding SourceViewTab.ZoomInCommand}"
+                    Command="{Binding #SourcePanel.ZoomInCommand}"
                     DockPanel.Dock="Left" />
             </DockPanel>
         </Grid>
@@ -1060,19 +1062,19 @@
                             Icon="{StaticResource arrow_autofit_width}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
-                            Command="{Binding FillCommand}"
+                            Click="TargetFitButton_Click"
                             DockPanel.Dock="Left" />
                         <elements:IconButton
                             Icon="{StaticResource arrow_autofit_height}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
-                            Command="{Binding FitCommand}"
+                            Click="TargetFillButton_Click"
                             DockPanel.Dock="Left" />
                         <elements:IconButton
                             Icon="{StaticResource scale_fit}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"
-                            Command="{Binding Zoom100Command}"
+                            Click="Target100Button_Click"
                             DockPanel.Dock="Left" />
                     </DockPanel>
                 </TabItem>
@@ -1280,12 +1282,12 @@
                 <elements:IconButton
                     Icon="{StaticResource zoom_out}"
                     ap:MouseOverInfoAP.InfoText="Zoom out (Ctrl + Mouse Wheel on the panel)"
-                    Command="{Binding DestinationViewTab.ZoomOutCommand}"
+                    Command="{Binding #TargetPanel.ZoomOutCommand}"
                     DockPanel.Dock="Left" />
                 <elements:IconButton
                     Icon="{StaticResource zoom_in}"
                     ap:MouseOverInfoAP.InfoText="Zoom in (Ctrl + Mouse Wheel on the panel)"
-                    Command="{Binding DestinationViewTab.ZoomInCommand}"
+                    Command="{Binding #TargetPanel.ZoomInCommand}"
                     DockPanel.Dock="Left" />
             </DockPanel>
         </Grid>
