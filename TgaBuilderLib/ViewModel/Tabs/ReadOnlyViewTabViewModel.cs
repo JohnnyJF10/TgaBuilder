@@ -167,7 +167,7 @@ namespace TgaBuilderLib.ViewModel
             _panel.Zoom = zoom;
             OnPropertyChanged(nameof(Zoom));
             OnContentActualSizeChanged();
-            ApplyTransformCallback?.Invoke(zoom, 0, 0);
+            ApplyTransformCallback?.Invoke(zoom, -_panel.Presenter.PixelWidth / 4, 0);
         }
 
         public void Fit()
