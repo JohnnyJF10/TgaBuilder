@@ -45,6 +45,14 @@ namespace TgaBuilderAvaloniaUi.View
                 });
             };
 
+            viewTab.CenterOnCallback = (centerX, centerY, zoom) =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    panel.CenterOn(new Point(centerX, centerY), zoom);
+                });
+            };
+
             viewTab.PanStepCallback = (deltaX, deltaY) =>
             {
                 Dispatcher.UIThread.Post(() =>
@@ -127,84 +135,6 @@ namespace TgaBuilderAvaloniaUi.View
                     e.Handled = true;
                 }
             }, RoutingStrategies.Tunnel);
-        }
-
-        public void SourceFitButton_Click(object? sender, RoutedEventArgs e)
-        {
-            var zoom = SourcePanel.Bounds.Width / SourceImage.Bounds.Width;
-
-            var centerX = SourceImage.Bounds.Width / 2;
-
-            var centerY = SourceImage.Bounds.Height > SourcePanel.Bounds.Height
-                ? SourcePanel.Bounds.Height / zoom / 2
-                : SourceImage.Bounds.Height / 2;
-            
-            SourcePanel.CenterOn(new Point(centerX, centerY), zoom);
-        }
-
-        public void SourceFillButton_Click(object? sender, RoutedEventArgs e)
-        {
-            var zoom = SourcePanel.Bounds.Height / SourceImage.Bounds.Height;
-           
-            var centerX = SourceImage.Bounds.Width > SourcePanel.Bounds.Width
-                ? SourcePanel.Bounds.Width / zoom / 2
-                : SourceImage.Bounds.Width / 2;
-
-            var centerY = SourceImage.Bounds.Height / 2;
-
-            SourcePanel.CenterOn(new Point(centerX, centerY), zoom);
-        }
-
-        public void Source100Button_Click(object? sender, RoutedEventArgs e)
-        {
-            var centerX = SourceImage.Bounds.Width > SourcePanel.Bounds.Width
-                ? SourcePanel.Bounds.Width / 2
-                : SourceImage.Bounds.Width / 2;
-
-            var centerY = SourceImage.Bounds.Height > SourcePanel.Bounds.Height
-                ? SourcePanel.Bounds.Height / 2
-                : SourceImage.Bounds.Height / 2;
-
-            SourcePanel.CenterOn(new Point(centerX, centerY), 1);
-        }
-
-        public void TargetFitButton_Click(object? sender, RoutedEventArgs e)
-        {
-            var zoom = TargetPanel.Bounds.Width / TargetImage.Bounds.Width;
-
-            var centerX = TargetImage.Bounds.Width / 2;
-
-            var centerY = TargetImage.Bounds.Height > TargetPanel.Bounds.Height
-                ? TargetPanel.Bounds.Height / zoom / 2
-                : TargetImage.Bounds.Height / 2;
-            
-            TargetPanel.CenterOn(new Point(centerX, centerY), zoom);
-        }
-
-        public void TargetFillButton_Click(object? sender, RoutedEventArgs e)
-        {
-            var zoom = TargetPanel.Bounds.Height / TargetImage.Bounds.Height;
-
-            var centerX = TargetImage.Bounds.Width > TargetPanel.Bounds.Width
-                ? TargetPanel.Bounds.Width / zoom / 2
-                : TargetImage.Bounds.Width / 2;
-
-            var centerY = TargetImage.Bounds.Height / 2;
-
-            TargetPanel.CenterOn(new Point(centerX, centerY), zoom);
-        }
-
-        public void Target100Button_Click(object? sender, RoutedEventArgs e)
-        {
-            var centerX = TargetImage.Bounds.Width > TargetPanel.Bounds.Width
-                ? TargetPanel.Bounds.Width / 2
-                : TargetImage.Bounds.Width / 2;
-
-            var centerY = TargetImage.Bounds.Height > TargetPanel.Bounds.Height
-                ? TargetPanel.Bounds.Height / 2
-                : TargetImage.Bounds.Height / 2;
-
-            TargetPanel.CenterOn(new Point(centerX, centerY), 1);
         }
     }
 }

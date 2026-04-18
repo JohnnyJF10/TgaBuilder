@@ -116,6 +116,12 @@ namespace TgaBuilderLib.ViewModel
         public Action<double, double, double>? ApplyTransformCallback { get; set; }
 
         /// <summary>
+        /// Callback to invoke ZoomBorder.CenterOn(Point, zoom).
+        /// Parameters: (centerX, centerY, zoom).
+        /// </summary>
+        public Action<double, double, double>? CenterOnCallback { get; set; }
+
+        /// <summary>
         /// Callback to apply an incremental pan step.
         /// Parameters: (deltaX, deltaY) in screen-space coordinates.
         /// </summary>
@@ -139,51 +145,54 @@ namespace TgaBuilderLib.ViewModel
 
             ResetViewCallback?.Invoke();
 
-            var zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
-            ? Math.Max(
-                VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
-                VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight)
-            : Math.Min(
-                VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
-                VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight);
+            var zoom = VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight;
 
             _panel.Zoom = zoom;
             OnPropertyChanged(nameof(Zoom));
             OnContentActualSizeChanged();
             await Task.Delay(20);
-            ApplyTransformCallback?.Invoke(zoom, 0, 0);
+
+            var centerX = _panel.Presenter.PixelWidth > VisualPanelSize.ViewportWidth
+                ? VisualPanelSize.ViewportWidth / zoom / 2
+                : _panel.Presenter.PixelWidth / 2.0;
+
+            var centerY = _panel.Presenter.PixelHeight / 2.0;
+
+            CenterOnCallback?.Invoke(centerX, centerY, zoom);
         }
 
         public void Fill()
         {
-            var zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
-            ? Math.Max(
-                VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
-                VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight)
-            : Math.Min(
-                VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
-                VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight);
+            var zoom = VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight;
 
             _panel.Zoom = zoom;
             OnPropertyChanged(nameof(Zoom));
             OnContentActualSizeChanged();
-            ApplyTransformCallback?.Invoke(zoom, -_panel.Presenter.PixelWidth / 4, 0);
+
+            var centerX = _panel.Presenter.PixelWidth > VisualPanelSize.ViewportWidth
+                ? VisualPanelSize.ViewportWidth / zoom / 2
+                : _panel.Presenter.PixelWidth / 2.0;
+
+            var centerY = _panel.Presenter.PixelHeight / 2.0;
+
+            CenterOnCallback?.Invoke(centerX, centerY, zoom);
         }
 
         public void Fit()
         {
-            var zoom = _panel.Presenter.PixelWidth < _panel.Presenter.PixelHeight
-                ? Math.Min(
-                    VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
-                    VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight)
-                : Math.Max(
-                    VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth,
-                    VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight);
+            var zoom = VisualPanelSize.ViewportWidth / _panel.Presenter.PixelWidth;
 
             _panel.Zoom = zoom;
             OnPropertyChanged(nameof(Zoom));
             OnContentActualSizeChanged();
-            ApplyTransformCallback?.Invoke(zoom, 0, 0);
+
+            var centerX = _panel.Presenter.PixelWidth / 2.0;
+
+            var centerY = _panel.Presenter.PixelHeight > VisualPanelSize.ViewportHeight
+                ? VisualPanelSize.ViewportHeight / zoom / 2
+                : _panel.Presenter.PixelHeight / 2.0;
+
+            CenterOnCallback?.Invoke(centerX, centerY, zoom);
         }
 
         public void Zoom100()
@@ -191,9 +200,16 @@ namespace TgaBuilderLib.ViewModel
             _panel.Zoom = 1.0;
             OnPropertyChanged(nameof(Zoom));
             OnContentActualSizeChanged();
-            double offsetX = (_panel.Presenter.PixelWidth - VisualPanelSize.ViewportWidth) / 2;
-            double offsetY = (_panel.Presenter.PixelHeight - VisualPanelSize.ViewportHeight) / 2;
-            ApplyTransformCallback?.Invoke(1.0, -offsetX, -offsetY);
+
+            var centerX = _panel.Presenter.PixelWidth > VisualPanelSize.ViewportWidth
+                ? VisualPanelSize.ViewportWidth / 2
+                : _panel.Presenter.PixelWidth / 2.0;
+
+            var centerY = _panel.Presenter.PixelHeight > VisualPanelSize.ViewportHeight
+                ? VisualPanelSize.ViewportHeight / 2
+                : _panel.Presenter.PixelHeight / 2.0;
+
+            CenterOnCallback?.Invoke(centerX, centerY, 1.0);
         }
 
         public void ZoomIn()
