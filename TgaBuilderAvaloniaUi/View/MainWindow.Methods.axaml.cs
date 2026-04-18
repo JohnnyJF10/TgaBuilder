@@ -7,6 +7,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
+using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
@@ -35,55 +36,7 @@ namespace TgaBuilderAvaloniaUi.View
 
         public void RegisterZoomBorderCallbacks(ReadOnlyViewTabViewModel viewTab, ZoomBorder panel)
         {
-            viewTab.ApplyTransformCallback = (zoom, translateX, translateY) =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    var matrix = Matrix.CreateScale(zoom, zoom) *
-                                 Matrix.CreateTranslation(translateX, translateY);
-                    panel.SetMatrix(matrix);
-                });
-            };
-
-            viewTab.CenterOnCallback = (centerX, centerY, zoom) =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    panel.CenterOn(new Point(centerX, centerY), zoom);
-                });
-            };
-
-            viewTab.PanStepCallback = (deltaX, deltaY) =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    panel.SetMatrix(panel.Matrix * Matrix.CreateTranslation(deltaX, deltaY));
-                });
-            };
-
-            viewTab.ZoomStepCallback = (zoomDelta) =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    var currentMatrix = panel.Matrix;
-                    double centerX = panel.Bounds.Width / 2;
-                    double centerY = panel.Bounds.Height / 2;
-
-                    var matrix = currentMatrix *
-                                 Matrix.CreateTranslation(-centerX, -centerY) *
-                                 Matrix.CreateScale(zoomDelta, zoomDelta) *
-                                 Matrix.CreateTranslation(centerX, centerY);
-                    panel.SetMatrix(matrix);
-                });
-            };
-
-            viewTab.ResetViewCallback = () =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    panel.ResetMatrix();
-                });
-            };
+            viewTab.ZoomBorderProxy = new ZoomBorderProxy(panel);
         }
 
         public void RegisterPresenterChangedCallback(

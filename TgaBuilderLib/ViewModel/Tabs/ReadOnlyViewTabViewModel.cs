@@ -110,40 +110,16 @@ namespace TgaBuilderLib.ViewModel
         public ICommand ZoomOutCommand => _zoomOutCommand ??= new RelayCommand(ZoomOut);
 
         /// <summary>
-        /// Callback to apply a full view transformation (zoom + translate).
-        /// Parameters: (zoom, translateX, translateY) in screen-space coordinates.
+        /// Proxy for the ZoomBorder control, allowing the ViewModel to invoke
+        /// zoom/pan operations without referencing any view-layer types.
         /// </summary>
-        public Action<double, double, double>? ApplyTransformCallback { get; set; }
-
-        /// <summary>
-        /// Callback to invoke ZoomBorder.CenterOn(Point, zoom).
-        /// Parameters: (centerX, centerY, zoom).
-        /// </summary>
-        public Action<double, double, double>? CenterOnCallback { get; set; }
-
-        /// <summary>
-        /// Callback to apply an incremental pan step.
-        /// Parameters: (deltaX, deltaY) in screen-space coordinates.
-        /// </summary>
-        public Action<double, double>? PanStepCallback { get; set; }
-
-        /// <summary>
-        /// Callback to apply a zoom step at the center of the viewport.
-        /// Parameters: (zoomDelta) where values > 1 zoom in, &lt; 1 zoom out.
-        /// </summary>
-        public Action<double>? ZoomStepCallback { get; set; }
-
-        /// <summary>
-        /// Callback to reset the ZoomBorder to its initial state.
-        /// Used to fix ScrollViewer range issues upon content reset.
-        /// </summary>
-        public Action? ResetViewCallback { get; set; }
+        public IZoomBorderProxy? ZoomBorderProxy { get; set; }
 
         public async Task DefferedFill()
         {
             await Task.Delay(20);
 
-            ResetViewCallback?.Invoke();
+            ZoomBorderProxy?.ResetView();
 
             var zoom = VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight;
 
@@ -158,7 +134,7 @@ namespace TgaBuilderLib.ViewModel
 
             var centerY = _panel.Presenter.PixelHeight / 2.0;
 
-            CenterOnCallback?.Invoke(centerX, centerY, zoom);
+            ZoomBorderProxy?.CenterOn(centerX, centerY, zoom);
         }
 
         public void Fill()
@@ -175,7 +151,7 @@ namespace TgaBuilderLib.ViewModel
 
             var centerY = _panel.Presenter.PixelHeight / 2.0;
 
-            CenterOnCallback?.Invoke(centerX, centerY, zoom);
+            ZoomBorderProxy?.CenterOn(centerX, centerY, zoom);
         }
 
         public void Fit()
@@ -192,7 +168,7 @@ namespace TgaBuilderLib.ViewModel
                 ? VisualPanelSize.ViewportHeight / zoom / 2
                 : _panel.Presenter.PixelHeight / 2.0;
 
-            CenterOnCallback?.Invoke(centerX, centerY, zoom);
+            ZoomBorderProxy?.CenterOn(centerX, centerY, zoom);
         }
 
         public void Zoom100()
@@ -209,17 +185,17 @@ namespace TgaBuilderLib.ViewModel
                 ? VisualPanelSize.ViewportHeight / 2
                 : _panel.Presenter.PixelHeight / 2.0;
 
-            CenterOnCallback?.Invoke(centerX, centerY, 1.0);
+            ZoomBorderProxy?.CenterOn(centerX, centerY, 1.0);
         }
 
         public void ZoomIn()
         {
-            ZoomStepCallback?.Invoke(ZOOM_STEP_FACTOR);
+            ZoomBorderProxy?.ZoomStep(ZOOM_STEP_FACTOR);
         }
 
         public void ZoomOut()
         {
-            ZoomStepCallback?.Invoke(1.0 / ZOOM_STEP_FACTOR);
+            ZoomBorderProxy?.ZoomStep(1.0 / ZOOM_STEP_FACTOR);
         }
 
         private void SetPanelZoom(double zoom)
@@ -281,7 +257,7 @@ namespace TgaBuilderLib.ViewModel
             {
                 double deltaX = -_scrollDirection.X * SCROLL_SPEED_PIX_PER_SEC;
                 double deltaY = -_scrollDirection.Y * SCROLL_SPEED_PIX_PER_SEC;
-                PanStepCallback?.Invoke(deltaX, deltaY);
+                ZoomBorderProxy?.PanStep(deltaX, deltaY);
                 await Task.Delay(1000);
             }
         }
