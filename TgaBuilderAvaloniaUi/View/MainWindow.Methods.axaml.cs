@@ -2,6 +2,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
@@ -90,6 +92,31 @@ namespace TgaBuilderAvaloniaUi.View
                     scrollViewer.InvalidateArrange();
                 });
             };
+        }
+
+        public void RegisterScrollViewScrollSpeedModification(ScrollViewer scrollViewer)
+        {
+            scrollViewer.AddHandler(InputElement.PointerWheelChangedEvent, (sender, e) =>
+            {
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Control)
+                    || e.KeyModifiers.HasFlag(KeyModifiers.Alt)
+                    || e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                    return;
+
+                if (sender is ScrollViewer sv)
+                {
+                    var delta = e.Delta.Y;
+
+                    double speedFactor = 3.0;
+
+                    sv.Offset = new Vector(
+                        sv.Offset.X,
+                        sv.Offset.Y - delta * 50 * speedFactor
+                    );
+
+                    e.Handled = true;
+                }
+            }, RoutingStrategies.Tunnel);
         }
     }
 }

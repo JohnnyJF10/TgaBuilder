@@ -53,6 +53,10 @@ namespace TgaBuilderAvaloniaUi.View
                         RegisterPresenterChangedCallback(vm.Source, sourcePanel, sourceScrollViewer);
                     if (targetPanel != null && targetScrollViewer != null)
                         RegisterPresenterChangedCallback(vm.Destination, targetPanel, targetScrollViewer);
+                    if (sourceScrollViewer != null)
+                        RegisterScrollViewScrollSpeedModification(sourceScrollViewer);
+                    if (targetScrollViewer != null)
+                        RegisterScrollViewScrollSpeedModification(targetScrollViewer);
                 };
             }
         }

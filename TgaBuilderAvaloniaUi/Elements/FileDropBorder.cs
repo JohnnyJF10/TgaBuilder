@@ -47,9 +47,10 @@ namespace TgaBuilderAvaloniaUi.Elements
 
         private void OnDrop(object? sender, DragEventArgs e)
         {
-            if (IsFileDrop(e))
+            var files = e.DataTransfer.TryGetFiles();
+
+            if (files is not null)
             {
-                var files = e.Data.GetFiles();
 
                 if (files == null)
                 {
@@ -74,6 +75,6 @@ namespace TgaBuilderAvaloniaUi.Elements
         }
 
         private bool IsFileDrop(DragEventArgs e) =>
-            e.Data.Contains(DataFormats.Files);
+            e.DataTransfer.TryGetFiles() is not null;
     }
 }

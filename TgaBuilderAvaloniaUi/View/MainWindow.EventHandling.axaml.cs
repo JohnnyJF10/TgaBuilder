@@ -123,5 +123,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DestinationFormatSwitch.IsChecked == false)
                 DestinationFormatSwitch.IsChecked = true;
         }
+
+        
     }
 }
