@@ -48,9 +48,7 @@ namespace TgaBuilderAvaloniaUi
 
             mainWindow.Loaded += (_, _) =>
             {
-                //_ = mainViewModel.SourceViewTab.DefferedFill();
-                //_ = mainViewModel.DestinationViewTab.DefferedFill();
-                _ = PeriodicDebugLogging();
+                //_ = PeriodicDebugLogging();
             };
 
             mainWindow.ThemeToggleButton.Click += (_, _) => ToggleTheme();
@@ -97,26 +95,14 @@ namespace TgaBuilderAvaloniaUi
         if (mainWindow.TargetPanel is not ZoomBorder targetPanel)
             return;
 
-        if (mainWindow.SourceScrollViewer is not ScrollViewer sourceScroll)
-            return;
 
-        if (mainWindow.TargetScrollViewer is not ScrollViewer targetScroll)
-            return;
-
-
-        Debug.WriteLine(
-            $"Periodic Debug Log - " +
-            $"SourceZoom: {sourcePanel.ZoomX:F2}, " +
-            //$"SourceOffsetX: {sourcePanel.OffsetX:F2}, " +
-            //$"SourceOffsetY: {sourcePanel.OffsetY:F2}, " +
-            $"SourceScrollX: {sourceScroll.Offset.X:F2}, " +
-            $"SourceScrollY: {sourceScroll.Offset.Y:F2}, " +
-            $"TargetZoom: {targetPanel.ZoomX:F2}, " +
-            //$"TargetOffsetX: {targetPanel.OffsetX:F2}, " +
-            //$"TargetOffsetY: {targetPanel.OffsetY:F2}"
-            $"TargetScrollX: {targetScroll.Offset.X:F2}, " +
-            $"TargetScrollY: {targetScroll.Offset.Y:F2}"
-        );
+        //Debug.WriteLine(
+        //    $"Periodic Debug Log - " +
+        //    $"SourceZoom: {sourcePanel.ZoomX:F2}, " +
+        //    $"SourceOffset: ({sourcePanel.OffsetX:F2}, {sourcePanel.OffsetY:F2}), " +
+        //    $"TargetZoom: {targetPanel.ZoomX:F2}, " +
+        //    $"TargetOffset: ({targetPanel.OffsetX:F2}, {targetPanel.OffsetY:F2})"
+        //);
             
         
 

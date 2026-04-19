@@ -44,6 +44,7 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _zoomInCommand;
         private RelayCommand? _zoomOutCommand;
         private RelayCommand<(double X, double Y)>? _scrollCommand;
+        private RelayCommand? _endScrollCommand;
 
         double maxX;
         double maxY;
@@ -104,6 +105,7 @@ namespace TgaBuilderLib.ViewModel
         public ICommand FitCommand => _FitCommand ??= new RelayCommand(Fit);
         public ICommand Zoom100Command => _100PercentCommand ??= new RelayCommand(Zoom100);
         public ICommand ScrollCommand => _scrollCommand ??= new(DoPanelScrolling);
+        public ICommand EndScrollCommand => _endScrollCommand ??= new RelayCommand(() => IsScrolling = false);
         public ICommand ZoomInCommand => _zoomInCommand ??= new RelayCommand(() => Zoom *= 1.2);
         public ICommand ZoomOutCommand => _zoomOutCommand ??= new RelayCommand(() => Zoom /= 1.2);
 

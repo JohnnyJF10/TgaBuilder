@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Diagnostics;
+using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Commands;
 
@@ -43,6 +44,7 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _zoomInCommand;
         private RelayCommand? _zoomOutCommand;
         private RelayCommand<(double X, double Y)>? _scrollCommand;
+        private RelayCommand? _endScrollCommand;
 
         public PanelVisualSizeViewModel VisualPanelSize { get; set; }
 
@@ -98,6 +100,7 @@ namespace TgaBuilderLib.ViewModel
         public ICommand FitCommand => _FitCommand ??= new RelayCommand(Fit);
         public ICommand Zoom100Command => _100PercentCommand ??= new RelayCommand(Zoom100);
         public ICommand ScrollCommand => _scrollCommand ??= new(DoPanelScrolling);
+        public ICommand EndScrollCommand => _endScrollCommand ??= new RelayCommand(() => IsScrolling = false);
 
         /// <summary>
         /// Command to zoom in by a fixed step factor.

@@ -466,6 +466,7 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         ap:PanelMouseAP.ScrollCommand="{Binding ScrollCommand}"
+                        ap:PanelMouseAP.EndScrollCommand="{Binding EndScrollCommand}"
                         ap:SizeObserverAP.ObserveSize="True"
                         ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
                         ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
@@ -496,9 +497,12 @@
                                 </Transitions>
                             </Canvas.Transitions>
                             <elements:CheckerRectangle
-                                Width="{Binding ElementName=SourceImage, Path=Bounds.Width}"
-                                Height="{Binding ElementName=SourceImage, Path=Bounds.Height}"
-                                TileDensity="{Binding ElementName=SourcePanel, Path=DataContext.Zoom}"
+                                x:Name="SourceCheckerBoard"
+                                Width="{Binding #SourceImage.Bounds.Width}"
+                                Height="{Binding #SourceImage.Bounds.Height}"
+                                TileDensity="{Binding #SourcePanel.DataContext.Zoom}"
+                                CutOffX="{Binding #SourcePanel.OffsetX}"
+                                CutOffY="{Binding #SourcePanel.OffsetY}"
                                 />
                             <Image
                                 Name="SourceImage"
@@ -717,7 +721,8 @@
                 <Grid>
                     <elements:CheckerRectangle
                         Width="30"
-                        Height="30" />
+                        Height="30"
+                        TileDensity="1.25" />
                     <Button
                         Width="30"
                         Height="30"
@@ -741,7 +746,8 @@
                 <Grid Width="100" Height="100">
                     <elements:CheckerRectangle
                         Width="{Binding ElementName=SelectionImage, Path=Bounds.Width}"
-                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}" />
+                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}"
+                        TileDensity="1.25" />
                     <Image x:Name="SelectionImage"
                            RenderOptions.BitmapInterpolationMode="None"
                            Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
@@ -804,7 +810,8 @@
                     <Canvas x:Name="AnimCanvas" ClipToBounds="True">
                         <elements:CheckerRectangle
                             Width="100"
-                            Height="100" />
+                            Height="100"
+                            TileDensity="1.25" />
                         <Image
                             Name="AnimImage"
                             RenderOptions.BitmapInterpolationMode="None"
@@ -1142,6 +1149,7 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         ap:PanelMouseAP.ScrollCommand="{Binding ScrollCommand}"
+                        ap:PanelMouseAP.EndScrollCommand="{Binding EndScrollCommand}"
                         ap:SizeObserverAP.ObserveSize="True"
                         ap:SizeObserverAP.ObservedHeight="{Binding VisualPanelSize.ViewportHeight, Mode=OneWayToSource}"
                         ap:SizeObserverAP.ObservedWidth="{Binding VisualPanelSize.ViewportWidth, Mode=OneWayToSource}"
@@ -1170,11 +1178,14 @@
                                     <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
                                 </Transitions>
                             </Canvas.Transitions>
-                          <elements:CheckerRectangle
-                              Width="{Binding ElementName=TargetImage, Path=Bounds.Width}"
-                              Height="{Binding ElementName=TargetImage, Path=Bounds.Height}"
-                              TileDensity="{Binding ElementName=TargetPanel, Path=DataContext.Zoom}"
-                                />                          
+                            <elements:CheckerRectangle
+                                x:Name="TargetCheckerBoard"
+                                Width="{Binding #TargetImage.Bounds.Width}"
+                                Height="{Binding #TargetImage.Bounds.Height}"
+                                TileDensity="{Binding #TargetPanel.DataContext.Zoom}"
+                                CutOffX="{Binding #TargetPanel.OffsetX}"
+                                CutOffY="{Binding #TargetPanel.OffsetY}"
+                                />
                             <Image
                                 Name="TargetImage"
                                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
