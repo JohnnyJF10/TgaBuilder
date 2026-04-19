@@ -1,7 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 
 namespace TgaBuilderAvaloniaUi.Elements
@@ -58,12 +60,10 @@ namespace TgaBuilderAvaloniaUi.Elements
                     return;
                 }
 
-                var paths = new List<string>();
-
-                foreach (var file in files)
-                {
-                    paths.Add(file.Name);
-                }
+                var paths = files
+                    .Select(f => f.TryGetLocalPath())
+                    .Where(p => p != null)
+                    .ToList(); 
 
                 if (paths.Count > 0 && DropCommand?.CanExecute(paths) == true)
                 {

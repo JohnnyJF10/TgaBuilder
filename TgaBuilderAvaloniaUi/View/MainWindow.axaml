@@ -456,6 +456,7 @@
                 ap:MouseOverInfoAP.EnableMouseUpdates="True"
                 ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ClipToBounds="True"
+                DragDrop.AllowDrop="True"
                 DropCommand="{Binding FileDropSourceCommand}">
                 <ScrollViewer
                     x:Name="SourceScrollViewer"
@@ -1139,6 +1140,7 @@
                 ap:MouseOverInfoAP.EnableMouseUpdates="True"
                 ap:MouseOverInfoAP.InfoText="{Binding PanelHelp, Converter={StaticResource PanelHelpConverter}}"
                 ClipToBounds="True"
+                DragDrop.AllowDrop="True"
                 DropCommand="{Binding FileDropDestinationCommand}">
                 <ScrollViewer
                     x:Name="TargetScrollViewer"
