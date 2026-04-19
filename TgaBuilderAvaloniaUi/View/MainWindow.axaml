@@ -984,40 +984,40 @@
                             Classes="outlined"
                             Icon="{StaticResource arrow_down_right_circle}"
                             ap:MouseOverInfoAP.InfoText="Regular Mode"
-                            IsChecked="{Binding RegularModeSelected}" />
+                            IsChecked="{Binding RegularModeSelected, Mode=TwoWay}" />
                         <Rectangle Width="10" Height="10" />
                         <elements:IconToggleButton
                             Classes="outlined"
                             Icon="{StaticResource arrow_rotate_counterclockwise}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"
-                            IsChecked="{Binding RotateModeSelected}" />
+                            IsChecked="{Binding RotateModeSelected, Mode=TwoWay}" />
 
                         <elements:IconToggleButton
                             Classes="outlined"
                             Icon="{StaticResource flip_horizontal}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Mirror Horizontal Mode"
-                            IsChecked="{Binding MirrorHorizontalModeSelected}" />
+                            IsChecked="{Binding MirrorHorizontalModeSelected, Mode=TwoWay}" />
                         <elements:IconToggleButton
                             Classes="outlined"
                             Icon="{StaticResource flip_vertical}"
                             ap:MouseOverInfoAP.InfoText="Mirror Vertical Mode"
-                            IsChecked="{Binding MirrorVerticalModeSelected}" />
+                            IsChecked="{Binding MirrorVerticalModeSelected, Mode=TwoWay}" />
                         <Rectangle Width="10" Height="10" />
                         <elements:IconToggleButton
                             Classes="outlined"
                             Icon="{StaticResource pair}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Tile Rally Mode"
-                            IsChecked="{Binding TileSwapModeSelected}" />
+                            IsChecked="{Binding TileSwapModeSelected, Mode=TwoWay}" />
 
                         <elements:IconToggleButton
                             Classes="outlined"
                             Icon="{StaticResource link_square}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Tile Swap Mode"
-                            IsChecked="{Binding MoveModeSelected}" />
+                            IsChecked="{Binding MoveModeSelected, Mode=TwoWay}" />
 
                     </StackPanel>
                 </TabItem>

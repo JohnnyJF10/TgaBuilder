@@ -32,11 +32,11 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 
   - **Smooth Transition Helper** for soft directional transitions with adjustable **Pivot** and **Hardness**.
 
-  <video src="Screenshots/SmoothTransition.mp4" autoplay loop muted playsinline width="600"></video>
+  ![SmoothTransitionWin](Screenshots/SmoothTransition_gif.gif)
 
   - **Brick Transition Helper** for marker-based brick/background transitions based on a watershed algorithm with **Pivot**, **Reverse Pivot**, **Marker Radius**, optional **Slice Corners**, and expandable label-map preview.
 
-  <video src="Screenshots/BrickTransition.mp4" autoplay loop muted playsinline width="600"></video>
+  ![BrickTransitionWin](Screenshots/BrickTransition_gif.gif)
 
 
 ## Installation

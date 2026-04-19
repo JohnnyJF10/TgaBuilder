@@ -54,10 +54,10 @@
       <SolidColorBrush x:Key="OutlinedButtonBackgroundPointerOver" Color="#FFF0F0F0" />
       <SolidColorBrush x:Key="OutlinedButtonBorderBrushPointerOver" Color="#FF000000" />
       <SolidColorBrush x:Key="OutlinedButtonBackgroundPressed" Color="#FFE0E0E0" />
-      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundChecked" Color="#FFD4EDFF" />
-      <SolidColorBrush x:Key="OutlinedToggleButtonBorderBrushChecked" Color="#FF0063B1" />
-      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundCheckedPointerOver" Color="#FFC0DEFF" />
-      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundCheckedPressed" Color="#FFB0D0FF" />
+      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundChecked" Color="{DynamicResource SystemAccentColorLight3}" />
+      <SolidColorBrush x:Key="OutlinedToggleButtonBorderBrushChecked" Color="{DynamicResource SystemAccentColorLight1}" />
+      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundCheckedPointerOver" Color="{DynamicResource SystemAccentColorLight2}" />
+      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundCheckedPressed" Color="{DynamicResource SystemAccentColorLight3}" />
 
     </ResourceDictionary>
 
@@ -107,10 +107,10 @@
       <SolidColorBrush x:Key="OutlinedButtonBackgroundPointerOver" Color="#FF3B3B4C" />
       <SolidColorBrush x:Key="OutlinedButtonBorderBrushPointerOver" Color="#FFFFFFFF" />
       <SolidColorBrush x:Key="OutlinedButtonBackgroundPressed" Color="#FF1A1A2A" />
-      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundChecked" Color="#FF1A3A5E" />
-      <SolidColorBrush x:Key="OutlinedToggleButtonBorderBrushChecked" Color="#FF60AEFF" />
-      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundCheckedPointerOver" Color="#FF22466E" />
-      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundCheckedPressed" Color="#FF10274A" />
+      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundChecked" Color="{DynamicResource SystemAccentColorDark3}" />
+      <SolidColorBrush x:Key="OutlinedToggleButtonBorderBrushChecked" Color="{DynamicResource SystemAccentColorDark1}" />
+      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundCheckedPointerOver" Color="{DynamicResource SystemAccentColorDark2}" />
+      <SolidColorBrush x:Key="OutlinedToggleButtonBackgroundCheckedPressed" Color="{DynamicResource SystemAccentColorDark3}" />
 
     </ResourceDictionary>
 
