@@ -62,22 +62,26 @@
                 VerticalAlignment="Stretch"
                 Background="Transparent">
                 <Grid>
-                    <Rectangle
-                        Margin="10"
-                        Fill="{StaticResource CheckerBrush}" />
+                    <Viewbox Stretch="Uniform" Margin="10"
+                             RenderOptions.BitmapInterpolationMode="None">
+                        <Grid Width="{Binding Image1.PixelWidth, FallbackValue=128}"
+                              Height="{Binding Image1.PixelHeight, FallbackValue=128}">
+                            <elements:CheckerRectangle TileDensity="1" />
+                            <Image
+                                x:Name="Image1"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Fill"/>
+                        </Grid>
+                    </Viewbox>
                     <TextBlock
                         Text="Brick Texture"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         FontSize="14"
+                        IsVisible="{Binding Image1, Converter={x:Static ObjectConverters.IsNull}}"
                         IsHitTestVisible="False" />
-                    <Image
-                        x:Name="Image1"
-                        Margin="10"
-                        RenderOptions.BitmapInterpolationMode="None"
-                        Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
-                        Stretch="Uniform"/>
                 </Grid>
             </Border>
             <StackPanel
@@ -124,20 +128,26 @@
                 VerticalAlignment="Stretch"
                 Background="Transparent">
                 <Grid>
-                    <Rectangle
-                        Fill="{StaticResource CheckerBrush}" />
+                    <Viewbox Stretch="Uniform"
+                             RenderOptions.BitmapInterpolationMode="None">
+                        <Grid Width="{Binding Image2.PixelWidth, FallbackValue=128}"
+                              Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            <elements:CheckerRectangle TileDensity="1" />
+                            <Image
+                                x:Name="Image2"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Fill"/>
+                        </Grid>
+                    </Viewbox>
                     <TextBlock
                         Text="Background Texture"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         FontSize="14"
+                        IsVisible="{Binding Image2, Converter={x:Static ObjectConverters.IsNull}}"
                         IsHitTestVisible="False" />
-                    <Image
-                        x:Name="Image2"
-                        RenderOptions.BitmapInterpolationMode="None"
-                        Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
-                        Stretch="Uniform"/>
                 </Grid>
             </Border>
             <StackPanel

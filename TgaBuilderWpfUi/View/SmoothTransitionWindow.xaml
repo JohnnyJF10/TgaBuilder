@@ -85,22 +85,36 @@
             AllowDrop="True"
             Background="Transparent">
             <Grid>
-                <Rectangle
-                    Margin="10"
-                    Fill="{StaticResource CheckerBrush}" />
+                <Viewbox Stretch="Uniform" Margin="10"
+                         RenderOptions.BitmapScalingMode="NearestNeighbor">
+                    <Grid Width="{Binding Image1.PixelWidth, FallbackValue=128}"
+                          Height="{Binding Image1.PixelHeight, FallbackValue=128}">
+                        <Rectangle Fill="{StaticResource CheckerBrush}" />
+                        <Image
+                            x:Name="Image1"
+                            RenderOptions.BitmapScalingMode="NearestNeighbor"
+                            Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                            Stretch="Fill" />
+                    </Grid>
+                </Viewbox>
                 <TextBlock
                     Text="Texture 1"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                     FontSize="14"
-                    IsHitTestVisible="False" />
-                <Image
-                    x:Name="Image1"
-                    Margin="10"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
-                    Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform" />
+                    IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Image1}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
         </Border>
         <Button
@@ -136,20 +150,36 @@
             AllowDrop="True"
             Background="Transparent">
             <Grid>
-                <Rectangle
-                    Fill="{StaticResource CheckerBrush}" />
+                <Viewbox Stretch="Uniform"
+                         RenderOptions.BitmapScalingMode="NearestNeighbor">
+                    <Grid Width="{Binding Image2.PixelWidth, FallbackValue=128}"
+                          Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                        <Rectangle Fill="{StaticResource CheckerBrush}" />
+                        <Image
+                            x:Name="Image2"
+                            RenderOptions.BitmapScalingMode="NearestNeighbor"
+                            Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                            Stretch="Fill" />
+                    </Grid>
+                </Viewbox>
                 <TextBlock
                     Text="Texture 2"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                     FontSize="14"
-                    IsHitTestVisible="False" />
-                <Image
-                    x:Name="Image2"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
-                    Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform" />
+                    IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Image2}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
         </Border>
         <Button
