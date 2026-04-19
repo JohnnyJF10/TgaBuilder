@@ -200,5 +200,21 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
             return mainWindow;
         }
+
+        public static readonly AttachedProperty<ICommand?> EndScrollCommandProperty =
+            AvaloniaProperty.RegisterAttached<Control, ICommand?>(
+                name: "EndScrollCommand",
+                ownerType: typeof(PanelMouseAP),
+                defaultValue: null);
+
+        public static void SetEndScrollCommand(Control element, ICommand value)
+        {
+            element.SetValue(EndScrollCommandProperty, value);
+        }
+
+        public static ICommand? GetEndScrollCommand(Control element)
+        {
+            return element.GetValue(EndScrollCommandProperty);
+        }
     }
 }

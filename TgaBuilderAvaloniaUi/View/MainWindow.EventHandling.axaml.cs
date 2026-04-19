@@ -78,12 +78,16 @@ namespace TgaBuilderAvaloniaUi.View
                 _modifier = IsGridlessModifier(e.KeyModifiers) ? MouseModifier.Alt : MouseModifier.None;
             }
 
-            if (CurrentPanel != null && PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand)
+            if (CurrentPanel != null && 
+                PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand &&
+                PanelMouseAP.GetEndScrollCommand(CurrentPanel) is ICommand endScrollCommand)
             {
                 var panelPos = e.GetPosition(CurrentPanel);
                 var imagePos = e.GetPosition(CurrentImage);
                 if (imagePos.X > 0 && imagePos.Y > 0 && imagePos.X < CurrentImage.Bounds.Width && imagePos.Y < CurrentImage.Bounds.Height)
                     scrollCommand.Execute((panelPos.X, panelPos.Y));
+                else
+                    endScrollCommand.Execute(null);
                 
             }
 
@@ -113,6 +117,9 @@ namespace TgaBuilderAvaloniaUi.View
             CurrentImage.InvalidateVisual();
 
             var hit = this.GetVisualsAt(e.GetPosition(this));
+
+            if (hit.Count() > 1 && hit.ElementAt(0) != CurrentImage && hit.ElementAt(1) != CurrentImage)
+                PanelMouseAP.OnPointerExited(CurrentImage);
 
             e.Pointer.Capture(null);
             _modifier = MouseModifier.None;

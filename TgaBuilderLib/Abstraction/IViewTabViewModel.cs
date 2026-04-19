@@ -31,6 +31,7 @@ namespace TgaBuilderLib.Abstraction
         ICommand FitCommand { get; }
         ICommand Zoom100Command { get; }
         ICommand ScrollCommand { get; }
+        ICommand EndScrollCommand { get; }
         ICommand ZoomInCommand { get; }
         ICommand ZoomOutCommand { get; }
 

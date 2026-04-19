@@ -48,9 +48,7 @@ namespace TgaBuilderAvaloniaUi
 
             mainWindow.Loaded += (_, _) =>
             {
-                //_ = mainViewModel.SourceViewTab.DefferedFill();
-                //_ = mainViewModel.DestinationViewTab.DefferedFill();
-                _ = PeriodicDebugLogging();
+                //_ = PeriodicDebugLogging();
             };
 
             mainWindow.ThemeToggleButton.Click += (_, _) => ToggleTheme();
@@ -98,13 +96,13 @@ namespace TgaBuilderAvaloniaUi
             return;
 
 
-        Debug.WriteLine(
-            $"Periodic Debug Log - " +
-            $"SourceZoom: {sourcePanel.ZoomX:F2}, " +
-            $"SourceOffset: ({sourcePanel.OffsetX:F2}, {sourcePanel.OffsetY:F2}), " +
-            $"TargetZoom: {targetPanel.ZoomX:F2}, " +
-            $"TargetOffset: ({targetPanel.OffsetX:F2}, {targetPanel.OffsetY:F2})"
-        );
+        //Debug.WriteLine(
+        //    $"Periodic Debug Log - " +
+        //    $"SourceZoom: {sourcePanel.ZoomX:F2}, " +
+        //    $"SourceOffset: ({sourcePanel.OffsetX:F2}, {sourcePanel.OffsetY:F2}), " +
+        //    $"TargetZoom: {targetPanel.ZoomX:F2}, " +
+        //    $"TargetOffset: ({targetPanel.OffsetX:F2}, {targetPanel.OffsetY:F2})"
+        //);
             
         
 
