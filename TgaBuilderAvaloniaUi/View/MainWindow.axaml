@@ -718,9 +718,10 @@
                     Command="{Binding SelectionMonoColorFillCommand}"
                     CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
                 <Grid>
-                    <elements:CheckerRectangle
+                    <Rectangle
                         Width="30"
-                        Height="30" />
+                        Height="30"
+                        Fill="{StaticResource CheckerBrush}" />
                     <Button
                         Width="30"
                         Height="30"
@@ -742,9 +743,10 @@
                 BorderThickness="1"
                 Command="{Binding SwitchToDestinationPlacingModeCommand}">
                 <Grid Width="100" Height="100">
-                    <elements:CheckerRectangle
+                    <Rectangle
                         Width="{Binding ElementName=SelectionImage, Path=Bounds.Width}"
-                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}" />
+                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}"
+                        Fill="{StaticResource CheckerBrush}" />
                     <Image x:Name="SelectionImage"
                            RenderOptions.BitmapInterpolationMode="None"
                            Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
@@ -805,9 +807,10 @@
                     ap:MouseOverInfoAP.InfoText="Animation View"
                     BorderThickness="0">
                     <Canvas x:Name="AnimCanvas" ClipToBounds="True">
-                        <elements:CheckerRectangle
+                        <Rectangle
                             Width="100"
-                            Height="100" />
+                            Height="100"
+                            Fill="{StaticResource CheckerBrush}" />
                         <Image
                             Name="AnimImage"
                             RenderOptions.BitmapInterpolationMode="None"

@@ -148,6 +148,7 @@
                Margin="5.1" 
                Width="{Binding ContentActualWidth}" 
                Height="{Binding ContentActualHeight}" 
+               Fill="{StaticResource CheckerBrush}"
                IsHitTestVisible="False" />
 
     <!-- File drop / image presenter -->
@@ -182,11 +183,6 @@
                 <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
               </Transitions>
             </Canvas.Transitions>
-            <elements:CheckerRectangle
-                Width="{Binding ElementName=BatchLoadedImage, Path=Bounds.Width}"
-                Height="{Binding ElementName=BatchLoadedImage, Path=Bounds.Height}"
-                TileDensity="{Binding ElementName=BatchLoaderWin, Path=DataContext.Zoom}"
-                                />
             <Image
                 Name="BatchLoadedImage"
                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
