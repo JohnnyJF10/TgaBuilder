@@ -15,7 +15,7 @@
     Title="TgaBuilder"
     Width="870"
     Height="570"
-    MinWidth="850"
+    MinWidth="870"
     MinHeight="620"
     ap:PanelMouseAP.EnterPanelCommand="{Binding EnterPanelCommand}"
     ap:PanelMouseAP.LeavePanelCommand="{Binding LeavePanelCommand}"
@@ -273,6 +273,10 @@
                             DockPanel.Dock="Right" />
                         <NumericUpDown
                             Margin="5,0"
+                            Minimum="1"
+                            Maximum="16"
+                            FormatString="N0"
+                            ParsingNumberStyle="Integer"
                             ap:MouseOverInfoAP.InfoText="Set the number of pages of the TR file to import. Each page has a width of 256 pix."
                             Value="{Binding SourceIO.TrImportHorPageNum, UpdateSourceTrigger=PropertyChanged}" />
                     </DockPanel>
@@ -290,12 +294,16 @@
                         <NumericUpDown
                             Margin="0,0,2.5,0"
                             HorizontalAlignment="Stretch"
+                            FormatString="N0"
+                            ParsingNumberStyle="Integer"
                             ap:MouseOverInfoAP.InfoText="Set the offset of the source texture panel in X direction"
                             Value="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged}" />
                         <NumericUpDown
                             Grid.Column="1"
                             Margin="2.5,0,0,0"
                             HorizontalAlignment="Stretch"
+                            FormatString="N0"
+                            ParsingNumberStyle="Integer"
                             ap:MouseOverInfoAP.InfoText="Set the offset of the source texture panel in Y direction"
                             Value="{Binding OffsetY, UpdateSourceTrigger=PropertyChanged}" />
                         <StackPanel Grid.Column="2" Orientation="Horizontal">
@@ -595,9 +603,13 @@
                     FontWeight="DemiBold"
                     Text="{Binding SourceIO.LastFileName}" />
                 <NumericUpDown
-                    Width="105"
+                    Width="115"
                     Height="23"
                     Margin="0,0,0,4"
+                    Minimum="8"
+                    Maximum="256"
+                    FormatString="N0"
+                    ParsingNumberStyle="Integer"
                     ap:MouseOverInfoAP.InfoText="Source Picker size (Shift + Mouse Wheel on the panel)"
                     DataContext="{Binding Source}"
                     DockPanel.Dock="Right"
@@ -667,6 +679,7 @@
                     Width="36"
                     Height="36"
                     Padding="0"
+                    Background="Transparent"
                     ap:MouseOverInfoAP.InfoText="Open Smooth Transition Helper"
                     Command="{Binding SmoothTransitionCommand}">
                     <PathIcon Data="{StaticResource smooth_transition}"
@@ -677,6 +690,7 @@
                     Width="36"
                     Height="36"
                     Padding="0"
+                    Background="Transparent"
                     ap:MouseOverInfoAP.InfoText="Open Brick Transition Helper"
                     Command="{Binding BrickTransitionCommand}">
                     <PathIcon Data="{StaticResource brick_transition}"
@@ -934,12 +948,20 @@
                         </Grid.ColumnDefinitions>
                         <NumericUpDown
                             HorizontalAlignment="Stretch"
+                            Minimum="1"
+                            Maximum="128"
+                            FormatString="N0"
+                            ParsingNumberStyle="Integer"
                             ap:MouseOverInfoAP.InfoText="Set the number of pages of the target texture panel in Y direction. Each page has a height of 256 pix."
                             Value="{Binding NumPagesY, UpdateSourceTrigger=PropertyChanged}" />
                         <NumericUpDown
                             Grid.Column="1"
                             Margin="5,0"
                             HorizontalAlignment="Stretch"
+                            Minimum="1"
+                            Maximum="16"
+                            FormatString="N0"
+                            ParsingNumberStyle="Integer"
                             ap:MouseOverInfoAP.InfoText="Set the number of pages of the target texture panel in X direction. Possible values are 1, 2 and 4."
                             Value="{Binding NumPagesX, UpdateSourceTrigger=PropertyChanged}" />
                         <elements:IconToggleButton
@@ -1303,9 +1325,13 @@
                     FontWeight="DemiBold"
                     Text="{Binding TargetIO.LastFileName}" />
                 <NumericUpDown
-                    Width="105"
+                    Width="115"
                     Height="23"
                     Margin="0,0,0,4"
+                    Minimum="8"
+                    Maximum="256"
+                    FormatString="N0"
+                    ParsingNumberStyle="Integer"
                     ap:MouseOverInfoAP.InfoText="Destination Picker size (Shift + Mouse Wheel on the panel)"
                     DataContext="{Binding Destination}"
                     DockPanel.Dock="Right"
