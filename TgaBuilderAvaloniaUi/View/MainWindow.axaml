@@ -450,6 +450,14 @@
                     </DockPanel>
                 </TabItem>
             </TabControl>
+            <Rectangle
+                Grid.Row="1"
+                Fill="{StaticResource CheckerBrush}"
+                DataContext="{Binding SourceViewTab}"
+                Width="{Binding ContentActualWidth}"
+                Height="{Binding ContentActualHeight}"
+                Margin="0.1"
+                IsHitTestVisible="False" />
             <elements:FileDropBorder
                 Grid.Row="1"
                 Margin="10,0"
@@ -495,11 +503,6 @@
                                     <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
                                 </Transitions>
                             </Canvas.Transitions>
-                            <elements:CheckerRectangle
-                                Width="{Binding ElementName=SourceImage, Path=Bounds.Width}"
-                                Height="{Binding ElementName=SourceImage, Path=Bounds.Height}"
-                                TileDensity="{Binding ElementName=SourcePanel, Path=DataContext.Zoom}"
-                                />
                             <Image
                                 Name="SourceImage"
                                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
@@ -1126,6 +1129,14 @@
                 </TabItem>
 
             </TabControl>
+            <Rectangle
+                Grid.Row="1"
+                Fill="{StaticResource CheckerBrush}"
+                DataContext="{Binding DestinationViewTab}"
+                Width="{Binding ContentActualWidth}"
+                Height="{Binding ContentActualHeight}"
+                Margin="0.1"
+                IsHitTestVisible="False" />
             <elements:FileDropBorder
                 Grid.Row="1"
                 Margin="10,0"
@@ -1170,11 +1181,6 @@
                                     <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
                                 </Transitions>
                             </Canvas.Transitions>
-                          <elements:CheckerRectangle
-                              Width="{Binding ElementName=TargetImage, Path=Bounds.Width}"
-                              Height="{Binding ElementName=TargetImage, Path=Bounds.Height}"
-                              TileDensity="{Binding ElementName=TargetPanel, Path=DataContext.Zoom}"
-                                />                          
                             <Image
                                 Name="TargetImage"
                                 ap:PanelMouseAP.CheckMouseEnterLeave="True"
