@@ -102,19 +102,10 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                    FontSize="14"
-                    IsHitTestVisible="False">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Image1}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    FontSize="18"
+                    Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                    IsHitTestVisible="False"/>
+
             </Grid>
         </Border>
         <Button
@@ -167,19 +158,9 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                    FontSize="14"
-                    IsHitTestVisible="False">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Image2}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    FontSize="18"
+                    Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                    IsHitTestVisible="False"/>
             </Grid>
         </Border>
         <Button

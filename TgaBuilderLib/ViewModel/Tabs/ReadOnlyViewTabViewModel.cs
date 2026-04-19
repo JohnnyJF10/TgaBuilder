@@ -70,26 +70,6 @@ namespace TgaBuilderLib.ViewModel
             set => SetPanelZoom(value);
         }
 
-        public double MultipliedOffsetX
-        {
-            get => -1.0 * OffsetX * Zoom;
-            set
-            {
-                OffsetX = -1.0 * value / Zoom;
-                OnCallerPropertyChanged();
-            }
-        }
-
-        public double MultipliedOffsetY
-        {
-            get => -1.0 * OffsetY * Zoom;
-            set
-            {
-                OffsetY = -1.0 * value / Zoom;
-                OnCallerPropertyChanged();
-            }
-        }
-
         public double HorizonatlMargin
         {
             get => _horizonatlMargin;

@@ -79,7 +79,7 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                        IsVisible="{Binding Image1, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        IsVisible="{Binding InitTextVisible}"
                         FontSize="24"
                         IsHitTestVisible="False" />
                     </Grid>
@@ -136,7 +136,7 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                        IsVisible="{Binding Image2, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        IsVisible="{Binding InitTextVisible}"
                         FontSize="24"
                         IsHitTestVisible="False" />
                 </Grid>

@@ -14,7 +14,7 @@ namespace TgaBuilderAvaloniaUi.View
     public partial class MainWindow
     {
         private static bool IsGridlessModifier(KeyModifiers modifiers)
-            => modifiers.HasFlag(KeyModifiers.Alt) || modifiers.HasFlag(KeyModifiers.Control);
+            => modifiers.HasFlag(KeyModifiers.Alt);
 
         private void Window_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
@@ -79,6 +79,7 @@ namespace TgaBuilderAvaloniaUi.View
             }
 
             if (CurrentPanel != null && 
+                !e.Properties.IsMiddleButtonPressed &&
                 PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand &&
                 PanelMouseAP.GetEndScrollCommand(CurrentPanel) is ICommand endScrollCommand)
             {
@@ -118,7 +119,7 @@ namespace TgaBuilderAvaloniaUi.View
 
             var hit = this.GetVisualsAt(e.GetPosition(this));
 
-            if (hit.Count() > 1 && hit.ElementAt(0) != CurrentImage && hit.ElementAt(1) != CurrentImage)
+            if (hit.Count() > 1 && !hit.Contains(CurrentImage))
                 PanelMouseAP.OnPointerExited(CurrentImage);
 
             e.Pointer.Capture(null);

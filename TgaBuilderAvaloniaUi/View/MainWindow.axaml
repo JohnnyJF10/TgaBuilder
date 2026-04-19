@@ -488,9 +488,9 @@
                       
                         <Canvas
                             x:Name="SourceCanvas"
-                            Width="{Binding ElementName=SourceImage, Path=Bounds.Width}"
-                            Height="{Binding ElementName=SourceImage, Path=Bounds.Height}"
-                            DataContext="{Binding DataContext.Source, ElementName=MainWin}">
+                            Width="{Binding #SourceImage.Bounds.Width}"
+                            Height="{Binding #SourceImage.Bounds.Height}"
+                            DataContext="{Binding #MainWin.DataContext.Source}">
                             <Canvas.Transitions>
                                 <Transitions>
                                     <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
@@ -545,8 +545,8 @@
                                 StrokeThickness="{Binding StrokeThickness}"
                                 TopStepPosition="{Binding StepPositionTop}" />
                             <elements:VisualGrid
-                                Width="{Binding ElementName=SourceImage, Path=Bounds.Width}"
-                                Height="{Binding ElementName=SourceImage, Path=Bounds.Height}"
+                                Width="{Binding #SourceImage.Bounds.Width}"
+                                Height="{Binding #SourceImage.Bounds.Height}"
                                 CellSize="{Binding CellSize}"
                                 DataContext="{Binding VisualGrid}"
                                 GridOffsetX="{Binding OffsetX}"
@@ -745,8 +745,8 @@
                 Command="{Binding SwitchToDestinationPlacingModeCommand}">
                 <Grid Width="100" Height="100">
                     <elements:CheckerRectangle
-                        Width="{Binding ElementName=SelectionImage, Path=Bounds.Width}"
-                        Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}"
+                        Width="{Binding #SelectionImage.Bounds.Width}"
+                        Height="{Binding #SelectionImage.Bounds.Height}"
                         TileDensity="1.25" />
                     <Image x:Name="SelectionImage"
                            RenderOptions.BitmapInterpolationMode="None"
@@ -1169,10 +1169,10 @@
                         ZoomY="{Binding Zoom, Mode=OneWayToSource}">
                         <Canvas
                             x:Name="TargetCanvas"
-                            Width="{Binding ElementName=TargetImage, Path=Bounds.Width}"
-                            Height="{Binding ElementName=TargetImage, Path=Bounds.Height}"
+                            Width="{Binding #TargetImage.Bounds.Width}"
+                            Height="{Binding #TargetImage.Bounds.Height}"
                             ClipToBounds="True"
-                            DataContext="{Binding DataContext.Destination, ElementName=MainWin}">
+                            DataContext="{Binding #MainWin.DataContext.Destination}">
                             <Canvas.Transitions>
                                 <Transitions>
                                     <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
@@ -1227,10 +1227,10 @@
                             <Rectangle
                                 Canvas.Left="{Binding Picker.X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Picker.Y, UpdateSourceTrigger=PropertyChanged}"
-                                Width="{Binding ElementName=SelectionPreviewImage, Path=Bounds.Width}"
-                                Height="{Binding ElementName=SelectionPreviewImage, Path=Bounds.Height}"
+                                Width="{Binding #SelectionPreviewImage.Bounds.Width}"
+                                Height="{Binding #SelectionPreviewImage.Bounds.Height}"
                                 IsHitTestVisible="False"
-                                IsVisible="{Binding ElementName=SelectionPreviewImage, Path=IsVisible}"
+                                IsVisible="{Binding #SelectionPreviewImage.IsVisible}"
                                 Stroke="Yellow"
                                 StrokeThickness="{Binding SelectionShape.StrokeThickness}" />
 
@@ -1436,7 +1436,7 @@
         </DockPanel>
         </Border>
       <notif:NotificationMessageContainer
-        Manager="{Binding Manager, ElementName=MainWin}"
+        Manager="{Binding #MainWin.Manager}"
         Grid.Row="1"
         Grid.ColumnSpan="2"/>
     </Grid>

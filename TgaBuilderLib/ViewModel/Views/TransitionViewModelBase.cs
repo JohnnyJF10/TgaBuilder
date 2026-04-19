@@ -60,6 +60,8 @@ public abstract class TransitionViewModelBase : ViewModelBase
     private IWriteableBitmap _image2;
     private IWriteableBitmap _resultImage;
 
+    private bool _initTextVisible = true;
+
     private byte[] _pixels1;
     private byte[] _pixels2;
 
@@ -98,6 +100,12 @@ public abstract class TransitionViewModelBase : ViewModelBase
     {
         get => _resultImage;
         set => SetCallerProperty(ref _resultImage, value);
+    }
+
+    public bool InitTextVisible
+    {
+        get => _initTextVisible;
+        set => SetCallerProperty(ref _initTextVisible, value);
     }
 
     public IVisualInvalidator? VisualInvalidator { get; set; }
@@ -264,6 +272,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
         _pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
         Image1.CopyPixels(_pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
+        InitTextVisible = false;
     }
 
     private void LoadImage2()
@@ -274,6 +283,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
         
         _pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
         Image2.CopyPixels(_pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
+        InitTextVisible = false;
     }
 
     private void SwapImages()
