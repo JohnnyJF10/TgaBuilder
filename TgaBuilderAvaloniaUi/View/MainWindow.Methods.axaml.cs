@@ -59,9 +59,14 @@ namespace TgaBuilderAvaloniaUi.View
         {
             scrollViewer.AddHandler(InputElement.PointerWheelChangedEvent, (sender, e) =>
             {
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                {
+                    e.Handled = true;
+                    return;
+                }
+
                 if (e.KeyModifiers.HasFlag(KeyModifiers.Control)
-                    || e.KeyModifiers.HasFlag(KeyModifiers.Alt)
-                    || e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                    || e.KeyModifiers.HasFlag(KeyModifiers.Alt))
                     return;
 
                 if (sender is ScrollViewer sv)
