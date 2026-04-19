@@ -21,8 +21,6 @@ namespace TgaBuilderAvaloniaUi.View
 
         public bool IsLoaded => throw new NotImplementedException();
 
-        public Cursor EyedropperCursor = new Cursor(StandardCursorType.Hand);
-
         private MouseModifier _modifier = MouseModifier.None;
 
         private Dictionary<Image, ZoomBorder>? _imagePanelDict;
