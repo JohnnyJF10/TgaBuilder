@@ -114,9 +114,6 @@ namespace TgaBuilderAvaloniaUi.View
 
             var hit = this.GetVisualsAt(e.GetPosition(this));
 
-            if (hit.Count() > 0 && hit.ElementAt(0) != CurrentImage)
-                PanelMouseAP.OnPointerExited(CurrentImage);
-
             e.Pointer.Capture(null);
             _modifier = MouseModifier.None;
         }
