@@ -1178,9 +1178,9 @@
                             </Canvas.Transitions>
                             <elements:CheckerRectangle
                                 x:Name="TargetCheckerBoard"
-                                Width="{Binding #SourceImage.Bounds.Width}"
-                                Height="{Binding #SourceImage.Bounds.Height}"
-                                TileDensity="{Binding #SourcePanel.DataContext.Zoom}"
+                                Width="{Binding #TargetImage.Bounds.Width}"
+                                Height="{Binding #TargetImage.Bounds.Height}"
+                                TileDensity="{Binding #TargetPanel.DataContext.Zoom}"
                                 CutOffX="{Binding #TargetPanel.OffsetX}"
                                 CutOffY="{Binding #TargetPanel.OffsetY}"
                                 />
