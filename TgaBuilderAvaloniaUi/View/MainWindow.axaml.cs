@@ -21,8 +21,6 @@ namespace TgaBuilderAvaloniaUi.View
 
         public bool IsLoaded => throw new NotImplementedException();
 
-        public Cursor EyedropperCursor = new Cursor(StandardCursorType.Hand);
-
         private MouseModifier _modifier = MouseModifier.None;
 
         private Dictionary<Image, ZoomBorder>? _imagePanelDict;
@@ -33,6 +31,7 @@ namespace TgaBuilderAvaloniaUi.View
             AddHandler(InputElement.PointerReleasedEvent, Window_PointerReleased, handledEventsToo: true);
             AddHandler(InputElement.PointerMovedEvent, Window_PointerMoved, handledEventsToo: true);
             AddHandler(InputElement.DoubleTappedEvent, Window_DoubleTapped, handledEventsToo: true);
+            AddHandler(InputElement.PointerWheelChangedEvent, Window_PointerWheelChanged, handledEventsToo: true);
 
             InitializeComponent();
             base.DataContext = mainViewModel;
@@ -43,10 +42,20 @@ namespace TgaBuilderAvaloniaUi.View
                 {
                     var sourcePanel = this.FindControl<ZoomBorder>("SourcePanel");
                     var targetPanel = this.FindControl<ZoomBorder>("TargetPanel");
+                    var sourceScrollViewer = this.FindControl<ScrollViewer>("SourceScrollViewer");
+                    var targetScrollViewer = this.FindControl<ScrollViewer>("TargetScrollViewer");
                     if (sourcePanel != null && vm.SourceViewTab is ReadOnlyViewTabViewModel sourceVm)
                         RegisterZoomBorderCallbacks(sourceVm, sourcePanel);
                     if (targetPanel != null && vm.DestinationViewTab is ReadOnlyViewTabViewModel targetVm)
                         RegisterZoomBorderCallbacks(targetVm, targetPanel);
+                    if (sourcePanel != null && sourceScrollViewer != null)
+                        RegisterPresenterChangedCallback(vm.Source, sourcePanel, sourceScrollViewer);
+                    if (targetPanel != null && targetScrollViewer != null)
+                        RegisterPresenterChangedCallback(vm.Destination, targetPanel, targetScrollViewer);
+                    if (sourceScrollViewer != null)
+                        RegisterScrollViewScrollSpeedModification(sourceScrollViewer);
+                    if (targetScrollViewer != null)
+                        RegisterScrollViewScrollSpeedModification(targetScrollViewer);
                 };
             }
         }

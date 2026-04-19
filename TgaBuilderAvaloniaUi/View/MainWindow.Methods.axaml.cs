@@ -2,9 +2,12 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
+using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
@@ -33,47 +36,63 @@ namespace TgaBuilderAvaloniaUi.View
 
         public void RegisterZoomBorderCallbacks(ReadOnlyViewTabViewModel viewTab, ZoomBorder panel)
         {
-            viewTab.ApplyTransformCallback = (zoom, translateX, translateY) =>
+            viewTab.ZoomBorderProxy = new ZoomBorderProxy(panel);
+        }
+
+        public void RegisterPresenterChangedCallback(
+            TexturePanelViewModelBase panelVm,
+            ZoomBorder zoomBorder,
+            ScrollViewer scrollViewer)
+        {
+            panelVm.PresenterChangedCallback = () =>
             {
                 Dispatcher.UIThread.Post(() =>
                 {
-                    var matrix = Matrix.CreateScale(zoom, zoom) *
-                                 Matrix.CreateTranslation(translateX, translateY);
-                    panel.SetMatrix(matrix);
+                    zoomBorder.ResetMatrix();
+                    scrollViewer.InvalidateMeasure();
+                    scrollViewer.InvalidateArrange();
                 });
             };
+        }
 
-            viewTab.PanStepCallback = (deltaX, deltaY) =>
+        public void RegisterScrollViewScrollSpeedModification(ScrollViewer scrollViewer)
+        {
+            scrollViewer.AddHandler(InputElement.PointerWheelChangedEvent, (sender, e) =>
             {
-                Dispatcher.UIThread.Post(() =>
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 {
-                    panel.SetMatrix(panel.Matrix * Matrix.CreateTranslation(deltaX, deltaY));
-                });
-            };
+                    e.Handled = true;
+                    return;
+                }
 
-            viewTab.ZoomStepCallback = (zoomDelta) =>
-            {
-                Dispatcher.UIThread.Post(() =>
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Control)
+                    || e.KeyModifiers.HasFlag(KeyModifiers.Alt))
+                    return;
+
+                if (sender is ScrollViewer sv)
                 {
-                    var currentMatrix = panel.Matrix;
-                    double centerX = panel.Bounds.Width / 2;
-                    double centerY = panel.Bounds.Height / 2;
+                    var delta = e.Delta.Y;
 
-                    var matrix = currentMatrix *
-                                 Matrix.CreateTranslation(-centerX, -centerY) *
-                                 Matrix.CreateScale(zoomDelta, zoomDelta) *
-                                 Matrix.CreateTranslation(centerX, centerY);
-                    panel.SetMatrix(matrix);
-                });
-            };
+                    double speedFactor = 3.0;
 
-            viewTab.ResetViewCallback = () =>
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    panel.ResetMatrix();
-                });
-            };
+                    sv.Offset = new Vector(
+                        sv.Offset.X,
+                        sv.Offset.Y - delta * 50 * speedFactor
+                    );
+
+                    Window_PointerMoved(this, new PointerEventArgs(
+                        routedEvent: InputElement.PointerMovedEvent,
+                        source: sender,
+                        pointer: e.GetCurrentPoint(sv).Pointer,
+                        rootVisual: sv,
+                        rootVisualPosition: e.GetCurrentPoint(sv).Position,
+                        timestamp: e.Timestamp,
+                        properties: e.GetCurrentPoint(sv).Properties,
+                        modifiers: e.KeyModifiers));
+
+                    e.Handled = true;
+                }
+            }, RoutingStrategies.Tunnel);
         }
     }
 }

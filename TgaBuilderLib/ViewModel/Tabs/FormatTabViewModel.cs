@@ -37,7 +37,7 @@ namespace TgaBuilderLib.ViewModel
         // Commands
         private RelayCommand? _eyedropperCommand;
         private RelayCommand<Color>? _selectionMonoColorFillCommand;
-        private RelayCommand? _replaceSourceColorCommand;
+        private AsyncCommand? _replaceSourceColorCommand;
 
         // Brushes
         private Color _colorSource;
@@ -69,15 +69,14 @@ namespace TgaBuilderLib.ViewModel
             ??= new RelayCommand<Color>(SelectionMonoColorFill);
 
         public ICommand ReplaceSourceColorCommand => _replaceSourceColorCommand
-            ??= new RelayCommand(ReplaceColor);
+            ??= new AsyncCommand(ReplaceColor);
 
-        private void ReplaceColor()
+        private async Task ReplaceColor()
         {
-            var result = _messageBoxService?.ShowOkCancelMessageBox(
+            bool result = _messageBoxService is null ? true : await _messageBoxService.ShowOkCancelMessageBox(
                 "Replace Color",
                 "Replacing a color will might result in loss of image info. " +
-                "Are you sure you want to proceed?")
-                .Result;
+                "Are you sure you want to proceed?");
 
             if (result != false)
                 _panel.ReplaceColor();

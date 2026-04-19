@@ -79,7 +79,7 @@ namespace TgaBuilderLib.ViewModel
 
         private void SetDestinationMode([CallerMemberName] string? propertyName = null)
         {
-            if (_keyValuePairs.TryGetValue(propertyName ?? "", out TargetMode lMode))
+            if (_keyValuePairs.TryGetValue(propertyName ?? string.Empty, out TargetMode lMode))
                 _destination.mode = lMode;
         }
 
@@ -88,7 +88,7 @@ namespace TgaBuilderLib.ViewModel
 
         private bool CheckIfSelected([CallerMemberName] string? propertyName = null)
         {
-            if (_keyValuePairs.TryGetValue(propertyName ?? "", out TargetMode lMode))
+            if (_keyValuePairs.TryGetValue(propertyName ?? string.Empty, out TargetMode lMode))
                 return _destination.mode == lMode;
             return false;
         }
@@ -101,12 +101,12 @@ namespace TgaBuilderLib.ViewModel
             string? oldSelected = GetSelectedMode();
 
             SetDestinationMode(propertyName);
-            if (!String.IsNullOrEmpty(oldSelected))
-                OnCallerPropertyChanged(oldSelected);
+            if (!string.IsNullOrEmpty(oldSelected))
+                OnPropertyChanged(oldSelected);
 
             _destination.IsPreviewVisible = false;
             _destination.Selection.IsPlacing = false;
-            OnCallerPropertyChanged(propertyName);
+            OnPropertyChanged(propertyName ?? string.Empty);
         }
     }
 }

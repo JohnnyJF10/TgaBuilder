@@ -1,7 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 
 namespace TgaBuilderAvaloniaUi.Elements
@@ -47,9 +49,10 @@ namespace TgaBuilderAvaloniaUi.Elements
 
         private void OnDrop(object? sender, DragEventArgs e)
         {
-            if (IsFileDrop(e))
+            var files = e.DataTransfer.TryGetFiles();
+
+            if (files is not null)
             {
-                var files = e.Data.GetFiles();
 
                 if (files == null)
                 {
@@ -57,12 +60,10 @@ namespace TgaBuilderAvaloniaUi.Elements
                     return;
                 }
 
-                var paths = new List<string>();
-
-                foreach (var file in files)
-                {
-                    paths.Add(file.Name);
-                }
+                var paths = files
+                    .Select(f => f.TryGetLocalPath())
+                    .Where(p => p != null)
+                    .ToList(); 
 
                 if (paths.Count > 0 && DropCommand?.CanExecute(paths) == true)
                 {
@@ -74,6 +75,6 @@ namespace TgaBuilderAvaloniaUi.Elements
         }
 
         private bool IsFileDrop(DragEventArgs e) =>
-            e.Data.Contains(DataFormats.Files);
+            e.DataTransfer.TryGetFiles() is not null;
     }
 }

@@ -1,10 +1,15 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.PanAndZoom;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderAvaloniaUi.View;
 using TgaBuilderLib.Abstraction;
@@ -43,8 +48,7 @@ namespace TgaBuilderAvaloniaUi
 
             mainWindow.Loaded += (_, _) =>
             {
-                _ = mainViewModel.SourceViewTab.DefferedFill();
-                _ = mainViewModel.DestinationViewTab.DefferedFill();
+                //_ = PeriodicDebugLogging();
             };
 
             mainWindow.ThemeToggleButton.Click += (_, _) => ToggleTheme();
@@ -74,5 +78,36 @@ namespace TgaBuilderAvaloniaUi
                 ? ThemeVariant.Light
                 : ThemeVariant.Dark;
         }
+
+    private async Task PeriodicDebugLogging()
+    {
+        while (true)
+        {
+        if (ApplicationLifetime is not Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+            return;
+
+        if (desktop.MainWindow is not View.MainWindow mainWindow)
+            return;
+
+        if (mainWindow.SourcePanel is not ZoomBorder sourcePanel)
+            return;
+
+        if (mainWindow.TargetPanel is not ZoomBorder targetPanel)
+            return;
+
+
+        //Debug.WriteLine(
+        //    $"Periodic Debug Log - " +
+        //    $"SourceZoom: {sourcePanel.ZoomX:F2}, " +
+        //    $"SourceOffset: ({sourcePanel.OffsetX:F2}, {sourcePanel.OffsetY:F2}), " +
+        //    $"TargetZoom: {targetPanel.ZoomX:F2}, " +
+        //    $"TargetOffset: ({targetPanel.OffsetX:F2}, {targetPanel.OffsetY:F2})"
+        //);
+            
+        
+
+        await Task.Delay(500);
+        }
+    }
     }
 }

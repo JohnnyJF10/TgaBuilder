@@ -22,6 +22,9 @@
 
     <Window.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+            </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
     </Window.Resources>
@@ -58,30 +61,37 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Background="Transparent">
-                <Image
-                    x:Name="Image1"
-                    Margin="10"
-                    RenderOptions.BitmapInterpolationMode="None"
-                    Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform"/>
-            </Border>
-            <StackPanel
-                Orientation="Horizontal"
-                HorizontalAlignment="Center"
-                Grid.Column="0"
-                Grid.Row="1"
-                Margin="10">
-                <TextBlock
-                    Margin="0,5,0,0"
-                    VerticalAlignment="Center"
-                    Text="Bricks"/>
+                <Grid>
+                    <Viewbox Stretch="Uniform" Margin="10"
+                             RenderOptions.BitmapInterpolationMode="None">
+                        <Grid Width="{Binding Image1.PixelWidth, FallbackValue=128}"
+                              Height="{Binding Image1.PixelHeight, FallbackValue=128}">
+                            <elements:CheckerRectangle TileDensity="1" />
+                            <Image
+                                x:Name="Image1"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Fill"/>
+                        </Grid>
+                    </Viewbox>
+                    <TextBlock
+                        Text="Bricks&#x0a;Texture"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        IsVisible="{Binding InitTextVisible}"
+                        FontSize="24"
+                        IsHitTestVisible="False" />
+                    </Grid>
+                </Border>
                 <Button
+                    Grid.Column="0"
+                    Grid.Row="1"
                     Margin="10"
                     Padding="5"
                     HorizontalAlignment="Center"
                     Command="{Binding LoadImage1Command}"
                     Content="From Selection"/>
-            </StackPanel>
 
             <!-- + symbol and swap -->
             <StackPanel
@@ -108,29 +118,37 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Background="Transparent">
-                <Image
-                    x:Name="Image2"
-                    RenderOptions.BitmapInterpolationMode="None"
-                    Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform"/>
+                <Grid>
+                    <Viewbox Stretch="Uniform"
+                             RenderOptions.BitmapInterpolationMode="None">
+                        <Grid Width="{Binding Image2.PixelWidth, FallbackValue=128}"
+                              Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            <elements:CheckerRectangle TileDensity="1" />
+                            <Image
+                                x:Name="Image2"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Fill"/>
+                        </Grid>
+                    </Viewbox>
+                    <TextBlock
+                        Text="Background&#x0a;Texture"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        IsVisible="{Binding InitTextVisible}"
+                        FontSize="24"
+                        IsHitTestVisible="False" />
+                </Grid>
             </Border>
-            <StackPanel
-                Orientation="Horizontal"
-                HorizontalAlignment="Center"
+            <Button
                 Grid.Column="2"
                 Grid.Row="1"
-                Margin="10">
-                <TextBlock
-                    Margin="0,5,0,0"
-                    VerticalAlignment="Center"
-                    Text="Background"/>
-                <Button
-                    Margin="10"
-                    Padding="5"
-                    HorizontalAlignment="Center"
-                    Command="{Binding LoadImage2Command}"
-                    Content="From Selection"/>
-            </StackPanel>
+                Margin="10"
+                Padding="5"
+                HorizontalAlignment="Center"
+                Command="{Binding LoadImage2Command}"
+                Content="From Selection"/>
 
             <!-- Arrow → symbol -->
             <PathIcon

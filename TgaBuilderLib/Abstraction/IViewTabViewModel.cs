@@ -22,15 +22,13 @@ namespace TgaBuilderLib.Abstraction
         double OffsetY { get; set; }
         double Zoom { get; set; }
 
-        double MultipliedOffsetX { get; set; }
-        double MultipliedOffsetY { get; set; }
-
         double HorizonatlMargin { get; set; }
 
         ICommand FillCommand { get; }
         ICommand FitCommand { get; }
         ICommand Zoom100Command { get; }
         ICommand ScrollCommand { get; }
+        ICommand EndScrollCommand { get; }
         ICommand ZoomInCommand { get; }
         ICommand ZoomOutCommand { get; }
 

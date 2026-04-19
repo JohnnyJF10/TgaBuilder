@@ -44,6 +44,7 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _zoomInCommand;
         private RelayCommand? _zoomOutCommand;
         private RelayCommand<(double X, double Y)>? _scrollCommand;
+        private RelayCommand? _endScrollCommand;
 
         double maxX;
         double maxY;
@@ -72,28 +73,6 @@ namespace TgaBuilderLib.ViewModel
             set => SetPanelZoom(value);
         }
 
-        public double MultipliedOffsetX
-        {
-            get => -1.0 * OffsetX * Zoom;
-            set
-            {
-                OffsetX = -1.0 * value / Zoom;
-                Debug.WriteLine($"MultipliedOffsetX set to {value}, OffsetX is now {OffsetX}");
-                OnCallerPropertyChanged();
-            }
-        }
-
-        public double MultipliedOffsetY
-        {
-            get => -1.0 * OffsetY * Zoom;
-            set
-            {
-                OffsetY = -1.0 * value / Zoom;
-                Debug.WriteLine($"MultipliedOffsetY set to {value}, OffsetY is now {OffsetY}");
-                OnCallerPropertyChanged();
-            }
-        }
-
         public double HorizonatlMargin
         {
             get => _horizonatlMargin;
@@ -104,6 +83,7 @@ namespace TgaBuilderLib.ViewModel
         public ICommand FitCommand => _FitCommand ??= new RelayCommand(Fit);
         public ICommand Zoom100Command => _100PercentCommand ??= new RelayCommand(Zoom100);
         public ICommand ScrollCommand => _scrollCommand ??= new(DoPanelScrolling);
+        public ICommand EndScrollCommand => _endScrollCommand ??= new RelayCommand(() => IsScrolling = false);
         public ICommand ZoomInCommand => _zoomInCommand ??= new RelayCommand(() => Zoom *= 1.2);
         public ICommand ZoomOutCommand => _zoomOutCommand ??= new RelayCommand(() => Zoom /= 1.2);
 
@@ -142,8 +122,6 @@ namespace TgaBuilderLib.ViewModel
 
             OffsetX = 0;
             OffsetY = 0;
-            OnPropertyChanged(nameof(MultipliedOffsetX));
-            OnPropertyChanged(nameof(MultipliedOffsetY));
         }
 
         public void Fit()
@@ -163,8 +141,6 @@ namespace TgaBuilderLib.ViewModel
             Zoom = 1.0;
             OffsetX = (_panel.Presenter.PixelWidth - VisualPanelSize.ViewportWidth) / 2;
             OffsetY = (_panel.Presenter.PixelHeight - VisualPanelSize.ViewportHeight) / 2;
-            OnPropertyChanged(nameof(MultipliedOffsetX));
-            OnPropertyChanged(nameof(MultipliedOffsetY));
         }
 
         private void SetPanelZoom(double zoom)
@@ -238,9 +214,6 @@ namespace TgaBuilderLib.ViewModel
 
                 OffsetX += deltaX;
                 OffsetY += deltaY;
-
-                OnPropertyChanged(nameof(MultipliedOffsetX));
-                OnPropertyChanged(nameof(MultipliedOffsetY));
 
                 maxX = Math.Max(0, _panel.Presenter.PixelWidth - (VisualPanelSize.ViewportWidth / Zoom));
                 maxY = Math.Max(0, _panel.Presenter.PixelHeight - (VisualPanelSize.ViewportHeight / Zoom));

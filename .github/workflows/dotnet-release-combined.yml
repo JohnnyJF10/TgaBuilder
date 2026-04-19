@@ -1,0 +1,182 @@
+name: dotnet-release-combined
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      artifact-name-wpf-net6: ${{ steps.meta.outputs.artifact_name_wpf_net6 }}
+      artifact-name-wpf-net8: ${{ steps.meta.outputs.artifact_name_wpf_net8 }}
+      artifact-name-avalonia-net8: ${{ steps.meta.outputs.artifact_name_avalonia_net8 }}
+      last-commit-msg: ${{ steps.commit.outputs.message }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.x
+            8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Extract version and artifact names from csproj
+        id: meta
+        shell: pwsh
+        run: |
+          [xml]$csproj = Get-Content ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj
+          $title = $csproj.Project.PropertyGroup.AssemblyTitle
+          $version = $csproj.Project.PropertyGroup.AssemblyVersion
+          $shortVersion = ($version -split '\.')[0..2] -join '.'
+          $tag = "v$shortVersion"
+          $artifactNameWpfNet6 = "${title}-WPF-dotnet6-V${shortVersion}"
+          $artifactNameWpfNet8 = "${title}-WPF-dotnet8-V${shortVersion}"
+          $artifactNameAvaloniaNet8 = "${title}-Avalonia-dotnet8-V${shortVersion}"
+          echo "tag=$tag" >> $env:GITHUB_OUTPUT
+          echo "artifact_name_wpf_net6=$artifactNameWpfNet6" >> $env:GITHUB_OUTPUT
+          echo "artifact_name_wpf_net8=$artifactNameWpfNet8" >> $env:GITHUB_OUTPUT
+          echo "artifact_name_avalonia_net8=$artifactNameAvaloniaNet8" >> $env:GITHUB_OUTPUT
+
+      - name: Get last commit message
+        id: commit
+        shell: pwsh
+        run: |
+          $msg = git log -1 --pretty=format:"%s"
+          echo "message=$msg" >> $env:GITHUB_OUTPUT
+
+      # WPF .NET 6
+      - name: Publish WPF .NET 6
+        run: |
+          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
+            -c Release `
+            -f net6.0-windows `
+            -r win-x64 `
+            --self-contained false `
+            /p:PublishReadyToRun=true `
+            /p:PublishSingleFile=false `
+            -o publish/wpf-net6
+
+      - name: Remove .pdb files (WPF .NET 6)
+        shell: pwsh
+        run: |
+          Get-ChildItem publish/wpf-net6 -Recurse -Filter *.pdb | Remove-Item -Force
+
+      - name: Zip WPF .NET 6
+        shell: pwsh
+        run: |
+          $zipName = "${{ steps.meta.outputs.artifact_name_wpf_net6 }}.zip"
+          Compress-Archive -Path publish/wpf-net6/* -DestinationPath $zipName
+
+      - name: Upload WPF .NET 6 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name_wpf_net6 }}
+          path: ${{ steps.meta.outputs.artifact_name_wpf_net6 }}.zip
+
+      # WPF .NET 8
+      - name: Publish WPF .NET 8
+        run: |
+          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
+            -c Release `
+            -f net8.0-windows `
+            -r win-x64 `
+            --self-contained false `
+            /p:PublishReadyToRun=true `
+            /p:PublishSingleFile=false `
+            -o publish/wpf-net8
+
+      - name: Remove .pdb files (WPF .NET 8)
+        shell: pwsh
+        run: |
+          Get-ChildItem publish/wpf-net8 -Recurse -Filter *.pdb | Remove-Item -Force
+
+      - name: Zip WPF .NET 8
+        shell: pwsh
+        run: |
+          $zipName = "${{ steps.meta.outputs.artifact_name_wpf_net8 }}.zip"
+          Compress-Archive -Path publish/wpf-net8/* -DestinationPath $zipName
+
+      - name: Upload WPF .NET 8 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name_wpf_net8 }}
+          path: ${{ steps.meta.outputs.artifact_name_wpf_net8 }}.zip
+
+      # Avalonia UI .NET 8 (Windows)
+      - name: Publish Avalonia UI .NET 8 Windows
+        run: |
+          dotnet publish ./TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj `
+            -c Release `
+            -f net8.0 `
+            -r win-x64 `
+            --self-contained false `
+            /p:PublishReadyToRun=true `
+            /p:PublishSingleFile=false `
+            -o publish/avalonia-net8
+
+      - name: Remove .pdb files (Avalonia UI .NET 8)
+        shell: pwsh
+        run: |
+          Get-ChildItem publish/avalonia-net8 -Recurse -Filter *.pdb | Remove-Item -Force
+
+      - name: Zip Avalonia UI .NET 8
+        shell: pwsh
+        run: |
+          $zipName = "${{ steps.meta.outputs.artifact_name_avalonia_net8 }}.zip"
+          Compress-Archive -Path publish/avalonia-net8/* -DestinationPath $zipName
+
+      - name: Upload Avalonia UI .NET 8 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name_avalonia_net8 }}
+          path: ${{ steps.meta.outputs.artifact_name_avalonia_net8 }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download WPF .NET 6 Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name-wpf-net6 }}
+          path: ./artifact
+
+      - name: Download WPF .NET 8 Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name-wpf-net8 }}
+          path: ./artifact
+
+      - name: Download Avalonia UI .NET 8 Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name-avalonia-net8 }}
+          path: ./artifact
+
+      - name: Create GitHub Release and upload assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.build.outputs.tag }}
+          name: Release ${{ needs.build.outputs.tag }}
+          body: ${{ needs.build.outputs.last-commit-msg }}
+          files: |
+            ./artifact/${{ needs.build.outputs.artifact-name-wpf-net6 }}.zip
+            ./artifact/${{ needs.build.outputs.artifact-name-wpf-net8 }}.zip
+            ./artifact/${{ needs.build.outputs.artifact-name-avalonia-net8 }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
