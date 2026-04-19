@@ -88,8 +88,9 @@ namespace TgaBuilderAvaloniaUi.Services
 
                 return new Cursor(wb, new PixelPoint(hotspotX, hotspotY));
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Failed to load custom cursor: {ex.Message}");
                 return new Cursor(StandardCursorType.Hand);
             }
         }
