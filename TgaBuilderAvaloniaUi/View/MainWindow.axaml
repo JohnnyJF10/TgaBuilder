@@ -450,9 +450,9 @@
                     </DockPanel>
                 </TabItem>
             </TabControl>
-            <Rectangle
+            <elements:CheckerRectangle
                 Grid.Row="1"
-                Fill="{StaticResource CheckerBrush}"
+                TileDensity="1.25"
                 DataContext="{Binding SourceViewTab}"
                 Width="{Binding ContentActualWidth}"
                 Height="{Binding ContentActualHeight}"
@@ -721,7 +721,7 @@
                     <elements:CheckerRectangle
                         Width="30"
                         Height="30"
-                        TileDensity="2.5" />
+                        TileDensity="1.25" />
                     <Button
                         Width="30"
                         Height="30"
@@ -746,7 +746,7 @@
                     <elements:CheckerRectangle
                         Width="{Binding ElementName=SelectionImage, Path=Bounds.Width}"
                         Height="{Binding ElementName=SelectionImage, Path=Bounds.Height}"
-                        TileDensity="2.5" />
+                        TileDensity="1.25" />
                     <Image x:Name="SelectionImage"
                            RenderOptions.BitmapInterpolationMode="None"
                            Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
@@ -810,7 +810,7 @@
                         <elements:CheckerRectangle
                             Width="100"
                             Height="100"
-                            TileDensity="2.5" />
+                            TileDensity="1.25" />
                         <Image
                             Name="AnimImage"
                             RenderOptions.BitmapInterpolationMode="None"
@@ -1132,9 +1132,9 @@
                 </TabItem>
 
             </TabControl>
-            <Rectangle
+            <elements:CheckerRectangle
                 Grid.Row="1"
-                Fill="{StaticResource CheckerBrush}"
+                TileDensity="1.25"
                 DataContext="{Binding DestinationViewTab}"
                 Width="{Binding ContentActualWidth}"
                 Height="{Binding ContentActualHeight}"
