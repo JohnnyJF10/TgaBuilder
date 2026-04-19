@@ -10,6 +10,14 @@ namespace TgaBuilderAvaloniaUi.Elements
     public class CheckerRectangle : Rectangle
     {
 
+        public static readonly StyledProperty<double> CutOffXProperty =
+            AvaloniaProperty.Register<CheckerRectangle, double>(
+                nameof(CutOffX), 0);
+
+        public static readonly StyledProperty<double> CutOffYProperty =
+            AvaloniaProperty.Register<CheckerRectangle, double>(
+                nameof(CutOffY), 0);
+
         public static readonly StyledProperty<double> TileDensityProperty =
             AvaloniaProperty.Register<CheckerRectangle, double>(
                 nameof(TileDensity), 16);
@@ -18,6 +26,18 @@ namespace TgaBuilderAvaloniaUi.Elements
         {
             get => GetValue(TileDensityProperty);
             set => SetValue(TileDensityProperty, value);
+        }
+
+        public double CutOffX
+        {
+            get => GetValue(CutOffXProperty);
+            set => SetValue(CutOffXProperty, value);
+        }
+
+        public double CutOffY
+        {
+            get => GetValue(CutOffYProperty);
+            set => SetValue(CutOffYProperty, value);
         }
 
         private DrawingBrush? _checkerBrush;
