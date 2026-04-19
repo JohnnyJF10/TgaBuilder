@@ -22,6 +22,9 @@
 
     <Window.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+            </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
     </Window.Resources>
@@ -58,12 +61,24 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Background="Transparent">
-                <Image
-                    x:Name="Image1"
-                    Margin="10"
-                    RenderOptions.BitmapInterpolationMode="None"
-                    Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform"/>
+                <Grid>
+                    <Rectangle
+                        Margin="10"
+                        Fill="{StaticResource CheckerBrush}" />
+                    <TextBlock
+                        Text="Brick Texture"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        FontSize="14"
+                        IsHitTestVisible="False" />
+                    <Image
+                        x:Name="Image1"
+                        Margin="10"
+                        RenderOptions.BitmapInterpolationMode="None"
+                        Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                        Stretch="Uniform"/>
+                </Grid>
             </Border>
             <StackPanel
                 Orientation="Horizontal"
@@ -108,11 +123,22 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Background="Transparent">
-                <Image
-                    x:Name="Image2"
-                    RenderOptions.BitmapInterpolationMode="None"
-                    Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform"/>
+                <Grid>
+                    <Rectangle
+                        Fill="{StaticResource CheckerBrush}" />
+                    <TextBlock
+                        Text="Background Texture"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        FontSize="14"
+                        IsHitTestVisible="False" />
+                    <Image
+                        x:Name="Image2"
+                        RenderOptions.BitmapInterpolationMode="None"
+                        Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                        Stretch="Uniform"/>
+                </Grid>
             </Border>
             <StackPanel
                 Orientation="Horizontal"

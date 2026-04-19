@@ -84,12 +84,24 @@
             VerticalAlignment="Stretch"
             AllowDrop="True"
             Background="Transparent">
-            <Image
-                x:Name="Image1"
-                Margin="10"
-                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
-                Stretch="Uniform" />
+            <Grid>
+                <Rectangle
+                    Margin="10"
+                    Fill="{StaticResource CheckerBrush}" />
+                <TextBlock
+                    Text="Texture 1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                    FontSize="14"
+                    IsHitTestVisible="False" />
+                <Image
+                    x:Name="Image1"
+                    Margin="10"
+                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                    Stretch="Uniform" />
+            </Grid>
         </Border>
         <Button
             x:Name="BtnLoad1"
@@ -123,11 +135,22 @@
             VerticalAlignment="Stretch"
             AllowDrop="True"
             Background="Transparent">
-            <Image
-                x:Name="Image2"
-                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
-                Stretch="Uniform" />
+            <Grid>
+                <Rectangle
+                    Fill="{StaticResource CheckerBrush}" />
+                <TextBlock
+                    Text="Texture 2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                    FontSize="14"
+                    IsHitTestVisible="False" />
+                <Image
+                    x:Name="Image2"
+                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                    Stretch="Uniform" />
+            </Grid>
         </Border>
         <Button
             x:Name="BtnLoad2"
