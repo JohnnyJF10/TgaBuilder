@@ -133,5 +133,47 @@
       </Style>
     </Style>
 
+    <Style Selector="^.outlined">
+      <Style Selector="^ /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedButtonBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlinedButtonBorderBrush}" />
+      </Style>
+
+      <Style Selector="^:pointerover /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedButtonBackgroundPointerOver}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlinedButtonBorderBrushPointerOver}" />
+      </Style>
+
+      <Style Selector="^:pressed /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedButtonBackgroundPressed}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlinedButtonBorderBrushPointerOver}" />
+      </Style>
+
+      <Style Selector="^:disabled /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedButtonBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
+      </Style>
+
+      <Style Selector="^:checked /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedToggleButtonBackgroundChecked}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlinedToggleButtonBorderBrushChecked}" />
+      </Style>
+
+      <Style Selector="^:checked:pointerover /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedToggleButtonBackgroundCheckedPointerOver}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlinedToggleButtonBorderBrushChecked}" />
+      </Style>
+
+      <Style Selector="^:checked:pressed /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedToggleButtonBackgroundCheckedPressed}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlinedToggleButtonBorderBrushChecked}" />
+      </Style>
+
+      <Style Selector="^:checked:disabled /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedToggleButtonBackgroundChecked}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
+      </Style>
+    </Style>
+
   </ControlTheme>
 </ResourceDictionary>

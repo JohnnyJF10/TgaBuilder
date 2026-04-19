@@ -134,5 +134,27 @@
       </Style>
     </Style>
 
+    <Style Selector="^.outlined">
+      <Style Selector="^ /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedButtonBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlinedButtonBorderBrush}" />
+      </Style>
+
+      <Style Selector="^:pointerover /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedButtonBackgroundPointerOver}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlinedButtonBorderBrushPointerOver}" />
+      </Style>
+
+      <Style Selector="^:pressed /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedButtonBackgroundPressed}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlinedButtonBorderBrushPointerOver}" />
+      </Style>
+
+      <Style Selector="^:disabled /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{DynamicResource OutlinedButtonBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
+      </Style>
+    </Style>
+
   </ControlTheme>
 </ResourceDictionary>
