@@ -13,11 +13,17 @@ namespace TgaBuilderAvaloniaUi.View
 {
     public partial class MainWindow
     {
+        private static bool IsGridlessModifier(KeyModifiers modifiers)
+            => modifiers.HasFlag(KeyModifiers.Alt) || modifiers.HasFlag(KeyModifiers.Control);
+
         private void Window_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
             if (CurrentImage == null) return;
 
-            if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            var updateKind = e.GetCurrentPoint(CurrentImage).Properties.PointerUpdateKind;
+            bool isLeftButton = updateKind == PointerUpdateKind.LeftButtonPressed;
+
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && !isLeftButton)
                 return;
 
             if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
@@ -32,9 +38,9 @@ namespace TgaBuilderAvaloniaUi.View
             int x = (int)pos.X;
             int y = (int)pos.Y;
 
-            _modifier = e.GetCurrentPoint(CurrentImage).Properties.PointerUpdateKind switch
+            _modifier = updateKind switch
             {
-                PointerUpdateKind.LeftButtonPressed when e.KeyModifiers.HasFlag(KeyModifiers.Alt) => MouseModifier.AltLeft,
+                PointerUpdateKind.LeftButtonPressed when IsGridlessModifier(e.KeyModifiers) => MouseModifier.AltLeft,
                 PointerUpdateKind.LeftButtonPressed when _modifier == MouseModifier.Double => MouseModifier.Double,
                 PointerUpdateKind.LeftButtonPressed => MouseModifier.Left,
                 PointerUpdateKind.RightButtonPressed => MouseModifier.Right,
@@ -47,10 +53,7 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Window_DoubleTapped(object? sender, RoutedEventArgs e)
         {
-            //_modifier = MouseModifier.Double;
-            //if (e is PointerReleasedEventArgs pe)
-            //    Window_PointerPressed(sender, new PointerPressedEventArgs(
-            //        pe.InputDevice, pe.Timestamp, pe.GetCurrentPoint(pe.Source)));
+            _modifier = MouseModifier.Double;
         }
 
         private void Window_PointerMoved(object? sender, PointerEventArgs e)
@@ -67,12 +70,12 @@ namespace TgaBuilderAvaloniaUi.View
                 x = Math.Clamp(x, 0, (int)CurrentImage.Bounds.Width - 1);
                 y = Math.Clamp(y, 0, (int)CurrentImage.Bounds.Height - 1);
 
-                if (e.KeyModifiers.HasFlag(KeyModifiers.Alt))
+                if (IsGridlessModifier(e.KeyModifiers))
                     _modifier = MouseModifier.AltLeft;
             }
             else
             {
-                _modifier = e.KeyModifiers.HasFlag(KeyModifiers.Alt) ? MouseModifier.Alt : MouseModifier.None;
+                _modifier = IsGridlessModifier(e.KeyModifiers) ? MouseModifier.Alt : MouseModifier.None;
             }
 
             if (CurrentPanel != null && PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand)
@@ -122,6 +125,21 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DestinationFormatSwitch.IsChecked == false)
                 DestinationFormatSwitch.IsChecked = true;
+        }
+
+        private void Window_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
+        {
+            if (CurrentImage == null) return;
+
+            if (!e.KeyModifiers.HasFlag(KeyModifiers.Shift)) return;
+
+            bool isDestination = CurrentImage.Name == "TargetImage";
+
+            if (PanelMouseAP.GetWheelShiftCommand(this) is ICommand wheelShiftCommand)
+            {
+                wheelShiftCommand.Execute((isDestination, e.Delta.Y < 0));
+                e.Handled = true;
+            }
         }
 
         
