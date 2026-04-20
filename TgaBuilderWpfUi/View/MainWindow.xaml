@@ -11,6 +11,7 @@
     xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
     xmlns:pzp="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel"
     xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters"
+    xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
@@ -58,6 +59,7 @@
                 <ResourceDictionary Source="/Styles/CheckerBrush.xaml"/>
                 <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/IconRadioButtonStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter               x:Key="BoolToVisibilityConverter"/>
             <converter:BitmapSourceConverter            x:Key="BitmapSourceConverter"/>
@@ -66,6 +68,7 @@
             <converter:BoolToStrokeDashStyleConverter   x:Key="BoolToStrokeDashStyleConverter"/>
             <converter:ColorStructToBrush               x:Key="ColorStructToBrush"/>
             <converter:PanelHelpConverter               x:Key="PanelHelpConverter"/>
+            <converter:EnumToBooleanConverter           x:Key="EnumToBooleanConverter"/>
             <Style TargetType="{x:Type elements:ContextMenuButton}"
                     BasedOn="{StaticResource {x:Type ui:Button}}"/>
         </ResourceDictionary>
@@ -1159,52 +1162,52 @@
                         Margin="5,0,5,0"
                         DataContext="{Binding EditsTab}"
                         Orientation="Horizontal">
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
-                            IsChecked="{Binding RegularModeSelected}"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.Default}}"
                             Icon="{ui:SymbolIcon ArrowSquareDown24}"
                             ap:MouseOverInfoAP.InfoText="Regular Mode"/>
                         <Rectangle
                             Width="10"
                             Height="10"/>
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             Margin="0,0,5,0"
-                            IsChecked="{Binding RotateModeSelected}"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.ClockwiseRotating}}"
                             Icon="{ui:SymbolIcon ArrowRotateCounterclockwise24}"
                             ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"/>
 
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             Margin="0,0,5,0"
-                            IsChecked="{Binding MirrorHorizontalModeSelected}"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorHorizontal}}"
                             ap:MouseOverInfoAP.InfoText="Mirror Horizontal Mode"
                             Content="↔️"/>
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
-                            IsChecked="{Binding MirrorVerticalModeSelected}"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorVertical}}"
                             ap:MouseOverInfoAP.InfoText="Mirror Vertical Mode"
                             Content="↕️"/>
                         <Rectangle
                             Width="10"
                             Height="10"/>
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             Margin="0,0,5,0"
-                            IsChecked="{Binding TileSwapModeSelected}"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.TileSwapping}}"
                             Icon="{ui:SymbolIcon ChannelShare24}"
                             ap:MouseOverInfoAP.InfoText="Tile Rally Mode"/>
 
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             Margin="0,0,5,0"
-                            IsChecked="{Binding MoveModeSelected}"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.TileMoving}}"
                             Icon="{ui:SymbolIcon LinkSquare24}"
                             ap:MouseOverInfoAP.InfoText="Tile Swap Mode"/>
 

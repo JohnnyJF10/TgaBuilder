@@ -10,6 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:paz="using:Avalonia.Controls.PanAndZoom"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
     xmlns:notif="clr-namespace:Avalonia.Notification.Controls;assembly=Notification.Avalonia"
     x:Name="MainWin"
     Title="TgaBuilder"
@@ -48,6 +49,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
                 <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/IconRadioButtonStyle.axaml" />
                 <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -61,6 +63,7 @@
           <converter:ZoomToOffsetConverter x:Key="ZoomToOffsetConverter" />
           <converter:PathToFriendlyPathConverter x:Key="PathToFriendlyPathConverter" />
           <converter:PanelHelpConverter x:Key="PanelHelpConverter" />
+          <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -980,44 +983,50 @@
                         Margin="5,0,5,0"
                         DataContext="{Binding EditsTab}"
                         Orientation="Horizontal">
-                        <elements:IconToggleButton
+                        <elements:IconRadioButton
                             Classes="outlined"
+                            GroupName="EditMode"
                             Icon="{StaticResource arrow_down_right_circle}"
                             ap:MouseOverInfoAP.InfoText="Regular Mode"
-                            IsChecked="{Binding RegularModeSelected, Mode=TwoWay}" />
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.Default}}" />
                         <Rectangle Width="10" Height="10" />
-                        <elements:IconToggleButton
+                        <elements:IconRadioButton
                             Classes="outlined"
+                            GroupName="EditMode"
                             Icon="{StaticResource arrow_rotate_counterclockwise}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"
-                            IsChecked="{Binding RotateModeSelected, Mode=TwoWay}" />
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.ClockwiseRotating}}" />
 
-                        <elements:IconToggleButton
+                        <elements:IconRadioButton
                             Classes="outlined"
+                            GroupName="EditMode"
                             Icon="{StaticResource flip_horizontal}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Mirror Horizontal Mode"
-                            IsChecked="{Binding MirrorHorizontalModeSelected, Mode=TwoWay}" />
-                        <elements:IconToggleButton
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorHorizontal}}" />
+                        <elements:IconRadioButton
                             Classes="outlined"
+                            GroupName="EditMode"
                             Icon="{StaticResource flip_vertical}"
                             ap:MouseOverInfoAP.InfoText="Mirror Vertical Mode"
-                            IsChecked="{Binding MirrorVerticalModeSelected, Mode=TwoWay}" />
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorVertical}}" />
                         <Rectangle Width="10" Height="10" />
-                        <elements:IconToggleButton
+                        <elements:IconRadioButton
                             Classes="outlined"
+                            GroupName="EditMode"
                             Icon="{StaticResource pair}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Tile Rally Mode"
-                            IsChecked="{Binding TileSwapModeSelected, Mode=TwoWay}" />
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.TileSwapping}}" />
 
-                        <elements:IconToggleButton
+                        <elements:IconRadioButton
                             Classes="outlined"
+                            GroupName="EditMode"
                             Icon="{StaticResource link_square}"
                             Margin="0,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Tile Swap Mode"
-                            IsChecked="{Binding MoveModeSelected, Mode=TwoWay}" />
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.TileMoving}}" />
 
                     </StackPanel>
                 </TabItem>
