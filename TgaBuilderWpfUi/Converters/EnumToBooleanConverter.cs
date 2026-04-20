@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
 namespace TgaBuilderWpfUi.Converters;
@@ -19,6 +18,6 @@ internal class EnumToBooleanConverter : IValueConverter
         {
             return parameter;
         }
-        return DependencyProperty.UnsetValue;
+        return Binding.DoNothing;
     }
 }
