@@ -28,7 +28,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
     <PackageReference Include="Notification.Avalonia" Version="2.2.0" />
-    <PackageReference Include="PanAndZoom" Version="12.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PanAndZoom\PanAndZoom.csproj" />
     <ProjectReference Include="..\TgaBuilderLib\TgaBuilderLib.csproj" />
   </ItemGroup>
 </Project>

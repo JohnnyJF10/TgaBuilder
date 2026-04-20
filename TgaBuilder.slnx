@@ -10,6 +10,7 @@
 
   <ProjectConfigurations>
   </ProjectConfigurations>
+  <Project Path="PanAndZoom/PanAndZoom.csproj" />
   <Project Path="TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj" />
   <Project Path="TgaBuilderLib/TgaBuilderLib.csproj">
     <Platform Project="x64" />
