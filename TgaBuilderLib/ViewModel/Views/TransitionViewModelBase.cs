@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,16 +44,6 @@ public abstract class TransitionViewModelBase : ViewModelBase
     private CancellationTokenSource? _cts;
 
     private const int TRANSITIONS_BPP = 4;
-
-    private readonly Dictionary<string, TransitionMode> _keyValuePairs = new()
-    {
-        { nameof(TransistionTopChecked), TransitionMode.Top },
-        { nameof(TransistionRightChecked), TransitionMode.Right },
-        { nameof(TransistionBottomChecked), TransitionMode.Bottom },
-        { nameof(TransistionLeftChecked), TransitionMode.Left },
-        { nameof(TransistionDiagonalTopLeftChecked), TransitionMode.DiagonalTopLeft },
-        { nameof(TransistionDiagonalTopRightChecked), TransitionMode.DiagonalTopRight }
-    };
 
     private IWriteableBitmap _image1;
     private IWriteableBitmap _image2;
@@ -123,42 +112,6 @@ public abstract class TransitionViewModelBase : ViewModelBase
     }
 
     protected virtual bool RequiresFullAnalysisOnPivotChange => true;
-
-    public bool TransistionTopChecked
-    {
-        get => CheckIfChecked();
-        set => ApplySelection(value);
-    }
-
-    public bool TransistionRightChecked
-    {
-        get => CheckIfChecked();
-        set => ApplySelection(value);
-    }
-
-    public bool TransistionBottomChecked
-    {
-        get => CheckIfChecked();
-        set => ApplySelection(value);
-    }
-
-    public bool TransistionLeftChecked
-    {
-        get => CheckIfChecked();
-        set => ApplySelection(value);
-    }
-
-    public bool TransistionDiagonalTopLeftChecked
-    {
-        get => CheckIfChecked();
-        set => ApplySelection(value);
-    }
-
-    public bool TransistionDiagonalTopRightChecked
-    {
-        get => CheckIfChecked();
-        set => ApplySelection(value);
-    }
 
     protected bool SetCallerPropertyReturn<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
@@ -230,39 +183,6 @@ public abstract class TransitionViewModelBase : ViewModelBase
     protected abstract byte[] CreateMixedPixels(bool requiresAnalysis);
 
     protected abstract void ConfigureTransitionHelperCore();
-
-    private void SetTransitionMode([CallerMemberName] string? propertyName = null)
-    {
-        if (_keyValuePairs.TryGetValue(propertyName ?? string.Empty, out TransitionMode mode))
-            _transitionMode = mode;
-    }
-
-    private string? GetSelectedMode()
-        => _keyValuePairs.FirstOrDefault(x => x.Value == _transitionMode).Key;
-
-    private bool CheckIfChecked([CallerMemberName] string? propertyName = null)
-    {
-        if (_keyValuePairs.TryGetValue(propertyName ?? string.Empty, out TransitionMode mode))
-            return _transitionMode == mode;
-
-        return false;
-    }
-
-    private void ApplySelection(bool value, [CallerMemberName] string? propertyName = null)
-    {
-        if (!value)
-            return;
-
-        string? oldSelected = GetSelectedMode();
-
-        SetTransitionMode(propertyName);
-        if (!string.IsNullOrEmpty(oldSelected))
-            OnPropertyChanged(oldSelected);
-
-        OnPropertyChanged(propertyName ?? string.Empty);
-
-        TriggerRecalculation();
-    }
 
     private void LoadImage1()
     {

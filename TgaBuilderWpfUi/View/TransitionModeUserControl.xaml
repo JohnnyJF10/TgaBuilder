@@ -5,10 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TgaBuilderWpfUi.View"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters"
+             xmlns:transitions="clr-namespace:TgaBuilderLib.Transitions;assembly=TgaBuilderLib"
              mc:Ignorable="d" 
              d:DesignHeight="40" 
              d:DesignWidth="350">
     <UserControl.Resources>
+        <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
         <Style x:Key="SquarePathStyle" TargetType="Path">
             <Setter Property="Stroke" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
             <Style.Triggers>
@@ -30,7 +33,7 @@
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
 
-        <ToggleButton IsChecked="{Binding TransistionTopChecked, Mode=TwoWay}" Margin="0,0,5,0">
+        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Top}}" Margin="0,0,5,0">
             <ToggleButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -40,7 +43,7 @@
                 </Grid>
             </ToggleButton.Content>
         </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransistionRightChecked, Mode=TwoWay}" Margin="0,0,5,0">
+        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Right}}" Margin="0,0,5,0">
             <ToggleButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -49,7 +52,7 @@
                 </Grid>
             </ToggleButton.Content>
         </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransistionBottomChecked, Mode=TwoWay}" Margin="0,0,5,0">
+        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Bottom}}" Margin="0,0,5,0">
             <ToggleButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -58,7 +61,7 @@
                 </Grid>
             </ToggleButton.Content>
         </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransistionLeftChecked, Mode=TwoWay}" Margin="0,0,5,0">
+        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Left}}" Margin="0,0,5,0">
             <ToggleButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -67,7 +70,7 @@
                 </Grid>
             </ToggleButton.Content>
         </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransistionDiagonalTopLeftChecked, Mode=TwoWay}" Margin="0,0,5,0">
+        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopLeft}}" Margin="0,0,5,0">
             <ToggleButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -76,7 +79,7 @@
                 </Grid>
             </ToggleButton.Content>
         </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransistionDiagonalTopRightChecked, Mode=TwoWay}" Margin="0,0,5,0">
+        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopRight}}" Margin="0,0,5,0">
             <ToggleButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
