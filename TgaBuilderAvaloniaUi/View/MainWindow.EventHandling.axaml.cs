@@ -70,8 +70,15 @@ namespace TgaBuilderAvaloniaUi.View
         private void Window_PointerMoved(object? sender, PointerEventArgs e)
         {
             // Handle Ctrl+Left panning: translate the ZoomBorder matrix.
-            if (_isCtrlPanning && CurrentPanel != null)
+            if (_isCtrlPanning)
             {
+                if (CurrentPanel == null)
+                {
+                    _isCtrlPanning = false;
+                    e.Pointer.Capture(null);
+                    return;
+                }
+
                 var currentPoint = e.GetPosition(CurrentPanel);
                 double dx = currentPoint.X - _ctrlPanLastPoint.X;
                 double dy = currentPoint.Y - _ctrlPanLastPoint.Y;
