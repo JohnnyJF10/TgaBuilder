@@ -59,6 +59,7 @@
                 <ResourceDictionary Source="/Styles/CheckerBrush.xaml"/>
                 <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/IconRadioButtonStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter               x:Key="BoolToVisibilityConverter"/>
             <converter:BitmapSourceConverter            x:Key="BitmapSourceConverter"/>
@@ -1161,7 +1162,7 @@
                         Margin="5,0,5,0"
                         DataContext="{Binding EditsTab}"
                         Orientation="Horizontal">
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.Default}}"
@@ -1170,7 +1171,7 @@
                         <Rectangle
                             Width="10"
                             Height="10"/>
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             Margin="0,0,5,0"
@@ -1178,14 +1179,14 @@
                             Icon="{ui:SymbolIcon ArrowRotateCounterclockwise24}"
                             ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"/>
 
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             Margin="0,0,5,0"
                             IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorHorizontal}}"
                             ap:MouseOverInfoAP.InfoText="Mirror Horizontal Mode"
                             Content="↔️"/>
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorVertical}}"
@@ -1194,7 +1195,7 @@
                         <Rectangle
                             Width="10"
                             Height="10"/>
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             Margin="0,0,5,0"
@@ -1202,7 +1203,7 @@
                             Icon="{ui:SymbolIcon ChannelShare24}"
                             ap:MouseOverInfoAP.InfoText="Tile Rally Mode"/>
 
-                        <elements:ToggleButtonEx
+                        <elements:IconRadioButton
                             Width="36"
                             Height="36"
                             Margin="0,0,5,0"

@@ -20,7 +20,7 @@ namespace TgaBuilderLib.Transitions
             var currentLabels = new int[Labels.Length];
             Array.Copy(Labels, currentLabels, Labels.Length);
 
-            if (currentLabels.Max() > currentTileData.Count)
+            if (currentLabels.Length > 0 && currentLabels.Max() > currentTileData.Count)
                 return bgPixels; // Fallback in case of race condition
 
             bool[] isLabelDrawn = new bool[currentTileData.Count + 1];

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TgaBuilderWpfUi.View"
+             xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters"
              xmlns:transitions="clr-namespace:TgaBuilderLib.Transitions;assembly=TgaBuilderLib"
@@ -11,82 +12,87 @@
              d:DesignHeight="40" 
              d:DesignWidth="350">
     <UserControl.Resources>
-        <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
-        <Style x:Key="SquarePathStyle" TargetType="Path">
-            <Setter Property="Stroke" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="True">
-                    <Setter Property="Stroke" Value="LightGray"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="AccentPathStyle" TargetType="Path">
-            <Setter Property="Stroke" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
-            <Setter Property="StrokeThickness" Value="2"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="True">
-                    <Setter Property="Stroke" Value="White"/>
-                    <Setter Property="StrokeThickness" Value="3"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/IconRadioButtonStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+            <Style x:Key="SquarePathStyle" TargetType="Path">
+                <Setter Property="Stroke" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=elements:IconRadioButton}}" Value="True">
+                        <Setter Property="Stroke" Value="LightGray"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="AccentPathStyle" TargetType="Path">
+                <Setter Property="Stroke" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                <Setter Property="StrokeThickness" Value="2"/>
+                <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=elements:IconRadioButton}}" Value="True">
+                        <Setter Property="Stroke" Value="White"/>
+                        <Setter Property="StrokeThickness" Value="3"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
 
-        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Top}}" Margin="0,0,5,0">
-            <ToggleButton.Content>
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Top}}" Margin="0,0,5,0">
+            <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
                     <Path Data="M0,0 L20,0 L20,20 L0,20 Z" Fill="Transparent" Style="{StaticResource SquarePathStyle}"/>
                     <!-- Top edge red -->
                     <Path Data="M0,0 L20,0" Style="{StaticResource AccentPathStyle}"/>
                 </Grid>
-            </ToggleButton.Content>
-        </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Right}}" Margin="0,0,5,0">
-            <ToggleButton.Content>
+            </elements:IconRadioButton.Content>
+        </elements:IconRadioButton>
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Right}}" Margin="0,0,5,0">
+            <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
                     <Path Data="M0,0 L20,0 L20,20 L0,20 Z" Fill="Transparent" Style="{StaticResource SquarePathStyle}"/>
                     <Path Data="M20,0 L20,20" Style="{StaticResource AccentPathStyle}"/>
                 </Grid>
-            </ToggleButton.Content>
-        </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Bottom}}" Margin="0,0,5,0">
-            <ToggleButton.Content>
+            </elements:IconRadioButton.Content>
+        </elements:IconRadioButton>
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Bottom}}" Margin="0,0,5,0">
+            <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
                     <Path Data="M0,0 L20,0 L20,20 L0,20 Z" Fill="Transparent" Style="{StaticResource SquarePathStyle}"/>
                     <Path Data="M0,20 L20,20" Style="{StaticResource AccentPathStyle}"/>
                 </Grid>
-            </ToggleButton.Content>
-        </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Left}}" Margin="0,0,5,0">
-            <ToggleButton.Content>
+            </elements:IconRadioButton.Content>
+        </elements:IconRadioButton>
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Left}}" Margin="0,0,5,0">
+            <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
                     <Path Data="M0,0 L20,0 L20,20 L0,20 Z" Fill="Transparent" Style="{StaticResource SquarePathStyle}"/>
                     <Path Data="M0,0 L0,20" Style="{StaticResource AccentPathStyle}"/>
                 </Grid>
-            </ToggleButton.Content>
-        </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopLeft}}" Margin="0,0,5,0">
-            <ToggleButton.Content>
+            </elements:IconRadioButton.Content>
+        </elements:IconRadioButton>
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopLeft}}" Margin="0,0,5,0">
+            <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
                     <Path Data="M0,0 L20,0 L20,20 L0,20 Z" Fill="Transparent" Style="{StaticResource SquarePathStyle}"/>
                     <Path Data="M0,20 L20,0" Style="{StaticResource AccentPathStyle}"/>
                 </Grid>
-            </ToggleButton.Content>
-        </ToggleButton>
-        <ToggleButton IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopRight}}" Margin="0,0,5,0">
-            <ToggleButton.Content>
+            </elements:IconRadioButton.Content>
+        </elements:IconRadioButton>
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopRight}}" Margin="0,0,5,0">
+            <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
                     <Path Data="M0,0 L20,0 L20,20 L0,20 Z" Fill="Transparent" Style="{StaticResource SquarePathStyle}"/>
                     <Path Data="M0,0 L20,20" Style="{StaticResource AccentPathStyle}"/>
                 </Grid>
-            </ToggleButton.Content>
-        </ToggleButton>
+            </elements:IconRadioButton.Content>
+        </elements:IconRadioButton>
     </StackPanel>
 </UserControl>
