@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using Avalonia.Notification;
@@ -22,6 +23,12 @@ namespace TgaBuilderAvaloniaUi.View
         public bool IsLoaded => throw new NotImplementedException();
 
         private MouseModifier _modifier = MouseModifier.None;
+
+        /// <summary>Tracks whether Ctrl+Left panning is in progress.</summary>
+        private bool _isCtrlPanning;
+
+        /// <summary>Last pointer position (in ZoomBorder coordinates) during Ctrl+Left pan.</summary>
+        private Point _ctrlPanLastPoint;
 
         private Dictionary<Image, ZoomBorder>? _imagePanelDict;
 

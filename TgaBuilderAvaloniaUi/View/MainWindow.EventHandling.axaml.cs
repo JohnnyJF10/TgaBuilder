@@ -1,4 +1,5 @@
-﻿using Avalonia.Input;
+﻿using Avalonia;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using System;
@@ -23,7 +24,17 @@ namespace TgaBuilderAvaloniaUi.View
             var updateKind = e.GetCurrentPoint(CurrentImage).Properties.PointerUpdateKind;
             bool isLeftButton = updateKind == PointerUpdateKind.LeftButtonPressed;
 
-            if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && !isLeftButton)
+            // Ctrl+Left initiates ZoomBorder panning (matching WPF Ctrl-pan behaviour).
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && isLeftButton)
+            {
+                CurrentPanel = GetPanelFromImage(CurrentImage);
+                _isCtrlPanning = true;
+                _ctrlPanLastPoint = e.GetPosition(CurrentPanel);
+                e.Pointer.Capture(CurrentPanel);
+                return;
+            }
+
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
                 return;
 
             if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
@@ -58,6 +69,18 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Window_PointerMoved(object? sender, PointerEventArgs e)
         {
+            // Handle Ctrl+Left panning: translate the ZoomBorder matrix.
+            if (_isCtrlPanning && CurrentPanel != null)
+            {
+                var currentPoint = e.GetPosition(CurrentPanel);
+                double dx = currentPoint.X - _ctrlPanLastPoint.X;
+                double dy = currentPoint.Y - _ctrlPanLastPoint.Y;
+                CurrentPanel.SetMatrix(
+                    CurrentPanel.Matrix * Avalonia.Matrix.CreateTranslation(dx, dy));
+                _ctrlPanLastPoint = currentPoint;
+                return;
+            }
+
             if (CurrentImage == null) return;
 
             var pos = e.GetPosition(CurrentImage);
@@ -98,6 +121,14 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Window_PointerReleased(object? sender, PointerReleasedEventArgs e)
         {
+            // End Ctrl+Left panning.
+            if (_isCtrlPanning)
+            {
+                _isCtrlPanning = false;
+                e.Pointer.Capture(null);
+                return;
+            }
+
             if (CurrentImage == null)
                 return;
 
