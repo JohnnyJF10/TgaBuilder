@@ -23,7 +23,7 @@ namespace TgaBuilderAvaloniaUi.View
             var updateKind = e.GetCurrentPoint(CurrentImage).Properties.PointerUpdateKind;
             bool isLeftButton = updateKind == PointerUpdateKind.LeftButtonPressed;
 
-            if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && !isLeftButton)
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && isLeftButton)
                 return;
 
             if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
@@ -79,7 +79,7 @@ namespace TgaBuilderAvaloniaUi.View
             }
 
             if (CurrentPanel != null && 
-                !e.Properties.IsMiddleButtonPressed &&
+                !(e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control)) &&
                 PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand &&
                 PanelMouseAP.GetEndScrollCommand(CurrentPanel) is ICommand endScrollCommand)
             {
