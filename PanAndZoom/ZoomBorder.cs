@@ -834,7 +834,7 @@ public partial class ZoomBorder : Border
             return;
         }
 
-        if (_element != null && !_captured && !_isPanning && IsPanButtonPressed(e))
+        if (_element != null && !_captured && !_isPanning && IsPanButtonPressed(e) && e.KeyModifiers.HasFlag(KeyModifiers.Control))
         {
             var point = e.GetPosition(_element);
             BeginPanTo(point.X, point.Y);

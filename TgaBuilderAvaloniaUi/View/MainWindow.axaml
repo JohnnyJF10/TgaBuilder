@@ -483,7 +483,7 @@
                         EnablePan="True"
                         EnableZoom="True"
                         Focusable="True"
-                        PanButton="Middle"
+                        PanButton="Left"
                         Stretch="None"
                         ZoomSpeed="1.5"
                         
@@ -1173,7 +1173,7 @@
                         EnablePan="True"
                         EnableZoom="True"
                         Focusable="True"
-                        PanButton="Middle"
+                        PanButton="Left"
                         Stretch="None"
                         ZoomSpeed="1.5"
                         ZoomX="{Binding Zoom, Mode=OneWayToSource}"
