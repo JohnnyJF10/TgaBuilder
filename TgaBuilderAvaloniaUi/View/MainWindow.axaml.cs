@@ -36,6 +36,7 @@ namespace TgaBuilderAvaloniaUi.View
             InitializeComponent();
             base.DataContext = mainViewModel;
 
+
             if (mainViewModel is MainViewModel vm)
             {
                 this.Opened += (_, _) =>

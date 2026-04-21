@@ -275,7 +275,7 @@
                 ToolTip.Tip="{Binding MarkerRadius}"
                 IsSnapToTickEnabled="True"
                 TickFrequency="1"
-                Maximum="20"
+                Maximum="10"
                 Minimum="1"
                 SmallChange="1"
                 Value="{Binding MarkerRadius}"/>

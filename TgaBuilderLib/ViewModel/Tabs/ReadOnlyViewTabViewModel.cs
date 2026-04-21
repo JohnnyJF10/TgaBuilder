@@ -23,10 +23,11 @@ namespace TgaBuilderLib.ViewModel
             VisualPanelSize.PropertyChanged += (_, _) => OnContentActualSizeChanged();
         }
 
-        private const int SCROLL_SPEED_PIX_PER_SEC = 150;
+        private const int SCROLL_SPEED_PIX_PER_SEC = 10;
         private const int DRAG_THRESHOLD = 10;
         private const int SCROLLING_THRESHOLD = 30;
         private const double ZOOM_STEP_FACTOR = 1.2;
+        private const int AutoPanDelay = 10;
 
         public bool IsScrolling { get; set; } = false;
         private (double X, double Y) _scrollDirection;
@@ -241,7 +242,7 @@ namespace TgaBuilderLib.ViewModel
                 double deltaX = -_scrollDirection.X * SCROLL_SPEED_PIX_PER_SEC;
                 double deltaY = -_scrollDirection.Y * SCROLL_SPEED_PIX_PER_SEC;
                 ZoomBorderProxy?.PanStep(deltaX, deltaY);
-                await Task.Delay(1000);
+                await Task.Delay(AutoPanDelay);
             }
         }
     }

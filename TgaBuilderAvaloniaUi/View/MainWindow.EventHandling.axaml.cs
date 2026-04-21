@@ -4,6 +4,7 @@ using Avalonia.VisualTree;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Transactions;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
 using TgaBuilderLib.Enums;
@@ -13,6 +14,9 @@ namespace TgaBuilderAvaloniaUi.View
 {
     public partial class MainWindow
     {
+
+        private Avalonia.Point _lastPanPosition;
+
         private static bool IsGridlessModifier(KeyModifiers modifiers)
             => modifiers.HasFlag(KeyModifiers.Alt);
 
@@ -23,9 +27,6 @@ namespace TgaBuilderAvaloniaUi.View
             var updateKind = e.GetCurrentPoint(CurrentImage).Properties.PointerUpdateKind;
             bool isLeftButton = updateKind == PointerUpdateKind.LeftButtonPressed;
 
-            if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && !isLeftButton)
-                return;
-
             if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
                 return;
 
@@ -34,7 +35,13 @@ namespace TgaBuilderAvaloniaUi.View
 
             e.Pointer.Capture(CurrentImage);
 
-            var pos = e.GetPosition(CurrentImage);
+
+            _lastPanPosition = e.GetPosition(CurrentPanel);
+            if (e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+                return;
+
+
+                var pos = e.GetPosition(CurrentImage);
             int x = (int)pos.X;
             int y = (int)pos.Y;
 
@@ -79,7 +86,22 @@ namespace TgaBuilderAvaloniaUi.View
             }
 
             if (CurrentPanel != null && 
-                !e.Properties.IsMiddleButtonPressed &&
+            e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                var posNewPanel = e.GetPosition(CurrentPanel);
+                var deltaPos = posNewPanel - _lastPanPosition;
+                CurrentPanel.EnablePan = false;
+                CurrentPanel.PanDelta(
+                    dx: deltaPos.X, 
+                    dy: deltaPos.Y,
+                    skipTransitions: true);
+
+                _lastPanPosition = posNewPanel;
+                return;
+            }
+
+            if (CurrentPanel != null && 
+                !(e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control)) &&
                 PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand &&
                 PanelMouseAP.GetEndScrollCommand(CurrentPanel) is ICommand endScrollCommand)
             {
@@ -89,7 +111,6 @@ namespace TgaBuilderAvaloniaUi.View
                     scrollCommand.Execute((panelPos.X, panelPos.Y));
                 else
                     endScrollCommand.Execute(null);
-                
             }
 
             if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
@@ -98,11 +119,12 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Window_PointerReleased(object? sender, PointerReleasedEventArgs e)
         {
-            if (CurrentImage == null)
-                return;
+            if (CurrentImage == null) return;
 
-            if (e.InitialPressMouseButton == MouseButton.Middle)
-                return;
+            if (e.InitialPressMouseButton == MouseButton.Middle) return;
+
+            if (CurrentPanel is not null)
+                CurrentPanel.EnablePan = false;
 
             if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 _modifier = MouseModifier.Shift;

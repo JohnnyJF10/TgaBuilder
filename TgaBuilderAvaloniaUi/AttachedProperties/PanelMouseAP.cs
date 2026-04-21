@@ -73,6 +73,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
                 mainWindow.CurrentImage = image;
                 mainWindow.SetPanelFromImage(image);
 
+                if (mainWindow.CurrentPanel is not null)
+                    mainWindow.CurrentPanel.EnableAnimations = false;
+
                 bool isDestination = GetIsTargetPanel(image);
 
                 var EnterPanelCommand = GetEnterPanelCommand(mainWindow);
@@ -95,6 +98,9 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
             bool isDestination = GetIsTargetPanel(image);
 
             var mainWindow = GetMainWindow();
+
+            if (mainWindow.CurrentPanel is not null)
+                mainWindow.CurrentPanel.EnableAnimations = true;
 
             mainWindow.CurrentImage = null;
             mainWindow.CurrentPanel = null;
