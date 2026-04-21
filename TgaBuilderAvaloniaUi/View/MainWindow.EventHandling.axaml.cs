@@ -4,6 +4,7 @@ using Avalonia.VisualTree;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Transactions;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
 using TgaBuilderLib.Enums;
@@ -23,9 +24,6 @@ namespace TgaBuilderAvaloniaUi.View
             var updateKind = e.GetCurrentPoint(CurrentImage).Properties.PointerUpdateKind;
             bool isLeftButton = updateKind == PointerUpdateKind.LeftButtonPressed;
 
-            if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && isLeftButton)
-                return;
-
             if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
                 return;
 
@@ -33,6 +31,15 @@ namespace TgaBuilderAvaloniaUi.View
             CurrentPanel = GetPanelFromImage(CurrentImage);
 
             e.Pointer.Capture(CurrentImage);
+
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && isLeftButton)
+            {
+                CurrentPanel.EnablePan = true;
+                CurrentPanel.BeginPanTo(
+                    x: e.GetPosition(CurrentPanel).X, 
+                    y: e.GetPosition(CurrentPanel).Y);
+                return;
+            }
 
             var pos = e.GetPosition(CurrentImage);
             int x = (int)pos.X;
@@ -79,6 +86,15 @@ namespace TgaBuilderAvaloniaUi.View
             }
 
             if (CurrentPanel != null && 
+            e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                CurrentPanel.BeginPanTo(
+                    x: e.GetPosition(CurrentPanel).X, 
+                    y: e.GetPosition(CurrentPanel).Y);
+                return;
+            }
+
+            if (CurrentPanel != null && 
                 !(e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control)) &&
                 PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand &&
                 PanelMouseAP.GetEndScrollCommand(CurrentPanel) is ICommand endScrollCommand)
@@ -103,6 +119,9 @@ namespace TgaBuilderAvaloniaUi.View
 
             if (e.InitialPressMouseButton == MouseButton.Middle)
                 return;
+
+            if (CurrentPanel is not null)
+                CurrentPanel.EnablePan = false;
 
             if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 _modifier = MouseModifier.Shift;
