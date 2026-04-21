@@ -731,11 +731,11 @@
                         Width="30"
                         Height="30"
                         Margin="2,0"
-                        ap:MouseOverInfoAP.InfoText="Set a pure maroon selection"
+                        ap:MouseOverInfoAP.InfoText="Set a pure transparent selection"
                         Background="Transparent"
-                        BorderBrush="Gray"
+                        BorderBrush="Transparent"
                         Command="{Binding SelectionMonoColorFillCommand}"
-                        CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
+                        CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"/>
                 </Grid>
             </StackPanel>
             <Button
@@ -744,8 +744,9 @@
                 Padding="0"
                 HorizontalAlignment="Center"
                 ap:MouseOverInfoAP.InfoText="Current Tile Preview (Click to place)"
-                BorderBrush="Gray"
-                BorderThickness="1"
+                BorderBrush="Transparent"
+                Background="Transparent"
+                BorderThickness="0"
                 Command="{Binding SwitchToDestinationPlacingModeCommand}">
                 <Grid Width="100" Height="100">
                     <elements:CheckerRectangle
@@ -756,6 +757,17 @@
                            RenderOptions.BitmapInterpolationMode="None"
                            Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
                 </Grid>
+                <Button.Styles>
+                    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                    </Style>
+
+                    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                    </Style>
+                </Button.Styles>
             </Button>
             <StackPanel
                 IsVisible="False"

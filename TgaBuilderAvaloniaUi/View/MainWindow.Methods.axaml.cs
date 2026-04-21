@@ -7,7 +7,11 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
+using System.Diagnostics;
+using System.Windows.Input;
+using TgaBuilderAvaloniaUi.AttachedProperties;
 using TgaBuilderAvaloniaUi.Services;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View

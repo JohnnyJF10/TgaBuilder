@@ -1,6 +1,9 @@
 ﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Threading;
+using System;
+using TgaBuilderAvaloniaUi.View;
 using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderAvaloniaUi.Services
@@ -13,10 +16,12 @@ namespace TgaBuilderAvaloniaUi.Services
     public class ZoomBorderProxy : IZoomBorderProxy
     {
         private readonly ZoomBorder _zoomBorder;
+        private readonly Action<double, double>? _invalidatePointerPositionCallback;
 
-        public ZoomBorderProxy(ZoomBorder zoomBorder)
+        public ZoomBorderProxy(ZoomBorder zoomBorder, Action<double, double>? invalidatePointerPositionCallback = null)
         {
             _zoomBorder = zoomBorder;
+            _invalidatePointerPositionCallback = invalidatePointerPositionCallback;
         }
 
         public void ApplyTransform(double zoom, double translateX, double translateY)
@@ -25,7 +30,7 @@ namespace TgaBuilderAvaloniaUi.Services
             {
                 var matrix = Matrix.CreateScale(zoom, zoom) *
                              Matrix.CreateTranslation(translateX, translateY);
-                _zoomBorder.SetMatrix(matrix);
+                _zoomBorder.SetMatrix(matrix, skipTransitions: true);
             });
         }
 
@@ -41,9 +46,12 @@ namespace TgaBuilderAvaloniaUi.Services
         {
             Dispatcher.UIThread.Post(() =>
             {
-                _zoomBorder.SetMatrix(
-                    _zoomBorder.Matrix * Matrix.CreateTranslation(deltaX, deltaY));
+                _zoomBorder.PanDelta(
+                    dx: deltaX,
+                    dy: deltaY,
+                    skipTransitions: true);
             });
+            _invalidatePointerPositionCallback?.Invoke(deltaX, deltaY);
         }
 
         public void ZoomStep(double zoomDelta)
