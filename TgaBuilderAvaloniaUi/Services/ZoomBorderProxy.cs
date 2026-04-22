@@ -16,9 +16,9 @@ namespace TgaBuilderAvaloniaUi.Services
     public class ZoomBorderProxy : IZoomBorderProxy
     {
         private readonly ZoomBorder _zoomBorder;
-        private readonly Action<double, double>? _invalidatePointerPositionCallback;
+        private readonly Action<double, double, ZoomBorder>? _invalidatePointerPositionCallback;
 
-        public ZoomBorderProxy(ZoomBorder zoomBorder, Action<double, double>? invalidatePointerPositionCallback = null)
+        public ZoomBorderProxy(ZoomBorder zoomBorder, Action<double, double, ZoomBorder>? invalidatePointerPositionCallback = null)
         {
             _zoomBorder = zoomBorder;
             _invalidatePointerPositionCallback = invalidatePointerPositionCallback;
@@ -51,7 +51,7 @@ namespace TgaBuilderAvaloniaUi.Services
                     dy: deltaY,
                     skipTransitions: true);
             });
-            _invalidatePointerPositionCallback?.Invoke(deltaX, deltaY);
+            _invalidatePointerPositionCallback?.Invoke(deltaX, deltaY, _zoomBorder);
         }
 
         public void ZoomStep(double zoomDelta)

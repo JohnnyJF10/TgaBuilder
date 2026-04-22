@@ -1,4 +1,5 @@
-﻿using Avalonia.Input;
+﻿using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using System;
@@ -16,6 +17,7 @@ namespace TgaBuilderAvaloniaUi.View
     {
 
         private Avalonia.Point _lastPanPosition;
+        private Avalonia.Point _lastPointerPosition;
 
         private static bool IsGridlessModifier(KeyModifiers modifiers)
             => modifiers.HasFlag(KeyModifiers.Alt);
@@ -56,6 +58,12 @@ namespace TgaBuilderAvaloniaUi.View
 
             if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((x, y, isDestination, MouseAction.DragStart, _modifier));
+
+            _lastPointerPosition = e.GetPosition(CurrentImage);
+
+            //Debug.WriteLine($"Image Width: {CurrentImage.Bounds.Width} | Image Height: {CurrentImage.Bounds.Height}" +
+            //    $"Panel Viewport Width: {CurrentPanel?.GetViewportBounds().Width} | Panel Viewport Height: {CurrentPanel?.GetViewportBounds().Height}" +
+            //    $"Panel Dimension: {CurrentPanel?.Bounds.Width} | Panel Dimension Height: {CurrentPanel?.Bounds.Height}");
         }
 
         private void Window_DoubleTapped(object? sender, RoutedEventArgs e)
@@ -111,10 +119,16 @@ namespace TgaBuilderAvaloniaUi.View
                     scrollCommand.Execute((panelPos.X, panelPos.Y));
                 else
                     endScrollCommand.Execute(null);
+
+                //Debug.WriteLine(
+                //    $"ImageMousePos: {e.GetPosition(CurrentImage).X}, {e.GetPosition(CurrentImage).Y} | " +
+                //    $"PanelOffset: {CurrentPanel.OffsetX}, {CurrentPanel.OffsetY} | ");
             }
 
             if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((x, y, isDestination, MouseAction.Move, _modifier));
+
+            _lastPointerPosition = e.GetPosition(CurrentImage);
         }
 
         private void Window_PointerReleased(object? sender, PointerReleasedEventArgs e)

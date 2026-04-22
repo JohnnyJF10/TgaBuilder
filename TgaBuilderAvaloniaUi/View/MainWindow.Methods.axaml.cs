@@ -40,7 +40,28 @@ namespace TgaBuilderAvaloniaUi.View
 
         public void RegisterZoomBorderCallbacks(ReadOnlyViewTabViewModel viewTab, ZoomBorder panel)
         {
-            viewTab.ZoomBorderProxy = new ZoomBorderProxy(panel);
+            viewTab.ZoomBorderProxy = new ZoomBorderProxy(panel, InvalidatePointerPosition);
+        }
+
+        public void InvalidatePointerPosition(double dx, double dy, ZoomBorder panel)
+        {
+            bool isDestination = string.Equals(panel.Name, "TargetPanel");
+            Image curImage = isDestination ? TargetImage : SourceImage;
+
+            int newPixX, newPixY;
+            int signX = dx > 0 ? -1 : 1;
+            int signY = dy > 0 ? -1 : 1;
+
+            newPixX = dx == 0
+                ? (int)_lastPointerPosition.X
+                : (int)(((curImage.Bounds.Width + (signX * panel.Bounds.Width)) * 0.5 - panel.OffsetX) / panel.ZoomX);
+
+            newPixY = dy == 0
+                ? (int)_lastPointerPosition.Y
+                : (int)(((curImage.Bounds.Height + (signY * panel.Bounds.Height)) * 0.5 - panel.OffsetY) / panel.ZoomY);
+            
+            if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
+                mousePanelCommand.Execute((newPixX, newPixY, isDestination, MouseAction.Move, _modifier));
         }
 
         public void RegisterPresenterChangedCallback(
