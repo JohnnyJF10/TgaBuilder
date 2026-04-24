@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using TgaBuilderAvaloniaUi.Elements;
+using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.ViewModel;
 
@@ -10,11 +11,11 @@ namespace TgaBuilderAvaloniaUi.View
 {
     public partial class SmoothTransitionWindow : AsyncWindow
     {
-        public SmoothTransitionWindow(INotifyPropertyChanged viewModel, IVisualInvalidatorFactory? visualInvalidatorFactory = null)
+        public SmoothTransitionWindow(INotifyPropertyChanged viewModel)
         {
             InitializeComponent();
             base.DataContext = viewModel;
-            InitializeVisualInvalidator(viewModel, visualInvalidatorFactory);
+            InitializeVisualInvalidator(viewModel);
         }
 
         [Obsolete("For designer use only")]
@@ -28,10 +29,10 @@ namespace TgaBuilderAvaloniaUi.View
             base.DataContext = vm;
         }
 
-        private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel, IVisualInvalidatorFactory? factory)
+        private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel)
         {
-            if (factory is not null && viewModel is SmoothTransitionViewModel vm)
-                vm.VisualInvalidator = factory.Create(ResultImage);
+            if (viewModel is SmoothTransitionViewModel vm)
+                vm.VisualInvalidator = new VisualInvalidator(ResultImage);
         }
 
         protected override void OnClosing(WindowClosingEventArgs e)

@@ -19,8 +19,6 @@ namespace TgaBuilderAvaloniaUi.View
 
         public INotificationMessageManager Manager { get; } = new NotificationMessageManager();
 
-        public bool IsLoaded => throw new NotImplementedException();
-
         private MouseModifier _modifier = MouseModifier.None;
 
         private Dictionary<Image, ZoomBorder>? _imagePanelDict;

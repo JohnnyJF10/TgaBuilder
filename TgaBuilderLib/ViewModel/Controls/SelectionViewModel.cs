@@ -91,6 +91,8 @@ namespace TgaBuilderLib.ViewModel
             }
         }
 
+        public IVisualInvalidator? VisualInvalidator { get; set; }
+
         public RelayCommand CopyCommand => _copyCommand ??= new(Copy);
 
         public RelayCommand PasteCommand => _pasteCommand ??= new(Paste);
@@ -139,16 +141,18 @@ namespace TgaBuilderLib.ViewModel
                 Presenter, rect, color);
 
             IsPlacing = true;
+
+            VisualInvalidator?.InvalidateVisual();
         }
 
         internal void FillSelection(IWriteableBitmap presenter, Color color)
         {
             PixelRect rect = new(0, 0,
-                Presenter.PixelWidth,
-                Presenter.PixelHeight);
+                presenter.PixelWidth,
+                presenter.PixelHeight);
 
             _bitmapOperations.FillRectColor(
-                Presenter, rect, color);
+                presenter, rect, color);
 
             IsPlacing = true;
         }

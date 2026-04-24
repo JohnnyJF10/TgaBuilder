@@ -39,7 +39,8 @@ namespace TgaBuilderAvaloniaUi
                 ?? throw new InvalidOperationException("MainWindow not found in DI container");
 
             // This is required in Avalonia UI as partial changes on Images are not automatically redrawn.
-            mainViewModel.VisualInvalidator = new ImageVisualInvalidator(mainWindow.TargetImage);
+            mainViewModel.VisualInvalidator = new VisualInvalidator(mainWindow.TargetImage);
+            mainViewModel.Selection.VisualInvalidator = new VisualInvalidator(mainWindow.SelectionImage);
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
