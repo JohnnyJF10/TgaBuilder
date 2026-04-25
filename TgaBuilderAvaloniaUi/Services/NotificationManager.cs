@@ -27,7 +27,9 @@ namespace TgaBuilderAvaloniaUi.Services
             if (entry.TimeoutSeconds > 0)
             {
                 var cts = new CancellationTokenSource();
-                Interlocked.Exchange(ref _dismissCts, cts)?.Dispose();
+                var old = Interlocked.Exchange(ref _dismissCts, cts);
+                old?.Cancel();
+                old?.Dispose();
                 _ = AutoDismissAsync(entry, entry.TimeoutSeconds, cts.Token);
             }
         }

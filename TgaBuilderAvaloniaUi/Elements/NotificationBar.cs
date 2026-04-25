@@ -101,8 +101,8 @@ namespace TgaBuilderAvaloniaUi.Elements
             if (e.PropertyName == nameof(NotificationEntry.IsDismissing) &&
                 sender is NotificationEntry entry && entry.IsDismissing)
             {
-                // Fade the whole bar out (transition defined in ControlTheme)
-                Dispatcher.UIThread.Post(() => Opacity = 0.0);
+                // Already on the UI thread (fired from BeginDismiss via InvokeAsync)
+                Opacity = 0.0;
             }
         }
 
