@@ -6,6 +6,8 @@ using Avalonia.Input;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.ViewModel;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 
 namespace TgaBuilderAvaloniaUi.View
 {
@@ -18,6 +20,7 @@ namespace TgaBuilderAvaloniaUi.View
             InitializeComponent();
             base.DataContext = viewModel;
             InitializeVisualInvalidator(viewModel);
+            RegisterScrollViewScrollSpeedModification(BatchLoaderScrollViewer);
         }
 
         [Obsolete("For designer use only")]
@@ -70,13 +73,72 @@ namespace TgaBuilderAvaloniaUi.View
                 e.Pointer.Capture(null);
         }
 
-        private void BatchLoaderZoomPanel_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
+        private void ScrollViewer_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
         {
-            if (!e.KeyModifiers.HasFlag(KeyModifiers.Control)) return;
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Alt))
+                return;
 
-            var pos = e.GetPosition(BatchLoaderZoomPanel);
-            BatchLoaderZoomPanel.ZoomDeltaTo(e.Delta.Y, pos.X, pos.Y);
-            e.Handled = true;
+            if (sender is ScrollViewer sv)
+            {
+                var delta = e.Delta.Y;
+
+                double speedFactor = 150.0;
+
+                if (delta > 0 && sv.Offset.Y < 0.00001)
+                    delta = 0;
+
+                if (delta < 0 && sv.Offset.Y > sv.ScrollBarMaximum.Y - 0.00001)
+                    delta = 0;
+
+                if (sv.Content is ZoomBorder zb)
+                {
+                    zb.Pan(
+                        x: zb.OffsetX,
+                        y: zb.OffsetY + delta * speedFactor,
+                        skipTransitions: true);
+                }
+
+                e.Handled = true;
+            }
+        }
+
+                public void RegisterScrollViewScrollSpeedModification(ScrollViewer scrollViewer)
+        {
+            scrollViewer.AddHandler(InputElement.PointerWheelChangedEvent, (sender, e) =>
+            {
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                {
+                    e.Handled = true;
+                    return;
+                }
+
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Control)
+                    || e.KeyModifiers.HasFlag(KeyModifiers.Alt))
+                    return;
+
+                if (sender is ScrollViewer sv)
+                {
+                    var delta = e.Delta.Y;
+
+                    double speedFactor = 150.0;
+
+                    if (delta > 0 && sv.Offset.Y < 0.00001)
+                        delta = 0;
+
+                    if (delta < 0 && sv.Offset.Y > sv.ScrollBarMaximum.Y - 0.00001)
+                        delta = 0;
+
+                    if (sv.Content is ZoomBorder zb)
+                    {
+                        zb.Pan(
+                            x: zb.OffsetX, 
+                            y: zb.OffsetY + delta * speedFactor, 
+                            skipTransitions: true);
+                    }
+
+                    e.Handled = true;
+                }
+            }, RoutingStrategies.Tunnel);
         }
     }
 }

@@ -1,77 +1,67 @@
 ﻿<elements:AsyncWindow
-        xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
-        xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:paz="using:Avalonia.Controls.PanAndZoom"
-        xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-        xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-        xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
-        x:Class="TgaBuilderAvaloniaUi.View.BatchLoaderWindow"
-        x:DataType="viewmodel:BatchLoaderViewModel"
-        x:Name="BatchLoaderWin"
-        mc:Ignorable="d"
-        WindowStartupLocation="CenterScreen"
-        UseLayoutRounding="True"
-        Background="{DynamicResource WindowBackgroundGradient}"
-        Foreground="{DynamicResource SystemBaseHighColor}"
-        Title="Batch File Loader"
-        Height="550"
-        MinHeight="550"
-        Width="600"
-        MinWidth="560"
-        Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
-        >
+xmlns="https://github.com/avaloniaui"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
+xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+xmlns:sys="clr-namespace:System;assembly=mscorlib"
+xmlns:paz="using:Avalonia.Controls.PanAndZoom"
+xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+x:Class="TgaBuilderAvaloniaUi.View.BatchLoaderWindow"
+x:DataType="viewmodel:BatchLoaderViewModel"
+x:Name="BatchLoaderWin"
+mc:Ignorable="d"
+WindowStartupLocation="CenterScreen"
+UseLayoutRounding="True"
+Background="{DynamicResource WindowBackgroundGradient}"
+Foreground="{DynamicResource SystemBaseHighColor}"
+Title="Batch File Loader"
+Height="550"
+MinHeight="550"
+Width="600"
+MinWidth="560"
+Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
+>
 
   <!-- Resources: converters kept. Styles and special merged dictionaries removed per request. -->
   <Window.Resources>
     <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+      </ResourceDictionary.MergedDictionaries>
       <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
       <sys:Boolean x:Key="True">True</sys:Boolean>
       <sys:Boolean x:Key="False">False</sys:Boolean>
     </ResourceDictionary>
-      </Window.Resources>
+  </Window.Resources>
 
   <Grid
-    RowDefinitions="Auto,Auto,Auto,*,Auto"
-    ColumnDefinitions="150,*"
-    >
+  RowDefinitions="Auto,Auto,Auto,*,Auto"
+  ColumnDefinitions="150,*"
+  >
 
-    <!-- Title / title bar area -->
-    <DockPanel Grid.ColumnSpan="2">
-      <!-- Right area (previously TitleBarNavigationAreaStyle) kept as plain Border so no styles required -->
-      <Border DockPanel.Dock="Right" 
-              Width="133" 
-              Background="Transparent" />
 
-      <Border Margin="3,3,0,0" 
-              Grid.ColumnSpan="2">
-        <TextBlock Text="Batch File Loader" 
-                   FontWeight="Bold" 
-                   VerticalAlignment="Center" 
-                   Margin="6,2" />
-      </Border>
-    </DockPanel>
 
     <!-- Top commands -->
-    <StackPanel Orientation="Horizontal" Grid.Row="1" 
-                Grid.Column="0" 
-                Grid.ColumnSpan="2">
+    <DockPanel Grid.Row="1"
+               Grid.Column="0"
+               Grid.ColumnSpan="2"
+               Margin="10,0,10,0"
+               >
       <Button Content="Select Folder..."
-              Margin="10"
               HorizontalAlignment="Stretch"
               Command="{Binding SelectTRRFolderCommand}"
               CommandParameter="{StaticResource False}" />
 
       <DropDownButton Margin="10"
                       Content="Open Recent Folders"
-              >
+                      >
         <DropDownButton.Flyout>
           <MenuFlyout
-            ItemsSource="{Binding RecentBatchLoaderFolders}"
-                            >
+          ItemsSource="{Binding RecentBatchLoaderFolders}"
+          >
 
             <MenuFlyout.ItemTemplate>
               <DataTemplate>
@@ -83,71 +73,71 @@
           </MenuFlyout>
         </DropDownButton.Flyout>
       </DropDownButton>
-    </StackPanel>
+      <elements:IconButton
+      Classes="outlined"
+      Icon="{StaticResource scale_fit}"
+      ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"
+      Command="{Binding Zoom100Command}"
+      DockPanel.Dock="Right" />
+      <elements:IconButton
+      Classes="outlined"
+      Icon="{StaticResource arrow_autofit_height}"
+      Margin="5,0"
+      ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
+      Command="{Binding FillCommand}"
+      DockPanel.Dock="Right" />
+      <elements:IconButton
+      x:Name="SourceFitButton"
+      Classes="outlined"
+      Icon="{StaticResource arrow_autofit_width}"
+      ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
+      Command="{Binding FitCommand}"
+      DockPanel.Dock="Right" />
+
+
+      <Rectangle Fill="Transparent"
+                 Width="10" />
+    </DockPanel>
 
     <!-- Left settings column -->
-    <StackPanel Grid.Row="3" 
-                Grid.RowSpan="2" 
+    <StackPanel Grid.Row="3"
+                Grid.RowSpan="2"
                 Margin="0">
-      
-      <TextBlock Text="First Texture Index:" 
+
+      <TextBlock Text="First Texture Index:"
                  Margin="10,10,10,0" />
-      
-      <NumericUpDown Margin="10,0,10,10" 
+
+      <NumericUpDown Margin="10,0,10,10"
                      Value="{Binding StartTexIndex, UpdateSourceTrigger=PropertyChanged}" />
 
-      <TextBlock Text="Number of Textures:" 
+      <TextBlock Text="Number of Textures:"
                  Margin="10,10,10,0" />
-      
+
       <NumericUpDown Margin="10,0,10,10"
                      Value="{Binding NumTextures, UpdateSourceTrigger=PropertyChanged}" />
 
-      <TextBlock Text="Texture Size:" 
+      <TextBlock Text="Texture Size:"
                  Margin="10,10,10,0" />
-      
-      <NumericUpDown Margin="10,0,10,10" 
+
+      <NumericUpDown Margin="10,0,10,10"
                      Value="{Binding TextureSize, UpdateSourceTrigger=PropertyChanged}" />
 
-      <TextBlock Text="Import Panel Width:" 
+      <TextBlock Text="Import Panel Width:"
                  Margin="10,10,10,0" />
-      
-      <NumericUpDown Margin="10,0,10,10" 
+
+      <NumericUpDown Margin="10,0,10,10"
                      Value="{Binding PanelWidth, UpdateSourceTrigger=PropertyChanged}" />
 
-      <TextBlock Text="Scaling Mode:" 
+      <TextBlock Text="Scaling Mode:"
                  Margin="10,10,10,0" />
-      
-      <ComboBox Margin="10,0,10,10" 
+
+      <ComboBox Margin="10,0,10,10"
                 SelectedIndex="{Binding ScalingModeIndex, UpdateSourceTrigger=PropertyChanged}">
         <ComboBoxItem Content="Linear" />
         <ComboBoxItem Content="Fant" />
         <ComboBoxItem Content="Near. Neigh." />
       </ComboBox>
     </StackPanel>
-
-    <!-- View toolbar (Fit / Fill / Zoom 100) -->
-    <DockPanel Grid.Row="2" Grid.Column="1" Margin="5,2,5,2">
-      <elements:IconButton
-          Classes="outlined"
-          Icon="{StaticResource arrow_autofit_width}"
-          ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
-          Command="{Binding FitCommand}"
-          DockPanel.Dock="Left" />
-      <elements:IconButton
-          Classes="outlined"
-          Icon="{StaticResource arrow_autofit_height}"
-          Margin="5,0,0,0"
-          ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
-          Command="{Binding FillCommand}"
-          DockPanel.Dock="Left" />
-      <elements:IconButton
-          Classes="outlined"
-          Icon="{StaticResource scale_fit}"
-          Margin="5,0,0,0"
-          ap:MouseOverInfoAP.InfoText="Zoom to exact pixel size (100% zoom)"
-          Command="{Binding Zoom100Command}"
-          DockPanel.Dock="Left" />
-    </DockPanel>
 
     <!-- Right preview area: replaced Card with simple Border to avoid custom styles -->
     <Border VerticalAlignment="Stretch"
@@ -163,60 +153,61 @@
     </Border>
 
     <!-- File drop / image presenter -->
-    <elements:FileDropBorder 
-      Grid.Row="3" 
-      Grid.Column="1" 
-      Margin="5" 
-      DropCommand="{Binding FileDropCommand}">
+    <elements:FileDropBorder
+    Grid.Row="3"
+    Grid.Column="1"
+    Margin="5"
+    DropCommand="{Binding FileDropCommand}">
       <ScrollViewer
-          HorizontalScrollBarVisibility="Auto"
-          VerticalScrollBarVisibility="Auto">
+      x:Name="BatchLoaderScrollViewer"
+      HorizontalScrollBarVisibility="Auto"
+      VerticalScrollBarVisibility="Auto"
+      >
         <paz:ZoomBorder x:Name="BatchLoaderZoomPanel"
-                       Stretch="None"
-                       ZoomSpeed="1.5"
-                       EnableConstrains="False"
-                       EnableGestures="False"
-                       EnableZoom="False"
-                       EnablePan="False"
-                       Background="Transparent"
-                       ClipToBounds="True"
-                       Focusable="True"
-                       VerticalAlignment="Stretch"
-                       HorizontalAlignment="Stretch"
-                       ZoomX="{Binding Zoom, Mode=OneWayToSource}"
-                       ZoomY="{Binding Zoom, Mode=OneWayToSource}"
-                       ap:SizeObserverAP.ObserveSize="True"
-                       ap:SizeObserverAP.ObservedWidth="{Binding ViewportWidth, Mode=OneWayToSource}"
-                       ap:SizeObserverAP.ObservedHeight="{Binding ViewportHeight, Mode=OneWayToSource}"
-                       PointerPressed="BatchLoaderZoomPanel_PointerPressed"
-                       PointerMoved="BatchLoaderZoomPanel_PointerMoved"
-                       PointerReleased="BatchLoaderZoomPanel_PointerReleased"
-                       PointerWheelChanged="BatchLoaderZoomPanel_PointerWheelChanged">
+                        Stretch="None"
+                        ZoomSpeed="1.5"
+                        EnableConstrains="False"
+                        EnableGestures="False"
+                        EnableZoom="True"
+                        EnablePan="False"
+                        Background="Transparent"
+                        ClipToBounds="True"
+                        Focusable="True"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        ZoomX="{Binding Zoom, Mode=OneWayToSource}"
+                        ZoomY="{Binding Zoom, Mode=OneWayToSource}"
+                        ap:SizeObserverAP.ObserveSize="True"
+                        ap:SizeObserverAP.ObservedWidth="{Binding ViewportWidth, Mode=OneWayToSource}"
+                        ap:SizeObserverAP.ObservedHeight="{Binding ViewportHeight, Mode=OneWayToSource}"
+                        PointerPressed="BatchLoaderZoomPanel_PointerPressed"
+                        PointerMoved="BatchLoaderZoomPanel_PointerMoved"
+                        PointerReleased="BatchLoaderZoomPanel_PointerReleased">
           <Canvas
-              x:Name="BatchLoaderCanvas"
-              Width="{Binding ElementName=BatchLoadedImage, Path=Bounds.Width}"
-              Height="{Binding ElementName=BatchLoadedImage, Path=Bounds.Height}"
-              >
+          x:Name="BatchLoaderCanvas"
+          Width="{Binding ElementName=BatchLoadedImage, Path=Bounds.Width}"
+          Height="{Binding ElementName=BatchLoadedImage, Path=Bounds.Height}"
+          >
             <Canvas.Transitions>
               <Transitions>
                 <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
               </Transitions>
             </Canvas.Transitions>
             <elements:CheckerRectangle
-                x:Name="BatchLoaderCheckerBoard"
-                Width="{Binding #BatchLoadedImage.Bounds.Width}"
-                Height="{Binding #BatchLoadedImage.Bounds.Height}"
-                TileDensity="{Binding #BatchLoaderZoomPanel.ZoomX}"
-                CutOffX="{Binding #BatchLoaderZoomPanel.OffsetX}"
-                CutOffY="{Binding #BatchLoaderZoomPanel.OffsetY}"
-                />
+            x:Name="BatchLoaderCheckerBoard"
+            Width="{Binding #BatchLoadedImage.Bounds.Width}"
+            Height="{Binding #BatchLoadedImage.Bounds.Height}"
+            TileDensity="{Binding #BatchLoaderZoomPanel.ZoomX}"
+            CutOffX="{Binding #BatchLoaderZoomPanel.OffsetX}"
+            CutOffY="{Binding #BatchLoaderZoomPanel.OffsetY}"
+            />
             <Image
-                Name="BatchLoadedImage"
-                ap:PanelMouseAP.CheckMouseEnterLeave="True"
-                ap:PanelMouseAP.IsTargetPanel="False"
-                RenderOptions.BitmapInterpolationMode="None"
-                Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
-                Stretch="None" />
+            Name="BatchLoadedImage"
+            ap:PanelMouseAP.CheckMouseEnterLeave="True"
+            ap:PanelMouseAP.IsTargetPanel="False"
+            RenderOptions.BitmapInterpolationMode="None"
+            Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
+            Stretch="None" />
           </Canvas>
 
         </paz:ZoomBorder>
@@ -256,28 +247,28 @@
         <Border/>
 
         <!--<Path
-          Margin="0,15,0,0"
-            Fill="Black"
-            Data="{StaticResource zoom_out}"
-            ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-            DockPanel.Dock="Left"
-                    />
+        Margin="0,15,0,0"
+        Fill="Black"
+        Data="{StaticResource zoom_out}"
+        ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
+        DockPanel.Dock="Left"
+        />
         <Path
-            Margin="0,15,10,0"
-            Fill="Black"
-            Data="{StaticResource zoom_in}"
-            ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-            DockPanel.Dock="Right"
-                    />
+        Margin="0,15,10,0"
+        Fill="Black"
+        Data="{StaticResource zoom_in}"
+        ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
+        DockPanel.Dock="Right"
+        />
 
         <Slider VerticalAlignment="Center"
-                HorizontalAlignment="Stretch"
-                Margin="5,0"
-                Minimum="0.1"
-                Maximum="10"
-                MinWidth="3"
-                Value="{Binding Zoom, Mode=TwoWay}"
-                ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" />-->
+        HorizontalAlignment="Stretch"
+        Margin="5,0"
+        Minimum="0.1"
+        Maximum="10"
+        MinWidth="3"
+        Value="{Binding Zoom, Mode=TwoWay}"
+        ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" />-->
       </DockPanel>
     </Border>
 
