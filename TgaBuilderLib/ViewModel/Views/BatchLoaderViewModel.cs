@@ -58,6 +58,9 @@ namespace TgaBuilderLib.ViewModel
 
         private IWriteableBitmap _presenter;
 
+        public IVisualInvalidator? VisualInvalidator { get; set; }
+        public IZoomBorderProxy? ZoomBorderProxy { get; set; }
+
         private string _selectedFolderPath = string.Empty;
         private int _startTexIndex = 0;
         private int _numTextures = 11;
@@ -74,6 +77,9 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand<IView>? _cancelCommand;
         private RelayCommand<string>? openRecentFolderCommand;
         private RelayCommand<List<string>>? _fileDropCommand;
+        private RelayCommand? _fitCommand;
+        private RelayCommand? _fillCommand;
+        private RelayCommand? _zoom100Command;
 
 
         public IEnumerable<string> RecentBatchLoaderFolders => _usageData.RecentBatchLoaderFolders;
@@ -155,6 +161,12 @@ namespace TgaBuilderLib.ViewModel
             => openRecentFolderCommand ??= new RelayCommand<string>(async s => await SelectFolder(s));
         public ICommand FileDropCommand
             => _fileDropCommand ??= new RelayCommand<List<string>>(FileDrop);
+        public ICommand FitCommand
+            => _fitCommand ??= new RelayCommand(Fit);
+        public ICommand FillCommand
+            => _fillCommand ??= new RelayCommand(Fill);
+        public ICommand Zoom100Command
+            => _zoom100Command ??= new RelayCommand(Zoom100);
 
 
 
@@ -173,6 +185,50 @@ namespace TgaBuilderLib.ViewModel
 
             OnPropertyChanged(nameof(ContentActualWidth));
             OnPropertyChanged(nameof(ContentActualHeight));
+        }
+
+        public void Fit()
+        {
+            if (_presenter.PixelWidth <= 0 || _viewportWidth <= 0) return;
+
+            var zoom = _viewportWidth / _presenter.PixelWidth;
+            SetZoom(zoom);
+
+            var centerX = _presenter.PixelWidth / 2.0;
+            var centerY = _presenter.PixelHeight > _viewportHeight
+                ? _viewportHeight / zoom / 2
+                : _presenter.PixelHeight / 2.0;
+
+            ZoomBorderProxy?.CenterOn(centerX, centerY, zoom);
+        }
+
+        public void Fill()
+        {
+            if (_presenter.PixelHeight <= 0 || _viewportHeight <= 0) return;
+
+            var zoom = _viewportHeight / _presenter.PixelHeight;
+            SetZoom(zoom);
+
+            var centerX = _presenter.PixelWidth > _viewportWidth
+                ? _viewportWidth / zoom / 2
+                : _presenter.PixelWidth / 2.0;
+            var centerY = _presenter.PixelHeight / 2.0;
+
+            ZoomBorderProxy?.CenterOn(centerX, centerY, zoom);
+        }
+
+        public void Zoom100()
+        {
+            SetZoom(1.0);
+
+            var centerX = _presenter.PixelWidth > _viewportWidth
+                ? _viewportWidth / 2
+                : _presenter.PixelWidth / 2.0;
+            var centerY = _presenter.PixelHeight > _viewportHeight
+                ? _viewportHeight / 2
+                : _presenter.PixelHeight / 2.0;
+
+            ZoomBorderProxy?.CenterOn(centerX, centerY, 1.0);
         }
 
         public void SetStartTexIndex(int index)
@@ -388,6 +444,8 @@ namespace TgaBuilderLib.ViewModel
                         target: Presenter,
                         pos: (x, y));
 
+                    VisualInvalidator?.InvalidateVisual();
+
                     successCount++;
 
                     await Task.Delay(1, token);
@@ -483,6 +541,8 @@ namespace TgaBuilderLib.ViewModel
                             target: Presenter,
                             pos: (x, y));
 
+                        VisualInvalidator?.InvalidateVisual();
+
                         successCount++;
 
                         await Task.Delay(1, token);
@@ -501,6 +561,7 @@ namespace TgaBuilderLib.ViewModel
 
                         _bitmapOperations.FillRectColor(Presenter, new PixelRect(x, y, _textureSize, _textureSize));
                     }
+                    VisualInvalidator?.InvalidateVisual();
                 }
             }
             catch (OperationCanceledException) { }
