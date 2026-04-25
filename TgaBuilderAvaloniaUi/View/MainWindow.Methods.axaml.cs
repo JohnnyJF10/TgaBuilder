@@ -8,6 +8,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
 using TgaBuilderAvaloniaUi.Services;
@@ -35,17 +36,21 @@ namespace TgaBuilderAvaloniaUi.View
             }
         }
 
+        public bool IsElementFromDestinationPanel(Control element) 
+        => element.Tag is not null && string.Equals(element.Tag.ToString(), "Destination");
+        
+
         public void SetPanelFromImage(Image image)
             => CurrentPanel = GetPanelFromImage(image);
 
         public void RegisterZoomBorderCallbacks(ReadOnlyViewTabViewModel viewTab, ZoomBorder panel)
         {
-            viewTab.ZoomBorderProxy = new ZoomBorderProxy(panel, InvalidatePointerPosition);
+            viewTab.ZoomBorderProxy = new ZoomBorderProxy(panel, AutoPanInvalidatePointerPos);
         }
 
-        public void InvalidatePointerPosition(double dx, double dy, ZoomBorder panel)
+        public void AutoPanInvalidatePointerPos(double dx, double dy, ZoomBorder panel)
         {
-            bool isDestination = string.Equals(panel.Name, "TargetPanel");
+            bool isDestination = IsElementFromDestinationPanel(panel);
             Image curImage = isDestination ? TargetImage : SourceImage;
 
             int newPixX, newPixY;
@@ -98,22 +103,21 @@ namespace TgaBuilderAvaloniaUi.View
                 {
                     var delta = e.Delta.Y;
 
-                    double speedFactor = 3.0;
+                    double speedFactor = 150.0;
 
                     sv.Offset = new Vector(
                         sv.Offset.X,
-                        sv.Offset.Y - delta * 50 * speedFactor
+                        sv.Offset.Y - delta * speedFactor
                     );
 
-                    Window_PointerMoved(this, new PointerEventArgs(
-                        routedEvent: InputElement.PointerMovedEvent,
-                        source: sender,
-                        pointer: e.GetCurrentPoint(sv).Pointer,
-                        rootVisual: sv,
-                        rootVisualPosition: e.GetCurrentPoint(sv).Position,
-                        timestamp: e.Timestamp,
-                        properties: e.GetCurrentPoint(sv).Properties,
-                        modifiers: e.KeyModifiers));
+                    if (CurrentImage is not null)
+                    {
+                        bool isDestination = IsElementFromDestinationPanel(CurrentImage);
+                        double PointerPosY = e.GetCurrentPoint(CurrentImage).Position.Y;
+
+                        if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
+                            mousePanelCommand.Execute(((int)_lastPointerPosition.X, (int)PointerPosY, isDestination, MouseAction.Move, _modifier));
+                    }
 
                     e.Handled = true;
                 }

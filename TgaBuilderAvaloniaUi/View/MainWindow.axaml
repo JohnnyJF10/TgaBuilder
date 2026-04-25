@@ -464,7 +464,8 @@
                 <ScrollViewer
                     x:Name="SourceScrollViewer"
                     HorizontalScrollBarVisibility="Auto"
-                    VerticalScrollBarVisibility="Auto">
+                    VerticalScrollBarVisibility="Auto"
+                    Tag="Source">
                     <paz:ZoomBorder
                         x:Name="SourcePanel"
                         HorizontalAlignment="Stretch"
@@ -486,9 +487,9 @@
                         PanButton="Left"
                         Stretch="None"
                         ZoomSpeed="1.5"
-                        
                         ZoomX="{Binding Zoom, Mode=OneWayToSource}"
-                        ZoomY="{Binding Zoom, Mode=OneWayToSource}">
+                        ZoomY="{Binding Zoom, Mode=OneWayToSource}"
+                        Tag="Source">
                       
                         <Canvas
                             x:Name="SourceCanvas"
@@ -514,7 +515,8 @@
                                 ap:PanelMouseAP.IsTargetPanel="False"
                                 RenderOptions.BitmapInterpolationMode="None"
                                 Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="None" />
+                                Stretch="None" 
+                                Tag="Source"/>
                             <Rectangle
                                 Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
                                 Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
@@ -1166,7 +1168,8 @@
                 <ScrollViewer
                     x:Name="TargetScrollViewer"
                     HorizontalScrollBarVisibility="Auto"
-                    VerticalScrollBarVisibility="Auto">
+                    VerticalScrollBarVisibility="Auto"
+                    Tag="Destination">
                     <paz:ZoomBorder
                         x:Name="TargetPanel"
                         HorizontalAlignment="Stretch"
@@ -1189,7 +1192,8 @@
                         Stretch="None"
                         ZoomSpeed="1.5"
                         ZoomX="{Binding Zoom, Mode=OneWayToSource}"
-                        ZoomY="{Binding Zoom, Mode=OneWayToSource}">
+                        ZoomY="{Binding Zoom, Mode=OneWayToSource}"
+                        Tag="Destination">
                         <Canvas
                             x:Name="TargetCanvas"
                             Width="{Binding #TargetImage.Bounds.Width}"
@@ -1215,7 +1219,8 @@
                                 ap:PanelMouseAP.IsTargetPanel="True"
                                 RenderOptions.BitmapInterpolationMode="None"
                                 Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="None" />
+                                Stretch="None" 
+                                Tag="Destination"/>
 
                             <Rectangle
                                 Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
