@@ -7,6 +7,7 @@ namespace TgaBuilderAvaloniaUi.Elements
     public class NotificationEntry : INotifyPropertyChanged
     {
         private bool _isLast;
+        private bool _isDismissing;
 
         public string Title { get; init; } = "";
         public string Message { get; init; } = "";
@@ -23,6 +24,19 @@ namespace TgaBuilderAvaloniaUi.Elements
                 OnPropertyChanged();
             }
         }
+
+        public bool IsDismissing
+        {
+            get => _isDismissing;
+            private set
+            {
+                if (_isDismissing == value) return;
+                _isDismissing = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public void BeginDismiss() => IsDismissing = true;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
