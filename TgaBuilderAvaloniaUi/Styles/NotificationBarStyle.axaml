@@ -1,0 +1,115 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements">
+
+  <!--
+    NotificationBarItem ControlTheme
+    Inspired by Lepoco WPF UI BreadcrumbBarItem style.
+    Layout:
+      [4px accent strip] [badge pill] [message – fills remaining width] [× close]
+  -->
+  <ControlTheme x:Key="{x:Type elements:NotificationBarItem}" TargetType="elements:NotificationBarItem">
+    <Setter Property="Height" Value="32" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="Foreground" Value="#FFFAFAFA" />
+    <Setter Property="Cursor" Value="Arrow" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Grid ColumnDefinitions="4,Auto,*,Auto"
+              VerticalAlignment="Center">
+
+          <!-- Left accent colour strip -->
+          <Border Grid.Column="0"
+                  Background="{TemplateBinding AccentBrush}"
+                  CornerRadius="3,0,0,3"
+                  VerticalAlignment="Stretch" />
+
+          <!-- Badge pill -->
+          <Border Grid.Column="1"
+                  Background="{TemplateBinding AccentBrush}"
+                  CornerRadius="3"
+                  Margin="6,5"
+                  Padding="6,2"
+                  VerticalAlignment="Center">
+            <TextBlock Text="{TemplateBinding Title}"
+                       FontSize="10"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       VerticalAlignment="Center" />
+          </Border>
+
+          <!-- Message text – fills all remaining space -->
+          <TextBlock Grid.Column="2"
+                     Text="{TemplateBinding Message}"
+                     Margin="6,0,6,0"
+                     VerticalAlignment="Center"
+                     TextTrimming="CharacterEllipsis"
+                     TextWrapping="NoWrap"
+                     Foreground="{TemplateBinding Foreground}" />
+
+          <!-- Dismiss (×) button -->
+          <Button Grid.Column="3"
+                  x:Name="PART_CloseButton"
+                  Command="{TemplateBinding DismissCommand}"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Width="26"
+                  Height="26"
+                  Padding="5"
+                  VerticalAlignment="Center"
+                  Margin="2,0,4,0"
+                  Cursor="Hand"
+                  ToolTip.Tip="Dismiss">
+            <Path Data="{StaticResource dismiss}"
+                  Fill="{TemplateBinding Foreground}"
+                  Width="9"
+                  Height="9"
+                  Stretch="Uniform" />
+          </Button>
+
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+
+    <!-- Dismiss button hover highlight -->
+    <Style Selector="^:pointerover /template/ Button#PART_CloseButton">
+      <Setter Property="Background" Value="#33FFFFFF" />
+    </Style>
+
+  </ControlTheme>
+
+
+  <!--
+    NotificationBar ControlTheme
+    Shows a single notification at a time across the full window width.
+    Fades out (Opacity 1→0) when the active entry sets IsDismissing=true.
+    The DoubleTransition is set on the instance in code (not here) so that
+    the instance-level Transitions property is non-null and the save/restore
+    pattern used to suppress the transition during opacity resets works correctly.
+  -->
+  <ControlTheme x:Key="{x:Type elements:NotificationBar}" TargetType="elements:NotificationBar">
+    <Setter Property="Background" Value="#E0161620" />
+    <Setter Property="IsVisible" Value="False" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Bottom" />
+    <Setter Property="ItemsPanel">
+      <ItemsPanelTemplate>
+        <!-- Grid gives the single item its full allocated width -->
+        <Grid />
+      </ItemsPanelTemplate>
+    </Setter>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Background="{TemplateBinding Background}"
+                CornerRadius="6,6,0,0"
+                Padding="0,2"
+                HorizontalAlignment="Stretch">
+          <ItemsPresenter x:Name="PART_ItemsPresenter"
+                          HorizontalAlignment="Stretch" />
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+
+</ResourceDictionary>
