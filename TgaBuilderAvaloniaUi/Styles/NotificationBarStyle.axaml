@@ -84,17 +84,15 @@
     NotificationBar ControlTheme
     Shows a single notification at a time across the full window width.
     Fades out (Opacity 1→0) when the active entry sets IsDismissing=true.
+    The DoubleTransition is set on the instance in code (not here) so that
+    the instance-level Transitions property is non-null and the save/restore
+    pattern used to suppress the transition during opacity resets works correctly.
   -->
   <ControlTheme x:Key="{x:Type elements:NotificationBar}" TargetType="elements:NotificationBar">
     <Setter Property="Background" Value="#E0161620" />
     <Setter Property="IsVisible" Value="False" />
     <Setter Property="HorizontalAlignment" Value="Stretch" />
     <Setter Property="VerticalAlignment" Value="Bottom" />
-    <Setter Property="Transitions">
-      <Transitions>
-        <DoubleTransition Property="Opacity" Duration="0:0:1" Easing="SineEaseIn" />
-      </Transitions>
-    </Setter>
     <Setter Property="ItemsPanel">
       <ItemsPanelTemplate>
         <!-- Grid gives the single item its full allocated width -->

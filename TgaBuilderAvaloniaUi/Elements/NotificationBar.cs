@@ -1,7 +1,9 @@
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Data;
-using Avalonia.Threading;
+using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using TgaBuilderLib.Commands;
@@ -15,6 +17,18 @@ namespace TgaBuilderAvaloniaUi.Elements
     /// </summary>
     public class NotificationBar : ItemsControl
     {
+        // Instance-level fade-out transition (style-level Transitions setter is not readable
+        // from code, so we own the Transitions object here to enable the save/restore pattern).
+        private static readonly Transitions _fadeTransitions = new Transitions
+        {
+            new DoubleTransition
+            {
+                Property = OpacityProperty,
+                Duration = TimeSpan.FromSeconds(1),
+                Easing   = new SineEaseIn()
+            }
+        };
+
         public static readonly StyledProperty<Services.NotificationManager?> ManagerProperty =
             AvaloniaProperty.Register<NotificationBar, Services.NotificationManager?>(nameof(Manager));
 
@@ -25,6 +39,14 @@ namespace TgaBuilderAvaloniaUi.Elements
         }
 
         private NotificationEntry? _currentEntry;
+
+        public NotificationBar()
+        {
+            // Set transitions at the instance level so they are accessible via this.Transitions.
+            // A ControlTheme <Setter Property="Transitions"> only applies at the style level and
+            // is never reflected in the instance Transitions property, breaking the save/null/restore pattern.
+            Transitions = _fadeTransitions;
+        }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
@@ -67,21 +89,19 @@ namespace TgaBuilderAvaloniaUi.Elements
                 _currentEntry = list[list.Count - 1];
                 _currentEntry.PropertyChanged += OnCurrentEntryPropertyChanged;
 
-                // Reset opacity instantly (without the fade transition) before revealing
-                var saved = Transitions;
+                // Reset opacity instantly (suppress transition so bar appears at full opacity immediately)
                 Transitions = null;
                 Opacity = 1.0;
-                Transitions = saved;
+                Transitions = _fadeTransitions;
 
                 IsVisible = true;
             }
             else
             {
-                // Item removed after fade — reset opacity (bar is invisible so no visual effect)
-                var saved = Transitions;
+                // Item removed after fade — reset opacity instantly (bar is invisible, no visual effect)
                 Transitions = null;
                 Opacity = 1.0;
-                Transitions = saved;
+                Transitions = _fadeTransitions;
 
                 IsVisible = false;
             }
@@ -101,7 +121,7 @@ namespace TgaBuilderAvaloniaUi.Elements
             if (e.PropertyName == nameof(NotificationEntry.IsDismissing) &&
                 sender is NotificationEntry entry && entry.IsDismissing)
             {
-                // Already on the UI thread (fired from BeginDismiss via InvokeAsync)
+                // Trigger the 1-second fade-out via the instance-level DoubleTransition
                 Opacity = 0.0;
             }
         }
