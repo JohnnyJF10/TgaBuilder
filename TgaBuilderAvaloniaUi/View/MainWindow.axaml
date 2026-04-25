@@ -478,6 +478,7 @@
                         Background="Transparent"
                         ClipToBounds="True"
                         DataContext="{Binding SourceViewTab}"
+                        EnableAnimations="True"
                         EnableConstrains="False"
                         EnableDoubleClickZoom="False"
                         EnableGestures="False"
@@ -663,14 +664,14 @@
             VerticalAlignment="Top">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <elements:IconButton
-                    Icon="{StaticResource ios_chevron_left}"
+                    Icon="{StaticResource double_chevron_left}"
                     Margin="5"
                     ap:MouseOverInfoAP.InfoText="Copy entire Target Texture Panel to Source."
                     Command="{Binding EntireToSourceCommand}"
                     DockPanel.Dock="Right"
                     IsEnabled="{Binding TargetIO.ControlsEnabled}" />
                 <elements:IconButton
-                    Icon="{StaticResource ios_chevron_right}"
+                    Icon="{StaticResource double_chevron_right}"
                     Margin="5"
                     ap:MouseOverInfoAP.InfoText="Copy entire Source Texture Panel to Target. CAUTION: This clears the undo and redo stacks."
                     Command="{Binding EntireToTargetCommand}"
@@ -686,7 +687,7 @@
                     Background="Transparent"
                     ap:MouseOverInfoAP.InfoText="Open Smooth Transition Helper"
                     Command="{Binding SmoothTransitionCommand}">
-                    <PathIcon Data="{StaticResource smooth_transition}"
+                    <PathIcon Data="{StaticResource tab_in_private}"
                               Width="18" Height="18" />
                 </Button>
                 <Button
@@ -697,7 +698,7 @@
                     Background="Transparent"
                     ap:MouseOverInfoAP.InfoText="Open Brick Transition Helper"
                     Command="{Binding BrickTransitionCommand}">
-                    <PathIcon Data="{StaticResource brick_transition}"
+                    <PathIcon Data="{StaticResource table_freeze_regular}"
                               Width="18" Height="18" />
                 </Button>
             </StackPanel>
@@ -1182,6 +1183,7 @@
                         Background="Transparent"
                         ClipToBounds="True"
                         DataContext="{Binding DestinationViewTab}"
+                        EnableAnimations="True"
                         EnableConstrains="False"
                         EnableDoubleClickZoom="False"
                         EnableGestures="False"

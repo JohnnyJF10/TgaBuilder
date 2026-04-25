@@ -105,10 +105,24 @@ namespace TgaBuilderAvaloniaUi.View
 
                     double speedFactor = 150.0;
 
-                    sv.Offset = new Vector(
-                        sv.Offset.X,
-                        sv.Offset.Y - delta * speedFactor
-                    );
+                    //sv.Offset = new Vector(
+                    //    sv.Offset.X,
+                    //    sv.Offset.Y - delta * speedFactor
+                    //);
+
+                    if (delta > 0 && sv.Offset.Y < 0.00001)
+                        delta = 0;
+
+                    if (delta < 0 && sv.Offset.Y > sv.ScrollBarMaximum.Y - 0.00001)
+                        delta = 0;
+
+                    if (sv.Content is ZoomBorder zb)
+                    {
+                        zb.Pan(
+                            x: zb.OffsetX, 
+                            y: zb.OffsetY + delta * speedFactor, 
+                            skipTransitions: true);
+                    }
 
                     if (CurrentImage is not null)
                     {
