@@ -58,6 +58,8 @@ namespace TgaBuilderLib.ViewModel
 
         private IWriteableBitmap _presenter;
 
+        public IVisualInvalidator? VisualInvalidator { get; set; }
+
         private string _selectedFolderPath = string.Empty;
         private int _startTexIndex = 0;
         private int _numTextures = 11;
@@ -388,6 +390,8 @@ namespace TgaBuilderLib.ViewModel
                         target: Presenter,
                         pos: (x, y));
 
+                    VisualInvalidator?.InvalidateVisual();
+
                     successCount++;
 
                     await Task.Delay(1, token);
@@ -483,6 +487,8 @@ namespace TgaBuilderLib.ViewModel
                             target: Presenter,
                             pos: (x, y));
 
+                        VisualInvalidator?.InvalidateVisual();
+
                         successCount++;
 
                         await Task.Delay(1, token);
@@ -501,6 +507,7 @@ namespace TgaBuilderLib.ViewModel
 
                         _bitmapOperations.FillRectColor(Presenter, new PixelRect(x, y, _textureSize, _textureSize));
                     }
+                    VisualInvalidator?.InvalidateVisual();
                 }
             }
             catch (OperationCanceledException) { }
