@@ -34,7 +34,10 @@ namespace TgaBuilderAvaloniaUi.View
         private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel)
         {
             if (viewModel is BatchLoaderViewModel vm)
+            {
                 vm.VisualInvalidator = new VisualInvalidator(BatchLoadedImage);
+                vm.ZoomBorderProxy = new ZoomBorderProxy(BatchLoaderZoomPanel);
+            }
         }
 
         private void BatchLoaderZoomPanel_PointerPressed(object? sender, PointerPressedEventArgs e)

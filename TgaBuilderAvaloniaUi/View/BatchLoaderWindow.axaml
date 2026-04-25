@@ -35,7 +35,7 @@
       </Window.Resources>
 
   <Grid
-    RowDefinitions="Auto,Auto,*,Auto"
+    RowDefinitions="Auto,Auto,Auto,*,Auto"
     ColumnDefinitions="150,*"
     >
 
@@ -86,7 +86,7 @@
     </StackPanel>
 
     <!-- Left settings column -->
-    <StackPanel Grid.Row="2" 
+    <StackPanel Grid.Row="3" 
                 Grid.RowSpan="2" 
                 Margin="0">
       
@@ -125,9 +125,33 @@
       </ComboBox>
     </StackPanel>
 
+    <!-- View toolbar (Fit / Fill / Zoom 100) -->
+    <DockPanel Grid.Row="2" Grid.Column="1" Margin="5,2,5,2">
+      <elements:IconButton
+          Classes="outlined"
+          Icon="{StaticResource arrow_autofit_width}"
+          ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
+          Command="{Binding FitCommand}"
+          DockPanel.Dock="Left" />
+      <elements:IconButton
+          Classes="outlined"
+          Icon="{StaticResource arrow_autofit_height}"
+          Margin="5,0,0,0"
+          ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
+          Command="{Binding FillCommand}"
+          DockPanel.Dock="Left" />
+      <elements:IconButton
+          Classes="outlined"
+          Icon="{StaticResource scale_fit}"
+          Margin="5,0,0,0"
+          ap:MouseOverInfoAP.InfoText="Zoom to exact pixel size (100% zoom)"
+          Command="{Binding Zoom100Command}"
+          DockPanel.Dock="Left" />
+    </DockPanel>
+
     <!-- Right preview area: replaced Card with simple Border to avoid custom styles -->
     <Border VerticalAlignment="Stretch"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="1"
             Grid.RowSpan="2"
             IsHitTestVisible="False"
@@ -140,63 +164,67 @@
 
     <!-- File drop / image presenter -->
     <elements:FileDropBorder 
-      Grid.Row="2" 
+      Grid.Row="3" 
       Grid.Column="1" 
       Margin="5" 
       DropCommand="{Binding FileDropCommand}">
-      <paz:ZoomBorder x:Name="BatchLoaderZoomPanel"
-                     Stretch="None"
-                     ZoomSpeed="1.5"
-                     EnableConstrains="False"
-                     EnableGestures="False"
-                     EnableZoom="False"
-                     EnablePan="False"
-                     Background="Transparent"
-                     ClipToBounds="True"
-                     Focusable="True"
-                     VerticalAlignment="Stretch"
-                     HorizontalAlignment="Stretch"
-                     ZoomX="{Binding Zoom, Mode=OneWayToSource}"
-                     ZoomY="{Binding Zoom, Mode=OneWayToSource}"
-                     ap:SizeObserverAP.ObserveSize="True"
-                     ap:SizeObserverAP.ObservedWidth="{Binding ViewportWidth, Mode=OneWayToSource}"
-                     ap:SizeObserverAP.ObservedHeight="{Binding ViewportHeight, Mode=OneWayToSource}"
-                     PointerPressed="BatchLoaderZoomPanel_PointerPressed"
-                     PointerMoved="BatchLoaderZoomPanel_PointerMoved"
-                     PointerReleased="BatchLoaderZoomPanel_PointerReleased"
-                     PointerWheelChanged="BatchLoaderZoomPanel_PointerWheelChanged">
-        <Canvas
-            x:Name="BatchLoaderCanvas"
-            Width="{Binding ElementName=BatchLoadedImage, Path=Bounds.Width}"
-            Height="{Binding ElementName=BatchLoadedImage, Path=Bounds.Height}"
-            >
-          <Canvas.Transitions>
-            <Transitions>
-              <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
-            </Transitions>
-          </Canvas.Transitions>
-          <elements:CheckerRectangle
-              x:Name="BatchLoaderCheckerBoard"
-              Width="{Binding #BatchLoadedImage.Bounds.Width}"
-              Height="{Binding #BatchLoadedImage.Bounds.Height}"
-              TileDensity="{Binding #BatchLoaderZoomPanel.ZoomX}"
-              CutOffX="{Binding #BatchLoaderZoomPanel.OffsetX}"
-              CutOffY="{Binding #BatchLoaderZoomPanel.OffsetY}"
-              />
-          <Image
-              Name="BatchLoadedImage"
-              ap:PanelMouseAP.CheckMouseEnterLeave="True"
-              ap:PanelMouseAP.IsTargetPanel="False"
-              RenderOptions.BitmapInterpolationMode="None"
-              Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
-              Stretch="None" />
-        </Canvas>
+      <ScrollViewer
+          HorizontalScrollBarVisibility="Auto"
+          VerticalScrollBarVisibility="Auto">
+        <paz:ZoomBorder x:Name="BatchLoaderZoomPanel"
+                       Stretch="None"
+                       ZoomSpeed="1.5"
+                       EnableConstrains="False"
+                       EnableGestures="False"
+                       EnableZoom="False"
+                       EnablePan="False"
+                       Background="Transparent"
+                       ClipToBounds="True"
+                       Focusable="True"
+                       VerticalAlignment="Stretch"
+                       HorizontalAlignment="Stretch"
+                       ZoomX="{Binding Zoom, Mode=OneWayToSource}"
+                       ZoomY="{Binding Zoom, Mode=OneWayToSource}"
+                       ap:SizeObserverAP.ObserveSize="True"
+                       ap:SizeObserverAP.ObservedWidth="{Binding ViewportWidth, Mode=OneWayToSource}"
+                       ap:SizeObserverAP.ObservedHeight="{Binding ViewportHeight, Mode=OneWayToSource}"
+                       PointerPressed="BatchLoaderZoomPanel_PointerPressed"
+                       PointerMoved="BatchLoaderZoomPanel_PointerMoved"
+                       PointerReleased="BatchLoaderZoomPanel_PointerReleased"
+                       PointerWheelChanged="BatchLoaderZoomPanel_PointerWheelChanged">
+          <Canvas
+              x:Name="BatchLoaderCanvas"
+              Width="{Binding ElementName=BatchLoadedImage, Path=Bounds.Width}"
+              Height="{Binding ElementName=BatchLoadedImage, Path=Bounds.Height}"
+              >
+            <Canvas.Transitions>
+              <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+              </Transitions>
+            </Canvas.Transitions>
+            <elements:CheckerRectangle
+                x:Name="BatchLoaderCheckerBoard"
+                Width="{Binding #BatchLoadedImage.Bounds.Width}"
+                Height="{Binding #BatchLoadedImage.Bounds.Height}"
+                TileDensity="{Binding #BatchLoaderZoomPanel.ZoomX}"
+                CutOffX="{Binding #BatchLoaderZoomPanel.OffsetX}"
+                CutOffY="{Binding #BatchLoaderZoomPanel.OffsetY}"
+                />
+            <Image
+                Name="BatchLoadedImage"
+                ap:PanelMouseAP.CheckMouseEnterLeave="True"
+                ap:PanelMouseAP.IsTargetPanel="False"
+                RenderOptions.BitmapInterpolationMode="None"
+                Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
+                Stretch="None" />
+          </Canvas>
 
-      </paz:ZoomBorder>
+        </paz:ZoomBorder>
+      </ScrollViewer>
     </elements:FileDropBorder>
 
     <!-- Drop hint text -->
-    <TextBlock Grid.Row="2"
+    <TextBlock Grid.Row="3"
                Grid.Column="1"
                Text="Drop Image Files here"
                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
