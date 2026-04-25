@@ -106,7 +106,9 @@ namespace TgaBuilderAvaloniaUi
             services.AddSingleton<IClipboardService, ClipboardService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<ICursorSetter, CursorSetter>();
-            services.AddSingleton<IMessageService, MessageService>();
+            services.AddSingleton<NotificationManager>();
+            services.AddSingleton<IMessageService, MessageService>(sp =>
+                new MessageService(sp.GetRequiredService<NotificationManager>()));
             services.AddSingleton<IMessageBoxService, MessageBoxService>();
             services.AddSingleton<IDispatcherService, DispatcherService>();
         }
@@ -325,7 +327,8 @@ namespace TgaBuilderAvaloniaUi
         private void AddViewsToProvider(IServiceCollection services)
         {
             services.AddSingleton<IView, MainWindow>(sp => new MainWindow(
-                    mainViewModel: sp.GetRequiredService<MainViewModel>()));
+                    mainViewModel: sp.GetRequiredService<MainViewModel>(),
+                    manager: sp.GetRequiredService<NotificationManager>()));
 
             services.AddTransient<IView, BatchLoaderWindow>(
                 sp => new BatchLoaderWindow(

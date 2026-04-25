@@ -1,0 +1,125 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements">
+
+  <!--
+    NotificationBarItem ControlTheme
+    Inspired by Lepoco WPF UI BreadcrumbBarItem style.
+    Layout per item:
+      [4px accent strip] [badge pill] [message] [× close] [› separator if not last]
+  -->
+  <ControlTheme x:Key="{x:Type elements:NotificationBarItem}" TargetType="elements:NotificationBarItem">
+    <Setter Property="Height" Value="32" />
+    <Setter Property="Foreground" Value="#FFFAFAFA" />
+    <Setter Property="Cursor" Value="Arrow" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Grid ColumnDefinitions="4,Auto,Auto,Auto,Auto"
+              VerticalAlignment="Center">
+
+          <!-- Left accent colour strip -->
+          <Border Grid.Column="0"
+                  Background="{TemplateBinding AccentBrush}"
+                  CornerRadius="3,0,0,3"
+                  VerticalAlignment="Stretch" />
+
+          <!-- Badge pill -->
+          <Border Grid.Column="1"
+                  Background="{TemplateBinding AccentBrush}"
+                  CornerRadius="3"
+                  Margin="6,5"
+                  Padding="6,2"
+                  VerticalAlignment="Center">
+            <TextBlock Text="{TemplateBinding Title}"
+                       FontSize="10"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       VerticalAlignment="Center" />
+          </Border>
+
+          <!-- Message text -->
+          <TextBlock Grid.Column="2"
+                     Text="{TemplateBinding Message}"
+                     Margin="4,0,4,0"
+                     VerticalAlignment="Center"
+                     TextTrimming="CharacterEllipsis"
+                     MaxWidth="320"
+                     Foreground="{TemplateBinding Foreground}" />
+
+          <!-- Dismiss (×) button – always visible -->
+          <Button Grid.Column="3"
+                  x:Name="PART_CloseButton"
+                  Command="{TemplateBinding DismissCommand}"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Width="22"
+                  Height="22"
+                  Padding="4"
+                  VerticalAlignment="Center"
+                  Margin="2,0,2,0"
+                  Cursor="Hand"
+                  ToolTip.Tip="Dismiss">
+            <Path Data="{StaticResource dismiss}"
+                  Fill="{TemplateBinding Foreground}"
+                  Width="9"
+                  Height="9"
+                  Stretch="Uniform" />
+          </Button>
+
+          <!-- Chevron separator – hidden on last item via :last pseudo-class -->
+          <Path Grid.Column="4"
+                x:Name="PART_Separator"
+                Data="{StaticResource ios_chevron_right}"
+                Fill="{TemplateBinding Foreground}"
+                Width="8"
+                Height="8"
+                Stretch="Uniform"
+                Margin="0,0,4,0"
+                Opacity="0.55"
+                VerticalAlignment="Center" />
+
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+
+    <!-- When last: hide the trailing chevron separator -->
+    <Style Selector="^:last /template/ Path#PART_Separator">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <!-- Dismiss button hover highlight -->
+    <Style Selector="^:pointerover /template/ Button#PART_CloseButton">
+      <Setter Property="Background" Value="#33FFFFFF" />
+    </Style>
+
+  </ControlTheme>
+
+
+  <!--
+    NotificationBar ControlTheme
+    Horizontal WrapPanel of NotificationBarItems inside a dark translucent bar.
+  -->
+  <ControlTheme x:Key="{x:Type elements:NotificationBar}" TargetType="elements:NotificationBar">
+    <Setter Property="Background" Value="#E0161620" />
+    <Setter Property="IsVisible" Value="False" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Bottom" />
+    <Setter Property="ItemsPanel">
+      <ItemsPanelTemplate>
+        <WrapPanel Orientation="Horizontal" />
+      </ItemsPanelTemplate>
+    </Setter>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Background="{TemplateBinding Background}"
+                CornerRadius="6,6,0,0"
+                Padding="4,2"
+                HorizontalAlignment="Stretch">
+          <ItemsPresenter x:Name="PART_ItemsPresenter" />
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+
+</ResourceDictionary>

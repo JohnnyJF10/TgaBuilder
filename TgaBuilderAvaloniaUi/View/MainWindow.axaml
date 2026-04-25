@@ -11,7 +11,6 @@
     xmlns:paz="using:Avalonia.Controls.PanAndZoom"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
     xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-    xmlns:notif="clr-namespace:Avalonia.Notification.Controls;assembly=Notification.Avalonia"
     x:Name="MainWin"
     Title="TgaBuilder"
     Width="870"
@@ -52,6 +51,7 @@
                 <ResourceInclude Source="/Styles/IconRadioButtonStyle.axaml" />
                 <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+                <ResourceInclude Source="/Styles/NotificationBarStyle.axaml" />
             </ResourceDictionary.MergedDictionaries>
             <converter:BitmapSourceConverter x:Key="BitmapSourceConverter" />
             <converter:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
@@ -1465,9 +1465,10 @@
                 TextWrapping="NoWrap" />
         </DockPanel>
         </Border>
-      <notif:NotificationMessageContainer
+      <elements:NotificationBar
         Manager="{Binding #MainWin.Manager}"
         Grid.Row="1"
-        Grid.ColumnSpan="2"/>
+        Grid.ColumnSpan="3"
+        ZIndex="100" />
     </Grid>
 </elements:AsyncWindow>

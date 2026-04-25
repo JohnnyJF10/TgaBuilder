@@ -1,12 +1,12 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
-using Avalonia.Notification;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using TgaBuilderAvaloniaUi.Elements;
+using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.ViewModel;
 
@@ -17,14 +17,16 @@ namespace TgaBuilderAvaloniaUi.View
         public Image? CurrentImage { get; set; }
         public ZoomBorder? CurrentPanel { get; set; }
 
-        public INotificationMessageManager Manager { get; } = new NotificationMessageManager();
+        public NotificationManager Manager { get; }
 
         private MouseModifier _modifier = MouseModifier.None;
 
         private Dictionary<Image, ZoomBorder>? _imagePanelDict;
 
-        public MainWindow(INotifyPropertyChanged mainViewModel)
+        public MainWindow(INotifyPropertyChanged mainViewModel, NotificationManager manager)
         {
+            Manager = manager;
+
             AddHandler(InputElement.PointerPressedEvent, Window_PointerPressed, handledEventsToo: true);
             AddHandler(InputElement.PointerReleasedEvent, Window_PointerReleased, handledEventsToo: true);
             AddHandler(InputElement.PointerMovedEvent, Window_PointerMoved, handledEventsToo: true);
@@ -66,6 +68,7 @@ namespace TgaBuilderAvaloniaUi.View
 
             var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>()
                 ?? throw new InvalidOperationException("MainViewModel not found in DI container");
+            Manager = serviceProvider.GetRequiredService<NotificationManager>();
             InitializeComponent();
             base.DataContext = mainViewModel;
         }
