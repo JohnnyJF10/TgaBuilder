@@ -33,8 +33,15 @@ namespace TgaBuilderAvaloniaUi.Services
 
         private async Task AutoDismissAsync(NotificationEntry entry, int seconds)
         {
-            await Task.Delay(TimeSpan.FromSeconds(seconds));
-            Dismiss(entry);
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(seconds));
+                Dismiss(entry);
+            }
+            catch (Exception)
+            {
+                // Swallow exceptions from auto-dismiss to prevent unhandled task exceptions.
+            }
         }
     }
 }
