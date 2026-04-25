@@ -107,8 +107,9 @@ namespace TgaBuilderAvaloniaUi
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<ICursorSetter, CursorSetter>();
             services.AddSingleton<NotificationManager>();
-            services.AddSingleton<IMessageService, MessageService>(sp =>
-                new MessageService(sp.GetRequiredService<NotificationManager>()));
+            services.AddSingleton<IMessageService, MessageService>(sp => new MessageService(
+                    manager: sp.GetRequiredService<NotificationManager>(),
+                    wetherSendSuccessMessages: sp.GetRequiredService<IUsageData>().WetherSendSuccessMessage));
             services.AddSingleton<IMessageBoxService, MessageBoxService>();
             services.AddSingleton<IDispatcherService, DispatcherService>();
         }
