@@ -9,10 +9,12 @@ namespace TgaBuilderAvaloniaUi.Services
     internal partial class MessageService : IMessageService
     {
         private readonly NotificationManager _manager;
+        private readonly bool _wetherSendSuccessMessages;
 
-        public MessageService(NotificationManager manager)
+        public MessageService(NotificationManager manager, bool wetherSendSuccessMessages = false)
         {
             _manager = manager;
+            _wetherSendSuccessMessages = wetherSendSuccessMessages;
         }
 
         public void SendMessage(MessageType message, string additionalInfo = "", Exception? ex = null)
@@ -22,6 +24,9 @@ namespace TgaBuilderAvaloniaUi.Services
                 Debug.WriteLine($"Unknown MessageType: {message}");
                 return;
             }
+
+            if (!_wetherSendSuccessMessages && string.Equals(uiMessage.Title, "Information"))
+                return;
 
             var text = string.IsNullOrEmpty(additionalInfo) ? uiMessage.Message : additionalInfo;
 
