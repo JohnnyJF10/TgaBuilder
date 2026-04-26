@@ -96,8 +96,11 @@ namespace TgaBuilderLib.Transitions
         {
             bool[] selection = new bool[Width * Height];
 
-            // Optional pre-step: identify corner tiles for pixel-level trigonometric filtering
-            var cornerTileMap = SliceCornerTiles ? BuildCornerTileMap(labels) : null;
+            // Optional pre-step: identify corner tiles for pixel-level trigonometric filtering.
+            // Passes drawn-edge flags so that each corner's dominant axis can be determined.
+            var cornerTileMap = SliceCornerTiles
+                ? BuildCornerTileMap(labels, checkTop, checkBottom, checkLeft, checkRight)
+                : null;
 
             for (int i = 0; i < tileData.Count; i++)
             {
@@ -120,23 +123,44 @@ namespace TgaBuilderLib.Transitions
                     continue;
 
                 // Corner slicing pre-step: for corner tiles, only add pixels that satisfy
-                // the trigonometric condition (same side as the corner pixel itself)
-                if (cornerTileMap != null && cornerTileMap.TryGetValue(labelID, out var corner))
+                // the trigonometric condition relative to the drawn edge axis.
+                if (cornerTileMap != null && cornerTileMap.TryGetValue(labelID, out var cornerInfo))
                 {
-                    float tanAngle = ComputeCornerSliceTanAngle(corner.cx, corner.cy);
-
-                    foreach (int offset in tile.PixelOffsets)
+                    if (cornerInfo.drawsHoriz && cornerInfo.drawsVert)
                     {
-                        int py = offset / Stride;
-                        int px = (offset % Stride) / TRANSITIONS_BPP;
-
-                        float dx = MathF.Abs(px - corner.cx);
-                        float dy = MathF.Abs(py - corner.cy);
-
-                        // The corner pixel itself satisfies dy >= dx * tanAngle (0 >= 0).
-                        // Include only pixels on the same side as the corner.
-                        if (dy >= dx * tanAngle)
+                        // Tile touches drawn edges on both axes — include all pixels (no slicing).
+                        foreach (int offset in tile.PixelOffsets)
+                        {
+                            int py = offset / Stride;
+                            int px = (offset % Stride) / TRANSITIONS_BPP;
                             selection[py * Width + px] = true;
+                        }
+                    }
+                    else
+                    {
+                        float tanAngle = ComputeCornerSliceTanAngle(cornerInfo.cx, cornerInfo.cy);
+
+                        // Horizontal-dominant corner (top/bottom drawn edge): keep the region
+                        // closer to the horizontal edge — dy < dx * tanAngle.
+                        // Vertical-dominant corner (left/right drawn edge) or pivot-only:
+                        // keep the region closer to the vertical edge — dy >= dx * tanAngle.
+                        bool keepHorizSide = cornerInfo.drawsHoriz;
+
+                        foreach (int offset in tile.PixelOffsets)
+                        {
+                            int py = offset / Stride;
+                            int px = (offset % Stride) / TRANSITIONS_BPP;
+
+                            float dx = MathF.Abs(px - cornerInfo.cx);
+                            float dy = MathF.Abs(py - cornerInfo.cy);
+
+                            bool include = keepHorizSide
+                                ? (dy < dx * tanAngle)    // near horizontal (top/bottom) edge
+                                : (dy >= dx * tanAngle);  // near vertical (left/right) edge or default
+
+                            if (include)
+                                selection[py * Width + px] = true;
+                        }
                     }
                 }
                 else
@@ -153,8 +177,12 @@ namespace TgaBuilderLib.Transitions
             return selection;
         }
 
-        // Builds a map from label ID to corner coordinates for tiles that contain an image corner pixel.
-        private Dictionary<int, (int cx, int cy)> BuildCornerTileMap(int[] labels)
+        // Builds a map from label ID to corner slicing info for tiles containing an image corner pixel.
+        // For each tile, records whether it touches a drawn horizontal edge (top/bottom),
+        // a drawn vertical edge (left/right), or both, and the first corner coordinate encountered.
+        private Dictionary<int, (bool drawsHoriz, bool drawsVert, int cx, int cy)> BuildCornerTileMap(
+            int[] labels,
+            bool checkTop, bool checkBottom, bool checkLeft, bool checkRight)
         {
             int[] cornerPixelIndices = new int[]
             {
@@ -172,15 +200,30 @@ namespace TgaBuilderLib.Transitions
                 (Width - 1, Height - 1)
             };
 
-            var map = new Dictionary<int, (int cx, int cy)>();
+            var map = new Dictionary<int, (bool drawsHoriz, bool drawsVert, int cx, int cy)>();
             for (int i = 0; i < cornerPixelIndices.Length; i++)
             {
                 int pixelIdx = cornerPixelIndices[i];
-                if (pixelIdx < labels.Length)
+                if (pixelIdx >= labels.Length) continue;
+
+                int label = labels[pixelIdx];
+                if (label <= 0) continue;
+
+                (int cornX, int cornY) = cornerCoords[i];
+
+                // Determine whether this image-corner position touches a drawn horizontal or vertical edge.
+                bool thisHoriz = (cornY == 0 && checkTop) || (cornY == Height - 1 && checkBottom);
+                bool thisVert  = (cornX == 0 && checkLeft) || (cornX == Width - 1 && checkRight);
+
+                if (map.TryGetValue(label, out var existing))
                 {
-                    int label = labels[pixelIdx];
-                    if (label > 0 && !map.ContainsKey(label))
-                        map[label] = cornerCoords[i];
+                    // Tile spans multiple image corners: accumulate edge-type flags.
+                    map[label] = (existing.drawsHoriz || thisHoriz, existing.drawsVert || thisVert,
+                                  existing.cx, existing.cy);
+                }
+                else
+                {
+                    map[label] = (thisHoriz, thisVert, cornX, cornY);
                 }
             }
             return map;
