@@ -12,6 +12,7 @@
         TransitionMode Mode { get; set; }
         float Pivot { get; set; }
         bool ReversePivot { get; set; }
+        FilterType SelectedFilter { get; set; }
         bool SliceCornerTiles { get; set; }
         int Stride { get; set; }
         List<TileSegment> TileData { get; set; }

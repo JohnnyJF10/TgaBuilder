@@ -222,6 +222,7 @@
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -289,6 +290,27 @@
                 IsChecked="{Binding SliceCornerTiles}"
                 Margin="3,0,0,0"
                 Content="Slice Corners"/>
+
+            <!-- Filter ComboBox -->
+            <TextBlock
+                Grid.Column="4"
+                Margin="5,5,0,0"
+                VerticalAlignment="Center"
+                Text="Filter"
+                FontStyle="Italic"/>
+            <ComboBox
+                Grid.Row="1"
+                Grid.Column="4"
+                Margin="5,0,5,0"
+                VerticalAlignment="Center"
+                MinWidth="90"
+                SelectedIndex="{Binding SelectedFilterIndex}">
+                <ComboBoxItem Content="None"/>
+                <ComboBoxItem Content="Box Blur"/>
+                <ComboBoxItem Content="Median"/>
+                <ComboBoxItem Content="Min"/>
+                <ComboBoxItem Content="Bilateral"/>
+            </ComboBox>
         </Grid>
 
         <!-- Row 2: Spacer -->

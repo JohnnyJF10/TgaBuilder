@@ -266,6 +266,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -340,6 +341,26 @@
                     TextBlock.FontStyle="Italic"
                     Content="Slice Corners"/>
 
+            <!-- Filter ComboBox -->
+            <Label
+                Grid.Column="4"
+                Margin="5,5,0,0"
+                VerticalAlignment="Center"
+                Content="Filter"
+                TextBlock.FontStyle="Italic"/>
+            <ComboBox
+                Grid.Row="1"
+                Grid.Column="4"
+                Margin="5,0,5,0"
+                VerticalAlignment="Center"
+                MinWidth="90"
+                SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
+                <ComboBoxItem Content="None"/>
+                <ComboBoxItem Content="Box Blur"/>
+                <ComboBoxItem Content="Median"/>
+                <ComboBoxItem Content="Min"/>
+                <ComboBoxItem Content="Bilateral"/>
+            </ComboBox>
 
         </Grid>
 
