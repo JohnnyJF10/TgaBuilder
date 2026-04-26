@@ -67,7 +67,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetCallerProperty(ref _isLabelMapExpanded, value);
     }
 
-    protected override bool RequiresFullAnalysisOnPivotChange => SliceCornerTiles;
+    protected override bool RequiresFullAnalysisOnPivotChange => false;
 
     protected override byte[] CreateMixedPixels(bool requiresAnalysis)
     {
