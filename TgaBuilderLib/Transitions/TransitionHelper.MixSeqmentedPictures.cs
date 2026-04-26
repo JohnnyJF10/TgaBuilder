@@ -97,9 +97,7 @@ namespace TgaBuilderLib.Transitions
             bool[] selection = new bool[Width * Height];
 
             // Optional pre-step: identify corner tiles for pixel-level trigonometric filtering
-            Dictionary<int, (int cx, int cy)>? cornerTileMap = null;
-            if (SliceCornerTiles)
-                cornerTileMap = BuildCornerTileMap(labels);
+            var cornerTileMap = SliceCornerTiles ? BuildCornerTileMap(labels) : null;
 
             for (int i = 0; i < tileData.Count; i++)
             {
