@@ -34,7 +34,10 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 
   ![SmoothTransitionWin](Screenshots/SmoothTransition_gif.gif)
 
-  - **Brick Transition Helper** for marker-based brick/background transitions based on a watershed algorithm. Adjust the **Marker Radius** value to control the number of initial seeds used by the watershed algorithm. A larger value reduces the number of tiles detected later. After tile detection, tiles are drawn depending on whether their centroid falls within the shape defined by the **Pivot** value. This shape is the same as that used for smooth transitions. Toggle **Reverse Pivot** to reverse the drawing logic. Toggle **Slice Corners** on if required to make placing adjacent background textures more accurate. 
+  - **Brick Transition Helper** for marker-based brick/background transition–based segmentation algorithms. Adjust the **Marker Radius** value to control the number of initial seeds used by the segmentation algorithm. A larger value reduces the number of tiles detected later. After tile detection, tiles are drawn depending on whether their centroid falls within the shape defined by the **Pivot** value. This shape is the same as that used for smooth transitions. Toggle **Reverse Pivot** to invert the drawing logic. Toggle **Slice Corners** if needed to make placing adjacent background textures more accurate. More options will be added in the future.
+  - Specify the pre-algorithm input **Filter**: choose between **Box Blur**, **Bilateral**, **Median**, or no filter (**None**).
+  - Specify the **Segmentation** algorithm itself: **Watershed** or **XY Projection**. More options will be added in the future.
+    - Tip: For wall bricks with clear joints in either the horizontal or vertical direction, choose the **XY Projection** algorithm with no input filter and a large **Marker Radius**. For natural or temple-style old bricks, select the **Watershed** algorithm with a **Box Blur** filter and a small **Marker Radius**.
 
   ![BrickTransitionWin](Screenshots/BrickTransition_gif.gif)
 
