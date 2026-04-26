@@ -30,6 +30,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private bool _reversePivot;
     private bool _sliceCornerTiles;
     private bool _isLabelMapExpanded;
+    private FilterType _selectedFilter = FilterType.BoxBlur;
 
     public IWriteableBitmap? LabelMapImage
     {
@@ -67,6 +68,25 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetCallerProperty(ref _isLabelMapExpanded, value);
     }
 
+    public FilterType SelectedFilter
+    {
+        get => _selectedFilter;
+        set
+        {
+            if (SetCallerPropertyReturn(ref _selectedFilter, value))
+            {
+                OnPropertyChanged(nameof(SelectedFilterIndex));
+                TriggerRecalculation(requiresAnalysis: true);
+            }
+        }
+    }
+
+    public int SelectedFilterIndex
+    {
+        get => (int)_selectedFilter;
+        set => SelectedFilter = (FilterType)value;
+    }
+
     protected override bool RequiresFullAnalysisOnPivotChange => false;
 
     protected override byte[] CreateMixedPixels(bool requiresAnalysis)
@@ -82,6 +102,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         TransitionHelper.ReversePivot = ReversePivot;
         TransitionHelper.SliceCornerTiles = SliceCornerTiles;
         TransitionHelper.MarkerRadius = MarkerRadius;
+        TransitionHelper.SelectedFilter = SelectedFilter;
     }
 
     protected override void OnResultUpdated()
