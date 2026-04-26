@@ -20,7 +20,6 @@
         int Width { get; set; }
 
         void AnalyzeTiles(byte[] pixels);
-        void AnalyzeTilesWatershed(byte[] pixels);
         byte[] MixPixels(byte[] pixels1, byte[] pixels2);
         byte[] MixSmartTilesPixels(byte[] tilePixels, byte[] bgPixels);
 

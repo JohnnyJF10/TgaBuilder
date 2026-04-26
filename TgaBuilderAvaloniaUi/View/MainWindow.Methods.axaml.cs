@@ -116,13 +116,13 @@ namespace TgaBuilderAvaloniaUi.View
                         zb.Pan(
                             x: zb.OffsetX, 
                             y: zb.OffsetY + delta * speedFactor, 
-                            skipTransitions: true);
+                            skipTransitions: false);
                     }
 
                     if (CurrentImage is not null)
                     {
                         bool isDestination = IsElementFromDestinationPanel(CurrentImage);
-                        double PointerPosY = e.GetCurrentPoint(CurrentImage).Position.Y;
+                        double PointerPosY = e.GetCurrentPoint(CurrentImage).Position.Y - delta * speedFactor / (CurrentPanel?.ZoomX ?? 1);
 
                         if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                             mousePanelCommand.Execute(((int)_lastPointerPosition.X, (int)PointerPosY, isDestination, MouseAction.Move, _modifier));

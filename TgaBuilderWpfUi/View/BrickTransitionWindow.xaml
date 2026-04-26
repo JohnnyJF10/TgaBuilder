@@ -342,46 +342,47 @@
                     TextBlock.FontStyle="Italic"
                     Content="Slice Corners"/>
 
-            <!-- Row 2: Filter ComboBox -->
-            <Label
+            <StackPanel
                 Grid.Row="2"
-                Grid.Column="0"
+                Grid.Column="1"        
+                Grid.ColumnSpan="4"
+                Orientation="Horizontal"
+                >
+                <!-- Row 2: Filter ComboBox -->
+                <Label
                 Margin="10,5,0,0"
+                HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Content="Filter"
                 TextBlock.FontStyle="Italic"/>
-            <ComboBox
-                Grid.Row="2"
-                Grid.Column="1"
+                <ComboBox
                 Margin="5,5,5,5"
                 VerticalAlignment="Center"
-                MinWidth="90"
+                MinWidth="130"
                 SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
-                <ComboBoxItem Content="None"/>
-                <ComboBoxItem Content="Box Blur"/>
-                <ComboBoxItem Content="Median"/>
-                <ComboBoxItem Content="Min"/>
-                <ComboBoxItem Content="Bilateral"/>
-            </ComboBox>
+                    <ComboBoxItem Content="None"/>
+                    <ComboBoxItem Content="Box Blur"/>
+                    <ComboBoxItem Content="Median"/>
+                    <ComboBoxItem Content="Bilateral"/>
+                </ComboBox>
 
-            <!-- Row 2: Segmentation Method ComboBox -->
-            <Label
-                Grid.Row="2"
-                Grid.Column="2"
+                <!-- Row 2: Segmentation Method ComboBox -->
+                <Label
                 Margin="10,5,0,0"
                 VerticalAlignment="Center"
                 Content="Segmentation"
                 TextBlock.FontStyle="Italic"/>
-            <ComboBox
-                Grid.Row="2"
-                Grid.Column="3"
+                <ComboBox
                 Margin="5,5,5,5"
                 VerticalAlignment="Center"
-                MinWidth="100"
+                HorizontalAlignment="Left"
+                MinWidth="150"
                 SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
-                <ComboBoxItem Content="Watershed"/>
-                <ComboBoxItem Content="Regular Grid"/>
-            </ComboBox>
+                    <ComboBoxItem Content="Watershed"/>
+                    <ComboBoxItem Content="XY Projection"/>
+                </ComboBox>
+            </StackPanel>
+
 
         </Grid>
 

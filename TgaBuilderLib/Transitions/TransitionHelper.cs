@@ -28,6 +28,7 @@ namespace TgaBuilderLib.Transitions
         public bool SliceCornerTiles { get; set; } = false;
         public int MarkerRadius { get; set; } = 3;
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Watershed;
+        public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
 
         public void CleanUp()
         {
