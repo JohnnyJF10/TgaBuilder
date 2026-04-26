@@ -7,14 +7,24 @@ using System.Threading.Tasks;
 
 namespace TgaBuilderLib.Transitions
 {
+    public enum FilterType
+    {
+        None,
+        BoxBlur,
+        Median,
+        Min,
+        Bilateral
+    }
+
     public partial class TransitionHelper
     {
+        public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
         // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
         public unsafe void AnalyzeTilesWatershed(byte[] pixels)
         {
             int totalPixels = Width * Height;
 
-            float[] blur = new float[totalPixels];
+            float[] filtered = new float[totalPixels];
             int[] labels = new int[totalPixels];
 
             // 1. Compute grayscale values
@@ -29,18 +39,25 @@ namespace TgaBuilderLib.Transitions
                 }
             }
 
-            // 2. Box blur
-            for (int y = 1; y < Height - 1; y++)
+            // 2. Initial Filter
+            switch (SelectedFilter)
             {
-                int row = y * Width;
-                for (int x = 1; x < Width - 1; x++)
-                {
-                    int idx = row + x;
-                    blur[idx] =
-                        (gray[idx - Width - 1] + gray[idx - Width] + gray[idx - Width + 1] +
-                         gray[idx - 1] + gray[idx] + gray[idx + 1] +
-                         gray[idx + Width - 1] + gray[idx + Width] + gray[idx + Width + 1]) / 9f;
-                }
+                case FilterType.BoxBlur:
+                    BoxBlur(filtered, gray);
+                    break;
+                case FilterType.Median:
+                    MedianFilter3x3(filtered, gray);
+                    break;
+                case FilterType.Min:
+                    MinFilter3x3(filtered, gray);
+                    break;
+                case FilterType.Bilateral:
+                    BilateralFilter3x3(filtered, gray, 30f);
+                    break;
+                case FilterType.None:
+                default:
+                    filtered = gray;
+                    break;
             }
 
             // 3. Seed candidates (keep all valid local maxima)
@@ -52,7 +69,7 @@ namespace TgaBuilderLib.Transitions
                 for (int x = MarkerRadius; x < Width - MarkerRadius; x++)
                 {
                     int idx = row + x;
-                    float val = blur[idx];
+                    float val = filtered[idx];
                     bool isMax = true;
 
                     for (int iy = -MarkerRadius; iy <= MarkerRadius; iy++)
@@ -61,7 +78,7 @@ namespace TgaBuilderLib.Transitions
                         for (int ix = -MarkerRadius; ix <= MarkerRadius; ix++)
                         {
                             if (ix == 0 && iy == 0) continue;
-                            if (blur[nRow + x + ix] >= val)
+                            if (filtered[nRow + x + ix] >= val)
                             {
                                 isMax = false;
                                 break;
@@ -99,7 +116,7 @@ namespace TgaBuilderLib.Transitions
                 int y = idx / Width;
 
                 AddPixelToTile(ts, x, y);
-                EnqueueNeighbors(idx, label, labels, blur, buckets, 255);
+                EnqueueNeighbors(idx, label, labels, filtered, buckets, 255);
             }
 
             if (tiles.Count == 0)
@@ -107,7 +124,7 @@ namespace TgaBuilderLib.Transitions
                 TileData = tiles;
                 return;
             }
-                
+
 
             // 5. Watershed flood
             for (int b = 255; b >= 0; b--)
@@ -129,7 +146,7 @@ namespace TgaBuilderLib.Transitions
                         idx % Width,
                         idx / Width);
 
-                    EnqueueNeighbors(idx, label, labels, blur, buckets, b);
+                    EnqueueNeighbors(idx, label, labels, filtered, buckets, b);
                 }
             }
 
@@ -153,6 +170,133 @@ namespace TgaBuilderLib.Transitions
             Labels = labels;
 
             TileData = tiles;
+        }
+
+        private unsafe void BoxBlur(float[] blur, float[] gray)
+        {
+            for (int y = 1; y < Height - 1; y++)
+            {
+                int row = y * Width;
+                for (int x = 1; x < Width - 1; x++)
+                {
+                    int idx = row + x;
+                    blur[idx] =
+                        (gray[idx - Width - 1] + gray[idx - Width] + gray[idx - Width + 1] +
+                         gray[idx - 1] + gray[idx] + gray[idx + 1] +
+                         gray[idx + Width - 1] + gray[idx + Width] + gray[idx + Width + 1]) / 9f;
+                }
+            }
+        }
+
+        private void MedianFilter3x3(float[] output, float[] input)
+        {
+            float[] window = new float[9];
+            for (int y = 1; y < Height - 1; y++)
+            {
+                int row = y * Width;
+                for (int x = 1; x < Width - 1; x++)
+                {
+                    int idx = row + x;
+                    window[0] = input[idx - Width - 1]; window[1] = input[idx - Width]; window[2] = input[idx - Width + 1];
+                    window[3] = input[idx - 1]; window[4] = input[idx]; window[5] = input[idx + 1];
+                    window[6] = input[idx + Width - 1]; window[7] = input[idx + Width]; window[8] = input[idx + Width + 1];
+
+                    // Kleiner Insertion Sort für 9 Werte (schneller als Array.Sort)
+                    for (int i = 1; i < 9; i++)
+                    {
+                        float temp = window[i];
+                        int j = i - 1;
+                        while (j >= 0 && window[j] > temp)
+                        {
+                            window[j + 1] = window[j];
+                            j--;
+                        }
+                        window[j + 1] = temp;
+                    }
+                    output[idx] = window[4]; // Der Median
+                }
+            }
+        }
+
+        private void MinFilter3x3(float[] output, float[] input)
+        {
+            for (int y = 1; y < Height - 1; y++)
+            {
+                int row = y * Width;
+                for (int x = 1; x < Width - 1; x++)
+                {
+                    int idx = row + x;
+                    float min = input[idx];
+
+                    if (input[idx - Width - 1] < min) min = input[idx - Width - 1];
+                    if (input[idx - Width] < min) min = input[idx - Width];
+                    if (input[idx - Width + 1] < min) min = input[idx - Width + 1];
+                    if (input[idx - 1] < min) min = input[idx - 1];
+                    if (input[idx + 1] < min) min = input[idx + 1];
+                    if (input[idx + Width - 1] < min) min = input[idx + Width - 1];
+                    if (input[idx + Width] < min) min = input[idx + Width];
+                    if (input[idx + Width + 1] < min) min = input[idx + Width + 1];
+
+                    output[idx] = min;
+                }
+            }
+        }
+
+        private void MaxFilter3x3(float[] output, float[] input)
+        {
+            for (int y = 1; y < Height - 1; y++)
+            {
+                int row = y * Width;
+                for (int x = 1; x < Width - 1; x++)
+                {
+                    int idx = row + x;
+                    float max = input[idx];
+
+                    if (input[idx - Width - 1] > max) max = input[idx - Width - 1];
+                    if (input[idx - Width] > max) max = input[idx - Width];
+                    if (input[idx - Width + 1] > max) max = input[idx - Width + 1];
+                    if (input[idx - 1] > max) max = input[idx - 1];
+                    if (input[idx + 1] > max) max = input[idx + 1];
+                    if (input[idx + Width - 1] > max) max = input[idx + Width - 1];
+                    if (input[idx + Width] > max) max = input[idx + Width];
+                    if (input[idx + Width + 1] > max) max = input[idx + Width + 1];
+
+                    output[idx] = max;
+                }
+            }
+        }
+
+        private void BilateralFilter3x3(float[] output, float[] input, float intensitySigma = 25f)
+        {
+            float sigmaSq = intensitySigma * intensitySigma * 2f;
+
+            for (int y = 1; y < Height - 1; y++)
+            {
+                int row = y * Width;
+                for (int x = 1; x < Width - 1; x++)
+                {
+                    int idx = row + x;
+                    float centerVal = input[idx];
+                    float sumWeight = 0;
+                    float sumVal = 0;
+
+                    for (int i = -1; i <= 1; i++)
+                    {
+                        for (int j = -1; j <= 1; j++)
+                        {
+                            float neighborVal = input[idx + (i * Width) + j];
+                            float diff = centerVal - neighborVal;
+
+                            // Gewichtung basierend auf Helligkeitsunterschied
+                            float weight = (float)Math.Exp(-(diff * diff) / sigmaSq);
+
+                            sumVal += neighborVal * weight;
+                            sumWeight += weight;
+                        }
+                    }
+                    output[idx] = sumVal / sumWeight;
+                }
+            }
         }
 
         // Enqueues valid 4-neighbor pixels into intensity buckets for flood expansion.

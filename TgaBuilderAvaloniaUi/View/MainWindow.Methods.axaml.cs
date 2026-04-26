@@ -105,11 +105,6 @@ namespace TgaBuilderAvaloniaUi.View
 
                     double speedFactor = 150.0;
 
-                    //sv.Offset = new Vector(
-                    //    sv.Offset.X,
-                    //    sv.Offset.Y - delta * speedFactor
-                    //);
-
                     if (delta > 0 && sv.Offset.Y < 0.00001)
                         delta = 0;
 

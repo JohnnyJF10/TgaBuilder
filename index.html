@@ -95,7 +95,7 @@
         <ul>
           <li>
             <strong>Smooth Transition Helper</strong> for soft directional transitions with adjustable
-            <strong>Pivot</strong> and <strong>Hardness</strong>.
+            <strong>Pivot</strong> for border line positioning and <strong>Hardness</strong>.
             <br>
             <video src="Screenshots/SmoothTransition.mp4" autoplay loop muted playsinline width="600">
             </video>
@@ -103,8 +103,12 @@
 
           <li>
             <strong>Brick Transition Helper</strong> for marker-based brick/background transitions based on a watershed
-            algorithm with <strong>Pivot</strong>, <strong>Reverse Pivot</strong>, <strong>Marker Radius</strong>,
-            optional <strong>Slice Corners</strong>, and expandable label-map preview.
+            algorithm. Adjust the <strong>Marker Radius</strong> to control the number of initial seeds (larger values
+            reduce
+            the number of detected tiles). Tiles are drawn depending on whether their centroid falls within the shape
+            defined
+            by the <strong>Pivot</strong>. Toggle <strong>Reverse Pivot</strong> to invert the drawing logic. Enable
+            <strong>Slice Corners</strong> if needed to improve alignment of adjacent background textures.
             <br>
             <video src="Screenshots/BrickTransition.mp4" autoplay loop muted playsinline width="600">
             </video>
