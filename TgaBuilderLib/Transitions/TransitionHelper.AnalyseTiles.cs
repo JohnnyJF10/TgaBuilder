@@ -7,15 +7,31 @@ using System.Threading.Tasks;
 
 namespace TgaBuilderLib.Transitions
 {
+    public enum FilterType
+    {
+        None,
+        BoxBlur,
+        Median,
+        Bilateral
+    }
+
+    public enum SegmentationMethod
+    {
+        Watershed,
+        XYProjection
+    }
+
     public partial class TransitionHelper
     {
+
         // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
-        public unsafe void AnalyzeTilesWatershed(byte[] pixels)
+        public unsafe void AnalyzeTiles(byte[] pixels)
         {
             int totalPixels = Width * Height;
 
-            float[] blur = new float[totalPixels];
+            float[] filtered = new float[totalPixels];
             int[] labels = new int[totalPixels];
+            List<TileSegment> tiles = new List<TileSegment>();
 
             // 1. Compute grayscale values
             float[] gray = new float[totalPixels];
@@ -29,7 +45,57 @@ namespace TgaBuilderLib.Transitions
                 }
             }
 
-            // 2. Box blur
+            // 2. Initial Filter
+            switch (SelectedFilter)
+            {
+                case FilterType.BoxBlur:
+                    BoxBlur(filtered, gray);
+                    break;
+                case FilterType.Median:
+                    MedianFilter3x3(filtered, gray);
+                    break;
+                case FilterType.Bilateral:
+                    BilateralFilter3x3(filtered, gray, 30f);
+                    break;
+                case FilterType.None:
+                default:
+                    filtered = gray;
+                    break;
+            }
+
+            // 3. Segmentation
+            switch (SegmentationMethod)
+            {
+                case SegmentationMethod.XYProjection:
+                    XYProjectionSegmentation(filtered, labels, tiles);
+                    break;
+                case SegmentationMethod.Watershed:
+                default:
+                    WatershedSegmentation(filtered, labels, tiles);
+                    break;
+            }
+
+            // 4. Centroids
+            foreach (var tile in tiles)
+            {
+                if (tile.PixelOffsets.Count > 0)
+                {
+                    tile.CentroidX = (float)tile.SumX / tile.PixelOffsets.Count / (Width - 1);
+                    tile.CentroidY = (float)tile.SumY / tile.PixelOffsets.Count / (Height - 1);
+                }
+            }
+
+            // 5. Generate label map
+            GenerateLabelMap(Width, Height, labels, tiles.Count);
+
+            // Assign labels to the class property
+            Labels = labels;
+
+            TileData = tiles;
+        }
+
+        private unsafe void BoxBlur(float[] blur, float[] gray)
+        {
             for (int y = 1; y < Height - 1; y++)
             {
                 int row = y * Width;
@@ -42,123 +108,117 @@ namespace TgaBuilderLib.Transitions
                          gray[idx + Width - 1] + gray[idx + Width] + gray[idx + Width + 1]) / 9f;
                 }
             }
+        }
 
-            // 3. Seed candidates (keep all valid local maxima)
-            var seedCandidates = new List<(int idx, float val)>(128);
-
-            for (int y = MarkerRadius; y < Height - MarkerRadius; y++)
+        private void MedianFilter3x3(float[] output, float[] input)
+        {
+            float[] window = new float[9];
+            for (int y = 1; y < Height - 1; y++)
             {
                 int row = y * Width;
-                for (int x = MarkerRadius; x < Width - MarkerRadius; x++)
+                for (int x = 1; x < Width - 1; x++)
                 {
                     int idx = row + x;
-                    float val = blur[idx];
-                    bool isMax = true;
+                    window[0] = input[idx - Width - 1]; window[1] = input[idx - Width]; window[2] = input[idx - Width + 1];
+                    window[3] = input[idx - 1]; window[4] = input[idx]; window[5] = input[idx + 1];
+                    window[6] = input[idx + Width - 1]; window[7] = input[idx + Width]; window[8] = input[idx + Width + 1];
 
-                    for (int iy = -MarkerRadius; iy <= MarkerRadius; iy++)
+                    // Kleiner Insertion Sort für 9 Werte (schneller als Array.Sort)
+                    for (int i = 1; i < 9; i++)
                     {
-                        int nRow = (y + iy) * Width;
-                        for (int ix = -MarkerRadius; ix <= MarkerRadius; ix++)
+                        float temp = window[i];
+                        int j = i - 1;
+                        while (j >= 0 && window[j] > temp)
                         {
-                            if (ix == 0 && iy == 0) continue;
-                            if (blur[nRow + x + ix] >= val)
-                            {
-                                isMax = false;
-                                break;
-                            }
+                            window[j + 1] = window[j];
+                            j--;
                         }
-                        if (!isMax) break;
+                        window[j + 1] = temp;
                     }
-
-                    if (isMax)
-                        seedCandidates.Add((idx, val));
+                    output[idx] = window[4]; // Der Median
                 }
             }
+        }
 
-            // NOTE: The previous seed trimming was removed here
-            // because it destroys topology. We regulate count during post-processing.
-
-            // 4. Buckets
-            Queue<int>[] buckets = new Queue<int>[256];
-            for (int i = 0; i < 256; i++)
-                buckets[i] = new Queue<int>(32);
-
-            List<TileSegment> tiles = new List<TileSegment>(seedCandidates.Count);
-
-            for (int i = 0; i < seedCandidates.Count; i++)
+        private void MinFilter3x3(float[] output, float[] input)
+        {
+            for (int y = 1; y < Height - 1; y++)
             {
-                int label = i + 1;
-                int idx = seedCandidates[i].idx;
-
-                labels[idx] = label;
-
-                TileSegment ts = new TileSegment();
-                tiles.Add(ts);
-
-                int x = idx % Width;
-                int y = idx / Width;
-
-                AddPixelToTile(ts, x, y);
-                EnqueueNeighbors(idx, label, labels, blur, buckets, 255);
-            }
-
-            if (tiles.Count == 0)
-            {
-                TileData = tiles;
-                return;
-            }
-                
-
-            // 5. Watershed flood
-            for (int b = 255; b >= 0; b--)
-            {
-                var q = buckets[b];
-                while (q.Count > 0)
+                int row = y * Width;
+                for (int x = 1; x < Width - 1; x++)
                 {
-                    int idx = q.Dequeue();
+                    int idx = row + x;
+                    float min = input[idx];
 
-                    if (labels[idx] != 0) continue;
+                    if (input[idx - Width - 1] < min) min = input[idx - Width - 1];
+                    if (input[idx - Width] < min) min = input[idx - Width];
+                    if (input[idx - Width + 1] < min) min = input[idx - Width + 1];
+                    if (input[idx - 1] < min) min = input[idx - 1];
+                    if (input[idx + 1] < min) min = input[idx + 1];
+                    if (input[idx + Width - 1] < min) min = input[idx + Width - 1];
+                    if (input[idx + Width] < min) min = input[idx + Width];
+                    if (input[idx + Width + 1] < min) min = input[idx + Width + 1];
 
-                    int label = GetExistingNeighborLabel(idx, labels);
-                    if (label == 0) continue;
-
-                    labels[idx] = label;
-
-                    AddPixelToTile(
-                        tiles[label - 1],
-                        idx % Width,
-                        idx / Width);
-
-                    EnqueueNeighbors(idx, label, labels, blur, buckets, b);
+                    output[idx] = min;
                 }
             }
+        }
 
-            // 6. Final fill (remaining pixels)
-            FinalFill(labels, tiles);
-
-            // 7. Optional corner tile slicing
-            if (SliceCornerTiles)
+        private void MaxFilter3x3(float[] output, float[] input)
+        {
+            for (int y = 1; y < Height - 1; y++)
             {
-                SliceCornerTilesAlongTopology(tiles, labels, Width, Height);
-            }
-
-            // 8. Centroids
-            foreach (var tile in tiles)
-            {
-                if (tile.PixelOffsets.Count > 0)
+                int row = y * Width;
+                for (int x = 1; x < Width - 1; x++)
                 {
-                    tile.CentroidX = (float)tile.SumX / tile.PixelOffsets.Count / (Width - 1);
-                    tile.CentroidY = (float)tile.SumY / tile.PixelOffsets.Count / (Height - 1);
+                    int idx = row + x;
+                    float max = input[idx];
+
+                    if (input[idx - Width - 1] > max) max = input[idx - Width - 1];
+                    if (input[idx - Width] > max) max = input[idx - Width];
+                    if (input[idx - Width + 1] > max) max = input[idx - Width + 1];
+                    if (input[idx - 1] > max) max = input[idx - 1];
+                    if (input[idx + 1] > max) max = input[idx + 1];
+                    if (input[idx + Width - 1] > max) max = input[idx + Width - 1];
+                    if (input[idx + Width] > max) max = input[idx + Width];
+                    if (input[idx + Width + 1] > max) max = input[idx + Width + 1];
+
+                    output[idx] = max;
                 }
             }
+        }
 
-            // 9. Generate label map
-            GenerateLabelMap(Width, Height, labels, tiles.Count);
+        private void BilateralFilter3x3(float[] output, float[] input, float intensitySigma = 25f)
+        {
+            float sigmaSq = intensitySigma * intensitySigma * 2f;
 
-            // Assign labels to the class property
-            Labels = labels;
+            for (int y = 1; y < Height - 1; y++)
+            {
+                int row = y * Width;
+                for (int x = 1; x < Width - 1; x++)
+                {
+                    int idx = row + x;
+                    float centerVal = input[idx];
+                    float sumWeight = 0;
+                    float sumVal = 0;
 
-            TileData = tiles;
+                    for (int i = -1; i <= 1; i++)
+                    {
+                        for (int j = -1; j <= 1; j++)
+                        {
+                            float neighborVal = input[idx + (i * Width) + j];
+                            float diff = centerVal - neighborVal;
+
+                            // Gewichtung basierend auf Helligkeitsunterschied
+                            float weight = (float)Math.Exp(-(diff * diff) / sigmaSq);
+
+                            sumVal += neighborVal * weight;
+                            sumWeight += weight;
+                        }
+                    }
+                    output[idx] = sumVal / sumWeight;
+                }
+            }
         }
 
         // Enqueues valid 4-neighbor pixels into intensity buckets for flood expansion.
@@ -183,6 +243,175 @@ namespace TgaBuilderLib.Transitions
                 }
             }
         }
+
+
+        private unsafe void WatershedSegmentation(float[] filtered, int[] labels, List<TileSegment> tiles)
+        {
+            // Seed candidates (keep all valid local maxima)
+            var seedCandidates = new List<(int idx, float val)>(128);
+
+            for (int y = MarkerRadius; y < Height - MarkerRadius; y++)
+            {
+                int row = y * Width;
+                for (int x = MarkerRadius; x < Width - MarkerRadius; x++)
+                {
+                    int idx = row + x;
+                    float val = filtered[idx];
+                    bool isMax = true;
+
+                    for (int iy = -MarkerRadius; iy <= MarkerRadius; iy++)
+                    {
+                        int nRow = (y + iy) * Width;
+                        for (int ix = -MarkerRadius; ix <= MarkerRadius; ix++)
+                        {
+                            if (ix == 0 && iy == 0) continue;
+                            if (filtered[nRow + x + ix] >= val)
+                            {
+                                isMax = false;
+                                break;
+                            }
+                        }
+                        if (!isMax) break;
+                    }
+
+                    if (isMax)
+                        seedCandidates.Add((idx, val));
+                }
+            }
+
+            // NOTE: The previous seed trimming was removed here
+            // because it destroys topology. We regulate count during post-processing.
+
+            // Buckets
+            Queue<int>[] buckets = new Queue<int>[256];
+            for (int i = 0; i < 256; i++)
+                buckets[i] = new Queue<int>(32);
+
+            for (int i = 0; i < seedCandidates.Count; i++)
+            {
+                int label = i + 1;
+                int idx = seedCandidates[i].idx;
+
+                labels[idx] = label;
+
+                TileSegment ts = new TileSegment();
+                tiles.Add(ts);
+
+                int x = idx % Width;
+                int y = idx / Width;
+
+                AddPixelToTile(ts, x, y);
+                EnqueueNeighbors(idx, label, labels, filtered, buckets, 255);
+            }
+
+            // Watershed flood
+            for (int b = 255; b >= 0; b--)
+            {
+                var q = buckets[b];
+                while (q.Count > 0)
+                {
+                    int idx = q.Dequeue();
+
+                    if (labels[idx] != 0) continue;
+
+                    int label = GetExistingNeighborLabel(idx, labels);
+                    if (label == 0) continue;
+
+                    labels[idx] = label;
+
+                    AddPixelToTile(
+                        tiles[label - 1],
+                        idx % Width,
+                        idx / Width);
+
+                    EnqueueNeighbors(idx, label, labels, filtered, buckets, b);
+                }
+            }
+
+            // Final fill (remaining pixels)
+            FinalFill(labels, tiles);
+        }
+
+        // Divides the image into a regular grid of tiles. Cell size scales with MarkerRadius.
+        private unsafe void XYProjectionSegmentation(float[] filtered, int[] labels, List<TileSegment> tiles)
+        {
+            int totalPixels = Width * Height;
+            int labelCounter = 1;
+
+            // --- Step 1: Global Horizontal Projection ---
+            // Calculate row sums to find the horizontal bed joints (Lagerfugen)
+            float[] rowSum = new float[Height];
+            for (int y = 0; y < Height; y++)
+            {
+                int rowIdx = y * Width;
+                for (int x = 0; x < Width; x++)
+                {
+                    rowSum[y] += filtered[rowIdx + x];
+                }
+            }
+
+            // Find horizontal split points
+            List<int> horizontalSplits = FindValleys(rowSum, MarkerRadius);
+
+            // Add boundaries
+            if (!horizontalSplits.Contains(0)) horizontalSplits.Insert(0, 0);
+            if (!horizontalSplits.Contains(Height)) horizontalSplits.Add(Height);
+            horizontalSplits.Sort();
+
+            // --- Step 2: Local Vertical Projection per Row ---
+            // Iterate through each detected brick course (row)
+            for (int i = 0; i < horizontalSplits.Count - 1; i++)
+            {
+                int yStart = horizontalSplits[i];
+                int yEnd = horizontalSplits[i + 1];
+                int rowHeight = yEnd - yStart;
+
+                if (rowHeight <= 0) continue;
+
+                // Calculate a LOCAL vertical profile for the current horizontal slice
+                float[] localColSum = new float[Width];
+                for (int x = 0; x < Width; x++)
+                {
+                    for (int y = yStart; y < yEnd; y++)
+                    {
+                        localColSum[x] += filtered[y * Width + x];
+                    }
+                }
+
+                // Find vertical split points (head joints) ONLY for this specific row
+                // This handles the 'offset'/staggered brick pattern
+                List<int> verticalSplits = FindValleys(localColSum, MarkerRadius);
+
+                // Add boundaries for the current row
+                if (!verticalSplits.Contains(0)) verticalSplits.Insert(0, 0);
+                if (!verticalSplits.Contains(Width)) verticalSplits.Add(Width);
+                verticalSplits.Sort();
+
+                // --- Step 3: Create Tiles for this Row ---
+                for (int j = 0; j < verticalSplits.Count - 1; j++)
+                {
+                    int xStart = verticalSplits[j];
+                    int xEnd = verticalSplits[j + 1];
+
+                    TileSegment ts = new TileSegment();
+
+                    for (int y = yStart; y < yEnd; y++)
+                    {
+                        int rowOffset = y * Width;
+                        for (int x = xStart; x < xEnd; x++)
+                        {
+                            int idx = rowOffset + x;
+                            labels[idx] = labelCounter;
+                            AddPixelToTile(ts, x, y);
+                        }
+                    }
+
+                    tiles.Add(ts);
+                    labelCounter++;
+                }
+            }
+        }
+
 
         // Returns the first existing 4-neighbor label around the given pixel index.
         private int GetExistingNeighborLabel(int idx, int[] labels)
@@ -404,184 +633,24 @@ namespace TgaBuilderLib.Transitions
             tile.SumY += y;
         }
 
-        // Slices corner tiles along an oriented line through the corner pixel.
-        // The cut angle is pivot-driven and adjusted per mode and corner position:
-        //   Left / Right modes        : angle = 10° + Pivot×70°  (Pivot=0→10°, 0.5→45°, 1→80°)
-        //   Top  / Bottom modes       : angle = 80° − Pivot×70°  (reversed)
-        //   Diagonal modes, top corner: reversed; bottom corner: original
-        // Corner tiles are tiles containing any of the four image corner pixels.
-        // Within each side, connected component analysis is run to handle star-shaped tiles
-        // that may produce multiple disconnected fragments.
-        private void SliceCornerTilesAlongTopology(List<TileSegment> tiles, int[] labels, int width, int height)
+        private List<int> FindValleys(float[] profile, int radius)
         {
-            // Corner pixel indices and their coordinates
-            int[] cornerPixelIndices = new int[]
+            List<int> valleys = new List<int>();
+            for (int i = radius; i < profile.Length - radius; i++)
             {
-                0,                                      // top-left (0,0)
-                width - 1,                              // top-right (W-1, 0)
-                (height - 1) * width,                   // bottom-left (0, H-1)
-                (height - 1) * width + (width - 1)      // bottom-right (W-1, H-1)
-            };
-
-            (int cx, int cy)[] cornerCoords = new (int, int)[]
-            {
-                (0, 0),
-                (width - 1, 0),
-                (0, height - 1),
-                (width - 1, height - 1)
-            };
-
-            // Map each unique corner tile label to the first corner coordinate it contains
-            var tileToCornersMap = new Dictionary<int, (int cx, int cy)>();
-            for (int i = 0; i < cornerPixelIndices.Length; i++)
-            {
-                int label = labels[cornerPixelIndices[i]];
-                if (label > 0 && !tileToCornersMap.ContainsKey(label))
-                    tileToCornersMap[label] = cornerCoords[i];
-            }
-
-            // Process each corner tile
-            foreach (var (cornerLabel, (cornerX, cornerY)) in tileToCornersMap)
-            {
-                int tileIndex = cornerLabel - 1;
-                if (tileIndex < 0 || tileIndex >= tiles.Count)
-                    continue;
-
-                var tile = tiles[tileIndex];
-                if (tile.PixelOffsets.Count == 0)
-                    continue;
-
-                // Determine whether to reverse the pivot-to-angle mapping for this corner.
-                // Top/Bottom modes always reverse; Diagonal modes reverse only for top corners.
-                bool reverseAngle = Mode switch
+                bool isMin = true;
+                for (int j = -radius; j <= radius; j++)
                 {
-                    TransitionMode.Top => true,
-                    TransitionMode.Bottom => true,
-                    TransitionMode.DiagonalTopLeft => cornerY == 0,
-                    TransitionMode.DiagonalTopRight => cornerY == 0,
-                    _ => false   // Left, Right: original mapping
-                };
-
-                // Original: Pivot=0→10°, 0.5→45°, 1.0→80°
-                // Reversed: Pivot=0→80°, 0.5→45°, 1.0→10°
-                float angleDeg = reverseAngle ? 80f - Pivot * 70f : 10f + Pivot * 70f;
-                float tanAngle = MathF.Tan(angleDeg * MathF.PI / 180f);
-
-                // Classify each pixel by which side of the angle-based line it falls on.
-                // For pixel (px, py), compute dx = |px - cornerX|, dy = |py - cornerY|.
-                // The cut line from the corner is: dy = dx * tanAngle.
-                // side = true  → dy < dx * tanAngle  (closer to the horizontal edge from corner)
-                // side = false → dy >= dx * tanAngle (closer to the vertical edge from corner)
-                var pixelSides = new List<(int offset, int x, int y, bool side)>(tile.PixelOffsets.Count);
-
-                bool hasHighSide = false;
-                bool hasLowSide = false;
-
-                foreach (int offset in tile.PixelOffsets)
-                {
-                    int py = offset / Stride;
-                    int px = (offset % Stride) / TRANSITIONS_BPP;
-
-                    float dx = Math.Abs(px - cornerX);
-                    float dy = Math.Abs(py - cornerY);
-
-                    bool side = dy < dx * tanAngle;
-                    pixelSides.Add((offset, px, py, side));
-
-                    if (side) hasHighSide = true;
-                    else hasLowSide = true;
-                }
-
-                // If all pixels fall on the same side, no split needed
-                if (!hasHighSide || !hasLowSide)
-                    continue;
-
-                // Build a pixel lookup for connected component analysis within this tile
-                var pixelMap = new Dictionary<(int x, int y), (int offset, bool side)>(pixelSides.Count);
-                foreach (var (offset, px, py, side) in pixelSides)
-                {
-                    pixelMap[(px, py)] = (offset, side);
-                }
-
-                // Run connected component analysis within the tile, respecting the side boundary
-                var visited = new HashSet<(int x, int y)>(pixelSides.Count);
-                var components = new List<List<(int offset, int x, int y)>>();
-
-                foreach (var (offset, px, py, side) in pixelSides)
-                {
-                    if (visited.Contains((px, py)))
-                        continue;
-
-                    // BFS within the same side
-                    var component = new List<(int offset, int x, int y)>();
-                    var queue = new Queue<(int x, int y)>();
-                    queue.Enqueue((px, py));
-                    visited.Add((px, py));
-
-                    while (queue.Count > 0)
+                    if (j == 0) continue;
+                    if (profile[i + j] < profile[i]) // Falls ein Nachbar dunkler ist, kein Minimum
                     {
-                        var (cx, cy) = queue.Dequeue();
-                        var (co, cs) = pixelMap[(cx, cy)];
-                        component.Add((co, cx, cy));
-
-                        // Check 4-connected neighbors
-                        int[] dxArr = { 0, 0, -1, 1 };
-                        int[] dyArr = { -1, 1, 0, 0 };
-
-                        for (int d = 0; d < 4; d++)
-                        {
-                            int nnx = cx + dxArr[d];
-                            int nny = cy + dyArr[d];
-
-                            if (!visited.Contains((nnx, nny)) &&
-                                pixelMap.TryGetValue((nnx, nny), out var neighbor) &&
-                                neighbor.side == side)
-                            {
-                                visited.Add((nnx, nny));
-                                queue.Enqueue((nnx, nny));
-                            }
-                        }
+                        isMin = false;
+                        break;
                     }
-
-                    components.Add(component);
                 }
-
-                // If only one component, no actual split happened
-                if (components.Count <= 1)
-                    continue;
-
-                // Rewrite the original tile with the first component, create new tiles for the rest
-                tile.PixelOffsets.Clear();
-                tile.SumX = 0;
-                tile.SumY = 0;
-
-                foreach (var (co, cx, cy) in components[0])
-                {
-                    tile.PixelOffsets.Add(co);
-                    tile.SumX += cx;
-                    tile.SumY += cy;
-                }
-
-                // Create new tiles for remaining components
-                for (int c = 1; c < components.Count; c++)
-                {
-                    var newTile = new TileSegment();
-                    int newLabel = tiles.Count + 1;
-
-                    foreach (var (co, cx, cy) in components[c])
-                    {
-                        newTile.PixelOffsets.Add(co);
-                        newTile.SumX += cx;
-                        newTile.SumY += cy;
-
-                        // Update the label array
-                        int pixelIdx = cy * width + cx;
-                        labels[pixelIdx] = newLabel;
-                    }
-
-                    tiles.Add(newTile);
-                }
+                if (isMin) valleys.Add(i);
             }
+            return valleys;
         }
     }
 }

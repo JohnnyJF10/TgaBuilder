@@ -59,7 +59,7 @@ jobs:
             -c Release `
             -f net6.0-windows `
             -r win-x64 `
-            --self-contained false `
+            /p:SelfContained=false `
             /p:PublishReadyToRun=true `
             /p:PublishSingleFile=false `
             -o publish/wpf-net6

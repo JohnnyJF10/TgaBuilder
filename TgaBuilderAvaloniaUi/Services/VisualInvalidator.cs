@@ -4,11 +4,11 @@ using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderAvaloniaUi.Services
 {
-    internal class ImageVisualInvalidator : IVisualInvalidator
+    internal class VisualInvalidator : IVisualInvalidator
     {
         private readonly Image _image;
 
-        public ImageVisualInvalidator(Image image)
+        public VisualInvalidator(Image image)
         {
             _image = image ?? throw new ArgumentNullException(nameof(image));
         }

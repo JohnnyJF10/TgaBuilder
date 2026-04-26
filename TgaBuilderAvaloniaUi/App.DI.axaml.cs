@@ -106,10 +106,12 @@ namespace TgaBuilderAvaloniaUi
             services.AddSingleton<IClipboardService, ClipboardService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<ICursorSetter, CursorSetter>();
-            services.AddSingleton<IMessageService, MessageService>();
+            services.AddSingleton<NotificationManager>();
+            services.AddSingleton<IMessageService, MessageService>(sp => new MessageService(
+                    manager: sp.GetRequiredService<NotificationManager>(),
+                    wetherSendSuccessMessages: sp.GetRequiredService<IUsageData>().WetherSendSuccessMessage));
             services.AddSingleton<IMessageBoxService, MessageBoxService>();
             services.AddSingleton<IDispatcherService, DispatcherService>();
-            services.AddSingleton<IVisualInvalidatorFactory, VisualInvalidatorFactory>();
         }
 
         private void AddBitmapFactoryProvider(IServiceCollection services)
@@ -119,7 +121,7 @@ namespace TgaBuilderAvaloniaUi
                     size: new Avalonia.PixelSize(width, height),
                     dpi: new Avalonia.Vector(APP_DEFAULT_DPI, APP_DEFAULT_DPI),
                     format: hasAlpha ? Avalonia.Platform.PixelFormat.Bgra8888 : Avalonia.Platform.PixelFormat.Rgb32,
-                    alphaFormat: hasAlpha ? Avalonia.Platform.AlphaFormat.Premul : Avalonia.Platform.AlphaFormat.Opaque));
+                    alphaFormat: Avalonia.Platform.AlphaFormat.Unpremul));
         }
 
         private void AddElementVMsToProvider(IServiceCollection services)
@@ -326,7 +328,8 @@ namespace TgaBuilderAvaloniaUi
         private void AddViewsToProvider(IServiceCollection services)
         {
             services.AddSingleton<IView, MainWindow>(sp => new MainWindow(
-                    mainViewModel: sp.GetRequiredService<MainViewModel>()));
+                    mainViewModel: sp.GetRequiredService<MainViewModel>(),
+                    manager: sp.GetRequiredService<NotificationManager>()));
 
             services.AddTransient<IView, BatchLoaderWindow>(
                 sp => new BatchLoaderWindow(
@@ -338,13 +341,11 @@ namespace TgaBuilderAvaloniaUi
 
             services.AddTransient<IView, SmoothTransitionWindow>(
                 sp => new SmoothTransitionWindow(
-                    viewModel: sp.GetRequiredService<SmoothTransitionViewModel>(),
-                    visualInvalidatorFactory: sp.GetRequiredService<IVisualInvalidatorFactory>()));
+                    viewModel: sp.GetRequiredService<SmoothTransitionViewModel>()));
 
             services.AddTransient<IView, BrickTransitionWindow>(
                 sp => new BrickTransitionWindow(
-                    viewModel: sp.GetRequiredService<BrickTransitionViewModel>(),
-                    visualInvalidatorFactory: sp.GetRequiredService<IVisualInvalidatorFactory>()));
+                    viewModel: sp.GetRequiredService<BrickTransitionViewModel>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)

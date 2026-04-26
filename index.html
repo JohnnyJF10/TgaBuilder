@@ -89,25 +89,40 @@
 
     <ul>
       <li>
-        New <strong>Transition Helper Windows</strong> to generate blend-ready transition tiles directly from
-        selections:
+        New <strong>Transition Helper Windows</strong> to generate transition tiles directly from texture tiles
+        available
+        in either Source or Destination panels:
 
         <ul>
           <li>
             <strong>Smooth Transition Helper</strong> for soft directional transitions with adjustable
-            <strong>Pivot</strong> and <strong>Hardness</strong>.
+            <strong>Pivot</strong> for border line positioning and <strong>Hardness</strong>.
             <br>
-            <video src="Screenshots/SmoothTransition.mp4" autoplay loop muted playsinline width="600">
-            </video>
+            <video src="Screenshots/SmoothTransition.mp4" autoplay loop muted playsinline width="600"></video>
           </li>
 
           <li>
-            <strong>Brick Transition Helper</strong> for marker-based brick/background transitions based on a watershed
-            algorithm with <strong>Pivot</strong>, <strong>Reverse Pivot</strong>, <strong>Marker Radius</strong>,
-            optional <strong>Slice Corners</strong>, and expandable label-map preview.
+            <strong>Brick Transition Helper</strong> for marker-based brick/background transition–based segmentation
+            algorithms.
+            Adjust the <strong>Marker Radius</strong> to control the number of initial seeds used by the segmentation
+            algorithm (larger values reduce the number of detected tiles).
+            Tiles are drawn depending on whether their centroid falls within the shape defined by the
+            <strong>Pivot</strong>. Toggle <strong>Reverse Pivot</strong> to invert the drawing logic. Toggle
+            <strong>Slice Corners</strong> if needed to improve placement of adjacent background textures.
             <br>
-            <video src="Screenshots/BrickTransition.mp4" autoplay loop muted playsinline width="600">
-            </video>
+            Specify the pre-algorithm input <strong>Filter</strong>: <strong>Box Blur</strong>,
+            <strong>Bilateral</strong>,
+            <strong>Median</strong>, or <strong>None</strong>.
+            <br>
+            Specify the <strong>Segmentation</strong> algorithm: <strong>Watershed</strong> or
+            <strong>XY Projection</strong>.
+            <br>
+            <em>Tip:</em> For wall bricks with clear horizontal or vertical joints, use <strong>XY Projection</strong>
+            with
+            no filter and a large <strong>Marker Radius</strong>. For natural or old bricks, use
+            <strong>Watershed</strong> with <strong>Box Blur</strong> and a small <strong>Marker Radius</strong>.
+            <br>
+            <video src="Screenshots/BrickTransition.mp4" autoplay loop muted playsinline width="600"></video>
           </li>
         </ul>
       </li>
@@ -117,30 +132,32 @@
     <p>Move over to <a href="https://github.com/JohnnyJF10/TgaBuilder/releases">GitHub Releases</a>.</p>
 
     <p><strong>Windows:</strong></p>
-    <p>For the latest releases there are two tool versions per release: The <em>.NET 6.0</em> version of the tool and
-      the <em>.NET 8.0</em> version of the tool.</p>
+    <p>
+      For the latest releases there are two tool versions per release: the <em>.NET 6.0</em> version and the
+      <em>.NET 8.0</em> version.
+    </p>
+
     <ul>
       <li>
-        Download the <strong>.NET 6.0</strong> version of the tool (<code>TgaBuilder-dotnet6</code>), if you already
-        have Tomb Editor Version 1.9 installed on your system and you do not wish to install another .NET runtime (as
-        Tomb Editor Version 1.9 is using <em>.NET 6.0</em> runtime as well)
+        Download the <strong>.NET 6.0</strong> version (<code>TgaBuilder-dotnet6</code>) if you already have Tomb Editor
+        Version 1.9 installed and do not want to install another runtime.
       </li>
       <li>
-        Download the <strong>.NET 8.0</strong> version of the tool (<code>TgaBuilder-dotnet8</code>), if you have the
-        <em>.NET 8.0</em> runtime installed or do not mind to install it. This version has the slightly better
-        performance.
+        Download the <strong>.NET 8.0</strong> version (<code>TgaBuilder-dotnet8</code>) if you have or don’t mind
+        installing the <em>.NET 8.0</em> runtime. This version has slightly better performance.
       </li>
     </ul>
+
     <p>Extract the files and start <em>TgaBuilder.exe</em>.</p>
 
-    <p><strong>Linux:</strong></p>
-    <p>There is also an experimental cross-platform version of the tool based on Avalonia UI instead of WPF. It has been
-      tested only on Linux Mint (and Windows) currently.
-      Please note that this version is highly experimental and contains bugs with zoom panel and some controls. They
-      will be fixed in future when there is realy need for TRLE building tools on other platforms than Windows. For any
-      productive purposes, use the regular versions of TgaBuilder for Windows.</p>
+    <p><strong>Linux and Windows:</strong></p>
+    <p>
+      There is also a cross-platform version based on Avalonia UI instead of WPF. It has been tested on Ubuntu,
+      Linux Mint, and Windows. Some features (mainly clipboard) are missing, but otherwise it is fully functional.
+      This version requires <strong>.NET 8.0</strong>.
+    </p>
 
-    <p>To run the Avalonia UI version on Linux, move over to the directory where you extracted the files and run:</p>
+    <p>To run the Avalonia UI version on Linux:</p>
 
     <pre><code>dotnet TgaBuilderAvaloniaUi.dll
 </code></pre>

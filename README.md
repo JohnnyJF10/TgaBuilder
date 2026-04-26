@@ -25,16 +25,19 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 - Imported texture repacking to remove TE compiled atlas padding
 - and others…
 
-### New in Version 2.2.0
+### New in Version 2.2.
 ![SmoothTransitions](Screenshots/TransitionHelperButton.png)
 
-- New **Transition Helper Windows** to generate blend-ready transition tiles directly from selections.
+- New **Transition Helper Windows** to generate transition tiles directly from texture tile available from either Source or Destination panels.
 
-  - **Smooth Transition Helper** for soft directional transitions with adjustable **Pivot** and **Hardness**.
+  - **Smooth Transition Helper** for soft directional transitions with adjustable **Pivot** for border line positioning and **Hardness**.
 
   ![SmoothTransitionWin](Screenshots/SmoothTransition_gif.gif)
 
-  - **Brick Transition Helper** for marker-based brick/background transitions based on a watershed algorithm with **Pivot**, **Reverse Pivot**, **Marker Radius**, optional **Slice Corners**, and expandable label-map preview.
+  - **Brick Transition Helper** for marker-based brick/background transition–based segmentation algorithms. Adjust the **Marker Radius** value to control the number of initial seeds used by the segmentation algorithm. A larger value reduces the number of tiles detected later. After tile detection, tiles are drawn depending on whether their centroid falls within the shape defined by the **Pivot** value. This shape is the same as that used for smooth transitions. Toggle **Reverse Pivot** to invert the drawing logic. Toggle **Slice Corners** if needed to make placing adjacent background textures more accurate. More options will be added in the future.
+  - Specify the pre-algorithm input **Filter**: choose between **Box Blur**, **Bilateral**, **Median**, or no filter (**None**).
+  - Specify the **Segmentation** algorithm itself: **Watershed** or **XY Projection**. More options will be added in the future.
+    - Tip: For wall bricks with clear joints in either the horizontal or vertical direction, choose the **XY Projection** algorithm with no input filter and a large **Marker Radius**. For natural or temple-style old bricks, select the **Watershed** algorithm with a **Box Blur** filter and a small **Marker Radius**.
 
   ![BrickTransitionWin](Screenshots/BrickTransition_gif.gif)
 

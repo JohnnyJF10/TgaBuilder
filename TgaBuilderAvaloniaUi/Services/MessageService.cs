@@ -1,54 +1,47 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Notification;
+using Avalonia.Media;
 using System;
 using System.Diagnostics;
-using TgaBuilderAvaloniaUi.View;
+using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderLib.Messaging;
 
 namespace TgaBuilderAvaloniaUi.Services
 {
     internal partial class MessageService : IMessageService
     {
+        private readonly NotificationManager _manager;
+        private readonly bool _wetherSendSuccessMessages;
+
+        public MessageService(NotificationManager manager, bool wetherSendSuccessMessages = false)
+        {
+            _manager = manager;
+            _wetherSendSuccessMessages = wetherSendSuccessMessages;
+        }
+
         public void SendMessage(MessageType message, string additionalInfo = "", Exception? ex = null)
         {
-            Window ActiveWindow;
-
-            if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            if (!_messageDict.TryGetValue(message, out var uiMessage))
             {
-                Debug.WriteLine("The application is not running in desktop mode.");
+                Debug.WriteLine($"Unknown MessageType: {message}");
                 return;
             }
 
-            if (desktop.MainWindow is not MainWindow mainWindow)
-            {
-                Debug.WriteLine("Could not get the top-level window.");
+            if (!_wetherSendSuccessMessages && string.Equals(uiMessage.Title, "Information"))
                 return;
-            }
 
-            ActiveWindow = mainWindow;
-
-            var uiMessage = _messageDict[message];
-
-            if (!string.IsNullOrEmpty(additionalInfo))
-                uiMessage.Message = additionalInfo;
+            var text = string.IsNullOrEmpty(additionalInfo) ? uiMessage.Message : additionalInfo;
 
             if (ex is not null)
-                uiMessage.Message += $" Error: {ex.Message} - Please find more information in the log file.";
+                text += $" Error: {ex.Message} - Please find more information in the log file.";
 
-            /*
-            mainWindow.Manager
-                .CreateMessage()
-                .Accent(uiMessage.Accent)
-                .Animates(true)
-                .Background("#333")
-                .HasBadge(uiMessage.Title)
-                .HasMessage(uiMessage.Message)
-                .Dismiss().WithButton("x", button => { })
-                .Dismiss().WithDelay(TimeSpan.FromSeconds(uiMessage.timeout))
-                .Queue();
-            */
+            var accent = new SolidColorBrush(Color.Parse(uiMessage.Accent));
+
+            _manager.QueueNotification(new NotificationEntry
+            {
+                Title = uiMessage.Title,
+                Message = text,
+                AccentBrush = accent,
+                TimeoutSeconds = uiMessage.timeout,
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Avalonia.Input;
+﻿using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using System;
@@ -16,6 +17,7 @@ namespace TgaBuilderAvaloniaUi.View
     {
 
         private Avalonia.Point _lastPanPosition;
+        private Avalonia.Point _lastPointerPosition;
 
         private static bool IsGridlessModifier(KeyModifiers modifiers)
             => modifiers.HasFlag(KeyModifiers.Alt);
@@ -30,7 +32,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
                 return;
 
-            bool isDestination = CurrentImage.Name == "TargetImage";
+            bool isDestination = IsElementFromDestinationPanel(CurrentImage);
             CurrentPanel = GetPanelFromImage(CurrentImage);
 
             e.Pointer.Capture(CurrentImage);
@@ -56,6 +58,8 @@ namespace TgaBuilderAvaloniaUi.View
 
             if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((x, y, isDestination, MouseAction.DragStart, _modifier));
+
+            _lastPointerPosition = e.GetPosition(CurrentImage);
         }
 
         private void Window_DoubleTapped(object? sender, RoutedEventArgs e)
@@ -70,7 +74,7 @@ namespace TgaBuilderAvaloniaUi.View
             var pos = e.GetPosition(CurrentImage);
             int x = (int)pos.X;
             int y = (int)pos.Y;
-            bool isDestination = CurrentImage.Name == "TargetImage";
+            bool isDestination = IsElementFromDestinationPanel(CurrentImage);
 
             if (CurrentImage == e.Pointer.Captured)
             {
@@ -115,6 +119,8 @@ namespace TgaBuilderAvaloniaUi.View
 
             if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((x, y, isDestination, MouseAction.Move, _modifier));
+
+            _lastPointerPosition = e.GetPosition(CurrentImage);
         }
 
         private void Window_PointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -132,7 +138,7 @@ namespace TgaBuilderAvaloniaUi.View
             var pos = e.GetPosition(CurrentImage);
             int x = (int)pos.X;
             int y = (int)pos.Y;
-            bool isDestination = CurrentImage.Name == "TargetImage";
+            bool isDestination = IsElementFromDestinationPanel(CurrentImage);
 
             if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((x, y, isDestination, MouseAction.DragEnd, _modifier));
@@ -160,8 +166,7 @@ namespace TgaBuilderAvaloniaUi.View
 
             if (!e.KeyModifiers.HasFlag(KeyModifiers.Shift)) return;
 
-            bool isDestination = CurrentImage.Name == "TargetImage";
-
+            bool isDestination = IsElementFromDestinationPanel(CurrentImage);
             if (PanelMouseAP.GetWheelShiftCommand(this) is ICommand wheelShiftCommand)
             {
                 wheelShiftCommand.Execute((isDestination, e.Delta.Y < 0));
