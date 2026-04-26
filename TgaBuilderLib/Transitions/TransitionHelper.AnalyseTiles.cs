@@ -16,9 +16,74 @@ namespace TgaBuilderLib.Transitions
         Bilateral
     }
 
+    public enum SegmentationMethod
+    {
+        Watershed,
+        RegularGrid
+    }
+
     public partial class TransitionHelper
     {
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
+
+        // Dispatches to the appropriate tile analysis method based on SegmentationMethod.
+        public void AnalyzeTiles(byte[] pixels)
+        {
+            switch (SegmentationMethod)
+            {
+                case SegmentationMethod.RegularGrid:
+                    AnalyzeTilesGrid();
+                    break;
+                case SegmentationMethod.Watershed:
+                default:
+                    AnalyzeTilesWatershed(pixels);
+                    break;
+            }
+        }
+
+        // Divides the image into a regular grid of tiles. Cell size scales with MarkerRadius.
+        public void AnalyzeTilesGrid()
+        {
+            // Cell size scales with MarkerRadius (multiplier of 4 gives comparable granularity to watershed).
+            const int cellSizeMultiplier = 4;
+            const int minCellSize = 4;
+            int cellSize = Math.Max(minCellSize, MarkerRadius * cellSizeMultiplier);
+            int cols = (Width + cellSize - 1) / cellSize;
+            int rows = (Height + cellSize - 1) / cellSize;
+
+            int[] labels = new int[Width * Height];
+            List<TileSegment> tiles = new List<TileSegment>(rows * cols);
+
+            for (int r = 0; r < rows; r++)
+                for (int c = 0; c < cols; c++)
+                    tiles.Add(new TileSegment());
+
+            for (int y = 0; y < Height; y++)
+            {
+                int r = y / cellSize;
+                for (int x = 0; x < Width; x++)
+                {
+                    int c = x / cellSize;
+                    int tileIdx = r * cols + c;
+                    labels[y * Width + x] = tileIdx + 1;
+                    AddPixelToTile(tiles[tileIdx], x, y);
+                }
+            }
+
+            foreach (var tile in tiles)
+            {
+                if (tile.PixelOffsets.Count > 0)
+                {
+                    tile.CentroidX = (float)tile.SumX / tile.PixelOffsets.Count / Math.Max(1, Width - 1);
+                    tile.CentroidY = (float)tile.SumY / tile.PixelOffsets.Count / Math.Max(1, Height - 1);
+                }
+            }
+
+            GenerateLabelMap(Width, Height, labels, tiles.Count);
+            Labels = labels;
+            TileData = tiles;
+        }
+
         // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
         public unsafe void AnalyzeTilesWatershed(byte[] pixels)
         {

@@ -15,9 +15,9 @@
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Brick Transition Helper"
     Width="750"
-    Height="400"
+    Height="450"
     MinWidth="750"
-    MinHeight="350"
+    MinHeight="400"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
     <Window.Resources>
@@ -227,6 +227,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10"/>
@@ -291,17 +292,18 @@
                 Margin="3,0,0,0"
                 Content="Slice Corners"/>
 
-            <!-- Filter ComboBox -->
+            <!-- Row 2: Filter ComboBox -->
             <TextBlock
-                Grid.Column="4"
-                Margin="5,5,0,0"
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="10,5,0,5"
                 VerticalAlignment="Center"
                 Text="Filter"
                 FontStyle="Italic"/>
             <ComboBox
-                Grid.Row="1"
-                Grid.Column="4"
-                Margin="5,0,5,0"
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="5,5,5,5"
                 VerticalAlignment="Center"
                 MinWidth="90"
                 SelectedIndex="{Binding SelectedFilterIndex}">
@@ -310,6 +312,25 @@
                 <ComboBoxItem Content="Median"/>
                 <ComboBoxItem Content="Min"/>
                 <ComboBoxItem Content="Bilateral"/>
+            </ComboBox>
+
+            <!-- Row 2: Segmentation Method ComboBox -->
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="2"
+                Margin="10,5,0,5"
+                VerticalAlignment="Center"
+                Text="Segmentation"
+                FontStyle="Italic"/>
+            <ComboBox
+                Grid.Row="2"
+                Grid.Column="3"
+                Margin="5,5,5,5"
+                VerticalAlignment="Center"
+                MinWidth="100"
+                SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
+                <ComboBoxItem Content="Watershed"/>
+                <ComboBoxItem Content="Regular Grid"/>
             </ComboBox>
         </Grid>
 

@@ -27,6 +27,7 @@ namespace TgaBuilderLib.Transitions
         public bool ReversePivot { get; set; } = false;
         public bool SliceCornerTiles { get; set; } = false;
         public int MarkerRadius { get; set; } = 3;
+        public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Watershed;
 
         public void CleanUp()
         {
@@ -40,6 +41,7 @@ namespace TgaBuilderLib.Transitions
             MarkerRadius = 3; 
             ReversePivot = false;
             SliceCornerTiles = false;
+            SegmentationMethod = SegmentationMethod.Watershed;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

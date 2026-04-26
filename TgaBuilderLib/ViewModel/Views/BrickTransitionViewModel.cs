@@ -31,6 +31,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private bool _sliceCornerTiles;
     private bool _isLabelMapExpanded;
     private FilterType _selectedFilter = FilterType.BoxBlur;
+    private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
 
     public IWriteableBitmap? LabelMapImage
     {
@@ -87,12 +88,31 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SelectedFilter = (FilterType)value;
     }
 
+    public SegmentationMethod SelectedSegmentationMethod
+    {
+        get => _selectedSegmentationMethod;
+        set
+        {
+            if (SetCallerPropertyReturn(ref _selectedSegmentationMethod, value))
+            {
+                OnPropertyChanged(nameof(SelectedSegmentationMethodIndex));
+                TriggerRecalculation(requiresAnalysis: true);
+            }
+        }
+    }
+
+    public int SelectedSegmentationMethodIndex
+    {
+        get => (int)_selectedSegmentationMethod;
+        set => SelectedSegmentationMethod = (SegmentationMethod)value;
+    }
+
     protected override bool RequiresFullAnalysisOnPivotChange => false;
 
     protected override byte[] CreateMixedPixels(bool requiresAnalysis)
     {
         if (requiresAnalysis || TransitionHelper.LastAnalysisMap.Length == 0)
-            TransitionHelper.AnalyzeTilesWatershed(Pixels1);
+            TransitionHelper.AnalyzeTiles(Pixels1);
 
         return TransitionHelper.MixSmartTilesPixels(Pixels1, Pixels2);
     }
@@ -103,6 +123,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         TransitionHelper.SliceCornerTiles = SliceCornerTiles;
         TransitionHelper.MarkerRadius = MarkerRadius;
         TransitionHelper.SelectedFilter = SelectedFilter;
+        TransitionHelper.SegmentationMethod = SelectedSegmentationMethod;
     }
 
     protected override void OnResultUpdated()

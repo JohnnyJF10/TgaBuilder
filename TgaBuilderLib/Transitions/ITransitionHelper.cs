@@ -13,11 +13,13 @@
         float Pivot { get; set; }
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
+        SegmentationMethod SegmentationMethod { get; set; }
         bool SliceCornerTiles { get; set; }
         int Stride { get; set; }
         List<TileSegment> TileData { get; set; }
         int Width { get; set; }
 
+        void AnalyzeTiles(byte[] pixels);
         void AnalyzeTilesWatershed(byte[] pixels);
         byte[] MixPixels(byte[] pixels1, byte[] pixels2);
         byte[] MixSmartTilesPixels(byte[] tilePixels, byte[] bgPixels);
