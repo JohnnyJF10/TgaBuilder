@@ -183,7 +183,9 @@
         </Grid>
 
         <!-- Row 1: Controls -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1"
+        VerticalAlignment="Stretch"
+        >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -238,8 +240,11 @@
             <!-- Expander: advanced controls + Label Map -->
             <Expander
                 Grid.Row="2"
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="4"
+                Background="Transparent"
+                BorderThickness="0"
                 Header="Options"
+                VerticalAlignment="Stretch"
                 Margin="5,0,5,5">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -331,8 +336,8 @@
                                 Stretch="Uniform"
                                 RenderOptions.BitmapInterpolationMode="None">
                                 <Grid
-                                    Width="{Binding LabelMapImage.PixelWidth, FallbackValue=128}"
-                                    Height="{Binding LabelMapImage.PixelHeight, FallbackValue=128}">
+                                    Width="{Binding #ResultImage.Bounds.Width, FallbackValue=128}"
+                                    Height="{Binding #ResultImage.Bounds.Height, FallbackValue=128}">
                                     <elements:CheckerRectangle TileDensity="1"/>
                                     <Image
                                         RenderOptions.BitmapInterpolationMode="None"
