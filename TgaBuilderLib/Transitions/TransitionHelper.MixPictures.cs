@@ -15,12 +15,21 @@ namespace TgaBuilderLib.Transitions
 
             Hardness = Math.Clamp(Hardness, 0.0f, 1.0f);
             Pivot = Math.Clamp(Pivot, 0.0f, 1.0f);
+            Offset = Math.Clamp(Offset, 0.0f, 1.0f);
 
             byte[] result = new byte[pixels1.Length];
+
+            // When offset covers the entire texture, return pixels2 directly.
+            if (Offset >= 1.0f)
+            {
+                Array.Copy(pixels2, result, result.Length);
+                return result;
+            }
 
             float lower = Pivot * Hardness;
             float upper = 1.0f - (1.0f - Pivot) * Hardness;
             bool isHardCut = (upper <= lower + 0.00001f);
+            float offset = Offset;
 
             unsafe
             {
@@ -40,7 +49,9 @@ namespace TgaBuilderLib.Transitions
                         {
                             float nx = (float)x / (Width - 1);
 
-                            float weight = ComputeWeight(Mode, Pivot, lower, upper, isHardCut, nx, ny);
+                            float weight = IsInOffsetZone(Mode, nx, ny, offset)
+                                ? 1.0f
+                                : ComputeWeight(Mode, Pivot, lower, upper, isHardCut, nx, ny);
 
                             byte* px1 = row1 + x * TRANSITIONS_BPP;
                             byte* px2 = row2 + x * TRANSITIONS_BPP;
@@ -56,6 +67,23 @@ namespace TgaBuilderLib.Transitions
             }
 
             return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // Returns true when the pixel at (nx, ny) falls inside the pure-T2 offset zone.
+        private static bool IsInOffsetZone(TransitionMode mode, float nx, float ny, float offset)
+        {
+            if (offset <= 0f) return false;
+            return mode switch
+            {
+                TransitionMode.Top             => ny < offset,
+                TransitionMode.Bottom          => ny > 1f - offset,
+                TransitionMode.Left            => nx < offset,
+                TransitionMode.Right           => nx > 1f - offset,
+                TransitionMode.DiagonalTopLeft => nx < offset && ny < offset,
+                TransitionMode.DiagonalTopRight => nx > 1f - offset && ny < offset,
+                _                              => false
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

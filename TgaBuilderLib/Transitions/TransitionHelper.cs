@@ -22,6 +22,7 @@ namespace TgaBuilderLib.Transitions
         public List<TileSegment> TileData { get; set; } = new List<TileSegment>();
         public float Hardness { get; set; } = 0.5f;
         public float Pivot { get; set; } = 0.5f;
+        public float Offset { get; set; } = 0f;
 
 
         public bool ReversePivot { get; set; } = false;
@@ -39,6 +40,7 @@ namespace TgaBuilderLib.Transitions
             TileData.Clear();
             Hardness = 0.5f;
             Pivot = 0.5f;
+            Offset = 0f;
             MarkerRadius = 3; 
             ReversePivot = false;
             SliceCornerTiles = false;

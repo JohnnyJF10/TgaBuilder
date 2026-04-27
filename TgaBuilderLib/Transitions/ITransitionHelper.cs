@@ -10,6 +10,7 @@
         int LastAnalysisWidth { get; }
         int MarkerRadius { get; set; }
         TransitionMode Mode { get; set; }
+        float Offset { get; set; }
         float Pivot { get; set; }
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
