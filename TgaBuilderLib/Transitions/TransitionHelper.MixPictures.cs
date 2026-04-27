@@ -29,7 +29,6 @@ namespace TgaBuilderLib.Transitions
             float lower = Pivot * Hardness;
             float upper = 1.0f - (1.0f - Pivot) * Hardness;
             bool isHardCut = (upper <= lower + 0.00001f);
-            float offset = Offset;
 
             unsafe
             {
@@ -49,7 +48,7 @@ namespace TgaBuilderLib.Transitions
                         {
                             float nx = (float)x / (Width - 1);
 
-                            float weight = IsInOffsetZone(Mode, nx, ny, offset)
+                            float weight = IsInOffsetZone(Mode, nx, ny, Offset)
                                 ? 1.0f
                                 : ComputeWeight(Mode, Pivot, lower, upper, isHardCut, nx, ny);
 
