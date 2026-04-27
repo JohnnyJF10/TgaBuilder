@@ -77,19 +77,6 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="35"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition>
-                    <ColumnDefinition.Style>
-                        <Style TargetType="ColumnDefinition">
-                            <Setter Property="Width" Value="0"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsChecked, ElementName=LabelMapToggle}" Value="True">
-                                    <Setter Property="Width" Value="*"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ColumnDefinition.Style>
-                </ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -225,46 +212,11 @@
                 Command="{Binding MixCommand}"
                 Content="Mix"/>
 
-            <!-- Toggle button for Label Map -->
-            <ToggleButton
-                x:Name="LabelMapToggle"
-                Grid.Column="5"
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                VerticalAlignment="Center"
-                IsChecked="{Binding IsLabelMapExpanded}"
-                Width="20"
-                Height="60"
-                Padding="0">
-                <ToggleButton.Content>
-                    <ui:SymbolIcon Symbol="ChevronLeft24"/>
-                </ToggleButton.Content>
-            </ToggleButton>
-
-            <!-- Label Map (Expandable 4th Image) -->
-            <Border
-                Grid.Column="6"
-                Grid.Row="0"
-                Margin="10"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Visibility="{Binding IsLabelMapExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
-                Background="Transparent">
-                <Image
-                    Margin="0,4,0,0"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
-                    Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform"/>
-            </Border>
         </Grid>
 
         <!-- Row 2: Controls (Sub Table) -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
@@ -274,32 +226,31 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10"/>
-
-            <!-- Pivot Slider -->
+            <!-- Pivot Label + ReversePivot Toggle -->
             <StackPanel
                 Orientation="Horizontal"
-                Grid.Column="1"
-                >
+                Grid.Column="0">
                 <Label
-                Margin="0,5,0,0"
-                VerticalAlignment="Center"
-                Content="Pivot"
-                TextBlock.FontStyle="Italic"/>
+                    Margin="0,5,0,0"
+                    VerticalAlignment="Center"
+                    Content="Pivot"
+                    TextBlock.FontStyle="Italic"/>
                 <ui:ToggleSwitch
-                Margin="5"
-                TextBlock.FontStyle="Italic"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Left"
-                IsChecked="{Binding ReversePivot}"
-                Padding="8,4"
-                Content="Reverse"/>
+                    Margin="5"
+                    TextBlock.FontStyle="Italic"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
+                    IsChecked="{Binding ReversePivot}"
+                    Padding="8,4"
+                    Content="Reverse"/>
             </StackPanel>
 
+            <!-- Pivot Slider -->
             <Slider
                 Grid.Row="1"
-                Grid.Column="1"
+                Grid.Column="0"
                 Margin="5"
+                MinWidth="100"
                 VerticalAlignment="Center"
                 AutoToolTipPlacement="BottomRight"
                 AutoToolTipPrecision="2"
@@ -308,82 +259,126 @@
                 SmallChange="0.01"
                 Value="{Binding PivotValue}"/>
 
-            <!-- Marker Radius Slider -->
-            <Label
-                Margin="0,5,0,0"
-                Grid.Column="2"
-                VerticalAlignment="Center"
-                Content="Marker Radius"
-                HorizontalAlignment="Center"
-                TextBlock.FontStyle="Italic"/>
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="2"
-                Margin="5"
-                VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
-                IsSnapToTickEnabled="True"
-                TickFrequency="1"
-                Maximum="10"
-                Minimum="1"
-                SmallChange="1"
-                Value="{Binding MarkerRadius}"/>
-
-            <!-- Expected Region Count Slider with Toggle -->
-
             <!-- Slice Corner Tiles Toggle -->
             <ui:ToggleSwitch
-                    Grid.Column="3"
-                    VerticalAlignment="Center"
-                    IsChecked="{Binding SliceCornerTiles}"
-                    Margin="3,0,0,0"
-                    Padding="4,2"
-                    TextBlock.FontStyle="Italic"
-                    Content="Slice Corners"/>
+                Grid.Column="1"
+                Grid.RowSpan="2"
+                VerticalAlignment="Center"
+                IsChecked="{Binding SliceCornerTiles}"
+                Margin="3,0,0,0"
+                Padding="4,2"
+                TextBlock.FontStyle="Italic"
+                Content="Slice Corners"/>
 
-            <StackPanel
+            <!-- Expander: advanced controls + Label Map -->
+            <Expander
                 Grid.Row="2"
-                Grid.Column="1"        
-                Grid.ColumnSpan="4"
-                Orientation="Horizontal"
-                >
-                <!-- Row 2: Filter ComboBox -->
-                <Label
-                Margin="10,5,0,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Content="Filter"
-                TextBlock.FontStyle="Italic"/>
-                <ComboBox
-                Margin="5,5,5,5"
-                VerticalAlignment="Center"
-                MinWidth="130"
-                SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
-                    <ComboBoxItem Content="None"/>
-                    <ComboBoxItem Content="Box Blur"/>
-                    <ComboBoxItem Content="Median"/>
-                    <ComboBoxItem Content="Bilateral"/>
-                </ComboBox>
+                Grid.ColumnSpan="2"
+                Header="Options"
+                Margin="5,0,5,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <!-- Row 2: Segmentation Method ComboBox -->
-                <Label
-                Margin="10,5,0,0"
-                VerticalAlignment="Center"
-                Content="Segmentation"
-                TextBlock.FontStyle="Italic"/>
-                <ComboBox
-                Margin="5,5,5,5"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Left"
-                MinWidth="150"
-                SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
-                    <ComboBoxItem Content="Watershed"/>
-                    <ComboBoxItem Content="XY Projection"/>
-                </ComboBox>
-            </StackPanel>
+                    <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10"/>
 
+                    <!-- Marker Radius Slider -->
+                    <Label
+                        Grid.Column="1"
+                        Margin="0,5,0,0"
+                        VerticalAlignment="Center"
+                        Content="Marker Radius"
+                        HorizontalAlignment="Center"
+                        TextBlock.FontStyle="Italic"/>
+                    <Slider
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="5"
+                        MinWidth="80"
+                        VerticalAlignment="Center"
+                        AutoToolTipPlacement="BottomRight"
+                        IsSnapToTickEnabled="True"
+                        TickFrequency="1"
+                        Maximum="10"
+                        Minimum="1"
+                        SmallChange="1"
+                        Value="{Binding MarkerRadius}"/>
 
+                    <!-- Filter + Segmentation -->
+                    <StackPanel
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Orientation="Horizontal">
+                        <Label
+                            Margin="10,5,0,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Content="Filter"
+                            TextBlock.FontStyle="Italic"/>
+                        <ComboBox
+                            Margin="5,5,5,5"
+                            VerticalAlignment="Center"
+                            MinWidth="130"
+                            SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
+                            <ComboBoxItem Content="None"/>
+                            <ComboBoxItem Content="Box Blur"/>
+                            <ComboBoxItem Content="Median"/>
+                            <ComboBoxItem Content="Bilateral"/>
+                        </ComboBox>
+                        <Label
+                            Margin="10,5,0,0"
+                            VerticalAlignment="Center"
+                            Content="Segmentation"
+                            TextBlock.FontStyle="Italic"/>
+                        <ComboBox
+                            Margin="5,5,5,5"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            MinWidth="150"
+                            SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
+                            <ComboBoxItem Content="Watershed"/>
+                            <ComboBoxItem Content="XY Projection"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Label Map -->
+                    <DockPanel
+                        Grid.Column="3"
+                        Grid.RowSpan="3"
+                        Margin="5">
+                        <Label
+                            DockPanel.Dock="Top"
+                            HorizontalAlignment="Center"
+                            Content="Label Map"
+                            TextBlock.FontStyle="Italic"/>
+                        <Border Background="Transparent">
+                            <Viewbox
+                                Stretch="Uniform"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor">
+                                <Grid
+                                    Width="{Binding LabelMapImage.PixelWidth, FallbackValue=128}"
+                                    Height="{Binding LabelMapImage.PixelHeight, FallbackValue=128}">
+                                    <Rectangle Fill="{StaticResource CheckerBrush}"/>
+                                    <Image
+                                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                        Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                        Stretch="Fill"/>
+                                </Grid>
+                            </Viewbox>
+                        </Border>
+                    </DockPanel>
+                </Grid>
+            </Expander>
         </Grid>
 
         <!-- Row 3: OK/Cancel Buttons -->
