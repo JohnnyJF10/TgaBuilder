@@ -19,6 +19,8 @@ namespace TgaBuilderAvaloniaUi.View
         {
             InitializeComponent();
             base.DataContext = viewModel;
+            _collapsedWindowHeight = Height;
+            _collapsedWindowMinHeight = MinHeight;
             InitializeVisualInvalidator(viewModel);
             SubscribeToExpanderState();
         }

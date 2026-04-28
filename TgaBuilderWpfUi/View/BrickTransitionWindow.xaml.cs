@@ -31,6 +31,8 @@ namespace TgaBuilderWpfUi.View
         {
             InitializeComponent();
             base.DataContext = viewModel;
+            _collapsedWindowHeight = Height;
+            _collapsedWindowMinHeight = MinHeight;
         }
 
         protected override void OnClosing(CancelEventArgs e)
