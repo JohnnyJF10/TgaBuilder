@@ -24,6 +24,9 @@ namespace TgaBuilderWpfUi.View
     /// </summary>
     public partial class BrickTransitionWindow : AsyncWindow, ISnackbarOwner
     {
+        private double _collapsedWindowHeight;
+        private double _collapsedWindowMinHeight;
+
         public BrickTransitionWindow(INotifyPropertyChanged viewModel)
         {
             InitializeComponent();
@@ -38,8 +41,31 @@ namespace TgaBuilderWpfUi.View
                 vm.MarkFinishedCommand.Execute(null);
         }
 
+        private void OptionsExpander_Expanded(object sender, RoutedEventArgs e)
+        {
+            _collapsedWindowHeight = ActualHeight;
+            _collapsedWindowMinHeight = MinHeight;
+
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, (Action)(() =>
+            {
+                if (sender is Expander { Content: FrameworkElement content } && content.ActualHeight > 0)
+                {
+                    double extra = content.ActualHeight;
+                    MinHeight = _collapsedWindowMinHeight + extra;
+                    Height = _collapsedWindowHeight + extra;
+                }
+            }));
+        }
+
+        private void OptionsExpander_Collapsed(object sender, RoutedEventArgs e)
+        {
+            Height = _collapsedWindowHeight;
+            MinHeight = _collapsedWindowMinHeight;
+        }
+
         public SnackbarPresenter SnackbarPresenter => MessageSnackbarPresenter;
 
         public SnackbarPresenter MessageSnackbarPresenter { get; private set; }
     }
 }
+

@@ -26,6 +26,66 @@
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
+
+            <!-- Flat, borderless ToggleButton theme used as the expander header button -->
+            <ControlTheme x:Key="FlatToggleButtonTheme" TargetType="ToggleButton">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="5,3"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border
+                            x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}">
+                            <ContentPresenter
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^:pointerover /template/ Border#Bd">
+                    <Setter Property="Background" Value="{DynamicResource ToolbarBackground}"/>
+                </Style>
+            </ControlTheme>
+
+            <!-- Flat, full-width Expander theme: no border, no background -->
+            <ControlTheme x:Key="FlatExpanderTheme" TargetType="Expander">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <StackPanel>
+                            <ToggleButton
+                                x:Name="PART_toggle"
+                                Theme="{StaticResource FlatToggleButtonTheme}"
+                                HorizontalAlignment="Left"
+                                HorizontalContentAlignment="Left"
+                                IsChecked="{TemplateBinding IsExpanded}">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <TextBlock x:Name="ExpandArrow" Text="▶" FontSize="9" VerticalAlignment="Center"/>
+                                    <ContentPresenter
+                                        Content="{TemplateBinding Header}"
+                                        ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                        VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ToggleButton>
+                            <ContentPresenter
+                                x:Name="PART_ContentPresenter"
+                                HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^:not(:expanded) /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+                <Style Selector="^:expanded /template/ TextBlock#ExpandArrow">
+                    <Setter Property="Text" Value="▼"/>
+                </Style>
+            </ControlTheme>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -182,16 +242,13 @@
 
         </Grid>
 
-        <!-- Row 1: Controls -->
-        <Grid Grid.Row="1"
-        VerticalAlignment="Stretch"
-        >
+        <!-- Row 1: Always-visible Controls -->
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -236,122 +293,118 @@
                 IsChecked="{Binding SliceCornerTiles}"
                 Margin="15,-5,0,0"
                 Content="Slice Corners"/>
-
-            <!-- Expander: advanced controls + Label Map -->
-            <Expander
-                Grid.Row="2"
-                Grid.ColumnSpan="4"
-                Background="Transparent"
-                BorderThickness="0"
-                Header="Options"
-                VerticalAlignment="Stretch"
-                Margin="5,0,5,5">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <local:TransitionModeUserControl
-                        Grid.Row="0"
-                        Margin="10,5,5,5"
-                        Grid.RowSpan="2"/>
-
-                    <!-- Marker Radius Slider -->
-                    <TextBlock
-                        Grid.Column="1"
-                        VerticalAlignment="Center"
-                        Text="Marker Radius"
-                        FontStyle="Italic"/>
-                    <Slider
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        VerticalAlignment="Center"
-                        Margin="0,-15,0,0"
-                        ToolTip.Tip="{Binding MarkerRadius}"
-                        IsSnapToTickEnabled="True"
-                        TickFrequency="1"
-                        Maximum="10"
-                        Minimum="1"
-                        SmallChange="1"
-                        Value="{Binding MarkerRadius}"/>
-
-                    <!-- Filter + Segmentation -->
-                    <StackPanel
-                        Orientation="Horizontal"
-                        Margin="0,-5,0,5"
-                        Grid.Column="0"
-                        Grid.Row="2"
-                        Grid.ColumnSpan="3">
-                        <TextBlock
-                            Margin="10,5,0,5"
-                            VerticalAlignment="Center"
-                            Text="Filter"
-                            FontStyle="Italic"/>
-                        <ComboBox
-                            Margin="5,5,15,5"
-                            VerticalAlignment="Center"
-                            MinWidth="90"
-                            SelectedIndex="{Binding SelectedFilterIndex}">
-                            <ComboBoxItem Content="None"/>
-                            <ComboBoxItem Content="Box Blur"/>
-                            <ComboBoxItem Content="Median"/>
-                            <ComboBoxItem Content="Bilateral"/>
-                        </ComboBox>
-                        <TextBlock
-                            Margin="0,5,0,5"
-                            VerticalAlignment="Center"
-                            Text="Segmentation"
-                            FontStyle="Italic"/>
-                        <ComboBox
-                            Margin="5,5,5,5"
-                            VerticalAlignment="Center"
-                            MinWidth="100"
-                            SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
-                            <ComboBoxItem Content="Watershed"/>
-                            <ComboBoxItem Content="XY Projection"/>
-                        </ComboBox>
-                    </StackPanel>
-
-                    <!-- Label Map -->
-                    <DockPanel
-                        Grid.Column="3"
-                        Grid.RowSpan="3"
-                        Margin="5">
-                        <TextBlock
-                            DockPanel.Dock="Top"
-                            HorizontalAlignment="Center"
-                            Text="Label Map"
-                            FontStyle="Italic"
-                            Margin="0,0,0,2"/>
-                        <Border Background="Transparent">
-                            <Viewbox
-                                Stretch="Uniform"
-                                RenderOptions.BitmapInterpolationMode="None">
-                                <Grid
-                                    Width="{Binding #ResultImage.Bounds.Width, FallbackValue=128}"
-                                    Height="{Binding #ResultImage.Bounds.Height, FallbackValue=128}">
-                                    <elements:CheckerRectangle TileDensity="1"/>
-                                    <Image
-                                        RenderOptions.BitmapInterpolationMode="None"
-                                        Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
-                                        Stretch="Fill"/>
-                                </Grid>
-                            </Viewbox>
-                        </Border>
-                    </DockPanel>
-                </Grid>
-            </Expander>
         </Grid>
 
-        <!-- Row 2: Spacer -->
+        <!-- Row 2: Expander – full window width, no border, no background -->
+        <Expander
+            x:Name="OptionsExpander"
+            Grid.Row="2"
+            Theme="{StaticResource FlatExpanderTheme}"
+            Header="Options"
+            Margin="5,0,5,5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <local:TransitionModeUserControl
+                    Grid.Row="0"
+                    Margin="10,5,5,5"
+                    Grid.RowSpan="2"/>
+
+                <!-- Marker Radius Slider -->
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Text="Marker Radius"
+                    FontStyle="Italic"/>
+                <Slider
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Margin="0,-15,0,0"
+                    ToolTip.Tip="{Binding MarkerRadius}"
+                    IsSnapToTickEnabled="True"
+                    TickFrequency="1"
+                    Maximum="10"
+                    Minimum="1"
+                    SmallChange="1"
+                    Value="{Binding MarkerRadius}"/>
+
+                <!-- Filter + Segmentation -->
+                <StackPanel
+                    Orientation="Horizontal"
+                    Margin="0,-5,0,5"
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Grid.ColumnSpan="3">
+                    <TextBlock
+                        Margin="10,5,0,5"
+                        VerticalAlignment="Center"
+                        Text="Filter"
+                        FontStyle="Italic"/>
+                    <ComboBox
+                        Margin="5,5,15,5"
+                        VerticalAlignment="Center"
+                        MinWidth="90"
+                        SelectedIndex="{Binding SelectedFilterIndex}">
+                        <ComboBoxItem Content="None"/>
+                        <ComboBoxItem Content="Box Blur"/>
+                        <ComboBoxItem Content="Median"/>
+                        <ComboBoxItem Content="Bilateral"/>
+                    </ComboBox>
+                    <TextBlock
+                        Margin="0,5,0,5"
+                        VerticalAlignment="Center"
+                        Text="Segmentation"
+                        FontStyle="Italic"/>
+                    <ComboBox
+                        Margin="5,5,5,5"
+                        VerticalAlignment="Center"
+                        MinWidth="100"
+                        SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
+                        <ComboBoxItem Content="Watershed"/>
+                        <ComboBoxItem Content="XY Projection"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Label Map -->
+                <DockPanel
+                    Grid.Column="3"
+                    Grid.RowSpan="3"
+                    Margin="5">
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        HorizontalAlignment="Center"
+                        Text="Label Map"
+                        FontStyle="Italic"
+                        Margin="0,0,0,2"/>
+                    <Border Background="Transparent">
+                        <Viewbox
+                            Stretch="Uniform"
+                            RenderOptions.BitmapInterpolationMode="None">
+                            <Grid
+                                Width="{Binding LabelMapImage.PixelWidth, FallbackValue=128}"
+                                Height="{Binding LabelMapImage.PixelHeight, FallbackValue=128}">
+                                <elements:CheckerRectangle TileDensity="1"/>
+                                <Image
+                                    RenderOptions.BitmapInterpolationMode="None"
+                                    Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                    Stretch="Fill"/>
+                            </Grid>
+                        </Viewbox>
+                    </Border>
+                </DockPanel>
+            </Grid>
+        </Expander>
 
         <!-- Row 3: OK/Cancel Buttons -->
         <Grid Grid.Row="3">

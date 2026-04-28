@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.Services;
@@ -11,14 +12,15 @@ namespace TgaBuilderAvaloniaUi.View
 {
     public partial class BrickTransitionWindow : AsyncWindow
     {
-        private ColumnDefinition? _labelMapColumn;
+        private double _collapsedWindowHeight;
+        private double _collapsedWindowMinHeight;
 
         public BrickTransitionWindow(INotifyPropertyChanged viewModel)
         {
             InitializeComponent();
             base.DataContext = viewModel;
-            SubscribeToLabelMapExpanded(viewModel);
             InitializeVisualInvalidator(viewModel);
+            SubscribeToExpanderState();
         }
 
         [Obsolete("For designer use only")]
@@ -30,7 +32,7 @@ namespace TgaBuilderAvaloniaUi.View
                 ?? throw new InvalidOperationException("BrickTransitionViewModel not found in DI container");
             InitializeComponent();
             base.DataContext = vm;
-            SubscribeToLabelMapExpanded(vm);
+            SubscribeToExpanderState();
         }
 
         private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel)
@@ -39,26 +41,40 @@ namespace TgaBuilderAvaloniaUi.View
                 vm.VisualInvalidator = new VisualInvalidator(ResultImage);
         }
 
-        private void SubscribeToLabelMapExpanded(INotifyPropertyChanged viewModel)
+        private void SubscribeToExpanderState()
         {
-            viewModel.PropertyChanged += (_, e) =>
+            var expander = this.FindControl<Expander>("OptionsExpander");
+            if (expander is null) return;
+
+            expander.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(BrickTransitionViewModel.IsLabelMapExpanded))
-                    UpdateLabelMapColumnWidth();
+                if (e.Property == Expander.IsExpandedProperty)
+                    OnExpanderStateChanged(expander.IsExpanded, expander);
             };
         }
 
-        private void UpdateLabelMapColumnWidth()
+        private void OnExpanderStateChanged(bool isExpanded, Expander expander)
         {
-            if (_labelMapColumn is null)
+            if (isExpanded)
             {
-                var grid = this.FindControl<Grid>("ImageAreaGrid");
-                if (grid is not null && grid.ColumnDefinitions.Count > 6)
-                    _labelMapColumn = grid.ColumnDefinitions[6];
-            }
+                _collapsedWindowHeight = Height;
+                _collapsedWindowMinHeight = MinHeight;
 
-            if (_labelMapColumn is not null && DataContext is BrickTransitionViewModel vm)
-                _labelMapColumn.Width = vm.IsLabelMapExpanded ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (expander.Content is Control content && content.Bounds.Height > 0)
+                    {
+                        double extra = content.Bounds.Height;
+                        MinHeight = _collapsedWindowMinHeight + extra;
+                        Height = _collapsedWindowHeight + extra;
+                    }
+                }, DispatcherPriority.Loaded);
+            }
+            else
+            {
+                Height = _collapsedWindowHeight;
+                MinHeight = _collapsedWindowMinHeight;
+            }
         }
 
         protected override void OnClosing(WindowClosingEventArgs e)

@@ -39,13 +39,76 @@
             <sys:Boolean x:Key="False">False</sys:Boolean>
             <Style TargetType="{x:Type elements:ContextMenuButton}"
                     BasedOn="{StaticResource {x:Type ui:Button}}"/>
+
+            <!-- Flat, borderless Expander style: spans full window width, no border, no background -->
+            <Style x:Key="FlatExpanderStyle" TargetType="{x:Type Expander}">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Expander}">
+                            <StackPanel>
+                                <ToggleButton
+                                    x:Name="HeaderSite"
+                                    Padding="5,3"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Left"
+                                    IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="{x:Type ToggleButton}">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Setter Property="BorderThickness" Value="0"/>
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                        <Border
+                                                            x:Name="Bd"
+                                                            Background="{TemplateBinding Background}"
+                                                            Padding="{TemplateBinding Padding}">
+                                                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ToggleButton.Style>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock x:Name="HeaderArrow" Text="▶  " VerticalAlignment="Center" FontSize="9"/>
+                                        <ContentPresenter ContentSource="Header" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ToggleButton>
+                                <ContentPresenter
+                                    x:Name="ExpandSite"
+                                    Focusable="False"
+                                    HorizontalAlignment="Stretch"
+                                    Visibility="Collapsed"/>
+                            </StackPanel>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsExpanded" Value="True">
+                                    <Setter TargetName="ExpandSite" Property="Visibility" Value="Visible"/>
+                                    <Setter TargetName="HeaderArrow" Property="Text" Value="▼  "/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <!-- Outer Grid: 4 Rows -->
+    <!-- Outer Grid: 5 Rows -->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="5*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
@@ -214,14 +277,13 @@
 
         </Grid>
 
-        <!-- Row 2: Controls (Sub Table) -->
+        <!-- Row 2: Always-visible Controls -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -269,120 +331,123 @@
                 Padding="4,2"
                 TextBlock.FontStyle="Italic"
                 Content="Slice Corners"/>
-
-            <!-- Expander: advanced controls + Label Map -->
-            <Expander
-                Grid.Row="2"
-                Grid.ColumnSpan="2"
-                Header="Options"
-                Margin="5,0,5,5">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10"/>
-
-                    <!-- Marker Radius Slider -->
-                    <Label
-                        Grid.Column="1"
-                        Margin="0,5,0,0"
-                        VerticalAlignment="Center"
-                        Content="Marker Radius"
-                        HorizontalAlignment="Center"
-                        TextBlock.FontStyle="Italic"/>
-                    <Slider
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Margin="5"
-                        MinWidth="80"
-                        VerticalAlignment="Center"
-                        AutoToolTipPlacement="BottomRight"
-                        IsSnapToTickEnabled="True"
-                        TickFrequency="1"
-                        Maximum="10"
-                        Minimum="1"
-                        SmallChange="1"
-                        Value="{Binding MarkerRadius}"/>
-
-                    <!-- Filter + Segmentation -->
-                    <StackPanel
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="3"
-                        Orientation="Horizontal">
-                        <Label
-                            Margin="10,5,0,0"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Content="Filter"
-                            TextBlock.FontStyle="Italic"/>
-                        <ComboBox
-                            Margin="5,5,5,5"
-                            VerticalAlignment="Center"
-                            MinWidth="130"
-                            SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
-                            <ComboBoxItem Content="None"/>
-                            <ComboBoxItem Content="Box Blur"/>
-                            <ComboBoxItem Content="Median"/>
-                            <ComboBoxItem Content="Bilateral"/>
-                        </ComboBox>
-                        <Label
-                            Margin="10,5,0,0"
-                            VerticalAlignment="Center"
-                            Content="Segmentation"
-                            TextBlock.FontStyle="Italic"/>
-                        <ComboBox
-                            Margin="5,5,5,5"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Left"
-                            MinWidth="150"
-                            SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
-                            <ComboBoxItem Content="Watershed"/>
-                            <ComboBoxItem Content="XY Projection"/>
-                        </ComboBox>
-                    </StackPanel>
-
-                    <!-- Label Map -->
-                    <DockPanel
-                        Grid.Column="3"
-                        Grid.RowSpan="3"
-                        Margin="5">
-                        <Label
-                            DockPanel.Dock="Top"
-                            HorizontalAlignment="Center"
-                            Content="Label Map"
-                            TextBlock.FontStyle="Italic"/>
-                        <Border Background="Transparent">
-                            <Viewbox
-                                Stretch="Uniform"
-                                RenderOptions.BitmapScalingMode="NearestNeighbor">
-                                <Grid
-                                    Width="{Binding LabelMapImage.PixelWidth, FallbackValue=128}"
-                                    Height="{Binding LabelMapImage.PixelHeight, FallbackValue=128}">
-                                    <Rectangle Fill="{StaticResource CheckerBrush}"/>
-                                    <Image
-                                        RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                        Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
-                                        Stretch="Fill"/>
-                                </Grid>
-                            </Viewbox>
-                        </Border>
-                    </DockPanel>
-                </Grid>
-            </Expander>
         </Grid>
 
-        <!-- Row 3: OK/Cancel Buttons -->
-        <Grid Grid.Row="3">
+        <!-- Row 3: Expander – full window width, no border, no background -->
+        <Expander
+            x:Name="OptionsExpander"
+            Grid.Row="3"
+            Style="{StaticResource FlatExpanderStyle}"
+            Header="Options"
+            Margin="5,0,5,5"
+            Expanded="OptionsExpander_Expanded"
+            Collapsed="OptionsExpander_Collapsed">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10"/>
+
+                <!-- Marker Radius Slider -->
+                <Label
+                    Grid.Column="1"
+                    Margin="0,5,0,0"
+                    VerticalAlignment="Center"
+                    Content="Marker Radius"
+                    HorizontalAlignment="Center"
+                    TextBlock.FontStyle="Italic"/>
+                <Slider
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="5"
+                    MinWidth="80"
+                    VerticalAlignment="Center"
+                    AutoToolTipPlacement="BottomRight"
+                    IsSnapToTickEnabled="True"
+                    TickFrequency="1"
+                    Maximum="10"
+                    Minimum="1"
+                    SmallChange="1"
+                    Value="{Binding MarkerRadius}"/>
+
+                <!-- Filter + Segmentation -->
+                <StackPanel
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Orientation="Horizontal">
+                    <Label
+                        Margin="10,5,0,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Content="Filter"
+                        TextBlock.FontStyle="Italic"/>
+                    <ComboBox
+                        Margin="5,5,5,5"
+                        VerticalAlignment="Center"
+                        MinWidth="130"
+                        SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
+                        <ComboBoxItem Content="None"/>
+                        <ComboBoxItem Content="Box Blur"/>
+                        <ComboBoxItem Content="Median"/>
+                        <ComboBoxItem Content="Bilateral"/>
+                    </ComboBox>
+                    <Label
+                        Margin="10,5,0,0"
+                        VerticalAlignment="Center"
+                        Content="Segmentation"
+                        TextBlock.FontStyle="Italic"/>
+                    <ComboBox
+                        Margin="5,5,5,5"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        MinWidth="150"
+                        SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
+                        <ComboBoxItem Content="Watershed"/>
+                        <ComboBoxItem Content="XY Projection"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Label Map -->
+                <DockPanel
+                    Grid.Column="3"
+                    Grid.RowSpan="3"
+                    Margin="5">
+                    <Label
+                        DockPanel.Dock="Top"
+                        HorizontalAlignment="Center"
+                        Content="Label Map"
+                        TextBlock.FontStyle="Italic"/>
+                    <Border Background="Transparent">
+                        <Viewbox
+                            Stretch="Uniform"
+                            RenderOptions.BitmapScalingMode="NearestNeighbor">
+                            <Grid
+                                Width="{Binding LabelMapImage.PixelWidth, FallbackValue=128}"
+                                Height="{Binding LabelMapImage.PixelHeight, FallbackValue=128}">
+                                <Rectangle Fill="{StaticResource CheckerBrush}"/>
+                                <Image
+                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                    Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                    Stretch="Fill"/>
+                            </Grid>
+                        </Viewbox>
+                    </Border>
+                </DockPanel>
+            </Grid>
+        </Expander>
+
+        <!-- Row 4: OK/Cancel Buttons -->
+        <Grid Grid.Row="4">
             <ui:Card
                 Margin="-10,0,-10,-10"
                 VerticalAlignment="Stretch"
