@@ -100,32 +100,32 @@ namespace TgaBuilderLib.Transitions
 
             float remaining = 1f - offset;
             if (remaining <= 0f)
-                return (0f, 1f);
+                return (1f, 0f);
 
             switch (mode)
             {
                 case TransitionMode.Top:
-                    if (ny < offset) return (0f, 1f);
+                    if (ny < offset) return (1f, 0f);
                     return ComputeTopologicy(mode, nx, (ny - offset) / remaining);
 
                 case TransitionMode.Bottom:
-                    if (ny > 1f - offset) return (0f, 1f);
+                    if (ny > 1f - offset) return (1f, 0f);
                     return ComputeTopologicy(mode, nx, ny / remaining);
 
                 case TransitionMode.Left:
-                    if (nx < offset) return (0f, 1f);
+                    if (nx < offset) return (1f, 0f);
                     return ComputeTopologicy(mode, (nx - offset) / remaining, ny);
 
                 case TransitionMode.Right:
-                    if (nx > 1f - offset) return (0f, 1f);
+                    if (nx > 1f - offset) return (1f, 0f);
                     return ComputeTopologicy(mode, nx / remaining, ny);
 
                 case TransitionMode.DiagonalTopLeft:
-                    if (ny < offset || nx < offset) return (0f, 1f);
+                    if (ny < offset || nx < offset) return (1f, 0f);
                     return ComputeTopologicy(mode, (nx - offset) / remaining, (ny - offset) / remaining);
 
                 case TransitionMode.DiagonalTopRight:
-                    if (ny < offset || nx > 1f - offset) return (0f, 1f);
+                    if (ny < offset || nx > 1f - offset) return (1f, 0f);
                     return ComputeTopologicy(mode, nx / remaining, (ny - offset) / remaining);
 
                 default:
