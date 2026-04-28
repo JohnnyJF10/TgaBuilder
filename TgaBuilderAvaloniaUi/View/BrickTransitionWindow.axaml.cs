@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using Avalonia.Controls;
-using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.Services;
@@ -34,6 +33,8 @@ namespace TgaBuilderAvaloniaUi.View
                 ?? throw new InvalidOperationException("BrickTransitionViewModel not found in DI container");
             InitializeComponent();
             base.DataContext = vm;
+            _collapsedWindowHeight = Height;
+            _collapsedWindowMinHeight = MinHeight;
             SubscribeToExpanderState();
         }
 
@@ -45,37 +46,43 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void SubscribeToExpanderState()
         {
-            var expander = this.FindControl<Expander>("OptionsExpander");
-            if (expander is null) return;
-
-            expander.PropertyChanged += (_, e) =>
+            // Use the generated field (x:Name="OptionsExpander") directly – always valid after InitializeComponent
+            OptionsExpander.PropertyChanged += (_, e) =>
             {
                 if (e.Property == Expander.IsExpandedProperty)
-                    OnExpanderStateChanged(expander.IsExpanded, expander);
+                    OnExpanderStateChanged(OptionsExpander.IsExpanded);
             };
         }
 
-        private void OnExpanderStateChanged(bool isExpanded, Expander expander)
+        private void OnExpanderStateChanged(bool isExpanded)
         {
             if (isExpanded)
             {
                 _collapsedWindowHeight = Height;
                 _collapsedWindowMinHeight = MinHeight;
 
-                Dispatcher.UIThread.Post(() =>
+                // Use LayoutUpdated to measure the content only after it has been laid out
+                if (OptionsExpander.Content is Control content)
                 {
-                    if (expander.Content is Control content && content.Bounds.Height > 0)
+                    void OnLayoutUpdated(object? sender, EventArgs args)
                     {
+                        content.LayoutUpdated -= OnLayoutUpdated;
                         double extra = content.Bounds.Height;
-                        MinHeight = _collapsedWindowMinHeight + extra;
-                        Height = _collapsedWindowHeight + extra;
+                        if (extra > 0)
+                        {
+                            // Set MinHeight before Height so the resize is not clamped
+                            MinHeight = _collapsedWindowMinHeight + extra;
+                            Height = _collapsedWindowHeight + extra;
+                        }
                     }
-                }, DispatcherPriority.Loaded);
+                    content.LayoutUpdated += OnLayoutUpdated;
+                }
             }
             else
             {
-                Height = _collapsedWindowHeight;
+                // Set MinHeight before Height so the window can actually shrink
                 MinHeight = _collapsedWindowMinHeight;
+                Height = _collapsedWindowHeight;
             }
         }
 

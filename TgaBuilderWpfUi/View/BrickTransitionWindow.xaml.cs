@@ -61,8 +61,9 @@ namespace TgaBuilderWpfUi.View
 
         private void OptionsExpander_Collapsed(object sender, RoutedEventArgs e)
         {
-            Height = _collapsedWindowHeight;
+            // MinHeight must be restored before Height so the window can actually shrink
             MinHeight = _collapsedWindowMinHeight;
+            Height = _collapsedWindowHeight;
         }
 
         public SnackbarPresenter SnackbarPresenter => MessageSnackbarPresenter;

@@ -64,7 +64,7 @@
                                 Theme="{StaticResource FlatToggleButtonTheme}"
                                 HorizontalAlignment="Left"
                                 HorizontalContentAlignment="Left"
-                                IsChecked="{TemplateBinding IsExpanded}">
+                                IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
                                 <StackPanel Orientation="Horizontal" Spacing="5">
                                     <TextBlock x:Name="ExpandArrow" Text="▶" FontSize="9" VerticalAlignment="Center"/>
                                     <ContentPresenter
@@ -218,6 +218,7 @@
 
             <!-- Result Image -->
             <Border
+                x:Name="ResultImageBorder"
                 Grid.Column="4"
                 Grid.Row="0"
                 Margin="10"
@@ -376,10 +377,14 @@
                     </ComboBox>
                 </StackPanel>
 
-                <!-- Label Map -->
+                <!-- Label Map – same size as result image, top right -->
                 <DockPanel
                     Grid.Column="3"
                     Grid.RowSpan="3"
+                    Width="{Binding #ResultImageBorder.Bounds.Width}"
+                    Height="{Binding #ResultImageBorder.Bounds.Height}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
                     Margin="5">
                     <TextBlock
                         DockPanel.Dock="Top"

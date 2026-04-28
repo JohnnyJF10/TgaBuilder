@@ -252,6 +252,7 @@
 
             <!-- Result Image -->
             <Border
+                x:Name="ResultImageBorder"
                 Grid.Column="4"
                 Grid.Row="0"
                 Margin="10"
@@ -417,10 +418,14 @@
                     </ComboBox>
                 </StackPanel>
 
-                <!-- Label Map -->
+                <!-- Label Map – same size as result image, top right -->
                 <DockPanel
                     Grid.Column="3"
                     Grid.RowSpan="3"
+                    Width="{Binding ElementName=ResultImageBorder, Path=ActualWidth}"
+                    Height="{Binding ElementName=ResultImageBorder, Path=ActualHeight}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
                     Margin="5">
                     <Label
                         DockPanel.Dock="Top"
