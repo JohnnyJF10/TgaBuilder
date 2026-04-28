@@ -49,6 +49,7 @@ namespace TgaBuilderLib.Transitions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // Computes directional distances to texture domains for the selected transition mode.
+        // Used as-is by brick transitions. Smooth transitions use ComputeTopologicyForSmooth.
         private (float distToT1, float distToT2) ComputeTopologicy(TransitionMode mode, float nx, float ny)
             => mode switch
             {
@@ -84,5 +85,52 @@ namespace TgaBuilderLib.Transitions
 
                 _ => (0f, 0f)
             };
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // Smooth-transition topology with offset support. When offset > 0:
+        // - Cardinal modes: the strip at the T2 edge is pure T2; the remaining band is
+        //   remapped to [0,1] so the full topology gradient fills it with no hard cut.
+        // - Diagonal modes: an L-shaped T2 zone (two strips at the T2-originating edges);
+        //   the remaining square is remapped to [0,1]×[0,1].
+        private (float distToT1, float distToT2) ComputeTopologicyForSmooth(
+            TransitionMode mode, float nx, float ny, float offset)
+        {
+            if (offset <= 0f)
+                return ComputeTopologicy(mode, nx, ny);
+
+            float remaining = 1f - offset;
+            if (remaining <= 0f)
+                return (0f, 1f);
+
+            switch (mode)
+            {
+                case TransitionMode.Top:
+                    if (ny < offset) return (0f, 1f);
+                    return ComputeTopologicy(mode, nx, (ny - offset) / remaining);
+
+                case TransitionMode.Bottom:
+                    if (ny > 1f - offset) return (0f, 1f);
+                    return ComputeTopologicy(mode, nx, ny / remaining);
+
+                case TransitionMode.Left:
+                    if (nx < offset) return (0f, 1f);
+                    return ComputeTopologicy(mode, (nx - offset) / remaining, ny);
+
+                case TransitionMode.Right:
+                    if (nx > 1f - offset) return (0f, 1f);
+                    return ComputeTopologicy(mode, nx / remaining, ny);
+
+                case TransitionMode.DiagonalTopLeft:
+                    if (ny < offset || nx < offset) return (0f, 1f);
+                    return ComputeTopologicy(mode, (nx - offset) / remaining, (ny - offset) / remaining);
+
+                case TransitionMode.DiagonalTopRight:
+                    if (ny < offset || nx > 1f - offset) return (0f, 1f);
+                    return ComputeTopologicy(mode, nx / remaining, (ny - offset) / remaining);
+
+                default:
+                    return ComputeTopologicy(mode, nx, ny);
+            }
+        }
     }
 }

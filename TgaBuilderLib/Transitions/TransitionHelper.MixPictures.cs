@@ -48,9 +48,7 @@ namespace TgaBuilderLib.Transitions
                         {
                             float nx = (float)x / (Width - 1);
 
-                            float weight = IsInOffsetZone(Mode, nx, ny, Offset)
-                                ? 1.0f
-                                : ComputeWeight(Mode, Pivot, lower, upper, isHardCut, nx, ny);
+                            float weight = ComputeWeightForSmooth(Mode, Pivot, lower, upper, isHardCut, nx, ny, Offset);
 
                             byte* px1 = row1 + x * TRANSITIONS_BPP;
                             byte* px2 = row2 + x * TRANSITIONS_BPP;
@@ -69,28 +67,12 @@ namespace TgaBuilderLib.Transitions
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // Returns true when the pixel at (nx, ny) falls inside the pure-T2 offset zone.
-        private static bool IsInOffsetZone(TransitionMode mode, float nx, float ny, float offset)
+        // Computes the blend weight using smooth-transition topology with offset support.
+        // Uses ComputeTopologicyForSmooth so the full gradient fills the remaining area
+        // with no hard cut at the offset boundary.
+        private float ComputeWeightForSmooth(TransitionMode mode, float pivot, float lower, float upper, bool isHardCut, float nx, float ny, float offset)
         {
-            if (offset <= 0f) return false;
-            return mode switch
-            {
-                TransitionMode.Top             => ny < offset,
-                TransitionMode.Bottom          => ny > 1f - offset,
-                TransitionMode.Left            => nx < offset,
-                TransitionMode.Right           => nx > 1f - offset,
-                TransitionMode.DiagonalTopLeft => nx < offset && ny < offset,
-                TransitionMode.DiagonalTopRight => nx > 1f - offset && ny < offset,
-                _                              => false
-            };
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // Computes the blend weight for one normalized pixel position.
-        private  float ComputeWeight(TransitionMode mode, float pivot, float lower, float upper, bool isHardCut, float nx, float ny)
-        {
-
-            (float distToT1, float distToT2) = ComputeTopologicy(mode, nx, ny);
+            (float distToT1, float distToT2) = ComputeTopologicyForSmooth(mode, nx, ny, offset);
 
             // 1. Compute the base V field (native 0.0 to 1.0 field)
             float v;
