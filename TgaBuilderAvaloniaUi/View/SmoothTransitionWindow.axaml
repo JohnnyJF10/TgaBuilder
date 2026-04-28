@@ -177,6 +177,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -218,6 +219,23 @@
                 Minimum="0"
                 SmallChange="0.01"
                 Value="{Binding PivotValue}" />
+
+            <TextBlock
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                Text="Offset"
+                FontStyle="Italic" />
+
+            <Slider
+                Grid.Row="1"
+                Grid.Column="3"
+                Margin="5"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding OffsetValue}"
+                Maximum="1"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding OffsetValue}" />
         </Grid>
 
         <!-- Bottom OK/Cancel bar -->

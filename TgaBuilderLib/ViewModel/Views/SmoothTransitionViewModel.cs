@@ -24,11 +24,20 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _blendHardnessValue, value);
     }
 
+    private float _offsetValue = 0f;
+
+    public float OffsetValue
+    {
+        get => _offsetValue;
+        set => SetPropertyTriggerRecalculation(ref _offsetValue, value);
+    }
+
     protected override byte[] CreateMixedPixels(bool requiresAnalysis)
         => TransitionHelper.MixPixels(Pixels1, Pixels2);
 
     protected override void ConfigureTransitionHelperCore()
     {
         TransitionHelper.Hardness = _blendHardnessValue;
+        TransitionHelper.Offset = _offsetValue;
     }
 }

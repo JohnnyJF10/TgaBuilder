@@ -210,6 +210,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -253,6 +254,24 @@
                 Minimum="0"
                 SmallChange="0.01"
                 Value="{Binding PivotValue}" />
+
+            <Label
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                Content="Offset"
+                TextBlock.FontStyle="Italic" />
+
+            <Slider
+                Grid.Row="1"
+                Grid.Column="3"
+                Margin="5"
+                VerticalAlignment="Center"
+                AutoToolTipPlacement="BottomRight"
+                AutoToolTipPrecision="2"
+                Maximum="1"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding OffsetValue}" />
         </Grid>
 
         <ui:Card
