@@ -161,13 +161,11 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
             if (!cts.Token.IsCancellationRequested)
             {
-                ResultImage.WritePixels(
-                    new PixelRect(0, 0, ResultImage.PixelWidth, ResultImage.PixelHeight),
-                    resultPixels,
-                    ResultImage.PixelWidth * TRANSITIONS_BPP);
+                var resImage = MediaFactory.CreateBitmapFromRaw(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha, resultPixels, stride: Image1.PixelWidth * TRANSITIONS_BPP);
+
+                ResultImage = MediaFactory.CloneBitmap(resImage);
 
                 OnResultUpdated();
-                VisualInvalidator?.InvalidateVisual();
             }
         }
         catch (TaskCanceledException)
