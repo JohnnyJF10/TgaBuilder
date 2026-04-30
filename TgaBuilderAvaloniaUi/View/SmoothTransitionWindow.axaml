@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
     xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
     x:Class="TgaBuilderAvaloniaUi.View.SmoothTransitionWindow"
     x:DataType="viewmodel:SmoothTransitionViewModel"
     mc:Ignorable="d"
@@ -67,21 +68,33 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <TextBlock VerticalAlignment="Center" Text="Pivot" FontStyle="Italic" Margin="0,0,5,0" />
+                <Path VerticalAlignment="Center" Margin="0,0,3,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource arrow_left}" />
                 <Slider
                     Width="100"
                     VerticalAlignment="Center"
-                    Margin="0,0,10,0"
+                    Margin="0,0,0,0"
                     ToolTip.Tip="{Binding PivotValue}"
+                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)"
                     Maximum="1" Minimum="0" SmallChange="0.01"
                     Value="{Binding PivotValue}" />
-                <TextBlock VerticalAlignment="Center" Text="Hardness" FontStyle="Italic" Margin="0,0,5,0" />
+                <Path VerticalAlignment="Center" Margin="3,0,10,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource arrow_right}" />
+                <Path VerticalAlignment="Center" Margin="0,0,3,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource circle_half_fill}" />
                 <Slider
                     Width="100"
                     VerticalAlignment="Center"
                     ToolTip.Tip="{Binding BlendHardnessValue}"
+                    ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge"
                     Maximum="1" Minimum="0" SmallChange="0.01"
                     Value="{Binding BlendHardnessValue}" />
+                <Path VerticalAlignment="Center" Margin="3,0,0,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource circle_line}" />
             </StackPanel>
 
             <!-- Col 1, Row 0-1: Tab View -->
@@ -92,13 +105,19 @@
                 TabStripPlacement="Top">
                 <TabItem Height="25" Header="Blend">
                     <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <TextBlock VerticalAlignment="Center" Text="Offset" FontStyle="Italic" Margin="0,0,5,0" />
+                        <Path VerticalAlignment="Center" Margin="0,0,3,0"
+                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                              Data="{StaticResource point_scan}" />
                         <Slider
                             Width="120"
                             VerticalAlignment="Center"
                             ToolTip.Tip="{Binding OffsetValue}"
+                            ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)"
                             Maximum="1" Minimum="0" SmallChange="0.01"
                             Value="{Binding OffsetValue}" />
+                        <Path VerticalAlignment="Center" Margin="3,0,0,0"
+                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                              Data="{StaticResource circle}" />
                     </StackPanel>
                 </TabItem>
             </TabControl>
@@ -110,6 +129,7 @@
             Margin="10,5"
             Padding="5"
             HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
             Command="{Binding LoadImage1Command}"
             Content="From Selection" />
         <Button
@@ -117,6 +137,7 @@
             Margin="10,5"
             Padding="5"
             HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
             Command="{Binding LoadImage2Command}"
             Content="From Selection" />
         <Button
@@ -124,6 +145,7 @@
             Margin="10,5"
             Padding="5"
             HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
             Command="{Binding MixCommand}"
             Content="Mix" />
 
@@ -169,6 +191,7 @@
             <Button
                 Margin="0,9,0,0"
                 Command="{Binding SwapImagesCommand}"
+                ap:MouseOverInfoAP.InfoText="Swap Texture 1 and Texture 2"
                 ToolTip.Tip="Swap images">
                 <PathIcon Data="{StaticResource arrow_swap}"
                           Width="16" Height="16" />
@@ -252,6 +275,7 @@
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
                 HorizontalContentAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Cancel and close the dialog"
                 Command="{Binding CancelCommand}"
                 CommandParameter="{Binding $parent[Window]}"
                 Content="Cancel" />
@@ -261,6 +285,7 @@
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
                 HorizontalContentAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Apply the smooth transition and close"
                 Command="{Binding OKCommand}"
                 CommandParameter="{Binding $parent[Window]}"
                 Content="OK" />

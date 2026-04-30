@@ -92,21 +92,28 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <Label VerticalAlignment="Center" Content="Pivot" TextBlock.FontStyle="Italic" Margin="0,0,3,0"/>
+                <Path Data="{StaticResource arrow_left}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0"/>
                 <Slider
                     Width="100"
                     VerticalAlignment="Center"
-                    Margin="0,0,10,0"
+                    Margin="0,0,0,0"
                     AutoToolTipPlacement="BottomRight"
                     AutoToolTipPrecision="2"
+                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)"
                     Maximum="1" Minimum="0" SmallChange="0.01"
                     Value="{Binding PivotValue}"/>
-                <ui:ToggleSwitch
+                <Path Data="{StaticResource arrow_right}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,8,0"/>
+                <elements:ToggleButtonEx
                     VerticalAlignment="Center"
-                    IsChecked="{Binding ReversePivot}"
-                    Padding="8,4"
-                    TextBlock.FontStyle="Italic"
-                    Content="Reverse"/>
+                    ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
+                    IsChecked="{Binding ReversePivot}">
+                    <elements:ToggleButtonEx.Content>
+                        <Path Data="{StaticResource flip_horizontal}" Width="16" Height="16" Stretch="Uniform"
+                              Fill="{DynamicResource ToggleButtonForeground}" />
+                    </elements:ToggleButtonEx.Content>
+                </elements:ToggleButtonEx>
             </StackPanel>
 
             <!-- Col 1, Row 0-1: Tab View -->
@@ -124,20 +131,25 @@
                 <!-- Tab: Analysis -->
                 <TabItem Header="Analysis" Height="25" Width="Auto">
                     <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <Label VerticalAlignment="Center" Content="Marker Radius" TextBlock.FontStyle="Italic" Margin="0,0,3,0"/>
+                        <Path Data="{StaticResource circle_small}" Width="14" Height="14" Stretch="Uniform"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0"/>
                         <Slider
                             Width="100"
                             VerticalAlignment="Center"
-                            Margin="0,0,15,0"
+                            Margin="0,0,0,0"
                             AutoToolTipPlacement="BottomRight"
+                            ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 10 = large)"
                             IsSnapToTickEnabled="True"
                             TickFrequency="1"
                             Maximum="10" Minimum="1" SmallChange="1"
                             Value="{Binding MarkerRadius}"/>
+                        <Path Data="{StaticResource circle}" Width="14" Height="14" Stretch="Uniform"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,15,0"/>
                         <Label VerticalAlignment="Center" Content="Segmentation" TextBlock.FontStyle="Italic" Margin="0,0,3,0"/>
                         <ComboBox
                             VerticalAlignment="Center"
                             MinWidth="130"
+                            ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions"
                             SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
                             <ComboBoxItem Content="Watershed"/>
                             <ComboBoxItem Content="XY Projection"/>
@@ -153,18 +165,22 @@
                             VerticalAlignment="Center"
                             MinWidth="130"
                             Margin="0,0,15,0"
+                            ap:MouseOverInfoAP.InfoText="Filter: post-processing filter applied to the result image"
                             SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
                             <ComboBoxItem Content="None"/>
                             <ComboBoxItem Content="Box Blur"/>
                             <ComboBoxItem Content="Median"/>
                             <ComboBoxItem Content="Bilateral"/>
                         </ComboBox>
-                        <ui:ToggleSwitch
+                        <elements:ToggleButtonEx
                             VerticalAlignment="Center"
-                            IsChecked="{Binding SliceCornerTiles}"
-                            Padding="8,4"
-                            TextBlock.FontStyle="Italic"
-                            Content="Slice Corners"/>
+                            ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
+                            IsChecked="{Binding SliceCornerTiles}">
+                            <elements:ToggleButtonEx.Content>
+                                <Path Data="{StaticResource cut}" Width="16" Height="16" Stretch="Uniform"
+                                      Fill="{DynamicResource ToggleButtonForeground}" />
+                            </elements:ToggleButtonEx.Content>
+                        </elements:ToggleButtonEx>
                     </StackPanel>
                 </TabItem>
             </TabControl>
@@ -198,6 +214,7 @@
                 Margin="10,5"
                 Padding="5"
                 HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Bricks Texture from the current selection"
                 Command="{Binding LoadImage1Command}"
                 Content="From Selection"/>
             <Button
@@ -206,6 +223,7 @@
                 Margin="10,5"
                 Padding="5"
                 HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Background Texture from the current selection"
                 Command="{Binding LoadImage2Command}"
                 Content="From Selection"/>
             <Button
@@ -214,6 +232,7 @@
                 Margin="10,5"
                 Padding="5"
                 HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Generate the brick transition result image"
                 Command="{Binding MixCommand}"
                 Content="Mix"/>
         </Grid>
@@ -279,6 +298,7 @@
                 <ui:SymbolIcon Symbol="Add24"/>
                 <ui:Button
                     Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
+                    ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture"
                     Command="{Binding SwapImagesCommand}"/>
             </StackPanel>
 
@@ -339,6 +359,7 @@
                 x:Name="LabelMapToggle"
                 Grid.Column="5"
                 VerticalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
                 IsChecked="{Binding IsLabelMapExpanded}"
                 Width="20"
                 Height="60"
@@ -378,6 +399,7 @@
                     Height="30"
                     Margin="0,0,15,0"
                     HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Cancel and close the dialog"
                     Command="{Binding CancelCommand}"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                     Content="Cancel"/>
@@ -386,6 +408,7 @@
                     Height="30"
                     Margin="0,0,15,0"
                     HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Apply the brick transition and close"
                     Command="{Binding OKCommand}"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                     Content="OK"/>

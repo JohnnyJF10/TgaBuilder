@@ -98,23 +98,31 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <Label VerticalAlignment="Center" Content="Pivot" TextBlock.FontStyle="Italic" Margin="0,0,3,0" />
+                <Path Data="{StaticResource arrow_left}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0" />
                 <Slider
                     Width="100"
                     VerticalAlignment="Center"
-                    Margin="0,0,10,0"
+                    Margin="0,0,0,0"
                     AutoToolTipPlacement="BottomRight"
                     AutoToolTipPrecision="2"
+                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)"
                     Maximum="1" Minimum="0" SmallChange="0.01"
                     Value="{Binding PivotValue}" />
-                <Label VerticalAlignment="Center" Content="Hardness" TextBlock.FontStyle="Italic" Margin="0,0,3,0" />
+                <Path Data="{StaticResource arrow_right}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,10,0" />
+                <Path Data="{StaticResource circle_half_fill}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0" />
                 <Slider
                     Width="100"
                     VerticalAlignment="Center"
                     AutoToolTipPlacement="BottomRight"
                     AutoToolTipPrecision="2"
+                    ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge"
                     Maximum="1" Minimum="0" SmallChange="0.01"
                     Value="{Binding BlendHardnessValue}" />
+                <Path Data="{StaticResource circle_line}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,0,0" />
             </StackPanel>
 
             <!-- Col 1, Row 0-1: Tab View -->
@@ -130,14 +138,18 @@
                 </TabControl.Resources>
                 <TabItem Header="Blend" Height="25" Width="Auto">
                     <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <Label VerticalAlignment="Center" Content="Offset" TextBlock.FontStyle="Italic" Margin="0,0,3,0" />
+                        <Path Data="{StaticResource point_scan}" Width="14" Height="14" Stretch="Uniform"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0" />
                         <Slider
                             Width="120"
                             VerticalAlignment="Center"
                             AutoToolTipPlacement="BottomRight"
                             AutoToolTipPrecision="2"
+                            ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)"
                             Maximum="1" Minimum="0" SmallChange="0.01"
                             Value="{Binding OffsetValue}" />
+                        <Path Data="{StaticResource circle}" Width="14" Height="14" Stretch="Uniform"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,0,0" />
                     </StackPanel>
                 </TabItem>
             </TabControl>
@@ -151,6 +163,7 @@
             Margin="10,5"
             Padding="5"
             HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
             Command="{Binding LoadImage1Command}"
             CommandParameter="1"
             Content="From Selection" />
@@ -161,6 +174,7 @@
             Margin="10,5"
             Padding="5"
             HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
             Command="{Binding LoadImage2Command}"
             CommandParameter="2"
             Content="From Selection" />
@@ -171,6 +185,7 @@
             Margin="10,5"
             Padding="5"
             HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
             Command="{Binding MixCommand}"
             CommandParameter="2"
             Content="Mix" />
@@ -215,6 +230,7 @@
             <ui:SymbolIcon Symbol="Add24"/>
             <ui:Button
                 Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
+                ap:MouseOverInfoAP.InfoText="Swap Texture 1 and Texture 2"
                 Command="{Binding SwapImagesCommand}" />
         </StackPanel>
 
@@ -288,6 +304,7 @@
                 Height="30"
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
+                ap:MouseOverInfoAP.InfoText="Cancel and close the dialog"
                 Command="{Binding CancelCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                 Content="Cancel" />
@@ -296,6 +313,7 @@
                 Height="30"
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
+                ap:MouseOverInfoAP.InfoText="Apply the smooth transition and close"
                 Command="{Binding OKCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                 Content="OK" />
