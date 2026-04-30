@@ -68,33 +68,36 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <Path VerticalAlignment="Center" Margin="0,0,3,0"
-                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
-                      Data="{StaticResource arrow_left}" />
-                <Slider
-                    Width="100"
-                    VerticalAlignment="Center"
-                    Margin="0,0,0,0"
-                    ToolTip.Tip="{Binding PivotValue}"
-                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)"
-                    Maximum="1" Minimum="0" SmallChange="0.01"
-                    Value="{Binding PivotValue}" />
-                <Path VerticalAlignment="Center" Margin="3,0,10,0"
-                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
-                      Data="{StaticResource arrow_right}" />
-                <Path VerticalAlignment="Center" Margin="0,0,3,0"
-                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
-                      Data="{StaticResource circle_half_fill}" />
-                <Slider
-                    Width="100"
-                    VerticalAlignment="Center"
-                    ToolTip.Tip="{Binding BlendHardnessValue}"
-                    ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge"
-                    Maximum="1" Minimum="0" SmallChange="0.01"
-                    Value="{Binding BlendHardnessValue}" />
-                <Path VerticalAlignment="Center" Margin="3,0,0,0"
-                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
-                      Data="{StaticResource circle_line}" />
+                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0">
+                    <Path VerticalAlignment="Center"
+                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource arrow_left}" />
+                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource arrow_right}" />
+                    <Slider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{Binding PivotValue}"
+                        ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)"
+                        Maximum="1" Minimum="0" SmallChange="0.01"
+                        Value="{Binding PivotValue}" />
+                </DockPanel>
+                <DockPanel Width="130" VerticalAlignment="Center">
+                    <Path VerticalAlignment="Center"
+                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource circle_half_fill}" />
+                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource circle_line}" />
+                    <Slider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{Binding BlendHardnessValue}"
+                        ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge"
+                        Maximum="1" Minimum="0" SmallChange="0.01"
+                        Value="{Binding BlendHardnessValue}" />
+                </DockPanel>
             </StackPanel>
 
             <!-- Col 1, Row 0-1: Tab View -->
@@ -104,21 +107,21 @@
                 BorderBrush="Transparent"
                 TabStripPlacement="Top">
                 <TabItem Height="25" Header="Blend">
-                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <Path VerticalAlignment="Center" Margin="0,0,3,0"
-                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                    <DockPanel Margin="5,0,5,0" VerticalAlignment="Center">
+                        <Path VerticalAlignment="Center"
+                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
                               Data="{StaticResource point_scan}" />
+                        <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                              Data="{StaticResource circle}" />
                         <Slider
-                            Width="120"
+                            Margin="5,0"
                             VerticalAlignment="Center"
                             ToolTip.Tip="{Binding OffsetValue}"
                             ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)"
                             Maximum="1" Minimum="0" SmallChange="0.01"
                             Value="{Binding OffsetValue}" />
-                        <Path VerticalAlignment="Center" Margin="3,0,0,0"
-                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
-                              Data="{StaticResource circle}" />
-                    </StackPanel>
+                    </DockPanel>
                 </TabItem>
             </TabControl>
         </Grid>

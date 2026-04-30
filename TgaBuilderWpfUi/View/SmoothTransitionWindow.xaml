@@ -98,31 +98,38 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <Path Data="{StaticResource arrow_left}" Width="14" Height="14" Stretch="Uniform"
-                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0" />
-                <Slider
-                    Width="100"
-                    VerticalAlignment="Center"
-                    Margin="0,0,0,0"
-                    AutoToolTipPlacement="BottomRight"
-                    AutoToolTipPrecision="2"
-                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)"
-                    Maximum="1" Minimum="0" SmallChange="0.01"
-                    Value="{Binding PivotValue}" />
-                <Path Data="{StaticResource arrow_right}" Width="14" Height="14" Stretch="Uniform"
-                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,10,0" />
-                <Path Data="{StaticResource circle_half_fill}" Width="14" Height="14" Stretch="Uniform"
-                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0" />
-                <Slider
-                    Width="100"
-                    VerticalAlignment="Center"
-                    AutoToolTipPlacement="BottomRight"
-                    AutoToolTipPrecision="2"
-                    ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge"
-                    Maximum="1" Minimum="0" SmallChange="0.01"
-                    Value="{Binding BlendHardnessValue}" />
-                <Path Data="{StaticResource circle_line}" Width="14" Height="14" Stretch="Uniform"
-                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,0,0" />
+                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0">
+                    <Path DockPanel.Dock="Left" VerticalAlignment="Center"
+                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource arrow_left}" />
+                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource arrow_right}" />
+                    <Slider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        AutoToolTipPlacement="BottomRight"
+                        AutoToolTipPrecision="2"
+                        ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)"
+                        Maximum="1" Minimum="0" SmallChange="0.01"
+                        Value="{Binding PivotValue}" />
+                </DockPanel>
+                <DockPanel Width="130" VerticalAlignment="Center">
+                    <Path DockPanel.Dock="Left" VerticalAlignment="Center"
+                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource circle_half_fill}" />
+                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource circle_line}" />
+                    <Slider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        AutoToolTipPlacement="BottomRight"
+                        AutoToolTipPrecision="2"
+                        ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge"
+                        Maximum="1" Minimum="0" SmallChange="0.01"
+                        Value="{Binding BlendHardnessValue}" />
+                </DockPanel>
             </StackPanel>
 
             <!-- Col 1, Row 0-1: Tab View -->
@@ -137,20 +144,22 @@
                     </Style>
                 </TabControl.Resources>
                 <TabItem Header="Blend" Height="25" Width="Auto">
-                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <Path Data="{StaticResource point_scan}" Width="14" Height="14" Stretch="Uniform"
-                              Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0" />
+                    <DockPanel Margin="5,0,5,0" VerticalAlignment="Center">
+                        <Path DockPanel.Dock="Left" VerticalAlignment="Center"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                              Data="{StaticResource point_scan}" />
+                        <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                              Data="{StaticResource circle}" />
                         <Slider
-                            Width="120"
+                            Margin="5,0"
                             VerticalAlignment="Center"
                             AutoToolTipPlacement="BottomRight"
                             AutoToolTipPrecision="2"
                             ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)"
                             Maximum="1" Minimum="0" SmallChange="0.01"
                             Value="{Binding OffsetValue}" />
-                        <Path Data="{StaticResource circle}" Width="14" Height="14" Stretch="Uniform"
-                              Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,0,0" />
-                    </StackPanel>
+                    </DockPanel>
                 </TabItem>
             </TabControl>
         </Grid>

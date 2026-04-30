@@ -62,20 +62,21 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <Path VerticalAlignment="Center" Margin="0,0,3,0"
-                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
-                      Data="{StaticResource arrow_left}" />
-                <Slider
-                    Width="100"
-                    VerticalAlignment="Center"
-                    Margin="0,0,0,0"
-                    ToolTip.Tip="{Binding PivotValue}"
-                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)"
-                    Maximum="1" Minimum="0" SmallChange="0.01"
-                    Value="{Binding PivotValue}" />
-                <Path VerticalAlignment="Center" Margin="3,0,8,0"
-                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
-                      Data="{StaticResource arrow_right}" />
+                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0">
+                    <Path VerticalAlignment="Center"
+                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource arrow_left}" />
+                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource arrow_right}" />
+                    <Slider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{Binding PivotValue}"
+                        ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)"
+                        Maximum="1" Minimum="0" SmallChange="0.01"
+                        Value="{Binding PivotValue}" />
+                </DockPanel>
                 <elements:IconToggleButton
                     Classes="outlined"
                     VerticalAlignment="Center"
@@ -94,22 +95,23 @@
                 <!-- Tab: Analysis -->
                 <TabItem Height="25" Header="Analysis">
                     <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <Path VerticalAlignment="Center" Margin="0,0,3,0"
-                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
-                              Data="{StaticResource circle_small}" />
-                        <Slider
-                            Width="100"
-                            VerticalAlignment="Center"
-                            Margin="0,0,0,0"
-                            ToolTip.Tip="{Binding MarkerRadius}"
-                            ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 10 = large)"
-                            IsSnapToTickEnabled="True"
-                            TickFrequency="1"
-                            Maximum="10" Minimum="1" SmallChange="1"
-                            Value="{Binding MarkerRadius}" />
-                        <Path VerticalAlignment="Center" Margin="3,0,15,0"
-                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
-                              Data="{StaticResource circle}" />
+                        <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,15,0">
+                            <Path VerticalAlignment="Center"
+                                  Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                                  Data="{StaticResource circle_small}" />
+                            <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                                  Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                                  Data="{StaticResource circle}" />
+                            <Slider
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                ToolTip.Tip="{Binding MarkerRadius}"
+                                ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 10 = large)"
+                                IsSnapToTickEnabled="True"
+                                TickFrequency="1"
+                                Maximum="10" Minimum="1" SmallChange="1"
+                                Value="{Binding MarkerRadius}" />
+                        </DockPanel>
                         <TextBlock VerticalAlignment="Center" Text="Segmentation" FontStyle="Italic" Margin="0,0,5,0" />
                         <ComboBox
                             VerticalAlignment="Center"
