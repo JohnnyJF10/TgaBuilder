@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
     xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
     x:Class="TgaBuilderAvaloniaUi.View.BrickTransitionWindow"
     x:DataType="viewmodel:BrickTransitionViewModel"
     mc:Ignorable="d"
@@ -14,16 +15,17 @@
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Brick Transition Helper"
-    Width="750"
-    Height="450"
-    MinWidth="750"
-    MinHeight="400"
+    Width="800"
+    Height="520"
+    MinWidth="760"
+    MinHeight="460"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+                <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
@@ -32,14 +34,122 @@
     <!-- Outer Grid: 4 Rows -->
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="5*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
 
-        <!-- Row 0: Image Area -->
-        <Grid Grid.Row="0" x:Name="ImageAreaGrid">
+        <!-- Row 0: Settings / Options -->
+        <Grid Grid.Row="0" Margin="5,5,5,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Col 0, Row 0: Transition Mode (always visible) -->
+            <local:TransitionModeUserControl
+                Grid.Column="0" Grid.Row="0"
+                Margin="5,5,10,5" />
+
+            <!-- Col 0, Row 1: Always-visible sliders -->
+            <StackPanel
+                Grid.Column="0" Grid.Row="1"
+                Orientation="Horizontal"
+                VerticalAlignment="Center"
+                Margin="5,0,10,5">
+                <Path VerticalAlignment="Center" Margin="0,0,3,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource arrow_left}" />
+                <Slider
+                    Width="100"
+                    VerticalAlignment="Center"
+                    Margin="0,0,0,0"
+                    ToolTip.Tip="{Binding PivotValue}"
+                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)"
+                    Maximum="1" Minimum="0" SmallChange="0.01"
+                    Value="{Binding PivotValue}" />
+                <Path VerticalAlignment="Center" Margin="3,0,8,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource arrow_right}" />
+                <elements:IconToggleButton
+                    Classes="outlined"
+                    VerticalAlignment="Center"
+                    ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
+                    Icon="{StaticResource flip_horizontal}"
+                    IsChecked="{Binding ReversePivot}" />
+            </StackPanel>
+
+            <!-- Col 1, Row 0-1: Tab View -->
+            <TabControl
+                Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                Margin="0,5,5,5"
+                BorderBrush="Transparent"
+                TabStripPlacement="Top">
+
+                <!-- Tab: Analysis -->
+                <TabItem Height="25" Header="Analysis">
+                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
+                        <Path VerticalAlignment="Center" Margin="0,0,3,0"
+                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                              Data="{StaticResource circle_small}" />
+                        <Slider
+                            Width="100"
+                            VerticalAlignment="Center"
+                            Margin="0,0,0,0"
+                            ToolTip.Tip="{Binding MarkerRadius}"
+                            ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 10 = large)"
+                            IsSnapToTickEnabled="True"
+                            TickFrequency="1"
+                            Maximum="10" Minimum="1" SmallChange="1"
+                            Value="{Binding MarkerRadius}" />
+                        <Path VerticalAlignment="Center" Margin="3,0,15,0"
+                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                              Data="{StaticResource circle}" />
+                        <TextBlock VerticalAlignment="Center" Text="Segmentation" FontStyle="Italic" Margin="0,0,5,0" />
+                        <ComboBox
+                            VerticalAlignment="Center"
+                            MinWidth="110"
+                            ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions"
+                            SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
+                            <ComboBoxItem Content="Watershed"/>
+                            <ComboBoxItem Content="XY Projection"/>
+                        </ComboBox>
+                    </StackPanel>
+                </TabItem>
+
+                <!-- Tab: Options -->
+                <TabItem Height="25" Header="Options">
+                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
+                        <TextBlock VerticalAlignment="Center" Text="Filter" FontStyle="Italic" Margin="0,0,5,0" />
+                        <ComboBox
+                            VerticalAlignment="Center"
+                            MinWidth="90"
+                            Margin="0,0,15,0"
+                            ap:MouseOverInfoAP.InfoText="Filter: post-processing filter applied to the result image"
+                            SelectedIndex="{Binding SelectedFilterIndex}">
+                            <ComboBoxItem Content="None"/>
+                            <ComboBoxItem Content="Box Blur"/>
+                            <ComboBoxItem Content="Median"/>
+                            <ComboBoxItem Content="Bilateral"/>
+                        </ComboBox>
+                        <elements:IconToggleButton
+                            Classes="outlined"
+                            VerticalAlignment="Center"
+                            ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
+                            Icon="{StaticResource cut}"
+                            IsChecked="{Binding SliceCornerTiles}" />
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- Row 1: From Selection / Mix buttons (aligned with image columns) -->
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="35"/>
@@ -49,15 +159,47 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="0"/>
             </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            <Button
+                Grid.Column="0"
+                Margin="10,5"
+                Padding="5"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Bricks Texture from the current selection"
+                Command="{Binding LoadImage1Command}"
+                Content="From Selection"/>
+            <Button
+                Grid.Column="2"
+                Margin="10,5"
+                Padding="5"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Background Texture from the current selection"
+                Command="{Binding LoadImage2Command}"
+                Content="From Selection"/>
+            <Button
+                Grid.Column="4"
+                Margin="10,5"
+                Padding="5"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Generate the brick transition result image"
+                Command="{Binding MixCommand}"
+                Content="Mix"/>
+        </Grid>
+
+        <!-- Row 2: Image Area -->
+        <Grid Grid.Row="2" x:Name="ImageAreaGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="35"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="35"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="0"/>
+            </Grid.ColumnDefinitions>
 
             <!-- Image 1 (Bricks) -->
             <Border
                 Grid.Column="0"
-                Grid.Row="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Background="Transparent">
@@ -82,28 +224,20 @@
                         IsVisible="{Binding InitTextVisible}"
                         FontSize="24"
                         IsHitTestVisible="False" />
-                    </Grid>
-                </Border>
-                <Button
-                    Grid.Column="0"
-                    Grid.Row="1"
-                    Margin="10"
-                    Padding="5"
-                    HorizontalAlignment="Center"
-                    Command="{Binding LoadImage1Command}"
-                    Content="From Selection"/>
+                </Grid>
+            </Border>
 
             <!-- + symbol and swap -->
             <StackPanel
                 VerticalAlignment="Center"
                 Grid.Column="1"
-                Grid.Row="0"
-                Margin="0,38,0,0">
+                Margin="0,0,0,0">
                 <PathIcon Data="{StaticResource add}"
                           Width="16" Height="16" />
                 <Button
                     Margin="0,9,0,0"
                     Command="{Binding SwapImagesCommand}"
+                    ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture"
                     ToolTip.Tip="Swap images">
                     <PathIcon Data="{StaticResource arrow_swap}"
                               Width="16" Height="16" />
@@ -113,7 +247,6 @@
             <!-- Image 2 (Background) -->
             <Border
                 Grid.Column="2"
-                Grid.Row="0"
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -141,19 +274,10 @@
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
-            <Button
-                Grid.Column="2"
-                Grid.Row="1"
-                Margin="10"
-                Padding="5"
-                HorizontalAlignment="Center"
-                Command="{Binding LoadImage2Command}"
-                Content="From Selection"/>
 
             <!-- Arrow → symbol -->
             <PathIcon
                 Grid.Column="3"
-                Grid.Row="0"
                 VerticalAlignment="Center"
                 Data="{StaticResource arrow_forward}"
                 Width="16" Height="16" />
@@ -161,7 +285,6 @@
             <!-- Result Image -->
             <Border
                 Grid.Column="4"
-                Grid.Row="0"
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -173,22 +296,13 @@
                     Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform"/>
             </Border>
-            <Button
-                Grid.Column="4"
-                Grid.Row="1"
-                Margin="10"
-                Padding="5"
-                HorizontalAlignment="Center"
-                Command="{Binding MixCommand}"
-                Content="Mix"/>
 
             <!-- Toggle button for Label Map -->
             <ToggleButton
                 x:Name="LabelMapToggle"
                 Grid.Column="5"
-                Grid.Row="0"
-                Grid.RowSpan="2"
                 VerticalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
                 IsChecked="{Binding IsLabelMapExpanded}"
                 Width="20"
                 Height="60"
@@ -200,7 +314,6 @@
             <!-- Label Map (Expandable 4th Image) -->
             <Border
                 Grid.Column="6"
-                Grid.Row="0"
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -213,135 +326,6 @@
                     Stretch="Uniform"/>
             </Border>
         </Grid>
-
-        <!-- Row 1: Controls -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <local:TransitionModeUserControl 
-                Grid.Row="0" 
-                Margin="10,5,5,5"
-                Grid.RowSpan="2"
-                />
-
-            <!-- Pivot Slider -->
-            <Slider
-                Grid.Row="1"
-                Grid.Column="1"
-                ZIndex="99"
-                Margin="0,-15,5,0"
-                VerticalAlignment="Center"
-                ToolTip.Tip="{Binding PivotValue}"
-                Maximum="1"
-                Minimum="0"
-                SmallChange="0.01"
-                Value="{Binding PivotValue}"/>
-
-            <StackPanel
-                ZIndex="100"
-                Orientation="Horizontal"
-                Grid.Column="1">
-                <TextBlock
-                    Margin="0,0,5,0"
-                    VerticalAlignment="Center"
-                    Text="Pivot"
-                    FontStyle="Italic"/>
-                <CheckBox
-                    VerticalAlignment="Center"
-                    ZIndex="100"
-                    HorizontalAlignment="Left"
-                    IsChecked="{Binding ReversePivot}"
-                    Content="Rev"/>
-            </StackPanel>
-
-            <!-- Marker Radius Slider -->
-            <TextBlock
-                Grid.Column="2"
-                VerticalAlignment="Center"
-                Text="Marker Radius"
-                FontStyle="Italic"/>
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="2"
-                VerticalAlignment="Center"
-                Margin="0,-15,0,0"
-                ToolTip.Tip="{Binding MarkerRadius}"
-                IsSnapToTickEnabled="True"
-                TickFrequency="1"
-                Maximum="10"
-                Minimum="1"
-                SmallChange="1"
-                Value="{Binding MarkerRadius}"/>
-
-            <!-- Slice Corner Tiles Toggle -->
-            <ToggleSwitch
-                Grid.Column="3"
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                Grid.ColumnSpan="2"
-                VerticalAlignment="Center"
-                IsChecked="{Binding SliceCornerTiles}"
-                Margin="15,-5,0,0"
-                Content="Slice Corners"/>
-
-            <!-- Row 2: Filter ComboBox -->
-            <StackPanel 
-                Orientation="Horizontal" 
-                Margin="0,-5,0,5"
-                Grid.Column="1"
-                Grid.Row="2"
-                Grid.ColumnSpan="4"
-                >
-                <!-- Filter -->
-                <TextBlock
-                    Margin="10,5,0,5"
-                    VerticalAlignment="Center"
-                    Text="Filter"
-                    FontStyle="Italic"/>
-                
-                <ComboBox
-                    Margin="5,5,15,5"
-                    VerticalAlignment="Center"
-                    MinWidth="90"
-                    SelectedIndex="{Binding SelectedFilterIndex}">
-                    <ComboBoxItem Content="None"/>
-                    <ComboBoxItem Content="Box Blur"/>
-                    <ComboBoxItem Content="Median"/>
-                    <ComboBoxItem Content="Bilateral"/>
-                </ComboBox>
-                
-                <!-- Segmentation -->
-                <TextBlock
-                    Margin="0,5,0,5"
-                    VerticalAlignment="Center"
-                    Text="Segmentation"
-                    FontStyle="Italic"/>
-                
-                <ComboBox
-                    Margin="5,5,5,5"
-                    VerticalAlignment="Center"
-                    MinWidth="100"
-                    SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
-                    <ComboBoxItem Content="Watershed"/>
-                    <ComboBoxItem Content="XY Projection"/>
-                </ComboBox>
-            </StackPanel>
-        </Grid>
-
-        <!-- Row 2: Spacer -->
 
         <!-- Row 3: OK/Cancel Buttons -->
         <Grid Grid.Row="3">
@@ -361,6 +345,7 @@
                     Margin="0,0,15,0"
                     HorizontalAlignment="Right"
                     HorizontalContentAlignment="Center"
+                    ap:MouseOverInfoAP.InfoText="Cancel and close the dialog"
                     Command="{Binding CancelCommand}"
                     CommandParameter="{Binding $parent[Window]}"
                     Content="Cancel"/>
@@ -370,6 +355,7 @@
                     Margin="0,0,15,0"
                     HorizontalAlignment="Right"
                     HorizontalContentAlignment="Center"
+                    ap:MouseOverInfoAP.InfoText="Apply the brick transition and close"
                     Command="{Binding OKCommand}"
                     CommandParameter="{Binding $parent[Window]}"
                     Content="OK"/>

@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
     xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
     x:Class="TgaBuilderAvaloniaUi.View.SmoothTransitionWindow"
     x:DataType="viewmodel:SmoothTransitionViewModel"
     mc:Ignorable="d"
@@ -14,16 +15,17 @@
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Smooth Transition Helper"
-    Width="600"
-    Height="400"
-    MinWidth="560"
-    MinHeight="350"
+    Width="620"
+    Height="460"
+    MinWidth="580"
+    MinHeight="410"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+                <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
@@ -38,15 +40,119 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="5*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="60" />
         </Grid.RowDefinitions>
 
+        <!-- Row 0: Settings / Options -->
+        <Grid Grid.Row="0" Grid.ColumnSpan="5" Margin="5,5,5,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Col 0, Row 0: Transition Mode (always visible) -->
+            <local:TransitionModeUserControl
+                Grid.Column="0" Grid.Row="0"
+                Margin="5,5,10,5" />
+
+            <!-- Col 0, Row 1: Always-visible sliders -->
+            <StackPanel
+                Grid.Column="0" Grid.Row="1"
+                Orientation="Horizontal"
+                VerticalAlignment="Center"
+                Margin="5,0,10,5">
+                <Path VerticalAlignment="Center" Margin="0,0,3,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource arrow_left}" />
+                <Slider
+                    Width="100"
+                    VerticalAlignment="Center"
+                    Margin="0,0,0,0"
+                    ToolTip.Tip="{Binding PivotValue}"
+                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)"
+                    Maximum="1" Minimum="0" SmallChange="0.01"
+                    Value="{Binding PivotValue}" />
+                <Path VerticalAlignment="Center" Margin="3,0,10,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource arrow_right}" />
+                <Path VerticalAlignment="Center" Margin="0,0,3,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource circle_half_fill}" />
+                <Slider
+                    Width="100"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="{Binding BlendHardnessValue}"
+                    ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge"
+                    Maximum="1" Minimum="0" SmallChange="0.01"
+                    Value="{Binding BlendHardnessValue}" />
+                <Path VerticalAlignment="Center" Margin="3,0,0,0"
+                      Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                      Data="{StaticResource circle_line}" />
+            </StackPanel>
+
+            <!-- Col 1, Row 0-1: Tab View -->
+            <TabControl
+                Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                Margin="0,5,5,5"
+                BorderBrush="Transparent"
+                TabStripPlacement="Top">
+                <TabItem Height="25" Header="Blend">
+                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
+                        <Path VerticalAlignment="Center" Margin="0,0,3,0"
+                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                              Data="{StaticResource point_scan}" />
+                        <Slider
+                            Width="120"
+                            VerticalAlignment="Center"
+                            ToolTip.Tip="{Binding OffsetValue}"
+                            ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)"
+                            Maximum="1" Minimum="0" SmallChange="0.01"
+                            Value="{Binding OffsetValue}" />
+                        <Path VerticalAlignment="Center" Margin="3,0,0,0"
+                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14"
+                              Data="{StaticResource circle}" />
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- Row 1: From Selection / Mix buttons -->
+        <Button
+            Grid.Row="1" Grid.Column="0"
+            Margin="10,5"
+            Padding="5"
+            HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
+            Command="{Binding LoadImage1Command}"
+            Content="From Selection" />
+        <Button
+            Grid.Row="1" Grid.Column="2"
+            Margin="10,5"
+            Padding="5"
+            HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
+            Command="{Binding LoadImage2Command}"
+            Content="From Selection" />
+        <Button
+            Grid.Row="1" Grid.Column="4"
+            Margin="10,5"
+            Padding="5"
+            HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
+            Command="{Binding MixCommand}"
+            Content="Mix" />
+
+        <!-- Row 2: Images -->
         <!-- Image 1 -->
         <Border
-            Grid.Row="0"
+            Grid.Row="2"
             Grid.Column="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -74,26 +180,18 @@
                     IsHitTestVisible="False" />
             </Grid>
         </Border>
-        <Button
-            Grid.Row="1"
-            Grid.Column="0"
-            Margin="10"
-            Padding="5"
-            HorizontalAlignment="Center"
-            Command="{Binding LoadImage1Command}"
-            Content="From Selection" />
 
         <!-- + symbol and swap -->
         <StackPanel
-            Grid.Row="0"
+            Grid.Row="2"
             Grid.Column="1"
-            VerticalAlignment="Center"
-            Margin="0,38,0,0">
+            VerticalAlignment="Center">
             <PathIcon Data="{StaticResource add}"
                       Width="16" Height="16" />
             <Button
                 Margin="0,9,0,0"
                 Command="{Binding SwapImagesCommand}"
+                ap:MouseOverInfoAP.InfoText="Swap Texture 1 and Texture 2"
                 ToolTip.Tip="Swap images">
                 <PathIcon Data="{StaticResource arrow_swap}"
                           Width="16" Height="16" />
@@ -102,7 +200,7 @@
 
         <!-- Image 2 -->
         <Border
-            Grid.Row="0"
+            Grid.Row="2"
             Grid.Column="2"
             Margin="10"
             HorizontalAlignment="Stretch"
@@ -131,25 +229,17 @@
                     IsHitTestVisible="False" />
             </Grid>
         </Border>
-        <Button
-            Grid.Row="1"
-            Grid.Column="2"
-            Margin="10"
-            Padding="5"
-            HorizontalAlignment="Center"
-            Command="{Binding LoadImage2Command}"
-            Content="From Selection" />
 
         <!-- Arrow → symbol -->
         <PathIcon
-            Grid.Row="0"
+            Grid.Row="2"
             Grid.Column="3"
             Data="{StaticResource arrow_forward}"
             Width="16" Height="16" />
 
         <!-- Result Image -->
         <Border
-            Grid.Row="0"
+            Grid.Row="2"
             Grid.Column="4"
             Margin="10"
             HorizontalAlignment="Stretch"
@@ -162,83 +252,8 @@
                 Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                 Stretch="Uniform" />
         </Border>
-        <Button
-            Grid.Row="1"
-            Grid.Column="4"
-            Margin="10"
-            Padding="5"
-            HorizontalAlignment="Center"
-            Command="{Binding MixCommand}"
-            Content="Mix" />
 
-        <!-- Controls Row -->
-        <Grid Grid.Row="2" Grid.ColumnSpan="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="100" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10" />
-
-            <TextBlock
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                Text="Hardness"
-                FontStyle="Italic" />
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="1"
-                Margin="5"
-                VerticalAlignment="Center"
-                ToolTip.Tip="{Binding BlendHardnessValue}"
-                Maximum="1"
-                Minimum="0"
-                SmallChange="0.01"
-                Value="{Binding BlendHardnessValue}" />
-
-            <TextBlock
-                Grid.Column="2"
-                VerticalAlignment="Center"
-                Text="Pivot"
-                FontStyle="Italic" />
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="2"
-                Margin="5"
-                VerticalAlignment="Center"
-                ToolTip.Tip="{Binding PivotValue}"
-                Maximum="1"
-                Minimum="0"
-                SmallChange="0.01"
-                Value="{Binding PivotValue}" />
-
-            <TextBlock
-                Grid.Column="3"
-                VerticalAlignment="Center"
-                Text="Offset"
-                FontStyle="Italic" />
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="3"
-                Margin="5"
-                VerticalAlignment="Center"
-                ToolTip.Tip="{Binding OffsetValue}"
-                Maximum="1"
-                Minimum="0"
-                SmallChange="0.01"
-                Value="{Binding OffsetValue}" />
-        </Grid>
-
-        <!-- Bottom OK/Cancel bar -->
+        <!-- Row 3: OK/Cancel bar -->
         <Border
             Grid.Row="3"
             Grid.ColumnSpan="5"
@@ -260,6 +275,7 @@
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
                 HorizontalContentAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Cancel and close the dialog"
                 Command="{Binding CancelCommand}"
                 CommandParameter="{Binding $parent[Window]}"
                 Content="Cancel" />
@@ -269,6 +285,7 @@
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
                 HorizontalContentAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Apply the smooth transition and close"
                 Command="{Binding OKCommand}"
                 CommandParameter="{Binding $parent[Window]}"
                 Content="OK" />

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:transitions="clr-namespace:TgaBuilderLib.Transitions;assembly=TgaBuilderLib"
              mc:Ignorable="d"
              x:CompileBindings="False">
@@ -61,6 +62,7 @@
         <RadioButton
             Classes="toggle-look"
             GroupName="TransitionMode"
+            ap:MouseOverInfoAP.InfoText="Transition from top edge"
             IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Top}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
@@ -77,6 +79,7 @@
         <RadioButton
             Classes="toggle-look"
             GroupName="TransitionMode"
+            ap:MouseOverInfoAP.InfoText="Transition from right edge"
             IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Right}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
@@ -93,6 +96,7 @@
         <RadioButton
             Classes="toggle-look"
             GroupName="TransitionMode"
+            ap:MouseOverInfoAP.InfoText="Transition from bottom edge"
             IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Bottom}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
@@ -109,6 +113,7 @@
         <RadioButton
             Classes="toggle-look"
             GroupName="TransitionMode"
+            ap:MouseOverInfoAP.InfoText="Transition from left edge"
             IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Left}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
@@ -125,6 +130,7 @@
         <RadioButton
             Classes="toggle-look"
             GroupName="TransitionMode"
+            ap:MouseOverInfoAP.InfoText="Transition from diagonal (top-left)"
             IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopLeft}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
@@ -141,6 +147,7 @@
         <RadioButton
             Classes="toggle-look"
             GroupName="TransitionMode"
+            ap:MouseOverInfoAP.InfoText="Transition from diagonal (top-right)"
             IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopRight}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">

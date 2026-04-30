@@ -13,10 +13,10 @@
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
     xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel"
     Title="MainWindow"
-    Width="600"
-    Height="400"
-    MinWidth="560"
-    MinHeight="350"
+    Width="620"
+    Height="460"
+    MinWidth="580"
+    MinHeight="410"
     d:Background="Black"
     d:DataContext="{d:DesignInstance Type=viewmodel:SmoothTransitionViewModel,
                                      IsDesignTimeCreatable=False}"
@@ -32,6 +32,7 @@
                 <ResourceDictionary Source="/Styles/TitleBarNavigationAreaStyle.xaml" />
                 <ResourceDictionary Source="/Styles/CheckerBrush.xaml" />
                 <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
+                <ResourceDictionary Source="/Styles/TabControlStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
@@ -50,19 +51,18 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="5*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="60" />
-
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
+        <!-- Row 0: Title Bar -->
         <DockPanel Grid.ColumnSpan="5">
             <ui:TitleBar
                 Width="133"
                 DockPanel.Dock="Right"
                 Style="{StaticResource TitleBarNavigationAreaStyle}" />
-
             <ui:TitleBar
                 Title="Smooth Transition Helper"
                 Grid.ColumnSpan="2"
@@ -76,9 +76,124 @@
             </ui:TitleBar>
         </DockPanel>
 
+        <!-- Row 1: Settings / Options -->
+        <Grid Grid.Row="1" Grid.ColumnSpan="5" Margin="5,5,5,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Col 0, Row 0: Transition Mode (always visible) -->
+            <local:TransitionModeUserControl
+                Grid.Column="0" Grid.Row="0"
+                Margin="5,5,10,5" />
+
+            <!-- Col 0, Row 1: Always-visible sliders -->
+            <StackPanel
+                Grid.Column="0" Grid.Row="1"
+                Orientation="Horizontal"
+                VerticalAlignment="Center"
+                Margin="5,0,10,5">
+                <Path Data="{StaticResource arrow_left}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0" />
+                <Slider
+                    Width="100"
+                    VerticalAlignment="Center"
+                    Margin="0,0,0,0"
+                    AutoToolTipPlacement="BottomRight"
+                    AutoToolTipPrecision="2"
+                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)"
+                    Maximum="1" Minimum="0" SmallChange="0.01"
+                    Value="{Binding PivotValue}" />
+                <Path Data="{StaticResource arrow_right}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,10,0" />
+                <Path Data="{StaticResource circle_half_fill}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0" />
+                <Slider
+                    Width="100"
+                    VerticalAlignment="Center"
+                    AutoToolTipPlacement="BottomRight"
+                    AutoToolTipPrecision="2"
+                    ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge"
+                    Maximum="1" Minimum="0" SmallChange="0.01"
+                    Value="{Binding BlendHardnessValue}" />
+                <Path Data="{StaticResource circle_line}" Width="14" Height="14" Stretch="Uniform"
+                      Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,0,0" />
+            </StackPanel>
+
+            <!-- Col 1, Row 0-1: Tab View -->
+            <TabControl
+                Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                Margin="0,5,5,5"
+                BorderBrush="Transparent"
+                TabStripPlacement="Top">
+                <TabControl.Resources>
+                    <Style TargetType="TabItem" BasedOn="{StaticResource NavTabItemStyle}">
+                        <Setter Property="Height" Value="20" />
+                    </Style>
+                </TabControl.Resources>
+                <TabItem Header="Blend" Height="25" Width="Auto">
+                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
+                        <Path Data="{StaticResource point_scan}" Width="14" Height="14" Stretch="Uniform"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,3,0" />
+                        <Slider
+                            Width="120"
+                            VerticalAlignment="Center"
+                            AutoToolTipPlacement="BottomRight"
+                            AutoToolTipPrecision="2"
+                            ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)"
+                            Maximum="1" Minimum="0" SmallChange="0.01"
+                            Value="{Binding OffsetValue}" />
+                        <Path Data="{StaticResource circle}" Width="14" Height="14" Stretch="Uniform"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="3,0,0,0" />
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- Row 2: From Selection / Mix buttons -->
+        <Button
+            x:Name="BtnLoad1"
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="10,5"
+            Padding="5"
+            HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
+            Command="{Binding LoadImage1Command}"
+            CommandParameter="1"
+            Content="From Selection" />
+        <Button
+            x:Name="BtnLoad2"
+            Grid.Row="2"
+            Grid.Column="2"
+            Margin="10,5"
+            Padding="5"
+            HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
+            Command="{Binding LoadImage2Command}"
+            CommandParameter="2"
+            Content="From Selection" />
+        <Button
+            x:Name="BtnResult"
+            Grid.Row="2"
+            Grid.Column="4"
+            Margin="10,5"
+            Padding="5"
+            HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
+            Command="{Binding MixCommand}"
+            CommandParameter="2"
+            Content="Mix" />
+
+        <!-- Row 3: Images -->
         <!--  Image 1  -->
         <Border
-            Grid.Row="1"
+            Grid.Row="3"
             Grid.Column="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -105,35 +220,23 @@
                     FontSize="18"
                     Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                     IsHitTestVisible="False"/>
-
             </Grid>
         </Border>
-        <Button
-            x:Name="BtnLoad1"
-            Grid.Row="2"
-            Grid.Column="0"
-            Margin="10"
-            Padding="5"
-            HorizontalAlignment="Center"
-            Command="{Binding LoadImage1Command}"
-            CommandParameter="1"
-            Content="From Selection" />
 
         <StackPanel
-                VerticalAlignment="Center"
-                Grid.Column="1"
-                Grid.Row="1" Margin="0,38,0,0">
-            <ui:SymbolIcon
-                    Symbol="Add24"/>
+            VerticalAlignment="Center"
+            Grid.Column="1"
+            Grid.Row="3">
+            <ui:SymbolIcon Symbol="Add24"/>
             <ui:Button
-                    Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
-                    Command="{Binding SwapImagesCommand}"
-                    />
+                Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
+                ap:MouseOverInfoAP.InfoText="Swap Texture 1 and Texture 2"
+                Command="{Binding SwapImagesCommand}" />
         </StackPanel>
 
         <!--  Image 2  -->
         <Border
-            Grid.Row="1"
+            Grid.Row="3"
             Grid.Column="2"
             Margin="10"
             HorizontalAlignment="Stretch"
@@ -163,24 +266,14 @@
                     IsHitTestVisible="False"/>
             </Grid>
         </Border>
-        <Button
-            x:Name="BtnLoad2"
-            Grid.Row="2"
-            Grid.Column="2"
-            Margin="10"
-            Padding="5"
-            HorizontalAlignment="Center"
-            Command="{Binding LoadImage2Command}"
-            CommandParameter="2"
-            Content="From Selection" />
 
         <ui:SymbolIcon
-            Grid.Row="1"
+            Grid.Row="3"
             Grid.Column="3"
             Symbol="ArrowRight24" />
 
         <Border
-            Grid.Row="1"
+            Grid.Row="3"
             Grid.Column="4"
             Margin="10"
             HorizontalAlignment="Stretch"
@@ -194,86 +287,7 @@
                 Stretch="Uniform" />
         </Border>
 
-        <Button
-            x:Name="BtnResult"
-            Grid.Row="2"
-            Grid.Column="4"
-            Margin="10"
-            Padding="5"
-            HorizontalAlignment="Center"
-            Command="{Binding MixCommand}"
-            CommandParameter="2"
-            Content="Mix" />
-
-        <Grid Grid.Row="3" Grid.ColumnSpan="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <local:TransitionModeUserControl Grid.Row="1" Margin="10,5,5,10" />
-
-            <Label
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                Content="Hardness"
-                TextBlock.FontStyle="Italic" />
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="1"
-                Margin="5"
-                VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
-                AutoToolTipPrecision="2"
-                Maximum="1"
-                Minimum="0"
-                SmallChange="0.01"
-                Value="{Binding BlendHardnessValue}" />
-
-            <Label
-                Grid.Column="2"
-                VerticalAlignment="Center"
-                Content="Pivot"
-                TextBlock.FontStyle="Italic" />
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="2"
-                Margin="5"
-                VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
-                AutoToolTipPrecision="2"
-                Maximum="1"
-                Minimum="0"
-                SmallChange="0.01"
-                Value="{Binding PivotValue}" />
-
-            <Label
-                Grid.Column="3"
-                VerticalAlignment="Center"
-                Content="Offset"
-                TextBlock.FontStyle="Italic" />
-
-            <Slider
-                Grid.Row="1"
-                Grid.Column="3"
-                Margin="5"
-                VerticalAlignment="Center"
-                AutoToolTipPlacement="BottomRight"
-                AutoToolTipPrecision="2"
-                Maximum="1"
-                Minimum="0"
-                SmallChange="0.01"
-                Value="{Binding OffsetValue}" />
-        </Grid>
-
+        <!-- Row 4: OK/Cancel -->
         <ui:Card
             Grid.Row="4"
             Grid.ColumnSpan="5"
@@ -290,6 +304,7 @@
                 Height="30"
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
+                ap:MouseOverInfoAP.InfoText="Cancel and close the dialog"
                 Command="{Binding CancelCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                 Content="Cancel" />
@@ -298,11 +313,10 @@
                 Height="30"
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
+                ap:MouseOverInfoAP.InfoText="Apply the smooth transition and close"
                 Command="{Binding OKCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                 Content="OK" />
         </StackPanel>
-
-
     </Grid>
 </elements:AsyncWindow>
