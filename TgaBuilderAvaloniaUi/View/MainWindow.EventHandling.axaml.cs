@@ -40,7 +40,10 @@ namespace TgaBuilderAvaloniaUi.View
 
             _lastPanPosition = e.GetPosition(CurrentPanel);
             if (e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                this.Cursor = new Cursor(StandardCursorType.SizeAll);
                 return;
+            }
 
 
                 var pos = e.GetPosition(CurrentImage);
@@ -152,6 +155,7 @@ namespace TgaBuilderAvaloniaUi.View
 
             e.Pointer.Capture(null);
             _modifier = MouseModifier.None;
+            this.Cursor = new Cursor(StandardCursorType.Arrow);
         }
 
         private void DestinationFormatSwitch_Click(object? sender, RoutedEventArgs e)
