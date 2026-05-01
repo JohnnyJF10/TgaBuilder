@@ -92,7 +92,8 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0">
+                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0"
+                           ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
                     <Path DockPanel.Dock="Left" VerticalAlignment="Center"
                           Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
                           Data="{StaticResource arrow_left}"/>
@@ -104,7 +105,6 @@
                         VerticalAlignment="Center"
                         AutoToolTipPlacement="BottomRight"
                         AutoToolTipPrecision="2"
-                        ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)"
                         Maximum="1" Minimum="0" SmallChange="0.01"
                         Value="{Binding PivotValue}"/>
                 </DockPanel>
@@ -134,7 +134,8 @@
                 <!-- Tab: Analysis -->
                 <TabItem Header="Analysis" Height="25" Width="Auto">
                     <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,15,0">
+                        <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,15,0"
+                                   ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 10 = large)">
                             <Path DockPanel.Dock="Left" VerticalAlignment="Center"
                                   Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
                                   Data="{StaticResource circle_small}"/>
@@ -145,13 +146,14 @@
                                 Margin="5,0"
                                 VerticalAlignment="Center"
                                 AutoToolTipPlacement="BottomRight"
-                                ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 10 = large)"
                                 IsSnapToTickEnabled="True"
                                 TickFrequency="1"
                                 Maximum="10" Minimum="1" SmallChange="1"
                                 Value="{Binding MarkerRadius}"/>
                         </DockPanel>
-                        <Label VerticalAlignment="Center" Content="Segmentation" TextBlock.FontStyle="Italic" Margin="0,0,3,0"/>
+                        <Path VerticalAlignment="Center" Margin="0,0,5,0"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                              Data="{StaticResource shapes}"/>
                         <ComboBox
                             VerticalAlignment="Center"
                             MinWidth="130"
@@ -166,7 +168,9 @@
                 <!-- Tab: Options -->
                 <TabItem Header="Options" Height="25" Width="Auto">
                     <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <Label VerticalAlignment="Center" Content="Filter" TextBlock.FontStyle="Italic" Margin="0,0,3,0"/>
+                        <Path VerticalAlignment="Center" Margin="0,0,5,0"
+                              Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                              Data="{StaticResource filter}"/>
                         <ComboBox
                             VerticalAlignment="Center"
                             MinWidth="130"

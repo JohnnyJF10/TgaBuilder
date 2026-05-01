@@ -68,7 +68,8 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0">
+                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0"
+                           ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
                     <Path VerticalAlignment="Center"
                           Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
                           Data="{StaticResource arrow_left}" />
@@ -79,11 +80,11 @@
                         Margin="5,0"
                         VerticalAlignment="Center"
                         ToolTip.Tip="{Binding PivotValue}"
-                        ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)"
                         Maximum="1" Minimum="0" SmallChange="0.01"
                         Value="{Binding PivotValue}" />
                 </DockPanel>
-                <DockPanel Width="130" VerticalAlignment="Center">
+                <DockPanel Width="130" VerticalAlignment="Center"
+                           ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
                     <Path VerticalAlignment="Center"
                           Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
                           Data="{StaticResource circle_half_fill}" />
@@ -94,7 +95,6 @@
                         Margin="5,0"
                         VerticalAlignment="Center"
                         ToolTip.Tip="{Binding BlendHardnessValue}"
-                        ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge"
                         Maximum="1" Minimum="0" SmallChange="0.01"
                         Value="{Binding BlendHardnessValue}" />
                 </DockPanel>
@@ -107,7 +107,8 @@
                 BorderBrush="Transparent"
                 TabStripPlacement="Top">
                 <TabItem Height="25" Header="Blend">
-                    <DockPanel Margin="5,0,5,0" VerticalAlignment="Center">
+                    <DockPanel Margin="5,0,5,0" VerticalAlignment="Center"
+                               ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)">
                         <Path VerticalAlignment="Center"
                               Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
                               Data="{StaticResource point_scan}" />
@@ -118,7 +119,6 @@
                             Margin="5,0"
                             VerticalAlignment="Center"
                             ToolTip.Tip="{Binding OffsetValue}"
-                            ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)"
                             Maximum="1" Minimum="0" SmallChange="0.01"
                             Value="{Binding OffsetValue}" />
                     </DockPanel>
