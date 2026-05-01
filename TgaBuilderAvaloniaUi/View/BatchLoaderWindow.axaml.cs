@@ -14,6 +14,7 @@ namespace TgaBuilderAvaloniaUi.View
     public partial class BatchLoaderWindow : AsyncWindow
     {
         private Avalonia.Point _lastPanPosition;
+        private bool _isPanning;
 
         public BatchLoaderWindow(INotifyPropertyChanged viewModel)
         {
@@ -49,6 +50,7 @@ namespace TgaBuilderAvaloniaUi.View
             {
                 _lastPanPosition = e.GetPosition(BatchLoaderZoomPanel);
                 e.Pointer.Capture(BatchLoaderZoomPanel);
+                _isPanning = true;
                 this.Cursor = new Cursor(StandardCursorType.SizeAll);
                 e.Handled = true;
             }
@@ -73,7 +75,11 @@ namespace TgaBuilderAvaloniaUi.View
             if (e.Pointer.Captured == BatchLoaderZoomPanel)
             {
                 e.Pointer.Capture(null);
-                this.Cursor = new Cursor(StandardCursorType.Arrow);
+                if (_isPanning)
+                {
+                    _isPanning = false;
+                    this.Cursor = new Cursor(StandardCursorType.Arrow);
+                }
             }
         }
 

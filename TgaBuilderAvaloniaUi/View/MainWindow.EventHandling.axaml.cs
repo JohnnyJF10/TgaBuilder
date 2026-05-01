@@ -18,6 +18,7 @@ namespace TgaBuilderAvaloniaUi.View
 
         private Avalonia.Point _lastPanPosition;
         private Avalonia.Point _lastPointerPosition;
+        private bool _isPanning;
 
         private static bool IsGridlessModifier(KeyModifiers modifiers)
             => modifiers.HasFlag(KeyModifiers.Alt);
@@ -41,6 +42,7 @@ namespace TgaBuilderAvaloniaUi.View
             _lastPanPosition = e.GetPosition(CurrentPanel);
             if (e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control))
             {
+                _isPanning = true;
                 this.Cursor = new Cursor(StandardCursorType.SizeAll);
                 return;
             }
@@ -155,7 +157,11 @@ namespace TgaBuilderAvaloniaUi.View
 
             e.Pointer.Capture(null);
             _modifier = MouseModifier.None;
-            this.Cursor = new Cursor(StandardCursorType.Arrow);
+            if (_isPanning)
+            {
+                _isPanning = false;
+                this.Cursor = new Cursor(StandardCursorType.Arrow);
+            }
         }
 
         private void DestinationFormatSwitch_Click(object? sender, RoutedEventArgs e)
