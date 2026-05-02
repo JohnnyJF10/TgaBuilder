@@ -33,6 +33,7 @@
                 <ResourceDictionary Source="/Styles/CheckerBrush.xaml"/>
                 <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/TabControlStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter"/>
@@ -92,7 +93,7 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0"
+                <DockPanel Width="196.3" VerticalAlignment="Center" Margin="0,0,8,0"
                            ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
                     <Path DockPanel.Dock="Left" VerticalAlignment="Center"
                           Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
@@ -111,6 +112,8 @@
                 <elements:ToggleButtonEx
                     VerticalAlignment="Center"
                     ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
+                    MinHeight="36"
+                    MinWidth="36"
                     IsChecked="{Binding ReversePivot}">
                     <elements:ToggleButtonEx.Content>
                         <Path Data="{StaticResource flip_horizontal}" Width="16" Height="16" Stretch="Uniform"
@@ -133,9 +136,9 @@
 
                 <!-- Tab: Analysis -->
                 <TabItem Header="Analysis" Height="25" Width="Auto">
-                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,15,0"
-                                   ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 10 = large)">
+                    <StackPanel Orientation="Horizontal" Margin="5,15,0,0" VerticalAlignment="Center">
+                        <DockPanel Width="150" VerticalAlignment="Center" Margin="0,0,15,0"
+                                   ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
                             <Path DockPanel.Dock="Left" VerticalAlignment="Center"
                                   Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
                                   Data="{StaticResource circle_small}"/>
@@ -148,42 +151,51 @@
                                 AutoToolTipPlacement="BottomRight"
                                 IsSnapToTickEnabled="True"
                                 TickFrequency="1"
-                                Maximum="10" Minimum="1" SmallChange="1"
+                                Maximum="20" Minimum="1" SmallChange="1"
                                 Value="{Binding MarkerRadius}"/>
                         </DockPanel>
-                        <Path VerticalAlignment="Center" Margin="0,0,5,0"
+                        <DockPanel
+                            ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+                            <Path VerticalAlignment="Center" Margin="5,0,0,0"
                               Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                              Data="{StaticResource shapes}"/>
-                        <ComboBox
-                            VerticalAlignment="Center"
-                            MinWidth="130"
+                              Data="{StaticResource filter}"/>
+                            <ComboBox
+                                VerticalAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
+                                <ComboBoxItem Content="None"/>
+                                <ComboBoxItem Content="Box Blur"/>
+                                <ComboBoxItem Content="Median"/>
+                                <ComboBoxItem Content="Bilateral"/>
+                            </ComboBox>
+                        </DockPanel>
+                        <DockPanel
                             ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions"
-                            SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
-                            <ComboBoxItem Content="Watershed"/>
-                            <ComboBoxItem Content="XY Projection"/>
-                        </ComboBox>
+                            MinWidth="130"
+                            >
+                            <Path VerticalAlignment="Center" Margin="5,0,0,0"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="18" Height="18" Stretch="Uniform"
+                                Data="{StaticResource shapes}"/>
+                            <ComboBox
+                                VerticalAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
+                                <ComboBoxItem Content="Watershed"/>
+                                <ComboBoxItem Content="XY Projection"/>
+                            </ComboBox>
+                        </DockPanel>
                     </StackPanel>
                 </TabItem>
 
                 <!-- Tab: Options -->
                 <TabItem Header="Options" Height="25" Width="Auto">
-                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <Path VerticalAlignment="Center" Margin="0,0,5,0"
-                              Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                              Data="{StaticResource filter}"/>
-                        <ComboBox
-                            VerticalAlignment="Center"
-                            MinWidth="130"
-                            Margin="0,0,15,0"
-                            ap:MouseOverInfoAP.InfoText="Filter: post-processing filter applied to the result image"
-                            SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
-                            <ComboBoxItem Content="None"/>
-                            <ComboBoxItem Content="Box Blur"/>
-                            <ComboBoxItem Content="Median"/>
-                            <ComboBoxItem Content="Bilateral"/>
-                        </ComboBox>
+                    <StackPanel Orientation="Horizontal" Margin="5,15,0,0" VerticalAlignment="Center">
                         <elements:ToggleButtonEx
                             VerticalAlignment="Center"
+                            MinHeight="36"
+                            MinWidth="36"
                             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
                             IsChecked="{Binding SliceCornerTiles}">
                             <elements:ToggleButtonEx.Content>

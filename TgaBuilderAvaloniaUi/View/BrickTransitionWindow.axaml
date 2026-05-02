@@ -26,6 +26,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
                 <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
@@ -94,9 +95,9 @@
 
                 <!-- Tab: Analysis -->
                 <TabItem Height="25" Header="Analysis">
-                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Margin="5,6,0,0" VerticalAlignment="Center">
                         <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,15,0"
-                                   ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 10 = large)">
+                                   ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
                             <Path VerticalAlignment="Center"
                                   Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
                                   Data="{StaticResource circle_small}" />
@@ -109,40 +110,52 @@
                                 ToolTip.Tip="{Binding MarkerRadius}"
                                 IsSnapToTickEnabled="True"
                                 TickFrequency="1"
-                                Maximum="10" Minimum="1" SmallChange="1"
+                                Maximum="20" Minimum="1" SmallChange="1"
                                 Value="{Binding MarkerRadius}" />
                         </DockPanel>
-                        <Path VerticalAlignment="Center" Margin="0,0,5,0"
-                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
-                              Data="{StaticResource shapes}" />
-                        <ComboBox
-                            VerticalAlignment="Center"
-                            MinWidth="110"
+                        <DockPanel
+                            ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+						    	  <Path VerticalAlignment="Center" Margin="5,0,0,0"
+                                  Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                                  Data="{StaticResource filter}" />
+                            <ComboBox
+                                VerticalAlignment="Center"
+                                MinWidth="90"
+                                Margin="0,0,15,0"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                SelectedIndex="{Binding SelectedFilterIndex}">
+                                <ComboBoxItem Content="None"/>
+                                <ComboBoxItem Content="Box Blur"/>
+                                <ComboBoxItem Content="Median"/>
+                                <ComboBoxItem Content="Bilateral"/>
+                            </ComboBox>
+                        </DockPanel>
+                        <DockPanel
                             ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions"
-                            SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
-                            <ComboBoxItem Content="Watershed"/>
-                            <ComboBoxItem Content="XY Projection"/>
-                        </ComboBox>
+                            >
+                            <Path VerticalAlignment="Center" Margin="5,0,0,0"
+                                  Fill="{DynamicResource IconFillBrush}" 
+                                  Width="18" 
+                                  Height="18" 
+                                  Stretch="Uniform"
+                                  Data="{StaticResource shapes}" />
+                            <ComboBox
+                                VerticalAlignment="Center"
+                                MinWidth="110"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
+                                <ComboBoxItem Content="Watershed"/>
+                                <ComboBoxItem Content="XY Projection"/> 
+                                </ComboBox>
+                            </DockPanel>
                     </StackPanel>
                 </TabItem>
 
                 <!-- Tab: Options -->
                 <TabItem Height="25" Header="Options">
-                    <StackPanel Orientation="Horizontal" Margin="5,0" VerticalAlignment="Center">
-                        <Path VerticalAlignment="Center" Margin="0,0,5,0"
-                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
-                              Data="{StaticResource filter}" />
-                        <ComboBox
-                            VerticalAlignment="Center"
-                            MinWidth="90"
-                            Margin="0,0,15,0"
-                            ap:MouseOverInfoAP.InfoText="Filter: post-processing filter applied to the result image"
-                            SelectedIndex="{Binding SelectedFilterIndex}">
-                            <ComboBoxItem Content="None"/>
-                            <ComboBoxItem Content="Box Blur"/>
-                            <ComboBoxItem Content="Median"/>
-                            <ComboBoxItem Content="Bilateral"/>
-                        </ComboBox>
+                    <StackPanel Orientation="Horizontal" Margin="5,6,0,0" VerticalAlignment="Center">
                         <elements:IconToggleButton
                             Classes="outlined"
                             VerticalAlignment="Center"

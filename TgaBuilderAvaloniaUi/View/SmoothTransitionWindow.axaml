@@ -26,6 +26,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
                 <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
@@ -107,7 +108,7 @@
                 BorderBrush="Transparent"
                 TabStripPlacement="Top">
                 <TabItem Height="25" Header="Blend">
-                    <DockPanel Margin="5,0,5,0" VerticalAlignment="Center"
+                    <DockPanel Margin="0,6,5,0" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left"
                                ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)">
                         <Path VerticalAlignment="Center"
                               Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"

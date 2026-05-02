@@ -33,6 +33,7 @@
                 <ResourceDictionary Source="/Styles/CheckerBrush.xaml" />
                 <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
                 <ResourceDictionary Source="/Styles/TabControlStyles.xaml" />
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
@@ -144,7 +145,7 @@
                     </Style>
                 </TabControl.Resources>
                 <TabItem Header="Blend" Height="25" Width="Auto">
-                    <DockPanel Margin="5,0,5,0" VerticalAlignment="Center"
+                    <DockPanel Margin="5,15,5,0" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left"
                                ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)">
                         <Path DockPanel.Dock="Left" VerticalAlignment="Center"
                               Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
