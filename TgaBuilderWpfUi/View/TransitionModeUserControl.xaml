@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:TgaBuilderWpfUi.View"
              xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters"
              xmlns:transitions="clr-namespace:TgaBuilderLib.Transitions;assembly=TgaBuilderLib"
              mc:Ignorable="d" 
@@ -39,7 +40,8 @@
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
 
-        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Top}}" Margin="0,0,5,0">
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Top}}" Margin="0,0,5,0"
+                                   ap:MouseOverInfoAP.InfoText="Transition from top edge">
             <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -49,7 +51,8 @@
                 </Grid>
             </elements:IconRadioButton.Content>
         </elements:IconRadioButton>
-        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Right}}" Margin="0,0,5,0">
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Right}}" Margin="0,0,5,0"
+                                   ap:MouseOverInfoAP.InfoText="Transition from right edge">
             <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -58,7 +61,8 @@
                 </Grid>
             </elements:IconRadioButton.Content>
         </elements:IconRadioButton>
-        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Bottom}}" Margin="0,0,5,0">
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Bottom}}" Margin="0,0,5,0"
+                                   ap:MouseOverInfoAP.InfoText="Transition from bottom edge">
             <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -67,7 +71,8 @@
                 </Grid>
             </elements:IconRadioButton.Content>
         </elements:IconRadioButton>
-        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Left}}" Margin="0,0,5,0">
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Left}}" Margin="0,0,5,0"
+                                   ap:MouseOverInfoAP.InfoText="Transition from left edge">
             <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -76,7 +81,8 @@
                 </Grid>
             </elements:IconRadioButton.Content>
         </elements:IconRadioButton>
-        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopLeft}}" Margin="0,0,5,0">
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopLeft}}" Margin="0,0,5,0"
+                                   ap:MouseOverInfoAP.InfoText="Transition from diagonal (top-left)">
             <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
@@ -85,7 +91,8 @@
                 </Grid>
             </elements:IconRadioButton.Content>
         </elements:IconRadioButton>
-        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopRight}}" Margin="0,0,5,0">
+        <elements:IconRadioButton Width="36" Height="36" IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopRight}}" Margin="0,0,5,0"
+                                   ap:MouseOverInfoAP.InfoText="Transition from diagonal (top-right)">
             <elements:IconRadioButton.Content>
                 <Grid Width="20" Height="20">
                     <!-- Square -->
