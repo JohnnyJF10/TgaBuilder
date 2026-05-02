@@ -987,4 +987,8 @@
 <StreamGeometry x:Key="pivot_low">M12,15 L3,21 L21,21 Z</StreamGeometry>
 <StreamGeometry x:Key="pivot_high">M12,3 L3,21 L21,21 Z</StreamGeometry>
 
+<!-- === Hardness icons === -->
+<StreamGeometry x:Key="hardness_soft">M12,2 C8,8 6.5,12 6.5,17 A5.5,5.5 0 0,1 17.5,17 C17.5,12 16,8 12,2 Z M12,4.5 C9.5,9.5 9,13 9,17 A3,3 0 0,1 15,17 C15,13 14.5,9.5 12,4.5 Z</StreamGeometry>
+<StreamGeometry x:Key="hardness_sharp">M12,2 L22,12 L12,22 L2,12 Z M12,4 L20,12 L12,20 L4,12 Z</StreamGeometry>
+
 </ResourceDictionary>
