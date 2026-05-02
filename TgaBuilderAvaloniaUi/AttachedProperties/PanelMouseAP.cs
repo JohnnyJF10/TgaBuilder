@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using System;
 using System.Diagnostics;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.View;
@@ -51,17 +52,34 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
         {
             if (obj is Image image && args.NewValue is bool newBoolVal)
             {
+                Cleanup(image);
+
                 if (newBoolVal)
                 {
                     image.PointerEntered += Image_PointerEntered;
                     image.PointerExited += Image_PointerExited;
-                }
-                else
-                {
-                    image.PointerEntered -= Image_PointerEntered;
-                    image.PointerExited -= Image_PointerExited;
+
+                    // Lifecycle Hook
+                    image.DetachedFromVisualTree -= Image_Detached;
+                    image.DetachedFromVisualTree += Image_Detached;
                 }
             }
+        }
+
+        private static void Image_Detached(object? sender, VisualTreeAttachmentEventArgs e)
+        {
+            if (sender is Image image)
+            {
+                Cleanup(image);
+            }
+        }
+
+        private static void Cleanup(Image image)
+        {
+            image.PointerEntered -= Image_PointerEntered;
+            image.PointerExited -= Image_PointerExited;
+
+            image.DetachedFromVisualTree -= Image_Detached;
         }
 
         private static void Image_PointerEntered(object? sender, PointerEventArgs e)
@@ -190,23 +208,6 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
             return element.GetValue(WheelShiftCommandProperty);
         }
 
-        private static MainWindow GetMainWindow()
-        {
-            if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                Debug.WriteLine("The application is not running in desktop mode.");
-                return new MainWindow();
-            }
-
-            if (desktop.MainWindow is not MainWindow mainWindow)
-            {
-                Debug.WriteLine("Could not get the MainWindow.");
-                return new MainWindow();
-            }
-
-            return mainWindow;
-        }
-
         public static readonly AttachedProperty<ICommand?> EndScrollCommandProperty =
             AvaloniaProperty.RegisterAttached<Control, ICommand?>(
                 name: "EndScrollCommand",
@@ -221,6 +222,17 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
         public static ICommand? GetEndScrollCommand(Control element)
         {
             return element.GetValue(EndScrollCommandProperty);
+        }
+
+        private static MainWindow GetMainWindow()
+        {
+            if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+                throw new InvalidOperationException("This attached property can only be used in a classic desktop application.");
+
+            if (desktop.MainWindow is not MainWindow mainWindow)
+                throw new InvalidOperationException("The main window of the application must be of type MainWindow.");
+
+            return mainWindow;
         }
     }
 }
