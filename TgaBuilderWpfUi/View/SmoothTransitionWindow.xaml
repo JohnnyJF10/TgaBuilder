@@ -103,10 +103,10 @@
                            ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
                     <Path DockPanel.Dock="Left" VerticalAlignment="Center"
                           Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource arrow_left}" />
+                          Data="{StaticResource pivot_low}" />
                     <Path DockPanel.Dock="Right" VerticalAlignment="Center"
                           Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource arrow_right}" />
+                          Data="{StaticResource pivot_high}" />
                     <Slider
                         Margin="5,0"
                         VerticalAlignment="Center"

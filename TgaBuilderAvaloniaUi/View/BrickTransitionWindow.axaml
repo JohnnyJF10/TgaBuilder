@@ -67,10 +67,10 @@
                            ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
                     <Path VerticalAlignment="Center"
                           Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource arrow_left}" />
+                          Data="{StaticResource pivot_low}" />
                     <Path DockPanel.Dock="Right" VerticalAlignment="Center"
                           Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource arrow_right}" />
+                          Data="{StaticResource pivot_high}" />
                     <Slider
                         Margin="5,0"
                         VerticalAlignment="Center"
