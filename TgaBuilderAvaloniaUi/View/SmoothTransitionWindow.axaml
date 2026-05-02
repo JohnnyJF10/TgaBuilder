@@ -110,13 +110,18 @@
                         Maximum="1" Minimum="0" SmallChange="0.01"
                         Value="{Binding PivotValue}" />
                 </DockPanel>
-                <DockPanel Width="130" VerticalAlignment="Center" Margin="16,0,0,0"
+                <DockPanel Width="130" VerticalAlignment="Center" Margin="10,0,0,0"
                            ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
                     <Path VerticalAlignment="Center"
-                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                          StrokeThickness="1"
+                          Stroke="{DynamicResource IconFillBrush}"
+                          Width="14" Height="24" 
+                          Margin="0,0,5,0"
                           Data="{StaticResource hardness_soft}" />
                     <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                          StrokeThickness="1"
+                          Stroke="{DynamicResource IconFillBrush}"
+                          Width="14" Height="20" 
                           Data="{StaticResource hardness_sharp}" />
                     <Slider
                         Margin="5,0"

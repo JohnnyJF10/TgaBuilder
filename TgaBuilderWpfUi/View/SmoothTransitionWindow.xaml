@@ -138,10 +138,12 @@
                 <DockPanel Width="150" VerticalAlignment="Center"
                            ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
                     <Path DockPanel.Dock="Left" VerticalAlignment="Center"
-                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
                           Data="{StaticResource hardness_soft}" />
                     <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
                           Data="{StaticResource hardness_sharp}" />
                     <Slider
                         Margin="5,0"
