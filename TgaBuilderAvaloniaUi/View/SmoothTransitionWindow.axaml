@@ -71,12 +71,38 @@
                 Margin="5,0,10,5">
                 <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0"
                            ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
-                    <Path VerticalAlignment="Center"
-                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_low}" />
-                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                          Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_high}" />
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Left">
+                        <Path VerticalAlignment="Bottom"
+                          Stroke="{DynamicResource IconFillBrush}"
+                          StrokeThickness="1"
+                          Fill="Transparent" Width="10" Height="10" 
+                          Data="{StaticResource pivot_low}"/>
+                        <Path VerticalAlignment="Bottom"
+                          Stroke="{DynamicResource IconFillBrush}"
+                          StrokeDashArray="2,2"
+                          StrokeThickness="1"
+                          Fill="Transparent" Width="10" Height="10" 
+                          Data="{StaticResource pivot_high}"/>
+                    </Grid>
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Right">
+                        <Path VerticalAlignment="Bottom"
+                              StrokeThickness="1"
+                          Stroke="{DynamicResource IconFillBrush}"
+                          Fill="Transparent" Width="10" Height="10" 
+                          Data="{StaticResource pivot_high}"/>
+                        <Path VerticalAlignment="Bottom" 
+                              StrokeThickness="1"
+                          Stroke="{DynamicResource IconFillBrush}"
+                          StrokeDashArray="2,2"
+                          Fill="Transparent" Width="10" Height="10" 
+                          Data="{StaticResource pivot_low}"/>
+                    </Grid>
                     <Slider
                         Margin="5,0"
                         VerticalAlignment="Center"
@@ -84,7 +110,7 @@
                         Maximum="1" Minimum="0" SmallChange="0.01"
                         Value="{Binding PivotValue}" />
                 </DockPanel>
-                <DockPanel Width="130" VerticalAlignment="Center"
+                <DockPanel Width="130" VerticalAlignment="Center" Margin="16,0,0,0"
                            ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
                     <Path VerticalAlignment="Center"
                           Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"

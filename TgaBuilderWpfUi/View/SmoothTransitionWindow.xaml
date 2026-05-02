@@ -99,14 +99,34 @@
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
                 Margin="5,0,10,5">
-                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0"
+                <DockPanel Width="150" VerticalAlignment="Center" Margin="0,0,8,0"
                            ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
-                    <Path DockPanel.Dock="Left" VerticalAlignment="Center"
-                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_low}" />
-                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_high}" />
+                    <Grid
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left">
+                        <Path VerticalAlignment="Bottom"
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource pivot_low}"/>
+                        <Path VerticalAlignment="Bottom"
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          StrokeDashArray="2.2"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource pivot_high}"/>
+                    </Grid>
+                    <Grid
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Right">
+                        <Path VerticalAlignment="Bottom"
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource pivot_high}"/>
+                        <Path VerticalAlignment="Bottom" 
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          StrokeDashArray="2.2"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource pivot_low}"/>
+                    </Grid>
                     <Slider
                         Margin="5,0"
                         VerticalAlignment="Center"
@@ -115,7 +135,7 @@
                         Maximum="1" Minimum="0" SmallChange="0.01"
                         Value="{Binding PivotValue}" />
                 </DockPanel>
-                <DockPanel Width="130" VerticalAlignment="Center"
+                <DockPanel Width="150" VerticalAlignment="Center"
                            ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
                     <Path DockPanel.Dock="Left" VerticalAlignment="Center"
                           Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"

@@ -95,12 +95,32 @@
                 Margin="5,0,10,5">
                 <DockPanel Width="196.3" VerticalAlignment="Center" Margin="0,0,8,0"
                            ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
-                    <Path DockPanel.Dock="Left" VerticalAlignment="Center"
-                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                    <Grid
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left">
+                        <Path VerticalAlignment="Bottom"
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
                           Data="{StaticResource pivot_low}"/>
-                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                          Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                        <Path VerticalAlignment="Bottom"
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          StrokeDashArray="2.2"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
                           Data="{StaticResource pivot_high}"/>
+                    </Grid>
+                    <Grid
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Right">
+                        <Path VerticalAlignment="Bottom"
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource pivot_high}"/>
+                        <Path VerticalAlignment="Bottom" 
+                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                          StrokeDashArray="2.2"
+                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
+                          Data="{StaticResource pivot_low}"/>
+                    </Grid>
                     <Slider
                         Margin="5,0"
                         VerticalAlignment="Center"
