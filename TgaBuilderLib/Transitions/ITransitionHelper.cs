@@ -5,6 +5,7 @@
         float Hardness { get; set; }
         int Height { get; set; }
         int[] Labels { get; }
+        (float X, float Y)[] Centroids { get; set; }
         int LastAnalysisHeight { get; }
         byte[] LastAnalysisMap { get; }
         int LastAnalysisWidth { get; }
@@ -17,7 +18,6 @@
         SegmentationMethod SegmentationMethod { get; set; }
         bool SliceCornerTiles { get; set; }
         int Stride { get; set; }
-        List<TileSegment> TileData { get; set; }
         int Width { get; set; }
 
         void AnalyzeTiles(byte[] pixels);

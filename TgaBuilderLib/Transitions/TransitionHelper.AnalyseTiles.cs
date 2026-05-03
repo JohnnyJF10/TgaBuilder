@@ -31,7 +31,7 @@ namespace TgaBuilderLib.Transitions
 
             float[] filtered = new float[totalPixels];
             int[] labels = new int[totalPixels];
-            List<TileSegment> tiles = new List<TileSegment>();
+            
 
             // 1. Compute grayscale values
             float[] gray = new float[totalPixels];
@@ -64,493 +64,70 @@ namespace TgaBuilderLib.Transitions
             }
 
             // 3. Segmentation
-            switch (SegmentationMethod)
+            int labelCount = SegmentationMethod switch
             {
-                case SegmentationMethod.XYProjection:
-                    XYProjectionSegmentation(filtered, labels, tiles);
-                    break;
-                case SegmentationMethod.Watershed:
-                default:
-                    WatershedSegmentation(filtered, labels, tiles);
-                    break;
-            }
+                SegmentationMethod.Watershed => WatershedSegmentation(filtered, labels),
+                SegmentationMethod.XYProjection => XYProjectionSegmentation(filtered, labels),
+                _ => 0
+            };
 
             // 4. Centroids
-            foreach (var tile in tiles)
-            {
-                if (tile.PixelOffsets.Count > 0)
-                {
-                    tile.CentroidX = (float)tile.SumX / tile.PixelOffsets.Count / (Width - 1);
-                    tile.CentroidY = (float)tile.SumY / tile.PixelOffsets.Count / (Height - 1);
-                }
-            }
+            var centroids = CalculateCentroids(labels, Width, Height, labelCount);
 
             // 5. Generate label map
-            GenerateLabelMap(Width, Height, labels, tiles.Count);
+            GenerateLabelMap(Width, Height, labels, labelCount);
 
             // Assign labels to the class property
             Labels = labels;
 
-            TileData = tiles;
+            Centroids = centroids;
         }
 
-        private unsafe void BoxBlur(float[] blur, float[] gray)
+
+        private (float X, float Y)[] CalculateCentroids(int[] labels, int width, int height, int labelCount)
         {
-            for (int y = 1; y < Height - 1; y++)
+            // Arrays für die Summen und Zähler (1-basiert, daher labelCount + 1)
+            long[] sumX = new long[labelCount + 1];
+            long[] sumY = new long[labelCount + 1];
+            int[] counts = new int[labelCount + 1];
+
+            int totalPixels = width * height;
+
+            // Einziger Durchlauf zur Aggregation aller X/Y-Koordinaten
+            for (int i = 0; i < totalPixels; i++)
             {
-                int row = y * Width;
-                for (int x = 1; x < Width - 1; x++)
+                int lbl = labels[i];
+                if (lbl > 0 && lbl <= labelCount)
                 {
-                    int idx = row + x;
-                    blur[idx] =
-                        (gray[idx - Width - 1] + gray[idx - Width] + gray[idx - Width + 1] +
-                         gray[idx - 1] + gray[idx] + gray[idx + 1] +
-                         gray[idx + Width - 1] + gray[idx + Width] + gray[idx + Width + 1]) / 9f;
+                    sumX[lbl] += i % width;
+                    sumY[lbl] += i / width;
+                    counts[lbl]++;
                 }
             }
-        }
 
-        private void MedianFilter3x3(float[] output, float[] input)
-        {
-            float[] window = new float[9];
-            for (int y = 1; y < Height - 1; y++)
+            // Array für die Ergebnisse (0-basiert, Index 0 entspricht Label 1)
+            var centroids = new (float X, float Y)[labelCount];
+
+            for (int i = 1; i <= labelCount; i++)
             {
-                int row = y * Width;
-                for (int x = 1; x < Width - 1; x++)
+                if (counts[i] > 0)
                 {
-                    int idx = row + x;
-                    window[0] = input[idx - Width - 1]; window[1] = input[idx - Width]; window[2] = input[idx - Width + 1];
-                    window[3] = input[idx - 1]; window[4] = input[idx]; window[5] = input[idx + 1];
-                    window[6] = input[idx + Width - 1]; window[7] = input[idx + Width]; window[8] = input[idx + Width + 1];
-
-                    // Kleiner Insertion Sort für 9 Werte (schneller als Array.Sort)
-                    for (int i = 1; i < 9; i++)
-                    {
-                        float temp = window[i];
-                        int j = i - 1;
-                        while (j >= 0 && window[j] > temp)
-                        {
-                            window[j + 1] = window[j];
-                            j--;
-                        }
-                        window[j + 1] = temp;
-                    }
-                    output[idx] = window[4]; // Der Median
+                    centroids[i - 1] = (
+                        (float)sumX[i] / counts[i],
+                        (float)sumY[i] / counts[i]
+                    );
+                }
+                else
+                {
+                    centroids[i - 1] = (0f, 0f); // Fallback für verdrängte/überschriebene Labels
                 }
             }
-        }
 
-        private void MinFilter3x3(float[] output, float[] input)
-        {
-            for (int y = 1; y < Height - 1; y++)
-            {
-                int row = y * Width;
-                for (int x = 1; x < Width - 1; x++)
-                {
-                    int idx = row + x;
-                    float min = input[idx];
-
-                    if (input[idx - Width - 1] < min) min = input[idx - Width - 1];
-                    if (input[idx - Width] < min) min = input[idx - Width];
-                    if (input[idx - Width + 1] < min) min = input[idx - Width + 1];
-                    if (input[idx - 1] < min) min = input[idx - 1];
-                    if (input[idx + 1] < min) min = input[idx + 1];
-                    if (input[idx + Width - 1] < min) min = input[idx + Width - 1];
-                    if (input[idx + Width] < min) min = input[idx + Width];
-                    if (input[idx + Width + 1] < min) min = input[idx + Width + 1];
-
-                    output[idx] = min;
-                }
-            }
-        }
-
-        private void MaxFilter3x3(float[] output, float[] input)
-        {
-            for (int y = 1; y < Height - 1; y++)
-            {
-                int row = y * Width;
-                for (int x = 1; x < Width - 1; x++)
-                {
-                    int idx = row + x;
-                    float max = input[idx];
-
-                    if (input[idx - Width - 1] > max) max = input[idx - Width - 1];
-                    if (input[idx - Width] > max) max = input[idx - Width];
-                    if (input[idx - Width + 1] > max) max = input[idx - Width + 1];
-                    if (input[idx - 1] > max) max = input[idx - 1];
-                    if (input[idx + 1] > max) max = input[idx + 1];
-                    if (input[idx + Width - 1] > max) max = input[idx + Width - 1];
-                    if (input[idx + Width] > max) max = input[idx + Width];
-                    if (input[idx + Width + 1] > max) max = input[idx + Width + 1];
-
-                    output[idx] = max;
-                }
-            }
-        }
-
-        private void BilateralFilter3x3(float[] output, float[] input, float intensitySigma = 25f)
-        {
-            float sigmaSq = intensitySigma * intensitySigma * 2f;
-
-            for (int y = 1; y < Height - 1; y++)
-            {
-                int row = y * Width;
-                for (int x = 1; x < Width - 1; x++)
-                {
-                    int idx = row + x;
-                    float centerVal = input[idx];
-                    float sumWeight = 0;
-                    float sumVal = 0;
-
-                    for (int i = -1; i <= 1; i++)
-                    {
-                        for (int j = -1; j <= 1; j++)
-                        {
-                            float neighborVal = input[idx + (i * Width) + j];
-                            float diff = centerVal - neighborVal;
-
-                            // Gewichtung basierend auf Helligkeitsunterschied
-                            float weight = (float)Math.Exp(-(diff * diff) / sigmaSq);
-
-                            sumVal += neighborVal * weight;
-                            sumWeight += weight;
-                        }
-                    }
-                    output[idx] = sumVal / sumWeight;
-                }
-            }
-        }
-
-        // Enqueues valid 4-neighbor pixels into intensity buckets for flood expansion.
-        private void EnqueueNeighbors(int idx, int label, int[] labels, float[] blur, Queue<int>[] buckets, int maxB)
-        {
-            // Up, down, left, right
-            int[] neighbors = { idx - Width, idx + Width, idx - 1, idx + 1 };
-            for (int i = 0; i < 4; i++)
-            {
-                int nIdx = neighbors[i];
-                if (nIdx >= 0 && nIdx < labels.Length)
-                {
-                    // Check horizontal boundary
-                    if (i >= 2 && (nIdx / Width != idx / Width)) continue;
-
-                    if (labels[nIdx] == 0)
-                    {
-                        int b = (int)blur[nIdx];
-                        if (b > maxB) b = maxB;
-                        buckets[b].Enqueue(nIdx);
-                    }
-                }
-            }
+            return centroids;
         }
 
 
-        private unsafe void WatershedSegmentation(float[] filtered, int[] labels, List<TileSegment> tiles)
-        {
-            // Seed candidates (keep all valid local maxima)
-            var seedCandidates = new List<(int idx, float val)>(128);
 
-            for (int y = MarkerRadius; y < Height - MarkerRadius; y++)
-            {
-                int row = y * Width;
-                for (int x = MarkerRadius; x < Width - MarkerRadius; x++)
-                {
-                    int idx = row + x;
-                    float val = filtered[idx];
-                    bool isMax = true;
-
-                    for (int iy = -MarkerRadius; iy <= MarkerRadius; iy++)
-                    {
-                        int nRow = (y + iy) * Width;
-                        for (int ix = -MarkerRadius; ix <= MarkerRadius; ix++)
-                        {
-                            if (ix == 0 && iy == 0) continue;
-                            if (filtered[nRow + x + ix] >= val)
-                            {
-                                isMax = false;
-                                break;
-                            }
-                        }
-                        if (!isMax) break;
-                    }
-
-                    if (isMax)
-                        seedCandidates.Add((idx, val));
-                }
-            }
-
-            // NOTE: The previous seed trimming was removed here
-            // because it destroys topology. We regulate count during post-processing.
-
-            // Buckets
-            Queue<int>[] buckets = new Queue<int>[256];
-            for (int i = 0; i < 256; i++)
-                buckets[i] = new Queue<int>(32);
-
-            for (int i = 0; i < seedCandidates.Count; i++)
-            {
-                int label = i + 1;
-                int idx = seedCandidates[i].idx;
-
-                labels[idx] = label;
-
-                TileSegment ts = new TileSegment();
-                tiles.Add(ts);
-
-                int x = idx % Width;
-                int y = idx / Width;
-
-                AddPixelToTile(ts, x, y);
-                EnqueueNeighbors(idx, label, labels, filtered, buckets, 255);
-            }
-
-            // Watershed flood
-            for (int b = 255; b >= 0; b--)
-            {
-                var q = buckets[b];
-                while (q.Count > 0)
-                {
-                    int idx = q.Dequeue();
-
-                    if (labels[idx] != 0) continue;
-
-                    int label = GetExistingNeighborLabel(idx, labels);
-                    if (label == 0) continue;
-
-                    labels[idx] = label;
-
-                    AddPixelToTile(
-                        tiles[label - 1],
-                        idx % Width,
-                        idx / Width);
-
-                    EnqueueNeighbors(idx, label, labels, filtered, buckets, b);
-                }
-            }
-
-            // Final fill (remaining pixels)
-            FinalFill(labels, tiles);
-        }
-
-        // Divides the image into a regular grid of tiles. Cell size scales with MarkerRadius.
-        private unsafe void XYProjectionSegmentation(float[] filtered, int[] labels, List<TileSegment> tiles)
-        {
-            int totalPixels = Width * Height;
-            int labelCounter = 1;
-
-            // --- Step 1: Global Horizontal Projection ---
-            // Calculate row sums to find the horizontal bed joints (Lagerfugen)
-            float[] rowSum = new float[Height];
-            for (int y = 0; y < Height; y++)
-            {
-                int rowIdx = y * Width;
-                for (int x = 0; x < Width; x++)
-                {
-                    rowSum[y] += filtered[rowIdx + x];
-                }
-            }
-
-            // Find horizontal split points
-            List<int> horizontalSplits = FindValleys(rowSum, MarkerRadius);
-
-            // Add boundaries
-            if (!horizontalSplits.Contains(0)) horizontalSplits.Insert(0, 0);
-            if (!horizontalSplits.Contains(Height)) horizontalSplits.Add(Height);
-            horizontalSplits.Sort();
-
-            // --- Step 2: Local Vertical Projection per Row ---
-            // Iterate through each detected brick course (row)
-            for (int i = 0; i < horizontalSplits.Count - 1; i++)
-            {
-                int yStart = horizontalSplits[i];
-                int yEnd = horizontalSplits[i + 1];
-                int rowHeight = yEnd - yStart;
-
-                if (rowHeight <= 0) continue;
-
-                // Calculate a LOCAL vertical profile for the current horizontal slice
-                float[] localColSum = new float[Width];
-                for (int x = 0; x < Width; x++)
-                {
-                    for (int y = yStart; y < yEnd; y++)
-                    {
-                        localColSum[x] += filtered[y * Width + x];
-                    }
-                }
-
-                // Find vertical split points (head joints) ONLY for this specific row
-                // This handles the 'offset'/staggered brick pattern
-                List<int> verticalSplits = FindValleys(localColSum, MarkerRadius);
-
-                // Add boundaries for the current row
-                if (!verticalSplits.Contains(0)) verticalSplits.Insert(0, 0);
-                if (!verticalSplits.Contains(Width)) verticalSplits.Add(Width);
-                verticalSplits.Sort();
-
-                // --- Step 3: Create Tiles for this Row ---
-                for (int j = 0; j < verticalSplits.Count - 1; j++)
-                {
-                    int xStart = verticalSplits[j];
-                    int xEnd = verticalSplits[j + 1];
-
-                    TileSegment ts = new TileSegment();
-
-                    for (int y = yStart; y < yEnd; y++)
-                    {
-                        int rowOffset = y * Width;
-                        for (int x = xStart; x < xEnd; x++)
-                        {
-                            int idx = rowOffset + x;
-                            labels[idx] = labelCounter;
-                            AddPixelToTile(ts, x, y);
-                        }
-                    }
-
-                    tiles.Add(ts);
-                    labelCounter++;
-                }
-            }
-        }
-
-
-        // Returns the first existing 4-neighbor label around the given pixel index.
-        private int GetExistingNeighborLabel(int idx, int[] labels)
-        {
-            if (idx >= Width && labels[idx - Width] != 0) return labels[idx - Width];
-            if (idx < labels.Length - Width && labels[idx + Width] != 0) return labels[idx + Width];
-            if (idx % Width > 0 && labels[idx - 1] != 0) return labels[idx - 1];
-            if (idx % Width < Width - 1 && labels[idx + 1] != 0) return labels[idx + 1];
-            return 0;
-        }
-
-        // Fills remaining unlabeled pixels by attaching them to adjacent labeled regions.
-        private void FinalFill(int[] labels, List<TileSegment> tiles)
-        {
-            // A single Z-order style scan is enough to bind final gaps to neighbors
-            for (int i = 0; i < labels.Length; i++)
-            {
-                if (labels[i] == 0)
-                {
-                    int l = GetExistingNeighborLabel(i, labels);
-                    if (l != 0)
-                    {
-                        labels[i] = l;
-                        tiles[l - 1].PixelOffsets.Add((i / Width) * Stride + (i % Width) * TRANSITIONS_BPP);
-                        // Centroid sums can optionally be updated here as well
-                    }
-                }
-            }
-        }
-
-        // Merges the smallest regions until the requested target region count is reached.
-        private void MergeSmallestRegions(List<TileSegment> tiles, int[] labels, int width, int height, int targetCount)
-        {
-            int mergesNeeded = tiles.Count - targetCount;
-
-            // List of indices that are still active (not merged away)
-            var activeTiles = new List<int>(tiles.Count);
-            for (int i = 0; i < tiles.Count; i++) activeTiles.Add(i);
-
-            for (int m = 0; m < mergesNeeded; m++)
-            {
-                int smallestIdx = -1;
-                int minSize = int.MaxValue;
-
-                // Find the smallest tile that still exists
-                for (int i = 0; i < activeTiles.Count; i++)
-                {
-                    int idx = activeTiles[i];
-                    if (tiles[idx].PixelOffsets.Count < minSize)
-                    {
-                        minSize = tiles[idx].PixelOffsets.Count;
-                        smallestIdx = idx;
-                    }
-                }
-
-                if (smallestIdx == -1) break;
-
-                int labelToMerge = smallestIdx + 1;
-                var tileToMerge = tiles[smallestIdx];
-
-                // Find the neighbor with the longest shared border
-                int bestNeighborLabel = FindDominantNeighbor(tileToMerge, labels, width, height, labelToMerge);
-
-                if (bestNeighborLabel > 0 && bestNeighborLabel != labelToMerge)
-                {
-                    var neighborTile = tiles[bestNeighborLabel - 1];
-
-                    // Transfer pixels and accumulated sums
-                    neighborTile.PixelOffsets.AddRange(tileToMerge.PixelOffsets);
-                    neighborTile.SumX += tileToMerge.SumX;
-                    neighborTile.SumY += tileToMerge.SumY;
-
-                    // Update the 1D label array efficiently (only affected pixels)
-                    foreach (int offset in tileToMerge.PixelOffsets)
-                    {
-                        int pixelIdx = offset / TRANSITIONS_BPP;
-                        labels[pixelIdx] = bestNeighborLabel;
-                    }
-
-                    // Clear merged tile
-                    tileToMerge.PixelOffsets.Clear();
-                }
-
-                // Remove from active checks
-                activeTiles.Remove(smallestIdx);
-            }
-        }
-
-        // Finds the neighboring label that shares the strongest border with the tile.
-        private int FindDominantNeighbor(TileSegment tile, int[] labels, int width, int height, int myLabel)
-        {
-            int bestLabel = 0;
-            int maxCount = -1;
-
-            // Count how often a foreign label borders this tile
-            var counts = new Dictionary<int, int>();
-
-            foreach (int offset in tile.PixelOffsets)
-            {
-                int pixelIdx = offset / TRANSITIONS_BPP;
-
-                // Check 4 neighbors: up, down, left, right
-                if (pixelIdx >= width)
-                    AddNeighborCount(labels[pixelIdx - width], myLabel, counts);
-
-                if (pixelIdx < labels.Length - width)
-                    AddNeighborCount(labels[pixelIdx + width], myLabel, counts);
-
-                if (pixelIdx % width > 0)
-                    AddNeighborCount(labels[pixelIdx - 1], myLabel, counts);
-
-                if (pixelIdx % width < width - 1)
-                    AddNeighborCount(labels[pixelIdx + 1], myLabel, counts);
-            }
-
-            // Select the neighbor with the highest count
-            foreach (var kvp in counts)
-            {
-                if (kvp.Value > maxCount)
-                {
-                    maxCount = kvp.Value;
-                    bestLabel = kvp.Key;
-                }
-            }
-
-            return bestLabel;
-        }
-
-        // Increments the border-contact count for a valid neighboring label.
-        private void AddNeighborCount(int nLabel, int myLabel, Dictionary<int, int> counts)
-        {
-            if (nLabel != 0 && nLabel != myLabel)
-            {
-                if (!counts.TryGetValue(nLabel, out int count))
-                    count = 0;
-
-                counts[nLabel] = count + 1;
-            }
-        }
 
         // Creates a colored debug map from label data and stores analysis dimensions.
         private unsafe void GenerateLabelMap(int width, int height, int[] labels, int labelCount)
@@ -601,56 +178,6 @@ namespace TgaBuilderLib.Transitions
                     }
                 }
             }
-        }
-
-        // Enqueues direct neighbors around a coordinate into bucketed flood queues.
-        private void EnqueueNeighbors(int x, int y, int label, int width, int height, int[] labels, float[] blur, Queue<(int, int, int)>[] buckets)
-        {
-            int[] dx = { 0, 0, -1, 1 };
-            int[] dy = { -1, 1, 0, 0 };
-
-            for (int i = 0; i < 4; i++)
-            {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
-
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height)
-                {
-                    if (labels[ny * width + nx] == 0) // Only check unassigned pixels
-                    {
-                        int val = (int)Math.Clamp(blur[ny * width + nx], 0, 255);
-                        buckets[val].Enqueue((nx, ny, label));
-                    }
-                }
-            }
-        }
-
-        // Adds a pixel to a tile and updates centroid accumulation sums.
-        private void AddPixelToTile(TileSegment tile, int x, int y)
-        {
-            tile.PixelOffsets.Add((y * Stride) + (x * TRANSITIONS_BPP));
-            tile.SumX += x;
-            tile.SumY += y;
-        }
-
-        private List<int> FindValleys(float[] profile, int radius)
-        {
-            List<int> valleys = new List<int>();
-            for (int i = radius; i < profile.Length - radius; i++)
-            {
-                bool isMin = true;
-                for (int j = -radius; j <= radius; j++)
-                {
-                    if (j == 0) continue;
-                    if (profile[i + j] < profile[i]) // Falls ein Nachbar dunkler ist, kein Minimum
-                    {
-                        isMin = false;
-                        break;
-                    }
-                }
-                if (isMin) valleys.Add(i);
-            }
-            return valleys;
         }
     }
 }
