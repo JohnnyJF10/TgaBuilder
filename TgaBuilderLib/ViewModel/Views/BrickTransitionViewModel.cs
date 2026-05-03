@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -113,6 +114,8 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     {
         if (requiresAnalysis || TransitionHelper.LastAnalysisMap.Length == 0)
             TransitionHelper.AnalyzeTiles(Pixels1);
+
+        Debug.WriteLine($"Current Pivot: {TransitionHelper.Pivot}, Reverse: {TransitionHelper.ReversePivot}");
 
         return TransitionHelper.MixSmartTilesPixels(Pixels1, Pixels2);
     }

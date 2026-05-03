@@ -86,14 +86,13 @@ namespace TgaBuilderLib.Transitions
 
         private (float X, float Y)[] CalculateCentroids(int[] labels, int width, int height, int labelCount)
         {
-            // Arrays für die Summen und Zähler (1-basiert, daher labelCount + 1)
+            // Arrays for summing coordinates and counting pixels for each label
             long[] sumX = new long[labelCount + 1];
             long[] sumY = new long[labelCount + 1];
             int[] counts = new int[labelCount + 1];
 
             int totalPixels = width * height;
 
-            // Einziger Durchlauf zur Aggregation aller X/Y-Koordinaten
             for (int i = 0; i < totalPixels; i++)
             {
                 int lbl = labels[i];
@@ -105,21 +104,21 @@ namespace TgaBuilderLib.Transitions
                 }
             }
 
-            // Array für die Ergebnisse (0-basiert, Index 0 entspricht Label 1)
             var centroids = new (float X, float Y)[labelCount];
 
             for (int i = 1; i <= labelCount; i++)
             {
                 if (counts[i] > 0)
                 {
+                    // Divide the average coordinate by the dimension to get relative (0-1) values
                     centroids[i - 1] = (
-                        (float)sumX[i] / counts[i],
-                        (float)sumY[i] / counts[i]
+                        ((float)sumX[i] / counts[i]) / width,
+                        ((float)sumY[i] / counts[i]) / height
                     );
                 }
                 else
                 {
-                    centroids[i - 1] = (0f, 0f); // Fallback für verdrängte/überschriebene Labels
+                    centroids[i - 1] = (0f, 0f);
                 }
             }
 

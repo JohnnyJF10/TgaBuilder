@@ -296,8 +296,8 @@ namespace TgaBuilderLib.Transitions
 
             foreach (int offset in pixelOffsets)
             {
-                int y = offset / Stride;
-                int x = (offset % Stride) / TRANSITIONS_BPP;
+                int y = offset / Width;
+                int x = offset % Width;
 
                 if (top && y == 0)
                     touchPixCount++;
