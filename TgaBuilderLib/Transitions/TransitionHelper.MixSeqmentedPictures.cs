@@ -98,7 +98,6 @@ namespace TgaBuilderLib.Transitions
             int labelCount = centroids.Length;
 
             // --- STEP 1: Fast Grouping of Offsets (CSR Approach) ---
-            // 1. Count pixels per label
             int[] counts = new int[labelCount + 1];
             for (int i = 0; i < labels.Length; i++)
             {
@@ -106,7 +105,6 @@ namespace TgaBuilderLib.Transitions
                 if (lbl > 0 && lbl <= labelCount) counts[lbl]++;
             }
 
-            // 2. Build Start Indices (Prefix Sum)
             int[] startIndices = new int[labelCount + 2];
             int currentPos = 0;
             for (int i = 1; i <= labelCount; i++)
@@ -116,8 +114,6 @@ namespace TgaBuilderLib.Transitions
             }
             startIndices[labelCount + 1] = currentPos;
 
-            // 3. Fill Flat Offsets array
-            // We use a temporary pointer array to track current write positions
             int[] flatOffsets = new int[currentPos];
             int[] writePos = (int[])startIndices.Clone();
 
@@ -137,43 +133,34 @@ namespace TgaBuilderLib.Transitions
 
             for (int i = 0; i < labelCount; i++)
             {
-                var centroid = centroids[i];
                 int labelID = i + 1;
-
-                // Get the slice of offsets for this specific label from our flat array
                 int start = startIndices[labelID];
                 int end = startIndices[labelID + 1];
-                ReadOnlySpan<int> tileOffsets = new ReadOnlySpan<int>(flatOffsets, start, end - start);
 
+                // tileOffsets now contains PIXEL indices (0 to Width*Height)
+                ReadOnlySpan<int> tileOffsets = new ReadOnlySpan<int>(flatOffsets, start, end - start);
                 if (tileOffsets.Length == 0) continue;
 
-                // Pivot condition
+                var centroid = centroids[i];
                 float v = ComputeFocusV(Mode, centroid);
                 bool shouldDraw = ReversePivot ? (v <= Pivot) : (v >= Pivot);
 
-                // Avoid background-touching edge tiles being drawn
+                // DoesTileTouchRequiredEdge needs to handle pixel indices internally
                 if (shouldDraw)
                     shouldDraw = !DoesTileTouchRequiredEdge(tileOffsets, !checkTop, !checkBottom, !checkLeft, !checkRight);
 
-                // Ensure required edge tiles are always drawn
                 if (!shouldDraw)
                     shouldDraw = DoesTileTouchRequiredEdge(tileOffsets, checkTop, checkBottom, checkLeft, checkRight);
 
-                if (!shouldDraw)
-                    continue;
+                if (!shouldDraw) continue;
 
-                // Corner slicing logic
                 if (cornerTileMap != null && cornerTileMap.TryGetValue(labelID, out var cornerInfo))
                 {
                     if (cornerInfo.drawsHoriz && cornerInfo.drawsVert)
                     {
-                        // Include all pixels in the tile
-                        foreach (int offset in tileOffsets)
+                        foreach (int pixelIdx in tileOffsets)
                         {
-                            // Using original coordinate extraction logic
-                            int py = offset / Stride;
-                            int px = (offset % Stride) / TRANSITIONS_BPP;
-                            selection[py * Width + px] = true;
+                            selection[pixelIdx] = true;
                         }
                     }
                     else
@@ -181,31 +168,25 @@ namespace TgaBuilderLib.Transitions
                         float tanAngle = ComputeCornerSliceTanAngle(cornerInfo.cx, cornerInfo.cy);
                         bool keepHorizSide = cornerInfo.drawsHoriz;
 
-                        foreach (int offset in tileOffsets)
+                        foreach (int pixelIdx in tileOffsets)
                         {
-                            int py = offset / Stride;
-                            int px = (offset % Stride) / TRANSITIONS_BPP;
+                            // Convert pixel index to coordinates
+                            int px = pixelIdx % Width;
+                            int py = pixelIdx / Width;
 
                             float dx = MathF.Abs(px - cornerInfo.cx);
                             float dy = MathF.Abs(py - cornerInfo.cy);
 
-                            bool include = keepHorizSide
-                                ? (dy < dx * tanAngle)    // near horizontal (top/bottom) edge
-                                : (dy >= dx * tanAngle);  // near vertical (left/right) edge
-
-                            if (include)
-                                selection[py * Width + px] = true;
+                            bool include = keepHorizSide ? (dy < dx * tanAngle) : (dy >= dx * tanAngle);
+                            if (include) selection[pixelIdx] = true;
                         }
                     }
                 }
                 else
                 {
-                    // Standard tile (no corner slicing)
-                    foreach (int offset in tileOffsets)
+                    foreach (int pixelIdx in tileOffsets)
                     {
-                        int py = offset / Stride;
-                        int px = (offset % Stride) / TRANSITIONS_BPP;
-                        selection[py * Width + px] = true;
+                        selection[pixelIdx] = true;
                     }
                 }
             }
