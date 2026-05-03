@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace PropertyTools.Wpf
+namespace TgaBuilderWpfUi.ColorPicker
 {
     using System.ComponentModel;
     using System.Windows.Controls;

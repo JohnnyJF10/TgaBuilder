@@ -23,7 +23,7 @@ namespace TgaBuilderWpfUi.View
     /// <summary>
     /// Interaktionslogik für SmoothTransitionWindow.xaml
     /// </summary>
-    public partial class SmoothTransitionWindow : AsyncWindow, ISnackbarOwner
+    public partial class SmoothTransitionWindow : AsyncWindow
     {
         public SmoothTransitionWindow(INotifyPropertyChanged viewModel)
         {
@@ -38,9 +38,5 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is SmoothTransitionViewModel vm)
                 vm.MarkFinishedCommand.Execute(null);
         }
-
-        public SnackbarPresenter SnackbarPresenter => MessageSnackbarPresenter;
-
-        public SnackbarPresenter MessageSnackbarPresenter { get; private set; }
     }
 }

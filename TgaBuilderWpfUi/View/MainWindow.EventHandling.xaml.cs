@@ -121,29 +121,5 @@ namespace TgaBuilderWpfUi.View
             if (PanelMouseAP.GetWheelShiftCommand(window) is ICommand wheelShiftCommand)
                 wheelShiftCommand.Execute((isDestination, e.Delta < 0));
         }
-
-        private void SourceFormatColorPickerButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (DataContext is not TgaBuilderLib.ViewModel.MainViewModel vm) return;
-            var formatTab = vm.SourceFormatTab;
-            var dialog = new ColorPickerWindow(formatTab.ColorSource, formatTab.ColorTarget);
-            if (dialog.ShowDialog() == true)
-            {
-                formatTab.ColorSource = dialog.ResultColorSource;
-                formatTab.ColorTarget = dialog.ResultColorTarget;
-            }
-        }
-
-        private void DestinationFormatColorPickerButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (DataContext is not TgaBuilderLib.ViewModel.MainViewModel vm) return;
-            var formatTab = vm.DestinationFormatTab;
-            var dialog = new ColorPickerWindow(formatTab.ColorSource, formatTab.ColorTarget);
-            if (dialog.ShowDialog() == true)
-            {
-                formatTab.ColorSource = dialog.ResultColorSource;
-                formatTab.ColorTarget = dialog.ResultColorTarget;
-            }
-        }
     }
 }

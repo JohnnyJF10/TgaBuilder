@@ -170,32 +170,6 @@ namespace TgaBuilderAvaloniaUi.View
                 DestinationFormatSwitch.IsChecked = true;
         }
 
-        private async void SourceFormatColorPickerButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (DataContext is not TgaBuilderLib.ViewModel.MainViewModel vm) return;
-            var formatTab = vm.SourceFormatTab;
-            var dialog = new ColorPickerWindow(formatTab.ColorSource, formatTab.ColorTarget);
-            var result = await dialog.ShowDialog<bool?>(this);
-            if (result == true)
-            {
-                formatTab.ColorSource = dialog.ResultColorSource;
-                formatTab.ColorTarget = dialog.ResultColorTarget;
-            }
-        }
-
-        private async void DestinationFormatColorPickerButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (DataContext is not TgaBuilderLib.ViewModel.MainViewModel vm) return;
-            var formatTab = vm.DestinationFormatTab;
-            var dialog = new ColorPickerWindow(formatTab.ColorSource, formatTab.ColorTarget);
-            var result = await dialog.ShowDialog<bool?>(this);
-            if (result == true)
-            {
-                formatTab.ColorSource = dialog.ResultColorSource;
-                formatTab.ColorTarget = dialog.ResultColorTarget;
-            }
-        }
-
         private void Window_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
         {
             if (CurrentImage == null) return;

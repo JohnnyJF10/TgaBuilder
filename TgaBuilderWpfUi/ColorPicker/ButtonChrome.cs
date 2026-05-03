@@ -2,14 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // https://github.com/dotnet/wpf
 
-namespace PropertyTools.Wpf
-{
-    using System;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Media;
-    using System.Windows.Media.Animation;
+using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using Wpf.Ui.Controls;
 
+namespace TgaBuilderWpfUi.ColorPicker
+{
     /// <summary>
     /// The ButtonChrome element
     /// This element is a theme-specific type that is used as an optimization

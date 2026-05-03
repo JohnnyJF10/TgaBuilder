@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // https://github.com/dotnet/wpf
 
-namespace PropertyTools.Wpf
+namespace TgaBuilderWpfUi.ColorPicker
 {
     using System;
     using System.Windows;

@@ -33,6 +33,9 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private bool _isLabelMapExpanded;
     private FilterType _selectedFilter = FilterType.BoxBlur;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
+    private Color _edgeColor;
+
+    private RelayCommand? _pickEdgeColorCommand;
 
     public IWriteableBitmap? LabelMapImage
     {
@@ -102,10 +105,24 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         }
     }
 
+    public Color EdgeColor 
+    {         
+        get => _edgeColor;
+        set => SetPropertyTriggerRecalculation(ref _edgeColor, value);
+    }
+
     public int SelectedSegmentationMethodIndex
     {
         get => (int)_selectedSegmentationMethod;
         set => SelectedSegmentationMethod = (SegmentationMethod)value;
+    }
+
+    public ICommand PickEdgeColorCommand => _pickEdgeColorCommand
+        ??= new RelayCommand(PickEdgeColor);
+
+    private void PickEdgeColor()
+    {
+        // Implement the logic for picking the edge color here
     }
 
     protected override bool RequiresFullAnalysisOnPivotChange => false;

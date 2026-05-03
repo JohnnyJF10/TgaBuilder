@@ -24,7 +24,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\TgaBuilder_icon.ico" />
+    <Resource Include="Resources\TgaBuilder_icon.ico" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="Resources\ColorPicker.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="Resources\Hsv.png" />
   </ItemGroup>
 
   <ItemGroup>

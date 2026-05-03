@@ -1,6 +1,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:PropertyTools.Wpf"
-                    xmlns:converters="clr-namespace:PropertyTools.Wpf"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:local="clr-namespace:TgaBuilderWpfUi.ColorPicker"
+                    xmlns:converters="clr-namespace:TgaBuilderWpfUi.ColorPicker"
+                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                     xmlns:themes="clr-namespace:Microsoft.Windows.Themes">
 
     <!-- 
@@ -17,9 +19,9 @@
     <local:ValueToVisibilityConverter x:Key="ValueToVisibilityConverter" />
     <local:DefinedColorToVisibilityConverter x:Key="DefinedColorToVisibilityConverter" />
 
-    <BitmapImage x:Key="ColorPickerImageSource" UriSource="ColorPicker.png" />
+    <BitmapImage x:Key="ColorPickerImageSource" UriSource="pack://application:,,,/Resources/ColorPicker.png" />
 
-    <BitmapImage x:Key="HsvImageSource" UriSource="Hsv.png" />
+    <BitmapImage x:Key="HsvImageSource" UriSource="pack://application:,,,/Resources/Hsv.png" />
 
     <DrawingBrush x:Key="CheckersBrush" Viewport="0,0,11,11" ViewportUnits="Absolute" TileMode="Tile">
         <DrawingBrush.Drawing>
@@ -66,8 +68,8 @@
                 <TextBlock Text="?" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" 
                        Visibility="{Binding Converter={StaticResource ValueToVisibilityConverter}, ConverterParameter={x:Static local:ColorHelper.UndefinedColor}}" />
             </Grid>
-            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
-                 Text="{Binding Converter={StaticResource ColorToStringConverter2}}" />
+            <!--><TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
+                 Text="{Binding Converter={StaticResource ColorToStringConverter2}}" />-->
         </StackPanel>
     </DataTemplate>
 
@@ -236,8 +238,8 @@ SnapsToDevicePixels="True" />
                                 </ToggleButton.Content>
                             </ToggleButton>
                             <ToggleButton
-                            ToolTip="{Binding Strings.TogglePanelToolTip,RelativeSource={RelativeSource Mode=TemplatedParent}}"
-IsChecked="{Binding ShowHsvPanel, RelativeSource={RelativeSource Mode=TemplatedParent}}" Grid.Column="2" Padding="0"
+                                ToolTip="{Binding Strings.TogglePanelToolTip,RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                IsChecked="{Binding ShowHsvPanel, RelativeSource={RelativeSource Mode=TemplatedParent}}" Grid.Column="2" Padding="0"
 Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}">
                                 <ToggleButton.Content>
                                     <Image Source="{StaticResource HsvImageSource}" Stretch="None" />

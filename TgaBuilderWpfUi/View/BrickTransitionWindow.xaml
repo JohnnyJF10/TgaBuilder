@@ -11,7 +11,7 @@
     xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel" 
     xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
     xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
-    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters"
+    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters" xmlns:ptwpf="clr-namespace:TgaBuilderWpfUi.ColorPicker"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
@@ -37,6 +37,7 @@
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter"/>
+            <converters:ColorStructToMediaColorConverter   x:Key="ColorStructToMediaColorConverter"/>
             <sys:Boolean x:Key="True">True</sys:Boolean>
             <sys:Boolean x:Key="False">False</sys:Boolean>
             <Style TargetType="{x:Type elements:ContextMenuButton}"
@@ -224,13 +225,17 @@
                             </elements:ToggleButtonEx.Content>
                         </elements:ToggleButtonEx>
                         <ui:Button
-                            Icon="{ui:SymbolIcon Color24}"
+                            Icon="{ui:SymbolIcon EyeDropper24}"
                             Width="36"
                             Height="36"
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Click="ColorPickerButton_Click"
-                            ap:MouseOverInfoAP.InfoText="Open color picker to set source and target colors"/>
+                            Margin="5,0,5,0"
+                            DockPanel.Dock="Left"
+                            Command="{Binding PickEdgeColorCommand}"
+                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
+                        <ptwpf:ColorPicker 
+                            SelectedColor="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                            ap:MouseOverInfoAP.InfoText="Open color picker to source color for transparency"
+                            Margin="4"/>
                     </StackPanel>
                 </TabItem>
             </TabControl>

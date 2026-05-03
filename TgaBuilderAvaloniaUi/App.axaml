@@ -11,6 +11,7 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="/Styles/AppTheme.axaml" />
         <ResourceInclude Source="/Styles/IconDictionary.axaml" />
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace PropertyTools.Wpf
+namespace TgaBuilderWpfUi.ColorPicker
 {
     /// <summary>
     /// Provides localized strings for the color picker panel.
