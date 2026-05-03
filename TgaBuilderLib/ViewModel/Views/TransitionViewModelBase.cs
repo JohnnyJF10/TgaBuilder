@@ -108,7 +108,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
     public float PivotValue
     {
         get => _pivotValue;
-        set => SetPropertyTriggerRecalculation(ref _pivotValue, value, RequiresFullAnalysisOnPivotChange);
+        set => SetOneWayPropertyTriggerRecalculation(ref _pivotValue, value, RequiresFullAnalysisOnPivotChange);
     }
 
     protected virtual bool RequiresFullAnalysisOnPivotChange => true;
@@ -137,6 +137,15 @@ public abstract class TransitionViewModelBase : ViewModelBase
             OnPropertyChanged(propertyName ?? string.Empty);
             TriggerRecalculation(requiresAnalysis);
         }
+    }
+
+    protected void SetOneWayPropertyTriggerRecalculation<T>(
+        ref T field,
+        T value,
+        bool requiresAnalysis = true)
+    {
+        field = value;
+        TriggerRecalculation(requiresAnalysis);
     }
 
     protected async void TriggerRecalculation(bool requiresAnalysis = true)
