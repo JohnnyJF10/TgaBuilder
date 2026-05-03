@@ -38,6 +38,17 @@ namespace TgaBuilderWpfUi.View
                 vm.MarkFinishedCommand.Execute(null);
         }
 
+        private void ColorPickerButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (DataContext is not BrickTransitionViewModel vm) return;
+            var dialog = new ColorPickerWindow(vm.ColorSource, vm.ColorTarget);
+            if (dialog.ShowDialog() == true)
+            {
+                vm.ColorSource = dialog.ResultColorSource;
+                vm.ColorTarget = dialog.ResultColorTarget;
+            }
+        }
+
         public SnackbarPresenter SnackbarPresenter => MessageSnackbarPresenter;
 
         public SnackbarPresenter MessageSnackbarPresenter { get; private set; }

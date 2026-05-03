@@ -223,6 +223,14 @@
                                       Fill="{DynamicResource ToggleButtonForeground}" />
                             </elements:ToggleButtonEx.Content>
                         </elements:ToggleButtonEx>
+                        <ui:Button
+                            Icon="{ui:SymbolIcon Color24}"
+                            Width="36"
+                            Height="36"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Click="ColorPickerButton_Click"
+                            ap:MouseOverInfoAP.InfoText="Open color picker to set source and target colors"/>
                     </StackPanel>
                 </TabItem>
             </TabControl>

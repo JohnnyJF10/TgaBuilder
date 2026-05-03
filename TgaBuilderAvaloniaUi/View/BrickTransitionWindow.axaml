@@ -189,6 +189,13 @@
                             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
                             Icon="{StaticResource cut}"
                             IsChecked="{Binding SliceCornerTiles}" />
+                        <elements:IconButton
+                            Classes="outlined"
+                            Icon="{StaticResource color}"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            ap:MouseOverInfoAP.InfoText="Open color picker to set source and target colors"
+                            Click="ColorPickerButton_Click" />
                     </StackPanel>
                 </TabItem>
             </TabControl>

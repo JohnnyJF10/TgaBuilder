@@ -409,6 +409,14 @@
                             Command="{Binding SelectionMonoColorFillCommand}"
                             CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
 
+                        <elements:IconButton
+                            Classes="outlined"
+                            Icon="{StaticResource color}"
+                            Margin="2,0,5,0"
+                            ap:MouseOverInfoAP.InfoText="Open color picker to set source and target colors"
+                            Click="SourceFormatColorPickerButton_Click"
+                            DockPanel.Dock="Left" />
+
                         <elements:IconToggleButton
                             Classes="outlined"
                             Icon="{StaticResource calligraphy_pen}"
@@ -1114,6 +1122,14 @@
                             BorderBrush="Gray"
                             Command="{Binding SelectionMonoColorFillCommand}"
                             CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
+
+                        <elements:IconButton
+                            Classes="outlined"
+                            Icon="{StaticResource color}"
+                            Margin="2,0,5,0"
+                            ap:MouseOverInfoAP.InfoText="Open color picker to set source and target colors"
+                            Click="DestinationFormatColorPickerButton_Click"
+                            DockPanel.Dock="Left" />
 
                         <elements:IconToggleButton
                             Classes="outlined"

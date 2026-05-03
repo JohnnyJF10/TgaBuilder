@@ -68,5 +68,17 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is BrickTransitionViewModel vm)
                 vm.MarkFinishedCommand.Execute(null);
         }
+
+        private async void ColorPickerButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (DataContext is not BrickTransitionViewModel vm) return;
+            var dialog = new ColorPickerWindow(vm.ColorSource, vm.ColorTarget);
+            var result = await dialog.ShowDialog<bool?>(this);
+            if (result == true)
+            {
+                vm.ColorSource = dialog.ResultColorSource;
+                vm.ColorTarget = dialog.ResultColorTarget;
+            }
+        }
     }
 }

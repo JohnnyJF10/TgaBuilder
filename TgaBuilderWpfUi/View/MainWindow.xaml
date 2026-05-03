@@ -499,6 +499,15 @@
                             ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color in the selection"
                         />
 
+                        <ui:Button
+                            Icon="{ui:SymbolIcon Color24}"
+                            Width="36"
+                            Height="36"
+                            Margin="2,0,5,0"
+                            DockPanel.Dock="Left"
+                            Click="SourceFormatColorPickerButton_Click"
+                            ap:MouseOverInfoAP.InfoText="Open color picker to set source and target colors"/>
+
                         <elements:ToggleButtonEx
                             DockPanel.Dock="Right"
                             Width="36"
@@ -1294,6 +1303,15 @@
                             BorderBrush="Gray"
                             ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color in the selection"
                         />
+
+                        <ui:Button
+                            Icon="{ui:SymbolIcon Color24}"
+                            Width="36"
+                            Height="36"
+                            Margin="2,0,5,0"
+                            DockPanel.Dock="Left"
+                            Click="DestinationFormatColorPickerButton_Click"
+                            ap:MouseOverInfoAP.InfoText="Open color picker to set source and target colors"/>
 
                         <elements:ToggleButtonEx
                             DockPanel.Dock="Right"

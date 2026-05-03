@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="TgaBuilderAvaloniaUi.View.ColorPickerWindow"
+        WindowStartupLocation="CenterOwner"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        CanMinimize="False"
+        Title="Color Picker"
+        Background="{DynamicResource DialogBackgroundGradient}"
+        Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
+
+    <Border Padding="16">
+        <Grid RowDefinitions="Auto,Auto,Auto">
+
+            <!-- Color Pickers -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,16,*">
+
+                <!-- Source Color -->
+                <StackPanel Grid.Column="0" Spacing="6">
+                    <TextBlock Text="Source Color"
+                               HorizontalAlignment="Center"
+                               FontWeight="SemiBold" />
+                    <ColorView x:Name="SourceColorView" />
+                </StackPanel>
+
+                <!-- Target Color -->
+                <StackPanel Grid.Column="2" Spacing="6">
+                    <TextBlock Text="Target Color"
+                               HorizontalAlignment="Center"
+                               FontWeight="SemiBold" />
+                    <ColorView x:Name="TargetColorView" />
+                </StackPanel>
+
+            </Grid>
+
+            <!-- Separator -->
+            <Border Grid.Row="1" Height="1" Margin="0,12"
+                    Background="{DynamicResource SeparatorBrush}" />
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="2"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                <Button x:Name="CancelButton"
+                        Content="Cancel"
+                        MinWidth="84"
+                        HorizontalContentAlignment="Center" />
+                <Button x:Name="OkButton"
+                        Content="OK"
+                        MinWidth="84"
+                        HorizontalContentAlignment="Center" />
+            </StackPanel>
+
+        </Grid>
+    </Border>
+</Window>
