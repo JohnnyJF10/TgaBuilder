@@ -7,7 +7,6 @@ namespace TgaBuilderWpfUi.View
 {
     public partial class ColorPickerWindow : AsyncWindow
     {
-        public bool Confirmed { get; private set; }
         public Color ResultColorSource { get; private set; }
         public Color ResultColorTarget { get; private set; }
 
@@ -26,7 +25,6 @@ namespace TgaBuilderWpfUi.View
         {
             ResultColorSource = ToLibColor(SourceColorPanel.SelectedColor ?? WpfColor.FromArgb(0, 0, 0, 0));
             ResultColorTarget = ToLibColor(TargetColorPanel.SelectedColor ?? WpfColor.FromArgb(0, 0, 0, 0));
-            Confirmed = true;
             DialogResult = true;
         }
 

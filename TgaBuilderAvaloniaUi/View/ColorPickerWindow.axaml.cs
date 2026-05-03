@@ -7,7 +7,6 @@ namespace TgaBuilderAvaloniaUi.View;
 
 public partial class ColorPickerWindow : AsyncWindow
 {
-    public bool Confirmed { get; private set; }
     public Color ResultColorSource { get; private set; }
     public Color ResultColorTarget { get; private set; }
 
@@ -22,7 +21,6 @@ public partial class ColorPickerWindow : AsyncWindow
         {
             ResultColorSource = ToLibColor(SourceColorView.Color);
             ResultColorTarget = ToLibColor(TargetColorView.Color);
-            Confirmed = true;
             Close(true);
         };
 
