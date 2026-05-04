@@ -12,13 +12,17 @@ using System.Threading.Tasks;
 
 namespace TgaBuilderAvaloniaUi.Elements;
 
-public static class EyedropperCursorProvider
+public static class CursorProvider
 {
-    static EyedropperCursorProvider()
+    static CursorProvider()
     {
+        DefaultCursor = new Cursor(StandardCursorType.Arrow);
+        CrossArrowCursor = new Cursor(StandardCursorType.SizeAll);
         EyedropperCursor = LoadCursorFromCurFile(new Uri("avares://TgaBuilderAvaloniaUi/Resources/eyedropper.cur"));
     }
 
+    public static readonly Cursor DefaultCursor;
+    public static readonly Cursor CrossArrowCursor;
     public static readonly Cursor EyedropperCursor;
 
     private static Cursor LoadCursorFromCurFile(Uri resourceUri)

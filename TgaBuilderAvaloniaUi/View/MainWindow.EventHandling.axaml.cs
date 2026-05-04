@@ -8,6 +8,7 @@ using System.Linq;
 using System.Transactions;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
+using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderLib.Enums;
 using MouseAction = TgaBuilderLib.Enums.MouseAction;
 
@@ -43,7 +44,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control))
             {
                 _isPanning = true;
-                this.Cursor = new Cursor(StandardCursorType.SizeAll);
+                this.Cursor = CursorProvider.CrossArrowCursor;
                 return;
             }
 
@@ -160,7 +161,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (_isPanning)
             {
                 _isPanning = false;
-                this.Cursor = new Cursor(StandardCursorType.Arrow);
+                this.Cursor = CursorProvider.DefaultCursor;
             }
         }
 

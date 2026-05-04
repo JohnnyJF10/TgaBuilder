@@ -19,13 +19,13 @@ namespace TgaBuilderAvaloniaUi.Services
 
         public CursorSetter()
         {
-            _eyedropperCursor = EyedropperCursorProvider.EyedropperCursor;
+            _eyedropperCursor = CursorProvider.EyedropperCursor;
         }
 
         public void SetDefaultCursor()
         {
             if (GetMainWindow() is { } mainWindow)
-                mainWindow.Cursor = new Cursor(StandardCursorType.Arrow);
+                mainWindow.Cursor = CursorProvider.DefaultCursor;
         }
 
         public void SetEyedropperCursor()

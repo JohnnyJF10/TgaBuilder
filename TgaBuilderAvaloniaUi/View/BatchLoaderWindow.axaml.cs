@@ -51,7 +51,7 @@ namespace TgaBuilderAvaloniaUi.View
                 _lastPanPosition = e.GetPosition(BatchLoaderZoomPanel);
                 e.Pointer.Capture(BatchLoaderZoomPanel);
                 _isPanning = true;
-                this.Cursor = new Cursor(StandardCursorType.SizeAll);
+                this.Cursor = CursorProvider.CrossArrowCursor;
                 e.Handled = true;
             }
         }
@@ -78,7 +78,7 @@ namespace TgaBuilderAvaloniaUi.View
                 if (_isPanning)
                 {
                     _isPanning = false;
-                    this.Cursor = new Cursor(StandardCursorType.Arrow);
+                    this.Cursor = CursorProvider.DefaultCursor;
                 }
             }
         }

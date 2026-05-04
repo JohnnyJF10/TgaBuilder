@@ -80,7 +80,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
             {
-                this.Cursor = EyedropperCursorProvider.EyedropperCursor;
+                this.Cursor = CursorProvider.EyedropperCursor;
             }
         }
 
@@ -97,7 +97,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
             {
-                this.Cursor = new Cursor(StandardCursorType.Arrow);
+                this.Cursor = CursorProvider.DefaultCursor;
             }
         }
 
@@ -106,7 +106,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
             {
                 vm.IsEyedropperMode = false;
-                this.Cursor = new Cursor(StandardCursorType.Arrow);
+                this.Cursor = CursorProvider.DefaultCursor;
             }
         }
 
@@ -119,7 +119,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
             {
-                this.Cursor = EyedropperCursorProvider.EyedropperCursor;
+                this.Cursor = CursorProvider.EyedropperCursor;
             }
         }
 
@@ -127,7 +127,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
             {
-                this.Cursor = new Cursor(StandardCursorType.Arrow);
+                this.Cursor = CursorProvider.DefaultCursor;
             }
         }
 
@@ -136,7 +136,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
             {
                 vm.IsEyedropperMode = false;
-                this.Cursor = new Cursor(StandardCursorType.Arrow);
+                this.Cursor = CursorProvider.DefaultCursor;
             }
         }
     }
