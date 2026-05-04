@@ -11,6 +11,7 @@ using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
+using TgaBuilderLib.Utils;
 
 namespace TgaBuilderLib.ViewModel;
 
@@ -34,8 +35,10 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private FilterType _selectedFilter = FilterType.BoxBlur;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
     private Color _edgeColor;
+    private bool _isEyedropperMode;
 
     private RelayCommand? _pickEdgeColorCommand;
+    private RelayCommand<(int X, int Y, int imageNum)>? _mouseOverCommand;
 
     public IWriteableBitmap? LabelMapImage
     {
@@ -111,6 +114,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _edgeColor, value);
     }
 
+    public bool IsEyedropperMode
+    {
+        get => _isEyedropperMode;
+        set => SetProperty(ref _isEyedropperMode, value, nameof(IsEyedropperMode));
+    }
+
     public int SelectedSegmentationMethodIndex
     {
         get => (int)_selectedSegmentationMethod;
@@ -119,10 +128,40 @@ public class BrickTransitionViewModel : TransitionViewModelBase
 
     public ICommand PickEdgeColorCommand => _pickEdgeColorCommand
         ??= new RelayCommand(PickEdgeColor);
+    public ICommand MouseOverCommand => _mouseOverCommand
+        ??= new RelayCommand<(int X, int Y, int imageNum)>(MouseOverImages);
 
-    private void PickEdgeColor()
+    private void MouseOverImages((int X, int Y, int imageNum) MouseOverImagesArgs)
     {
-        // Implement the logic for picking the edge color here
+        if (IsEyedropperMode)
+        {
+            DoColorPicking(MouseOverImagesArgs.X, MouseOverImagesArgs.Y, MouseOverImagesArgs.imageNum);
+        }
+    }
+
+    public event EventHandler? EyedroppingRequested;
+
+
+
+    private void PickEdgeColor() => StartColorPicking();
+
+    private void StartColorPicking()
+    {
+        IsEyedropperMode = true;
+
+        EyedroppingRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void DoColorPicking(int X, int Y, int imageNum)
+    {
+        EdgeColor = BitmapOperations.GetPixelBrush(imageNum == 1 ? Image1 : Image2, X, Y);
+    }
+
+    private void EndColorPicking()
+    {
+        IsEyedropperMode = false;
+
+        //_panel.EyedropperEnd();
     }
 
     protected override bool RequiresFullAnalysisOnPivotChange => false;
@@ -144,6 +183,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         TransitionHelper.MarkerRadius = MarkerRadius;
         TransitionHelper.SelectedFilter = SelectedFilter;
         TransitionHelper.SegmentationMethod = SelectedSegmentationMethod;
+        TransitionHelper.EdgeColor = EdgeColor;
     }
 
     protected override void OnResultUpdated()

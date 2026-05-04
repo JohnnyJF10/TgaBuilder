@@ -43,41 +43,66 @@ namespace TgaBuilderLib.Transitions
                     // Copy the background first
                     Buffer.MemoryCopy(pBg, pRes, Height * Stride, Height * Stride);
 
-                    // Apply selection: copy selected pixels from tile texture
+                    // Pre-calculate alpha values for blending
+                    int eA = EdgeColor.A ?? 255;      // Edge alpha (0-255)
+                    int invA = 255 - eA;              // Inverse alpha for background contribution
+                    int eR = EdgeColor.R;
+                    int eG = EdgeColor.G;
+                    int eB = EdgeColor.B;
+
                     for (int y = 0; y < Height; y++)
                     {
+                        int rowOffset = y * Stride;
                         for (int x = 0; x < Width; x++)
                         {
-                            if (!selection[y * Width + x]) continue;
+                            int pixelIndex = y * Width + x;
+                            if (!selection[pixelIndex]) continue;
 
-                            int offset = y * Stride + x * TRANSITIONS_BPP;
-                            for (int b = 0; b < TRANSITIONS_BPP; b++)
-                                pRes[offset + b] = pTile[offset + b];
-                        }
-                    }
+                            int offset = rowOffset + (x * 4);
 
-                    // Contour smoothing at the demolition edge selection border only.
-                    // Pixels positioned on the texture outer edge are excluded from smoothing.
-                    for (int y = 0; y < Height; y++)
-                    {
-                        for (int x = 0; x < Width; x++)
-                        {
-                            if (!selection[y * Width + x]) continue;
+                            // Initial step: copy selected pixel from tile to result
+                            // (Already done for non-edge pixels by logic below or by a full copy)
+                            // For simplicity and clarity, we handle the edge case specifically:
 
-                            // No smoothing for pixels on the texture outer edge
-                            if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1) continue;
-
-                            int backgroundNeighbors = 0;
-                            if (!selection[(y - 1) * Width + x]) backgroundNeighbors++;
-                            if (!selection[(y + 1) * Width + x]) backgroundNeighbors++;
-                            if (!selection[y * Width + (x - 1)]) backgroundNeighbors++;
-                            if (!selection[y * Width + (x + 1)]) backgroundNeighbors++;
-
-                            if (backgroundNeighbors > 0)
+                            if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1)
                             {
-                                int offset = y * Stride + x * TRANSITIONS_BPP;
-                                for (int b = 0; b < TRANSITIONS_BPP; b++)
-                                    pRes[offset + b] = (byte)((pTile[offset + b] + pBg[offset + b]) >> 1);
+                                pRes[offset + 0] = pTile[offset + 0];
+                                pRes[offset + 1] = pTile[offset + 1];
+                                pRes[offset + 2] = pTile[offset + 2];
+                                pRes[offset + 3] = pTile[offset + 3];
+                                continue;
+                            }
+
+                            bool isEdge = !selection[pixelIndex - 1] || !selection[pixelIndex + 1] ||
+                                          !selection[pixelIndex - Width] || !selection[pixelIndex + Width];
+
+                            if (isEdge)
+                            {
+                                // 1. Tint the tile pixel color with EdgeColor
+                                // 2. Alpha blend the result with the background
+
+                                // Blue
+                                int tintedB = (pTile[offset + 0] * eB) / 255;
+                                pRes[offset + 0] = (byte)((tintedB * eA + pBg[offset + 0] * invA) / 255);
+
+                                // Green
+                                int tintedG = (pTile[offset + 1] * eG) / 255;
+                                pRes[offset + 1] = (byte)((tintedG * eA + pBg[offset + 1] * invA) / 255);
+
+                                // Red
+                                int tintedR = (pTile[offset + 2] * eR) / 255;
+                                pRes[offset + 2] = (byte)((tintedR * eA + pBg[offset + 2] * invA) / 255);
+
+                                // Alpha (Blending the transparency)
+                                pRes[offset + 3] = (byte)((pTile[offset + 3] * eA + pBg[offset + 3] * invA) / 255);
+                            }
+                            else
+                            {
+                                // Standard selection: just copy from tile
+                                pRes[offset + 0] = pTile[offset + 0];
+                                pRes[offset + 1] = pTile[offset + 1];
+                                pRes[offset + 2] = pTile[offset + 2];
+                                pRes[offset + 3] = pTile[offset + 3];
                             }
                         }
                     }

@@ -1,21 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using TgaBuilderLib.ViewModel;
 using TgaBuilderWpfUi.Elements;
-using TgaBuilderWpfUi.Services;
-using Wpf.Ui.Controls;
+using Image = System.Windows.Controls.Image;
 
 namespace TgaBuilderWpfUi.View
 {
@@ -30,12 +18,82 @@ namespace TgaBuilderWpfUi.View
             base.DataContext = viewModel;
         }
 
+        public Cursor EyedropperCursor = new(Application
+            .GetResourceStream(
+            new Uri("Resources/eyedropper.cur", UriKind.Relative))
+            .Stream);
+
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
 
             if (DataContext is BrickTransitionViewModel vm)
                 vm.MarkFinishedCommand.Execute(null);
+        }
+
+        private void Image1_MouseMove(object sender, MouseEventArgs e) 
+            => DoEyedropperMouseMove(Image1, e, 1);
+
+        private void Image2_MouseMove(object sender, MouseEventArgs e) 
+            => DoEyedropperMouseMove(Image2, e, 2);
+
+        private void DoEyedropperMouseMove(Image image, MouseEventArgs e, int imageNum)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                var position = e.GetPosition(image);
+                vm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
+            }
+        }
+
+        private void Image2_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                Mouse.OverrideCursor = EyedropperCursor;
+            }
+        }
+
+        private void Image2_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        private void Image2_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                vm.IsEyedropperMode = false;
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        private void Image1_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                Mouse.OverrideCursor = EyedropperCursor;
+            }
+        }
+
+        private void Image1_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        private void Image1_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                vm.IsEyedropperMode = false;
+                Mouse.OverrideCursor = null;
+            }
         }
     }
 }

@@ -12,7 +12,7 @@
     xmlns:pzp="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel"
     xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters"
     xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib" 
-    xmlns:ptwpf="clr-namespace:TgaBuilderWpfUi.ColorPicker"
+    xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
@@ -489,7 +489,9 @@
                             Command="{Binding EyeDropperCommand}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
 
-                        <ptwpf:ColorPicker 
+                        <cp:PortableColorPicker
+                            Width="34"
+                            Height="30"
                             SelectedColor="{Binding ColorToReplace, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                             ap:MouseOverInfoAP.InfoText="Open color picker to source color for transparency"
                             Margin="4"/>
@@ -1278,7 +1280,9 @@
                             Command="{Binding EyeDropperCommand}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
 
-                        <ptwpf:ColorPicker 
+                        <cp:PortableColorPicker
+                            Width="34"
+                            Height="30"
                             SelectedColor="{Binding ColorToReplace, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                             ap:MouseOverInfoAP.InfoText="Open color picker to target color for transparency"
                             Margin="4"/>

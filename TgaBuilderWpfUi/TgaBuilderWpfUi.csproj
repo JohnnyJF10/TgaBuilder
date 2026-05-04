@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ColorPicker\ColorPicker.csproj" />
     <ProjectReference Include="..\TgaBuilderLib\TgaBuilderLib.csproj" />
     <ProjectReference Include="..\ZoomPanel\ZoomPanel.csproj" />
   </ItemGroup>

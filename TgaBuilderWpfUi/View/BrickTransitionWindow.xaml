@@ -11,7 +11,8 @@
     xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel" 
     xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
     xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
-    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters" xmlns:ptwpf="clr-namespace:TgaBuilderWpfUi.ColorPicker"
+    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters"
+    xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
@@ -133,14 +134,10 @@
                 <elements:ToggleButtonEx
                     VerticalAlignment="Center"
                     ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
+                    Icon="{ui:SymbolIcon FlipHorizontal24}"
                     MinHeight="36"
                     MinWidth="36"
-                    IsChecked="{Binding ReversePivot}">
-                    <elements:ToggleButtonEx.Content>
-                        <Path Data="{StaticResource flip_horizontal}" Width="16" Height="16" Stretch="Uniform"
-                              Fill="{DynamicResource ToggleButtonForeground}" />
-                    </elements:ToggleButtonEx.Content>
-                </elements:ToggleButtonEx>
+                    IsChecked="{Binding ReversePivot}"/>
             </StackPanel>
 
             <!-- Col 1, Row 0-1: Tab View -->
@@ -217,13 +214,9 @@
                             VerticalAlignment="Center"
                             MinHeight="36"
                             MinWidth="36"
+                            Icon="{ui:SymbolIcon Cut24}"
                             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
-                            IsChecked="{Binding SliceCornerTiles}">
-                            <elements:ToggleButtonEx.Content>
-                                <Path Data="{StaticResource cut}" Width="16" Height="16" Stretch="Uniform"
-                                      Fill="{DynamicResource ToggleButtonForeground}" />
-                            </elements:ToggleButtonEx.Content>
-                        </elements:ToggleButtonEx>
+                            IsChecked="{Binding SliceCornerTiles}"/>
                         <ui:Button
                             Icon="{ui:SymbolIcon EyeDropper24}"
                             Width="36"
@@ -232,7 +225,9 @@
                             DockPanel.Dock="Left"
                             Command="{Binding PickEdgeColorCommand}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
-                        <ptwpf:ColorPicker 
+                        <cp:PortableColorPicker
+                            Width="34"
+                            Height="30"
                             SelectedColor="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                             ap:MouseOverInfoAP.InfoText="Open color picker to source color for transparency"
                             Margin="4"/>
@@ -332,7 +327,12 @@
                                 x:Name="Image1"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Fill"/>
+                                Stretch="Fill"
+                                MouseMove="Image1_MouseMove"
+                                MouseEnter="Image1_MouseEnter"
+                                MouseLeave="Image1_MouseLeave"
+                                MouseDown="Image1_MouseDown"
+                                />
                         </Grid>
                     </Viewbox>
                     <TextBlock
@@ -375,7 +375,12 @@
                                 x:Name="Image2"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Fill"/>
+                                Stretch="Fill"
+                                MouseMove="Image2_MouseMove"
+                                MouseEnter="Image2_MouseEnter"
+                                MouseLeave="Image2_MouseLeave"
+                                MouseDown="Image2_MouseDown"
+                                />
                         </Grid>
                     </Viewbox>
                     <TextBlock
