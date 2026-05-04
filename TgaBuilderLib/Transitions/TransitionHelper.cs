@@ -33,7 +33,7 @@ namespace TgaBuilderLib.Transitions
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Watershed;
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
 
-        public Color EdgeColor { get; set; } = new Color(0, 0, 0, 128);
+        public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
 
         public void CleanUp()
         {

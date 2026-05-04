@@ -274,7 +274,12 @@
                                 x:Name="Image1"
                                 RenderOptions.BitmapInterpolationMode="None"
                                 Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Fill"/>
+                                Stretch="Fill"
+                                PointerMoved="Image1_PointerMoved"
+                                PointerEntered="Image1_PointerEntered"
+                                PointerExited="Image1_PointerExited"
+                                PointerPressed="Image1_PointerPressed"
+                                />
                         </Grid>
                     </Viewbox>
                     <TextBlock
@@ -322,7 +327,12 @@
                                 x:Name="Image2"
                                 RenderOptions.BitmapInterpolationMode="None"
                                 Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Fill"/>
+                                Stretch="Fill"
+                                PointerMoved="Image2_PointerMoved"
+                                PointerEntered="Image2_PointerEntered"
+                                PointerExited="Image2_PointerExited"
+                                PointerPressed="Image2_PointerPressed"
+                                />
                         </Grid>
                     </Viewbox>
                     <TextBlock

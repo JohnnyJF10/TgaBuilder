@@ -34,7 +34,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private bool _isLabelMapExpanded;
     private FilterType _selectedFilter = FilterType.BoxBlur;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
-    private Color _edgeColor;
+    private Color _edgeColor = new Color(255, 255, 255, 128);
     private bool _isEyedropperMode;
 
     private RelayCommand? _pickEdgeColorCommand;

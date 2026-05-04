@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <TextBox VerticalAlignment="Center" Width="100" Height="36"
+        <TextBox VerticalAlignment="Center" Width="90" Height="23" Padding="0,0,0,5"
                  Text="{Binding Path=SelectedColor, Converter={StaticResource ColorToHexConverter}, ElementName=uc}"
                  x:Name="textbox">
             <i:Interaction.Behaviors>
