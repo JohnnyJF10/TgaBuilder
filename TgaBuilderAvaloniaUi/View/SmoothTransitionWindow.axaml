@@ -27,6 +27,7 @@
                 <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
                 <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
                 <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml"/>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
@@ -41,7 +42,6 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="5*" />
             <RowDefinition Height="60" />
@@ -158,36 +158,10 @@
             </TabControl>
         </Grid>
 
-        <!-- Row 1: From Selection / Mix buttons -->
-        <Button
-            Grid.Row="1" Grid.Column="0"
-            Margin="10,5"
-            Padding="5"
-            HorizontalAlignment="Center"
-            ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
-            Command="{Binding LoadImage1Command}"
-            Content="From Selection" />
-        <Button
-            Grid.Row="1" Grid.Column="2"
-            Margin="10,5"
-            Padding="5"
-            HorizontalAlignment="Center"
-            ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
-            Command="{Binding LoadImage2Command}"
-            Content="From Selection" />
-        <Button
-            Grid.Row="1" Grid.Column="4"
-            Margin="10,5"
-            Padding="5"
-            HorizontalAlignment="Center"
-            ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
-            Command="{Binding MixCommand}"
-            Content="Mix" />
-
-        <!-- Row 2: Images -->
+        <!-- Row 1: Images -->
         <!-- Image 1 -->
         <Border
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -218,7 +192,7 @@
 
         <!-- + symbol and swap -->
         <StackPanel
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="1"
             VerticalAlignment="Center">
             <PathIcon Data="{StaticResource add}"
@@ -235,7 +209,7 @@
 
         <!-- Image 2 -->
         <Border
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="2"
             Margin="10"
             HorizontalAlignment="Stretch"
@@ -265,16 +239,20 @@
             </Grid>
         </Border>
 
-        <!-- Arrow → symbol -->
-        <PathIcon
-            Grid.Row="2"
+        <!-- Mix button (arrow) -->
+        <elements:IconButton
+            Classes="accent"
+            Grid.Row="1"
             Grid.Column="3"
-            Data="{StaticResource arrow_forward}"
-            Width="16" Height="16" />
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
+            Icon="{StaticResource arrow_forward}"
+            Command="{Binding MixCommand}" />
 
         <!-- Result Image -->
         <Border
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="4"
             Margin="10"
             HorizontalAlignment="Stretch"
@@ -288,9 +266,9 @@
                 Stretch="Uniform" />
         </Border>
 
-        <!-- Row 3: OK/Cancel bar -->
+        <!-- Row 2: OK/Cancel bar -->
         <Border
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.ColumnSpan="5"
             Margin="-10,0,-10,-10"
             VerticalAlignment="Stretch"
@@ -299,8 +277,28 @@
             BorderBrush="{DynamicResource SeparatorBrush}"
             BorderThickness="0,1,0,0"
             CornerRadius="0" />
+        <elements:IconButton
+            x:Name="BtnLoad1"
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="10,5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
+            Icon="{StaticResource image_copy}"
+            Command="{Binding LoadImage1Command}" />
+        <elements:IconButton
+            x:Name="BtnLoad2"
+            Grid.Row="2"
+            Grid.Column="2"
+            Margin="10,5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
+            Icon="{StaticResource image_copy}"
+            Command="{Binding LoadImage2Command}" />
         <StackPanel
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.ColumnSpan="5"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
@@ -315,6 +313,7 @@
                 CommandParameter="{Binding $parent[Window]}"
                 Content="Cancel" />
             <Button
+                Classes="accent"
                 Width="80"
                 Height="32"
                 Margin="0,0,15,0"
