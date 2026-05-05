@@ -15,10 +15,10 @@
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Brick Transition Helper"
-    Width="800"
-    Height="520"
-    MinWidth="760"
-    MinHeight="460"
+    Width="660"
+    Height="300"
+    MinWidth="660"
+    MinHeight="300"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
     <Window.Resources>
@@ -34,13 +34,11 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <!-- Outer Grid: 4 Rows -->
+    <!-- Outer Grid: 2 Rows -->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="5*"/>
-            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
 
         <!-- Row 0: Settings / Options -->
@@ -209,45 +207,12 @@
             </TabControl>
         </Grid>
 
-        <!-- Row 1: From Selection / Mix buttons (aligned with image columns) -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="35"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="35"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="0"/>
-            </Grid.ColumnDefinitions>
-            <Button
-                Grid.Column="0"
-                Margin="10,5"
-                Padding="5"
-                HorizontalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Load Bricks Texture from the current selection"
-                Command="{Binding LoadImage1Command}"
-                Content="From Selection"/>
-            <Button
-                Grid.Column="2"
-                Margin="10,5"
-                Padding="5"
-                HorizontalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Load Background Texture from the current selection"
-                Command="{Binding LoadImage2Command}"
-                Content="From Selection"/>
-            <Button
-                Grid.Column="4"
-                Margin="10,5"
-                Padding="5"
-                HorizontalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Generate the brick transition result image"
-                Command="{Binding MixCommand}"
-                Content="Mix"/>
-        </Grid>
-
-        <!-- Row 2: Image Area -->
-        <Grid Grid.Row="2" x:Name="ImageAreaGrid">
+        <!-- Row 1: Image Area -->
+        <Grid Grid.Row="1" x:Name="ImageAreaGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="35"/>
@@ -288,7 +253,7 @@
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         IsVisible="{Binding InitTextVisible}"
-                        FontSize="24"
+                        FontSize="20"
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
@@ -297,17 +262,17 @@
             <StackPanel
                 VerticalAlignment="Center"
                 Grid.Column="1"
-                Margin="0,0,0,0">
+                Margin="0,45,0,0">
                 <PathIcon Data="{StaticResource add}"
                           Width="16" Height="16" />
-                <Button
+                <elements:IconButton
+                    Classes="outlined"
                     Margin="0,9,0,0"
+                    Padding="4,0,0,0"
                     Command="{Binding SwapImagesCommand}"
                     ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture"
-                    ToolTip.Tip="Swap images">
-                    <PathIcon Data="{StaticResource arrow_swap}"
-                              Width="16" Height="16" />
-                </Button>
+                    ToolTip.Tip="Swap images"
+                    Icon="{StaticResource arrow_swap}"/>
             </StackPanel>
 
             <!-- Image 2 (Background) -->
@@ -341,17 +306,22 @@
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         IsVisible="{Binding InitTextVisible}"
-                        FontSize="24"
+                        FontSize="16"
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
 
-            <!-- Arrow → symbol -->
-            <PathIcon
+            <!-- Mix button (arrow) -->
+            <elements:IconButton
+                Classes="accent"
+                Foreground="White"
                 Grid.Column="3"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Data="{StaticResource arrow_forward}"
-                Width="16" Height="16" />
+                Padding="0,0,0,-5"
+                ap:MouseOverInfoAP.InfoText="Generate the brick transition result image"
+                Icon="{StaticResource arrow_forward}"
+                Command="{Binding MixCommand}" />
 
             <!-- Result Image -->
             <Border
@@ -396,18 +366,42 @@
                     Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform"/>
             </Border>
-        </Grid>
 
-        <!-- Row 3: OK/Cancel Buttons -->
-        <Grid Grid.Row="3">
+            <!-- Row 1: OK/Cancel bar -->
             <Border
+                Grid.Row="1"
+                Grid.ColumnSpan="7"
                 Margin="-10,0,-10,-10"
                 VerticalAlignment="Stretch"
                 IsHitTestVisible="False"
                 Background="{DynamicResource StatusBarBackground}"
                 BorderBrush="{DynamicResource SeparatorBrush}"
                 BorderThickness="0,1,0,0"/>
+            <elements:IconButton
+                x:Name="BtnLoad1"
+                Grid.Row="1"
+                Grid.Column="0"
+                Classes="outlined"
+                Margin="10,5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Bricks Texture from the current selection"
+                Icon="{StaticResource image_copy}"
+                Command="{Binding LoadImage1Command}" />
+            <elements:IconButton
+                x:Name="BtnLoad2"
+                Grid.Row="1"
+                Grid.Column="2"
+                Classes="outlined"
+                Margin="10,5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Background Texture from the current selection"
+                Icon="{StaticResource image_copy}"
+                Command="{Binding LoadImage2Command}" />
             <StackPanel
+                Grid.Row="1"
+                Grid.ColumnSpan="7"
                 HorizontalAlignment="Right"
                 Orientation="Horizontal">
                 <Button
@@ -421,6 +415,7 @@
                     CommandParameter="{Binding $parent[Window]}"
                     Content="Cancel"/>
                 <Button
+                    Classes="accent"
                     Width="80"
                     Height="32"
                     Margin="0,0,15,0"

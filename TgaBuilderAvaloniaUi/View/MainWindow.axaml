@@ -706,39 +706,22 @@
                 HorizontalAlignment="Center"
                 DataContext="{Binding Selection}"
                 Orientation="Horizontal">
+                <ColorPicker
+                    x:Name="SelectionFillColorPicker"
+                    ap:MouseOverInfoAP.InfoText="Pick the color for filling the selection"
+                    Color="{Binding SelectedFillColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"
+                    />
                 <Button
-                    Width="30"
+                    Margin="5"
+                    Width="20"
                     Height="30"
-                    Margin="2,0"
-                    ap:MouseOverInfoAP.InfoText="Set a pure black selection"
-                    Background="Black"
-                    BorderBrush="Gray"
-                    Command="{Binding SelectionMonoColorFillCommand}"
-                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
-                <Button
-                    Width="30"
-                    Height="30"
-                    Margin="3,0"
-                    ap:MouseOverInfoAP.InfoText="Set a pure magenta selection"
-                    Background="Magenta"
-                    BorderBrush="Gray"
-                    Command="{Binding SelectionMonoColorFillCommand}"
-                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
-                <Grid>
-                    <elements:CheckerRectangle
-                        Width="30"
-                        Height="30"
-                        TileDensity="1.25" />
-                    <Button
-                        Width="30"
-                        Height="30"
-                        Margin="2,0"
-                        ap:MouseOverInfoAP.InfoText="Set a pure transparent selection"
-                        Background="Transparent"
-                        BorderBrush="Transparent"
-                        Command="{Binding SelectionMonoColorFillCommand}"
-                        CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"/>
-                </Grid>
+                    Padding="0"
+                    Background="Transparent"
+                    ap:MouseOverInfoAP.InfoText="Fill selection with color"
+                    Command="{Binding SelectionMonoColorFillCommand}">
+                    <PathIcon Data="{StaticResource arrow_curve_down_right}"
+                              Width="18" Height="18" />
+                </Button>
             </StackPanel>
             <Button
                 Width="100"

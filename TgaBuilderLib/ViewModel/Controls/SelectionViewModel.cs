@@ -40,10 +40,12 @@ namespace TgaBuilderLib.ViewModel
         private bool _autoCopy;
         private bool _autoPaste;
 
+        private Color _selectedFillColor = new Color(255,0,255,255);
+
         private RelayCommand? _copyCommand;
         private RelayCommand? _pasteCommand;
         private RelayCommand? _autoPasteCommand;
-        private RelayCommand<Color>? _selectionMonoColorFillCommand;
+        private RelayCommand? _selectionMonoColorFillCommand;
 
 
 
@@ -61,6 +63,12 @@ namespace TgaBuilderLib.ViewModel
         {
             get => _isPlacing;
             set => SetProperty(ref _isPlacing, value, nameof(IsPlacing));
+        }
+
+        public Color SelectedFillColor
+        {
+            get => _selectedFillColor;
+            set => SetProperty(ref _selectedFillColor, value, nameof(SelectedFillColor));
         }
 
         public bool AutoCopy
@@ -131,14 +139,14 @@ namespace TgaBuilderLib.ViewModel
             }
         }
 
-        public void SelectionMonoColorFill(Color color)
+        public void SelectionMonoColorFill()
         {
             PixelRect rect = new(0, 0,
                 Presenter.PixelWidth,
                 Presenter.PixelHeight);
 
             _bitmapOperations.FillRectColor(
-                Presenter, rect, color);
+                Presenter, rect, SelectedFillColor);
 
             IsPlacing = true;
 
