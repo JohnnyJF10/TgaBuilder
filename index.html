@@ -61,8 +61,11 @@
     <h3 id="texture-panel-building-tool-for-trle"><strong>Texture Panel Building Tool for TRLE</strong></h3>
     <p>
       <a href="https://github.com/JohnnyJF10/TgaBuilder/releases" target="_blank">Latest Releases</a> |
-      <a href="https://github.com/JohnnyJF10/TgaBuilder" target="_blank">Github Repository</a>
+      <a href="https://johnnyjf10.github.io/TgaBuilder/" target="_blank">Github Page</a>
     </p>
+    <p><img src="https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release.yml/badge.svg" alt="LatestReleaseBuildStatus" /></p>
+    <p><img src="https://img.shields.io/github/downloads/JohnnyJF10/TgaBuilder/total.svg" alt="Github All Releases" /></p>
+    <p><img src="https://img.shields.io/github/license/JohnnyJF10/TgaBuilder" alt="GitHub License" /></p>
     <p><img src="/TgaBuilder/Screenshots/TgaBuilder_logo.png" alt="Logo" /></p>
 
     <h2 id="description">Description</h2>
@@ -85,44 +88,43 @@
       <li>and others…</li>
     </ul>
 
-    <h3 id="new-in-version-220">New in Version 2.2.0</h3>
+    <h3 id="new-in-version-220">New in Version 2.2</h3>
+
+    <p><img src="/TgaBuilder/Screenshots/TransitionHelperButton.png" alt="SmoothTransitions" /></p>
 
     <ul>
       <li>
-        New <strong>Transition Helper Windows</strong> to generate transition tiles directly from texture tiles
-        available
-        in either Source or Destination panels:
+        New <strong>Transition Helper Windows</strong> to generate transition tiles directly from texture tile available
+        from either Source or Destination panels.
 
         <ul>
           <li>
             <strong>Smooth Transition Helper</strong> for soft directional transitions with adjustable
             <strong>Pivot</strong> for border line positioning and <strong>Hardness</strong>.
-            <br>
-            <video src="Screenshots/SmoothTransition.mp4" autoplay loop muted playsinline width="600"></video>
+            <p><video src="Screenshots/SmoothTransition.mp4" autoplay loop muted playsinline width="600"></video></p>
           </li>
 
           <li>
             <strong>Brick Transition Helper</strong> for marker-based brick/background transition–based segmentation
-            algorithms.
-            Adjust the <strong>Marker Radius</strong> to control the number of initial seeds used by the segmentation
-            algorithm (larger values reduce the number of detected tiles).
-            Tiles are drawn depending on whether their centroid falls within the shape defined by the
-            <strong>Pivot</strong>. Toggle <strong>Reverse Pivot</strong> to invert the drawing logic. Toggle
-            <strong>Slice Corners</strong> if needed to improve placement of adjacent background textures.
-            <br>
-            Specify the pre-algorithm input <strong>Filter</strong>: <strong>Box Blur</strong>,
-            <strong>Bilateral</strong>,
-            <strong>Median</strong>, or <strong>None</strong>.
-            <br>
-            Specify the <strong>Segmentation</strong> algorithm: <strong>Watershed</strong> or
-            <strong>XY Projection</strong>.
-            <br>
-            <em>Tip:</em> For wall bricks with clear horizontal or vertical joints, use <strong>XY Projection</strong>
-            with
-            no filter and a large <strong>Marker Radius</strong>. For natural or old bricks, use
-            <strong>Watershed</strong> with <strong>Box Blur</strong> and a small <strong>Marker Radius</strong>.
-            <br>
-            <video src="Screenshots/BrickTransition.mp4" autoplay loop muted playsinline width="600"></video>
+            algorithms. Adjust the <strong>Marker Radius</strong> value to control the number of initial seeds used by
+            the segmentation algorithm. A larger value reduces the number of tiles detected later. After tile
+            detection, tiles are drawn depending on whether their centroid falls within the shape defined by the
+            <strong>Pivot</strong> value. This shape is the same as that used for smooth transitions. Toggle
+            <strong>Reverse Pivot</strong> to invert the drawing logic. Toggle <strong>Slice Corners</strong> if needed
+            to make placing adjacent background textures more accurate. More options will be added in the future.
+            <br />
+            Specify the pre-algorithm input <strong>Filter</strong>: choose between <strong>Box Blur</strong>,
+            <strong>Bilateral</strong>, <strong>Median</strong>, or no filter (<strong>None</strong>).
+            <br />
+            Specify the <strong>Segmentation</strong> algorithm itself: <strong>Watershed</strong> or
+            <strong>XY Projection</strong>. More options will be added in the future.
+            <br />
+            <em>Tip:</em> For wall bricks with clear joints in either the horizontal or vertical direction, choose the
+            <strong>XY Projection</strong> algorithm with no input filter and a large <strong>Marker Radius</strong>. For
+            natural or temple-style old bricks, select the <strong>Watershed</strong> algorithm with a
+            <strong>Box Blur</strong> filter and a small <strong>Marker Radius</strong>. To specify the color of the
+            demolition edge, you can find a color picker and an eyedropper in the <strong>Options</strong> tab.
+            <p><video src="Screenshots/BrickTransition.mp4" autoplay loop muted playsinline width="600"></video></p>
           </li>
         </ul>
       </li>
@@ -150,11 +152,11 @@
 
     <p>Extract the files and start <em>TgaBuilder.exe</em>.</p>
 
-    <p><strong>Linux and Windows:</strong></p>
+    <p><strong>Cross Platform, Windows and Linux:</strong></p>
     <p>
-      There is also a cross-platform version based on Avalonia UI instead of WPF. It has been tested on Ubuntu,
-      Linux Mint, and Windows. Some features (mainly clipboard) are missing, but otherwise it is fully functional.
-      This version requires <strong>.NET 8.0</strong>.
+      There is also a cross-platform version based on Avalonia UI instead of WPF. It has been tested on Ubuntu, Linux
+      Mint, and Windows. Some features (mainly clipboard) are missing, but otherwise it is fully functional. This
+      version requires <em>.NET 8.0</em>.
     </p>
 
     <p>To run the Avalonia UI version on Linux:</p>
@@ -319,7 +321,7 @@
     <p>From left to rigth:</p>
     <ul>
       <li>Import atlas from Classic TR levels<br />
-        <em>Supports:</em> <strong>TR1–TRC, TRLE, TRNG, TEN)</strong> (<code>Ctrl + Q</code>)
+        <em>Supports:</em> <strong>TR1–TRC, TRLE, TRNG, TEN</strong> (<code>Ctrl + Q</code>)
       </li>
       <li>Enable remapping for imports (removes padding in TE-built atlases)</li>
     </ul>
@@ -331,7 +333,10 @@
     <ul>
       <li>Open Batch Loader (<code>Ctrl + W</code>)</li>
     </ul>
-    <p>Please use Imports carefully and conscientiously when building own custom levels…</p>
+    <p>Please use Imports carefully and conscientiously when building own custom levels.
+      Specifically, clarify with the creator whether you are authorised to use custom assets.
+      If in doubt, use assets that are guaranteed to be acceptable for use in your own custom levels instead.
+      Please also note that this tool is licensed under the MIT licence.</p>
 
     <h3 id="batch-file-loader">Batch File Loader</h3>
     <p><img src="Screenshots/BatchLoader.png" alt="Batch Loader" /></p>
@@ -364,7 +369,8 @@
     </ul>
 
     <h3 id="format-tab">Format Tab (Source and Destination Panel)</h3>
-    <p>This tab allows you to modify the format of the destination texture panel…</p>
+    <p>This tab allows you to modify the format of the destination texture panel. TgaBuilder now fully supports the
+      opening, modification and writing of both <strong>24-bit</strong> and <strong>32-bit</strong> pixel formats.</p>
     <p><img src="Screenshots/TabFormat.png" alt="Format Tab" /></p>
     <ul>
       <li>BPP toggle</li>
@@ -373,7 +379,14 @@
       <li>Replace selected color with <strong>magenta</strong> or <strong>transparency</strong></li>
       <li>Auto-apply magenta or transparency replacement for new selections</li>
     </ul>
+    <p>The BPP toggle will be set automatically depending on the input after loading. You can then set it manually if
+      you wish. If you select <strong>RGB 24 BPP</strong>, magenta will be used for transparent parts. If you select
+      <strong>BGRA 32 BPP</strong>, you will have a real alpha channel. Switching between the two settings will set the
+      pixel values appropriately (e.g. alpha = 0 areas will be converted to magenta areas, and so on).</p>
     <p><img src="Screenshots/Format.png" alt="Format" /></p>
+    <p>Switching from <strong>BGRA 32 BPP</strong> to <strong>RGB 24 BPP</strong> will set the magenta colour correctly,
+      but since pixels with an alpha value other than <strong>0</strong> or <strong>255</strong> are not supported by
+      <strong>RGB 24 BPP</strong>, information will be lost, possibly making the switching step irreversible.</p>
 
     <h3 id="view-tab">View Tab (Source and Destination Panel)</h3>
     <p><img src="Screenshots/TabView.png" alt="View Tab" /></p>
@@ -495,8 +508,10 @@
 
     <h3 id="third-party-libraries">Third-Party Libraries</h3>
 
-    <p>For WPFZoomPanel I did some custom modifications and adapted it to .net 8. This modified project is included in
-      this reporsitory as well.</p>
+    <p>For WPFZoomPanel, bzPSD and ColorPicker, I did a significant amount of custom modifications, so it was not
+      sufficient to just add them as NuGet packages. This modified project is included in this reporsitory as well.
+      bzPSD has been modernized to .net core and is fully integrated into the TgaBuildeLib assembly. WPFZoomPanel and
+      ColorPicker have own assemblies.</p>
 
     <table>
       <thead>
@@ -518,15 +533,15 @@
         </tr>
         <tr>
           <td>Pfim</td>
-          <td>0.11.3</td>
+          <td>0.11.4</td>
           <td>NuGet</td>
           <td>MIT</td>
           <td><a href="https://github.com/nickbabcock/Pfim">GitHub</a></td>
         </tr>
         <tr>
           <td>bzPSD</td>
-          <td>0.1.0</td>
-          <td>NuGet</td>
+          <td>-</td>
+          <td>GitHub</td>
           <td>BSD-3-Clause license</td>
           <td><a href="https://github.com/DsonKing/System.Drawing.PSD">GitHub</a></td>
         </tr>
@@ -539,7 +554,7 @@
         </tr>
         <tr>
           <td>Microsoft Dependency Injection</td>
-          <td>9.0.6</td>
+          <td>9.0.9</td>
           <td>NuGet</td>
           <td>MIT</td>
           <td><a href="https://dotnet.microsoft.com/en-us/">Microsoft</a></td>
@@ -548,6 +563,13 @@
           <td>SharpZipLib</td>
           <td>1.4.2</td>
           <td>NuGet</td>
+          <td>MIT</td>
+          <td><a href="https://github.com/icsharpcode/SharpZipLib">GitHub</a></td>
+        </tr>
+        <tr>
+          <td>ColorPicker</td>
+          <td>1.0.11</td>
+          <td>GitHub</td>
           <td>MIT</td>
           <td><a href="https://github.com/icsharpcode/SharpZipLib">GitHub</a></td>
         </tr>
@@ -581,8 +603,6 @@
         </tr>
       </tbody>
     </table>
-
-    <PackageReference Include="SharpZipLib" Version="1.4.2" />
 
     <p>I would like to express my gratitude to the <a href="https://github.com/MontyTRC89/Tomb-Editor">TombEditor</a>
       team and the authors of <a href="http://xproger.info/projects/OpenLara/trs.html">TRosettaStone</a>. Their

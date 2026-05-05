@@ -8,6 +8,7 @@
                              xmlns:lui="http://schemas.lepo.co/wpfui/2022/xaml"
                              mc:Ignorable="d"
                              x:Name="uc"
+                             BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                              Background="{DynamicResource ApplicationBackgroundBrush}"
                              d:DesignWidth="268.356" d:DesignHeight="463.308">
     <local:DualPickerControlBase.Resources>

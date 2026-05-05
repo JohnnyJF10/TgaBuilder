@@ -1,5 +1,4 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-using K4os.Compression.LZ4;
 using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -136,46 +135,6 @@ namespace TgaBuilderLib.Level
         {
             var limitedStream = new SubStream(baseStream, compressedSize);
             return new InflaterInputStream(limitedStream);
-        }
-
-        protected Stream DecompressStreamLZ4(Stream baseStream, ulong totalUncompressedSize)
-        {
-            var outputStream = new MemoryStream((int)totalUncompressedSize);
-            
-            using (var reader = new BinaryReader(baseStream, Encoding.UTF8, leaveOpen: true))
-            {
-                uint numChunks = reader.ReadUInt32();
-
-                uint totalDecompressed = 0;
-
-                for (uint i = 0; i < numChunks; i++)
-                {
-                    uint chunkUncompressed = reader.ReadUInt32();
-                    uint chunkCompressed = reader.ReadUInt32();
-
-                    byte[] compressedData = reader.ReadBytes((int)chunkCompressed);
-                    if (compressedData.Length != chunkCompressed)
-                        throw new EndOfStreamException($"Chunk {i}: expected {chunkCompressed}, got {compressedData.Length}");
-
-                    byte[] decompressedData = new byte[chunkUncompressed];
-
-                    int result = LZ4Codec.Decode(
-                        compressedData, 0, (int)chunkCompressed,
-                        decompressedData, 0, (int)chunkUncompressed);
-
-                    if (result != chunkUncompressed)
-                        throw new InvalidDataException($"Chunk {i} failed");
-
-                    outputStream.Write(decompressedData, 0, (int)chunkUncompressed);
-                    totalDecompressed += chunkUncompressed;
-                }
-
-                if (totalDecompressed != totalUncompressedSize)
-                    throw new InvalidDataException($"Expected {totalUncompressedSize} bytes, got {totalDecompressed}");
-            }
-            
-            outputStream.Position = 0;
-            return outputStream;
         }
 
         public IWriteableBitmap GetResultBitmap()

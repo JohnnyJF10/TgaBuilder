@@ -5,7 +5,7 @@
 
 ![LatestReleaseBuildStatus](https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release.yml/badge.svg)
 ![Github All Releases](https://img.shields.io/github/downloads/JohnnyJF10/TgaBuilder/total.svg)
-![CodeFactor Review](https://www.codefactor.io/Content/badges/AMinus.svg)
+![GitHub License](https://img.shields.io/github/license/JohnnyJF10/TgaBuilder)
 
 ![Logo](Screenshots/TgaBuilder_logo.png)
 
@@ -25,7 +25,7 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 - Imported texture repacking to remove TE compiled atlas padding
 - and others…
 
-### New in Version 2.2.
+### New in Version 2.2
 ![SmoothTransitions](Screenshots/TransitionHelperButton.png)
 
 - New **Transition Helper Windows** to generate transition tiles directly from texture tile available from either Source or Destination panels.
@@ -37,7 +37,7 @@ If you have already worked with TBuilder in the past, you should get familiar wi
   - **Brick Transition Helper** for marker-based brick/background transition–based segmentation algorithms. Adjust the **Marker Radius** value to control the number of initial seeds used by the segmentation algorithm. A larger value reduces the number of tiles detected later. After tile detection, tiles are drawn depending on whether their centroid falls within the shape defined by the **Pivot** value. This shape is the same as that used for smooth transitions. Toggle **Reverse Pivot** to invert the drawing logic. Toggle **Slice Corners** if needed to make placing adjacent background textures more accurate. More options will be added in the future.
   - Specify the pre-algorithm input **Filter**: choose between **Box Blur**, **Bilateral**, **Median**, or no filter (**None**).
   - Specify the **Segmentation** algorithm itself: **Watershed** or **XY Projection**. More options will be added in the future.
-    - Tip: For wall bricks with clear joints in either the horizontal or vertical direction, choose the **XY Projection** algorithm with no input filter and a large **Marker Radius**. For natural or temple-style old bricks, select the **Watershed** algorithm with a **Box Blur** filter and a small **Marker Radius**.
+    - Tip: For wall bricks with clear joints in either the horizontal or vertical direction, choose the **XY Projection** algorithm with no input filter and a large **Marker Radius**. For natural or temple-style old bricks, select the **Watershed** algorithm with a **Box Blur** filter and a small **Marker Radius**. To specify the color of the demolition edge, you can find a color picker and an eyedropper in the **Options** tab.
 
   ![BrickTransitionWin](Screenshots/BrickTransition_gif.gif)
 
@@ -49,14 +49,14 @@ Move over to [GitHub Releases](https://github.com/JohnnyJF10/TgaBuilder/releases
 
 For the latest releases there are two tool versions per release: The *.NET 6.0* version of the tool and the *.NET 8.0* version of the tool.
 - Download the ***.NET 6.0*** version of the tool (TgaBuilder-dotnet6), if you already have Tomb Editor Version 1.9 installed on your system and you do not wish to install another .NET runtime (as Tomb Editor Version 1.9 is using *.NET 6.0* runtime as well)
+
 - Download the ***.NET 8.0*** version of the tool (TgaBuilder-dotnet8), if you have the *.NET 8.0* runtime installed or do not mind to install it. This version has the slightly better performance.
 
 Extract the files and start *TgaBuilder.exe*.
 
-**Linux**: 
+**Cross Platform, Windows and Linux**: 
 
-There is also an experimental cross-platform version of the tool based on Avalonia UI instead of WPF. It has been tested only on Linux Mint (and Windows) currently.
-Please note that this version is highly experimental and contains bugs with zoom panel and some controls. They will be fixed in future when there is realy need for TRLE building tools on other platforms than Windows. For any productive purposes, use the regular versions of TgaBuilder for Windows.
+There is also a cross-platform version based on Avalonia UI instead of WPF. It has been tested on Ubuntu, Linux Mint, and Windows. Some features (mainly clipboard) are missing, but otherwise it is fully functional. This version requires *.NET 8.0*.
 
 
 To run the Avalonia UI version on Linux, move ober to the directory where you extracted the files and run:
@@ -318,16 +318,17 @@ This project is licensed under the MIT License.
 
 ### Third-Party Libraries
 
-For WPFZoomPanel I did some custom modifications and adapted it to .net 8. This modified project is included in this reporsitory as well.
+For WPFZoomPanel, bzPSD and ColorPicker, I did a significant amount of custom modifications, so it was not sufficient to just add them as NuGet packages. This modified project is included in this reporsitory as well. bzPSD has been modernized to .net core and is fully integrated into the TgaBuildeLib assembly. WPFZoomPanel and ColorPicker have own assemblies.
 
 | Package                          | Version | Source      | License               | Project URL                                                          |
 |----------------------------------|---------|-------------|-----------------------|----------------------------------------------------------------------|
 | WPFZoomPanel                     | -       | GitHub      | MIT                   | [GitHub](https://github.com/Moravuscz/WPFZoomPanel)                  |
-| Pfim                             | 0.11.3  | NuGet       | MIT                   | [GitHub](https://github.com/nickbabcock/Pfim)                        |
-| bzPSD                            | 0.1.0   | NuGet       | BSD-3-Clause license  | [GitHub](https://github.com/DsonKing/System.Drawing.PSD)             |
+| Pfim                             | 0.11.4  | NuGet       | MIT                   | [GitHub](https://github.com/nickbabcock/Pfim)                        |
+| bzPSD                            | -       | GitHub      | BSD-3-Clause license  | [GitHub](https://github.com/DsonKing/System.Drawing.PSD)             |
 | WPF UI                           | 4.0.3   | NuGet       | MIT                   | [GitHub](https://github.com/lepoco/wpfui)                            |
-| Microsoft Dependency Injection   | 9.0.6   | NuGet       | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
+| Microsoft Dependency Injection   | 9.0.9   | NuGet       | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
 | SharpZipLib                      | 1.4.2   | NuGet       | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
+| ColorPicker                      | 1.0.11  | GitHub      | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
 | *For the Avalonia UI Port:*      |         |             |                       |                                                                      |
 | Avalonia UI                      | 11.3.7  | Avalonia UI | MIT                   | [Avalonia UI](https://avaloniaui.net/)                               |
 | PanAndZoom                       | 11.3.6  | NuGet       | MIT                   | [GitHub](https://github.com/wieslawsoltes/PanAndZoom)                |

@@ -34,8 +34,8 @@
         <Border BorderThickness="3" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" IsHitTestVisible="False" Panel.ZIndex="2"
             CornerRadius="3.0" Width="{Binding Width, ElementName=toggleButton}" Height="{Binding Height, ElementName=toggleButton}"
             Padding="0" Margin="0"/>
-        <Popup Name="popup" StaysOpen="False" IsOpen="{Binding Path=IsChecked, ElementName=toggleButton, Mode=TwoWay}">
-            <Border BorderThickness="1" BorderBrush="Black" Background="White">
+        <Popup Name="popup" StaysOpen="False" Placement="Left" IsOpen="{Binding Path=IsChecked, ElementName=toggleButton, Mode=TwoWay}">
+            <Border BorderThickness="1" BorderBrush="Black" Background="{DynamicResource ControlStrokeColorDefaultBrush}">
                 <local:StandardColorPicker ColorState="{Binding ElementName=uc, Path=ColorState, Mode=TwoWay}"
                                            x:Name="test"
                                            UseHintColor="{Binding ElementName=uc, Path=UseHintColor, Mode=TwoWay}"
