@@ -48,6 +48,7 @@ namespace TgaBuilderLib.Psd
             Channels = new List<Channel>();
             Rect = PixelRect.Empty;
             PsdFile = psdFile;
+            Name = string.Empty;
         }
 
         public Layer(BinaryReverseReader reverseReader, PsdFile psdFile)
@@ -222,9 +223,9 @@ namespace TgaBuilderLib.Psd
         /// </summary>
         public string Name { get; }
 
-        public BlendingRanges BlendingRangesData { get; set; }
+        public BlendingRanges BlendingRangesData { get; set; } = null!;
 
-        public Mask MaskData { get; private set; }
+        public Mask MaskData { get; private set; } = null!;
 
         public List<AdjusmentLayerInfo> AdjustmentInfo { get; }
 

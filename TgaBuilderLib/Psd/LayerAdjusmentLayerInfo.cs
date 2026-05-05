@@ -71,7 +71,7 @@ namespace TgaBuilderLib.Psd
 
             public string Key { get; }
 
-            public byte[] Data { get; }
+            public byte[] Data { get; } = Array.Empty<byte>();
 
             public void Save(BinaryReverseWriter writer)
             {

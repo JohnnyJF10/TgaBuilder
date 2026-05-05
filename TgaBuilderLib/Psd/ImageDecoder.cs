@@ -150,13 +150,13 @@ namespace TgaBuilderLib.Psd
             r = g = b = 255;
             a = 255;
 
-            byte red = psdFile.ImageData[0][pos];
-            byte green = psdFile.ImageData[1][pos];
-            byte blue = psdFile.ImageData[2][pos];
+            byte red = psdFile.ImageData![0][pos];
+            byte green = psdFile.ImageData![1][pos];
+            byte blue = psdFile.ImageData![2][pos];
 
             byte alpha = 255;
-            if (psdFile.ImageData.Length > 3)
-                alpha = psdFile.ImageData[3][pos];
+            if (psdFile.ImageData!.Length > 3)
+                alpha = psdFile.ImageData![3][pos];
 
             switch (psdFile.ColorMode)
             {

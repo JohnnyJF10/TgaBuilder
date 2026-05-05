@@ -42,6 +42,7 @@ namespace TgaBuilderLib.Psd
         {
             OSType = string.Empty;
             Name = string.Empty;
+            Data = Array.Empty<byte>();
         }
 
         public ImageResource(short id)
@@ -49,6 +50,7 @@ namespace TgaBuilderLib.Psd
             OSType = string.Empty;
             Name = string.Empty;
             ID = id;
+            Data = Array.Empty<byte>();
         }
 
         public ImageResource(ImageResource imgRes)

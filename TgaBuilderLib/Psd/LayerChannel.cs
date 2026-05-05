@@ -56,9 +56,9 @@ namespace TgaBuilderLib.Psd
             /// <summary>
             /// The compressed raw channel data.
             /// </summary>
-            public byte[] Data { get; set; }
+            public byte[] Data { get; set; } = null!;
 
-            public byte[] ImageData { get; set; }
+            public byte[] ImageData { get; set; } = null!;
 
             public ImageCompression ImageCompression { get; set; }
 
@@ -97,7 +97,7 @@ namespace TgaBuilderLib.Psd
 
                 Data = reverseReader.ReadBytes(Length);
 
-                using (BinaryReverseReader imageReader = DataReader)
+                using (BinaryReverseReader imageReader = DataReader!)
                 {
                     ImageCompression = (ImageCompression)imageReader.ReadInt16();
 
@@ -221,7 +221,7 @@ namespace TgaBuilderLib.Psd
                 writer.Write(ImageData);
             }
 
-            public BinaryReverseReader DataReader
+            public BinaryReverseReader? DataReader
             {
                 get => Data == null ? null : new BinaryReverseReader(new MemoryStream(Data));
             }

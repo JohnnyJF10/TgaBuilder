@@ -134,7 +134,7 @@ namespace TgaBuilderLib.Psd
 
         public bool AbsoluteAlpha { get; private set; }
 
-        public byte[][] ImageData { get; private set; }
+        public byte[][]? ImageData { get; private set; }
 
         public ImageCompression ImageCompression { get; private set; }
 
@@ -145,23 +145,23 @@ namespace TgaBuilderLib.Psd
         /// </summary>
         public IEnumerable<ImageResource> ImageResources => _imageResources;
 
-        public ResolutionInfo Resolution
+        public ResolutionInfo? Resolution
         {
-            get => (ResolutionInfo)_imageResources.Find(x => x.ID == (int)ResourceIDs.ResolutionInfo);
+            get => (ResolutionInfo?)_imageResources.Find(x => x.ID == (int)ResourceIDs.ResolutionInfo);
 
             private set
             {
-                ImageResource oldValue = _imageResources.Find(x => x.ID == (int)ResourceIDs.ResolutionInfo);
+                ImageResource? oldValue = _imageResources.Find(x => x.ID == (int)ResourceIDs.ResolutionInfo);
                 if (oldValue != null)
                 {
                     _imageResources.Remove(oldValue);
                 }
 
-                _imageResources.Add(value);
+                _imageResources.Add(value!);
             }
         }
 
-        public PsdFile Load(string filename, IMediaFactory? mediaFactory = null)
+        public PsdFile? Load(string filename, IMediaFactory? mediaFactory = null)
         {
             using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
             {
@@ -169,14 +169,14 @@ namespace TgaBuilderLib.Psd
             }
         }
 
-        public PsdFile Load(byte[] data, IMediaFactory? mediaFactory = null)
+        public PsdFile? Load(byte[] data, IMediaFactory? mediaFactory = null)
         {
             var stream = new MemoryStream(data);
 
             return Load(stream, mediaFactory);
         }
 
-        public PsdFile Load(Stream stream, IMediaFactory? mediaFactory = null)
+        public PsdFile? Load(Stream stream, IMediaFactory? mediaFactory = null)
         {
             //binary reverse reader reads data types in big-endian format.
             BinaryReverseReader reader = new BinaryReverseReader(stream);

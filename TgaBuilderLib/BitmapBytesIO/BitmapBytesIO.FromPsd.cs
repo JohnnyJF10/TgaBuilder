@@ -16,7 +16,7 @@ namespace TgaBuilderLib.BitmapBytesIO
             var psd = new PsdFile();
             psd.Load(psdFilePath);
 
-            var data = psd.ImageData;
+            var data = psd.ImageData!;
             int bytesPerPixel = data.Length;
 
             LoadedHasAlpha = bytesPerPixel == 4;

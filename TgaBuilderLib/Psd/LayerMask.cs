@@ -120,7 +120,7 @@ namespace TgaBuilderLib.Psd
                 }
             }
 
-            public byte[] ImageData { get; set; }
+            public byte[] ImageData { get; set; } = null!;
 
             /// <summary>
             /// The layer to which this mask belongs.
@@ -174,7 +174,7 @@ namespace TgaBuilderLib.Psd
                 if (Rect.IsEmpty)
 					return;
 
-                using (BinaryReverseReader readerImg = maskChannel.DataReader)
+                using (BinaryReverseReader readerImg = maskChannel.DataReader!)
                 {
                     maskChannel.ImageCompression = (ImageCompression)readerImg.ReadInt16();
 
