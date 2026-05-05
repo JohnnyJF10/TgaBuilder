@@ -9,8 +9,8 @@
     <AssemblyName>TgaBuilder</AssemblyName>
     <ApplicationIcon>Resources\TgaBuilder_icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <AssemblyVersion>2.2.3.0</AssemblyVersion>
-    <FileVersion>2.2.3.0</FileVersion>
+    <AssemblyVersion>2.2.4.0</AssemblyVersion>
+    <FileVersion>2.2.4.0</FileVersion>
     <AssemblyTitle>TgaBuilder</AssemblyTitle>
     <Description>Texture Sets Building Tool for TRLE</Description>
     <Product>TgaBuilder</Product>
@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\TgaBuilder_icon.ico" />
+    <Resource Include="Resources\TgaBuilder_icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ColorPicker\ColorPicker.csproj" />
     <ProjectReference Include="..\TgaBuilderLib\TgaBuilderLib.csproj" />
     <ProjectReference Include="..\ZoomPanel\ZoomPanel.csproj" />
   </ItemGroup>

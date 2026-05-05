@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using static System.Net.WebRequestMethods;
 
 namespace TgaBuilderLib.Transitions
 {
@@ -14,14 +15,13 @@ namespace TgaBuilderLib.Transitions
             if (bgPixels.Length != tilePixels.Length)
                 throw new ArgumentException("Pixel arrays must have same length.");
 
-            var currentTileData = new List<TileSegment>(TileData.Count);
-            foreach (var tile in TileData)         
-                currentTileData.Add((TileSegment)tile.Clone());
+            var currentCentroids = new (float X, float Y)[Centroids.Length];
+            Array.Copy(Centroids, currentCentroids, Centroids.Length);
 
             var currentLabels = new int[Labels.Length];
             Array.Copy(Labels, currentLabels, Labels.Length);
 
-            if (currentLabels.Length > 0 && currentLabels.Max() > currentTileData.Count)
+            if (currentLabels.Length > 0 && currentLabels.Max() > currentCentroids.Length)
                 return bgPixels; // Fallback in case of race condition
 
             // Determine relevant edges based on mode and reverse pivot
@@ -29,7 +29,7 @@ namespace TgaBuilderLib.Transitions
                 GetDrawnEdgeTilesBools(Mode, ReversePivot);
 
             // Selection step: determine which pixels are drawn (Input → Label Map → Selection)
-            bool[] selection = BuildSelection(currentTileData, currentLabels,
+            bool[] selection = BuildSelection(currentCentroids, currentLabels,
                 checkTop, checkBottom, checkLeft, checkRight);
 
             byte[] result = new byte[bgPixels.Length];
@@ -43,41 +43,66 @@ namespace TgaBuilderLib.Transitions
                     // Copy the background first
                     Buffer.MemoryCopy(pBg, pRes, Height * Stride, Height * Stride);
 
-                    // Apply selection: copy selected pixels from tile texture
+                    // Pre-calculate alpha values for blending
+                    int eA = EdgeColor.A ?? 255;      // Edge alpha (0-255)
+                    int invA = 255 - eA;              // Inverse alpha for background contribution
+                    int eR = EdgeColor.R;
+                    int eG = EdgeColor.G;
+                    int eB = EdgeColor.B;
+
                     for (int y = 0; y < Height; y++)
                     {
+                        int rowOffset = y * Stride;
                         for (int x = 0; x < Width; x++)
                         {
-                            if (!selection[y * Width + x]) continue;
+                            int pixelIndex = y * Width + x;
+                            if (!selection[pixelIndex]) continue;
 
-                            int offset = y * Stride + x * TRANSITIONS_BPP;
-                            for (int b = 0; b < TRANSITIONS_BPP; b++)
-                                pRes[offset + b] = pTile[offset + b];
-                        }
-                    }
+                            int offset = rowOffset + (x * 4);
 
-                    // Contour smoothing at the demolition edge selection border only.
-                    // Pixels positioned on the texture outer edge are excluded from smoothing.
-                    for (int y = 0; y < Height; y++)
-                    {
-                        for (int x = 0; x < Width; x++)
-                        {
-                            if (!selection[y * Width + x]) continue;
+                            // Initial step: copy selected pixel from tile to result
+                            // (Already done for non-edge pixels by logic below or by a full copy)
+                            // For simplicity and clarity, we handle the edge case specifically:
 
-                            // No smoothing for pixels on the texture outer edge
-                            if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1) continue;
-
-                            int backgroundNeighbors = 0;
-                            if (!selection[(y - 1) * Width + x]) backgroundNeighbors++;
-                            if (!selection[(y + 1) * Width + x]) backgroundNeighbors++;
-                            if (!selection[y * Width + (x - 1)]) backgroundNeighbors++;
-                            if (!selection[y * Width + (x + 1)]) backgroundNeighbors++;
-
-                            if (backgroundNeighbors > 0)
+                            if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1)
                             {
-                                int offset = y * Stride + x * TRANSITIONS_BPP;
-                                for (int b = 0; b < TRANSITIONS_BPP; b++)
-                                    pRes[offset + b] = (byte)((pTile[offset + b] + pBg[offset + b]) >> 1);
+                                pRes[offset + 0] = pTile[offset + 0];
+                                pRes[offset + 1] = pTile[offset + 1];
+                                pRes[offset + 2] = pTile[offset + 2];
+                                pRes[offset + 3] = pTile[offset + 3];
+                                continue;
+                            }
+
+                            bool isEdge = !selection[pixelIndex - 1] || !selection[pixelIndex + 1] ||
+                                          !selection[pixelIndex - Width] || !selection[pixelIndex + Width];
+
+                            if (isEdge)
+                            {
+                                // 1. Tint the tile pixel color with EdgeColor
+                                // 2. Alpha blend the result with the background
+
+                                // Blue
+                                int tintedB = (pTile[offset + 0] * eB) / 255;
+                                pRes[offset + 0] = (byte)((tintedB * eA + pBg[offset + 0] * invA) / 255);
+
+                                // Green
+                                int tintedG = (pTile[offset + 1] * eG) / 255;
+                                pRes[offset + 1] = (byte)((tintedG * eA + pBg[offset + 1] * invA) / 255);
+
+                                // Red
+                                int tintedR = (pTile[offset + 2] * eR) / 255;
+                                pRes[offset + 2] = (byte)((tintedR * eA + pBg[offset + 2] * invA) / 255);
+
+                                // Alpha (Blending the transparency)
+                                pRes[offset + 3] = (byte)((pTile[offset + 3] * eA + pBg[offset + 3] * invA) / 255);
+                            }
+                            else
+                            {
+                                // Standard selection: just copy from tile
+                                pRes[offset + 0] = pTile[offset + 0];
+                                pRes[offset + 1] = pTile[offset + 1];
+                                pRes[offset + 2] = pTile[offset + 2];
+                                pRes[offset + 3] = pTile[offset + 3];
                             }
                         }
                     }
@@ -90,86 +115,103 @@ namespace TgaBuilderLib.Transitions
         // The selection is the union of all qualified tiles' pixels, optionally filtered by
         // corner-slicing trigonometry as a pre-step when SliceCornerTiles is enabled.
         private bool[] BuildSelection(
-            List<TileSegment> tileData,
+            (float X, float Y)[] centroids,
             int[] labels,
             bool checkTop, bool checkBottom, bool checkLeft, bool checkRight)
         {
             bool[] selection = new bool[Width * Height];
+            int labelCount = centroids.Length;
 
-            // Optional pre-step: identify corner tiles for pixel-level trigonometric filtering.
-            // Passes drawn-edge flags so that each corner's dominant axis can be determined.
+            // --- STEP 1: Fast Grouping of Offsets (CSR Approach) ---
+            int[] counts = new int[labelCount + 1];
+            for (int i = 0; i < labels.Length; i++)
+            {
+                int lbl = labels[i];
+                if (lbl > 0 && lbl <= labelCount) counts[lbl]++;
+            }
+
+            int[] startIndices = new int[labelCount + 2];
+            int currentPos = 0;
+            for (int i = 1; i <= labelCount; i++)
+            {
+                startIndices[i] = currentPos;
+                currentPos += counts[i];
+            }
+            startIndices[labelCount + 1] = currentPos;
+
+            int[] flatOffsets = new int[currentPos];
+            int[] writePos = (int[])startIndices.Clone();
+
+            for (int i = 0; i < labels.Length; i++)
+            {
+                int lbl = labels[i];
+                if (lbl > 0 && lbl <= labelCount)
+                {
+                    flatOffsets[writePos[lbl]++] = i;
+                }
+            }
+
+            // --- STEP 2: Selection Logic ---
             var cornerTileMap = SliceCornerTiles
                 ? BuildCornerTileMap(labels, checkTop, checkBottom, checkLeft, checkRight)
                 : null;
 
-            for (int i = 0; i < tileData.Count; i++)
+            for (int i = 0; i < labelCount; i++)
             {
-                var tile = tileData[i];
                 int labelID = i + 1;
+                int start = startIndices[labelID];
+                int end = startIndices[labelID + 1];
 
-                // Pivot condition
-                float v = ComputeFocusV(Mode, tile);
+                // tileOffsets now contains PIXEL indices (0 to Width*Height)
+                ReadOnlySpan<int> tileOffsets = new ReadOnlySpan<int>(flatOffsets, start, end - start);
+                if (tileOffsets.Length == 0) continue;
+
+                var centroid = centroids[i];
+                float v = ComputeFocusV(Mode, centroid);
                 bool shouldDraw = ReversePivot ? (v <= Pivot) : (v >= Pivot);
 
-                // Avoid background-touching edge tiles being drawn
+                // DoesTileTouchRequiredEdge needs to handle pixel indices internally
                 if (shouldDraw)
-                    shouldDraw = !DoesTileTouchRequiredEdge(tile, !checkTop, !checkBottom, !checkLeft, !checkRight);
-
-                // Ensure required edge tiles are always drawn
-                if (!shouldDraw)
-                    shouldDraw = DoesTileTouchRequiredEdge(tile, checkTop, checkBottom, checkLeft, checkRight);
+                    shouldDraw = !DoesTileTouchRequiredEdge(tileOffsets, !checkTop, !checkBottom, !checkLeft, !checkRight);
 
                 if (!shouldDraw)
-                    continue;
+                    shouldDraw = DoesTileTouchRequiredEdge(tileOffsets, checkTop, checkBottom, checkLeft, checkRight);
 
-                // Corner slicing pre-step: for corner tiles, only add pixels that satisfy
-                // the trigonometric condition relative to the drawn edge axis.
+                if (!shouldDraw) continue;
+
                 if (cornerTileMap != null && cornerTileMap.TryGetValue(labelID, out var cornerInfo))
                 {
                     if (cornerInfo.drawsHoriz && cornerInfo.drawsVert)
                     {
-                        // Tile touches drawn edges on both axes — include all pixels (no slicing).
-                        foreach (int offset in tile.PixelOffsets)
+                        foreach (int pixelIdx in tileOffsets)
                         {
-                            int py = offset / Stride;
-                            int px = (offset % Stride) / TRANSITIONS_BPP;
-                            selection[py * Width + px] = true;
+                            selection[pixelIdx] = true;
                         }
                     }
                     else
                     {
                         float tanAngle = ComputeCornerSliceTanAngle(cornerInfo.cx, cornerInfo.cy);
-
-                        // Horizontal-dominant corner (top/bottom drawn edge): keep the region
-                        // closer to the horizontal edge — dy < dx * tanAngle.
-                        // Vertical-dominant corner (left/right drawn edge) or pivot-only:
-                        // keep the region closer to the vertical edge — dy >= dx * tanAngle.
                         bool keepHorizSide = cornerInfo.drawsHoriz;
 
-                        foreach (int offset in tile.PixelOffsets)
+                        foreach (int pixelIdx in tileOffsets)
                         {
-                            int py = offset / Stride;
-                            int px = (offset % Stride) / TRANSITIONS_BPP;
+                            // Convert pixel index to coordinates
+                            int px = pixelIdx % Width;
+                            int py = pixelIdx / Width;
 
                             float dx = MathF.Abs(px - cornerInfo.cx);
                             float dy = MathF.Abs(py - cornerInfo.cy);
 
-                            bool include = keepHorizSide
-                                ? (dy < dx * tanAngle)    // near horizontal (top/bottom) edge
-                                : (dy >= dx * tanAngle);  // near vertical (left/right) edge or default
-
-                            if (include)
-                                selection[py * Width + px] = true;
+                            bool include = keepHorizSide ? (dy < dx * tanAngle) : (dy >= dx * tanAngle);
+                            if (include) selection[pixelIdx] = true;
                         }
                     }
                 }
                 else
                 {
-                    foreach (int offset in tile.PixelOffsets)
+                    foreach (int pixelIdx in tileOffsets)
                     {
-                        int py = offset / Stride;
-                        int px = (offset % Stride) / TRANSITIONS_BPP;
-                        selection[py * Width + px] = true;
+                        selection[pixelIdx] = true;
                     }
                 }
             }
@@ -256,31 +298,31 @@ namespace TgaBuilderLib.Transitions
             bool reversePivot)
             => (mode, reversePivot) switch
             {
-                (TransitionMode.Top, false) => (true, false, false, false),
-                (TransitionMode.Top, true) => (false, true, true, true),
-                (TransitionMode.Bottom, false) => (false, true, false, false),
-                (TransitionMode.Bottom, true) => (true, false, true, true),
-                (TransitionMode.Left, false) => (false, false, true, false),
-                (TransitionMode.Left, true) => (true, true, false, true),
-                (TransitionMode.Right, false) => (false, false, false, true),
-                (TransitionMode.Right, true) => (true, true, true, false),
-                (TransitionMode.DiagonalTopLeft, false) => (true, false, true, false),
-                (TransitionMode.DiagonalTopLeft, true) => (false, true, false, true),
-                (TransitionMode.DiagonalTopRight, false) => (true, false, false, true),
-                (TransitionMode.DiagonalTopRight, true) => (false, true, true, false),
+                (TransitionMode.Top, false)                 => (true, false, false, false),
+                (TransitionMode.Top, true)                  => (false, true, true, true),
+                (TransitionMode.Bottom, false)              => (false, true, false, false),
+                (TransitionMode.Bottom, true)               => (true, false, true, true),
+                (TransitionMode.Left, false)                => (false, false, true, false),
+                (TransitionMode.Left, true)                 => (true, true, false, true),
+                (TransitionMode.Right, false)               => (false, false, false, true),
+                (TransitionMode.Right, true)                => (true, true, true, false),
+                (TransitionMode.DiagonalTopLeft, false)     => (true, false, true, false),
+                (TransitionMode.DiagonalTopLeft, true)      => (false, true, false, true),
+                (TransitionMode.DiagonalTopRight, false)    => (true, false, false, true),
+                (TransitionMode.DiagonalTopRight, true)     => (false, true, true, false),
                 _ => throw new ArgumentException("Invalid mode.")
             };
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // Checks whether a tile touches any of the requested image edges.
-        private bool DoesTileTouchRequiredEdge(TileSegment tile, bool top, bool bottom, bool left, bool right)
+        private bool DoesTileTouchRequiredEdge(ReadOnlySpan<int> pixelOffsets, bool top, bool bottom, bool left, bool right)
         {
             int touchPixCount = 0;
 
-            foreach (int offset in tile.PixelOffsets)
+            foreach (int offset in pixelOffsets)
             {
-                int y = offset / Stride;
-                int x = (offset % Stride) / TRANSITIONS_BPP;
+                int y = offset / Width;
+                int x = offset % Width;
 
                 if (top && y == 0)
                     touchPixCount++;
@@ -302,10 +344,10 @@ namespace TgaBuilderLib.Transitions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // Computes a normalized focus value for a tile based on its centroid.
-        private float ComputeFocusV(TransitionMode mode, TileSegment tile)
+        private float ComputeFocusV(TransitionMode mode, (float X, float Y) centroid)
         {
-            float nx = tile.CentroidX;
-            float ny = tile.CentroidY;
+            float nx = centroid.X;
+            float ny = centroid.Y;
 
             // --- Topological logic excerpt ---
             float distToT1 = 0, distToT2 = 0;
@@ -318,5 +360,20 @@ namespace TgaBuilderLib.Transitions
             else v = distToT1 / (distToT1 + distToT2);
             return v;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // Computes directional distances to texture domains for the selected transition mode.
+        // Used as-is by brick transitions. Smooth transitions use ComputeTopologicyForSmooth.
+        private (float distToT1, float distToT2) ComputeTopologicy(TransitionMode mode, float nx, float ny)
+            => mode switch
+            {
+                TransitionMode.Top              => (Math.Min(nx, Math.Min(1.0f - nx, 1.0f - ny)), ny),
+                TransitionMode.Bottom           => (Math.Min(nx, Math.Min(1.0f - nx, ny)), 1.0f - ny),
+                TransitionMode.Left             => (Math.Min(ny, Math.Min(1.0f - ny, 1.0f - nx)), nx),
+                TransitionMode.Right            => (Math.Min(ny, Math.Min(1.0f - ny, nx)), 1.0f - nx),
+                TransitionMode.DiagonalTopLeft  => (Math.Min(1.0f - nx, 1.0f - ny), Math.Min(nx, ny)),
+                TransitionMode.DiagonalTopRight => (Math.Min(nx, 1.0f - ny), Math.Min(1.0f - nx, ny)),
+                _ => (0f, 0f)
+            };
     }
 }

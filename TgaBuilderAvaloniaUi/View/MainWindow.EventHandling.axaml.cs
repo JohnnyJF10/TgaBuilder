@@ -8,6 +8,7 @@ using System.Linq;
 using System.Transactions;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
+using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderLib.Enums;
 using MouseAction = TgaBuilderLib.Enums.MouseAction;
 
@@ -18,6 +19,7 @@ namespace TgaBuilderAvaloniaUi.View
 
         private Avalonia.Point _lastPanPosition;
         private Avalonia.Point _lastPointerPosition;
+        private bool _isPanning;
 
         private static bool IsGridlessModifier(KeyModifiers modifiers)
             => modifiers.HasFlag(KeyModifiers.Alt);
@@ -40,7 +42,11 @@ namespace TgaBuilderAvaloniaUi.View
 
             _lastPanPosition = e.GetPosition(CurrentPanel);
             if (e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                _isPanning = true;
+                this.Cursor = CursorProvider.CrossArrowCursor;
                 return;
+            }
 
 
                 var pos = e.GetPosition(CurrentImage);
@@ -152,6 +158,11 @@ namespace TgaBuilderAvaloniaUi.View
 
             e.Pointer.Capture(null);
             _modifier = MouseModifier.None;
+            if (_isPanning)
+            {
+                _isPanning = false;
+                this.Cursor = CursorProvider.DefaultCursor;
+            }
         }
 
         private void DestinationFormatSwitch_Click(object? sender, RoutedEventArgs e)

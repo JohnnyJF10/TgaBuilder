@@ -194,6 +194,7 @@ namespace WPFZoomPanel
                 {
                     // Just a plain old left-down initiates panning mode.
                     _mouseHandlingMode = MouseHandlingMode.DragPanning;
+                    Cursor = Cursors.SizeAll;
                 }
 
                 if (_mouseHandlingMode != MouseHandlingMode.None)
@@ -282,6 +283,10 @@ namespace WPFZoomPanel
                     // When drag-zooming has finished we zoom in on the
                     // rectangle that was highlighted by the user.
                     ApplyDragZoomRect(finalContentMousePoint);
+                }
+                else if (_mouseHandlingMode == MouseHandlingMode.DragPanning)
+                {
+                    Cursor = Cursors.Arrow;
                 }
 
                 _mouseHandlingMode = MouseHandlingMode.None;

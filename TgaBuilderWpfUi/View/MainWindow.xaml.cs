@@ -14,7 +14,6 @@ namespace TgaBuilderWpfUi.View
         public Image? CurrentImage { get; set; }
         public ZoomPanel? CurrentPanel { get; set; }
 
-        public bool IsLoaded => throw new NotImplementedException();
 
         public Cursor EyedropperCursor = new(Application
             .GetResourceStream(

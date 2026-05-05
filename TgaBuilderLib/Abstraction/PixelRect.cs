@@ -14,5 +14,14 @@ namespace TgaBuilderLib.Abstraction
             Width = width;
             Height = height;
         }
+
+        public static PixelRect Empty => new PixelRect(0, 0, 0, 0);
+
+        public bool IsEmpty => X == 0 && Y == 0 && Width == 0 && Height == 0;
+
+        public int Top => Y;
+        public int Left => X;
+        public int Bottom => Y + Height;
+        public int Right => X + Width;
     }
 }

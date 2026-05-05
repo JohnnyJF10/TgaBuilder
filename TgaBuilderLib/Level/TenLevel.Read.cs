@@ -9,8 +9,7 @@ namespace TgaBuilderLib.Level
             Unknown,
             Version_1_5,
             Version_1_6,
-            Version_1_7,
-            Version_1_10
+            Version_1_7
         }
 
         protected override void ReadLevel(string fileName, CancellationToken? cancellationToken = null)
@@ -31,7 +30,6 @@ namespace TgaBuilderLib.Level
                 5 => TenVersion.Version_1_5,
                 6 => TenVersion.Version_1_6,
                 7 => TenVersion.Version_1_7,
-                10 => TenVersion.Version_1_10,
                 _ => TenVersion.Unknown
             };
 
@@ -48,10 +46,6 @@ namespace TgaBuilderLib.Level
 
                 case TenVersion.Version_1_7:
                     ReadTenData_1_7(reader, cancellationToken);
-                    break;
-
-                case TenVersion.Version_1_10:
-                    ReadTenData_1_10(reader, cancellationToken);
                     break;
 
                 case TenVersion.Unknown:
@@ -77,28 +71,6 @@ namespace TgaBuilderLib.Level
             uint geometryCompressedSize = reader.ReadUInt32();
 
             using (var geometryStream = DecompressStream(reader.BaseStream, geometryCompressedSize))
-            using (var geometryReader = new BinaryReader(geometryStream))
-            {
-                ReadStaticRoomData(geometryReader, cancellationToken);
-            }
-        }
-
-        private void ReadTenData_1_10(BinaryReader reader, CancellationToken? cancellationToken = null)
-        {
-            uint mediaUncompressedSize = reader.ReadUInt32();
-            uint mediaCompressedSize = reader.ReadUInt32();
-
-            using (var mediaStream = DecompressStreamLZ4(reader.BaseStream, mediaUncompressedSize))
-            using (var mediaReader = new BinaryReader(mediaStream))
-            {
-                ReadTextures(mediaReader, cancellationToken);
-                ReadSamples(mediaReader, cancellationToken);
-            }
-
-            uint geometryUncompressedSize = reader.ReadUInt32();
-            uint geometryCompressedSize = reader.ReadUInt32();
-
-            using (var geometryStream = DecompressStreamLZ4(reader.BaseStream, geometryUncompressedSize))
             using (var geometryReader = new BinaryReader(geometryStream))
             {
                 ReadStaticRoomData(geometryReader, cancellationToken);
@@ -185,9 +157,6 @@ namespace TgaBuilderLib.Level
                     size = levelReader.ReadInt32();
                     levelReader.ReadBytes(size); //Normal map data
                 }
-
-                if (Version != TenVersion.Version_1_10)
-                    continue;
 
                 hasORSHMap = levelReader.ReadByte() == 1;
                 if (hasORSHMap)

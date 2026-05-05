@@ -1,7 +1,9 @@
+using Avalonia.Controls;
+using Avalonia.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
-using Avalonia.Controls;
-using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.Abstraction;
@@ -67,6 +69,75 @@ namespace TgaBuilderAvaloniaUi.View
 
             if (DataContext is BrickTransitionViewModel vm)
                 vm.MarkFinishedCommand.Execute(null);
+        }
+
+        private void Image1_PointerMoved(object? sender, Avalonia.Input.PointerEventArgs e)
+        {
+            DoEyedropperMouseMove(Image1, e, 1);
+        }
+
+        private void Image1_PointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                this.Cursor = CursorProvider.EyedropperCursor;
+            }
+        }
+
+        private void DoEyedropperMouseMove(Image image, PointerEventArgs e, int imageNum)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                var position = e.GetPosition(image);
+                vm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
+            }
+        }
+
+        private void Image1_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                this.Cursor = CursorProvider.DefaultCursor;
+            }
+        }
+
+        private void Image1_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                vm.IsEyedropperMode = false;
+                this.Cursor = CursorProvider.DefaultCursor;
+            }
+        }
+
+        private void Image2_PointerMoved(object? sender, Avalonia.Input.PointerEventArgs e)
+        {
+            DoEyedropperMouseMove(Image2, e, 2);
+        }
+
+        private void Image2_PointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                this.Cursor = CursorProvider.EyedropperCursor;
+            }
+        }
+
+        private void Image2_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                this.Cursor = CursorProvider.DefaultCursor;
+            }
+        }
+
+        private void Image2_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            if (DataContext is BrickTransitionViewModel vm && vm.IsEyedropperMode)
+            {
+                vm.IsEyedropperMode = false;
+                this.Cursor = CursorProvider.DefaultCursor;
+            }
         }
     }
 }

@@ -11,15 +11,16 @@
     xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
     xmlns:pzp="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel"
     xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters"
-    xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
+    xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib" 
+    xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     Title="MainWindow"
-    Height="570"
-    MinHeight="570"
+    Height="590"
+    MinHeight="590"
     Width="800"
     MinWidth="760"
     d:Background="Black"
@@ -67,6 +68,7 @@
             <converter:BrushToColorStruct               x:Key="BrushToColorStruct"/>
             <converter:BoolToStrokeDashStyleConverter   x:Key="BoolToStrokeDashStyleConverter"/>
             <converter:ColorStructToBrush               x:Key="ColorStructToBrush"/>
+            <converter:ColorStructToMediaColorConverter   x:Key="ColorStructToMediaColorConverter"/>
             <converter:PanelHelpConverter               x:Key="PanelHelpConverter"/>
             <converter:EnumToBooleanConverter           x:Key="EnumToBooleanConverter"/>
             <Style TargetType="{x:Type elements:ContextMenuButton}"
@@ -487,17 +489,12 @@
                             Command="{Binding EyeDropperCommand}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
 
-                        <Button
-                            Width="20"
-                            Height="20"
-                            Margin="2,0"
-                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
-                            Command="{Binding SelectionMonoColorFillCommand}"
-                            CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                            Style="{StaticResource FlatButtonStyle}"
-                            BorderBrush="Gray"
-                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color in the selection"
-                        />
+                        <cp:PortableColorPicker
+                            Width="34"
+                            Height="30"
+                            SelectedColor="{Binding ColorToReplace, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                            ap:MouseOverInfoAP.InfoText="Open color picker to source color for transparency"
+                            Margin="4"/>
 
                         <elements:ToggleButtonEx
                             DockPanel.Dock="Right"
@@ -820,46 +817,20 @@
                 HorizontalAlignment="Center"
                 Margin="5"
                 Orientation="Horizontal">
-                <Button
-                    Width="30"
-                    Height="30"
-                    Margin="2,0"
-                    Background="Black"
-                    Command="{Binding SelectionMonoColorFillCommand}"
-                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                    Style="{StaticResource FlatButtonStyle}"
-                    BorderBrush="Gray"
-                    ap:MouseOverInfoAP.InfoText="Set a pure black selection" 
-                />
-                <Button
-                    Width="30"
-                    Height="30"
-                    Margin="3,0"
-                    Background="Magenta"
-                    Command="{Binding SelectionMonoColorFillCommand}"
-                    CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                    Style="{StaticResource FlatButtonStyle}"
-                    BorderBrush="Gray"
-                    ap:MouseOverInfoAP.InfoText="Set a pure magenta selection"
+                <cp:PortableColorPicker
+                    x:Name="SelectionFillColorPicker"
+                    Width="36"
+                    Height="36"
+                    ap:MouseOverInfoAP.InfoText="Select Fill Color for Selection"
+                    SelectedColor="{Binding SelectedFillColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     />
-                <Grid>
-                    <Rectangle
-                        Width="30"
-                        Height="30"
-                        Fill="{StaticResource CheckerBrush}"
-                        />
-                    <Button
-                        Width="30"
-                        Height="30"
-                        Margin="2,0"
-                        Background="Transparent"
-                        Style="{StaticResource FlatButtonStyle}"
-                        Command="{Binding SelectionMonoColorFillCommand}"
-                        CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                        BorderBrush="Gray"
-                        ap:MouseOverInfoAP.InfoText="Set a pure maroon selection"
-                        />
-                </Grid>
+                <ui:Button
+                    Margin="9.4,0,0,0"
+                    Width="36"
+                    Height="36"
+                    Icon="{ui:SymbolIcon ArrowTurnRightDown48}"
+                    Command="{Binding SelectionMonoColorFillCommand}"
+                    ap:MouseOverInfoAP.InfoText="Fill Selection"/>
             </StackPanel>
             <Button
                 BorderBrush="Gray"
@@ -1283,17 +1254,12 @@
                             Command="{Binding EyeDropperCommand}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
 
-                        <Button
-                            Width="20"
-                            Height="20"
-                            Margin="2,0"
-                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
-                            Command="{Binding SelectionMonoColorFillCommand}"
-                            CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}"
-                            Style="{StaticResource FlatButtonStyle}"
-                            BorderBrush="Gray"
-                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color in the selection"
-                        />
+                        <cp:PortableColorPicker
+                            Width="34"
+                            Height="30"
+                            SelectedColor="{Binding ColorToReplace, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                            ap:MouseOverInfoAP.InfoText="Open color picker to target color for transparency"
+                            Margin="4"/>
 
                         <elements:ToggleButtonEx
                             DockPanel.Dock="Right"

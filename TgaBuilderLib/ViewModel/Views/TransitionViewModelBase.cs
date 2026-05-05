@@ -57,6 +57,9 @@ public abstract class TransitionViewModelBase : ViewModelBase
     private TransitionMode _transitionMode = TransitionMode.Top;
     private float _pivotValue = 0.5f;
 
+    private Color _colorSource = new(0, 0, 0, 0);
+    private Color _colorTarget = new(0, 0, 0, 0);
+
     private RelayCommand? _loadImage1Command;
     private RelayCommand? _loadImage2Command;
     private RelayCommand? _swapImagesCommand;
@@ -108,7 +111,19 @@ public abstract class TransitionViewModelBase : ViewModelBase
     public float PivotValue
     {
         get => _pivotValue;
-        set => SetPropertyTriggerRecalculation(ref _pivotValue, value, RequiresFullAnalysisOnPivotChange);
+        set => SetOneWayPropertyTriggerRecalculation(ref _pivotValue, value, RequiresFullAnalysisOnPivotChange);
+    }
+
+    public Color ColorSource
+    {
+        get => _colorSource;
+        set => SetCallerProperty(ref _colorSource, value);
+    }
+
+    public Color ColorTarget
+    {
+        get => _colorTarget;
+        set => SetCallerProperty(ref _colorTarget, value);
     }
 
     protected virtual bool RequiresFullAnalysisOnPivotChange => true;
@@ -139,6 +154,15 @@ public abstract class TransitionViewModelBase : ViewModelBase
         }
     }
 
+    protected void SetOneWayPropertyTriggerRecalculation<T>(
+        ref T field,
+        T value,
+        bool requiresAnalysis = true)
+    {
+        field = value;
+        TriggerRecalculation(requiresAnalysis);
+    }
+
     protected async void TriggerRecalculation(bool requiresAnalysis = true)
     {
         _cts?.Cancel();
@@ -161,13 +185,11 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
             if (!cts.Token.IsCancellationRequested)
             {
-                ResultImage.WritePixels(
-                    new PixelRect(0, 0, ResultImage.PixelWidth, ResultImage.PixelHeight),
-                    resultPixels,
-                    ResultImage.PixelWidth * TRANSITIONS_BPP);
+                var resImage = MediaFactory.CreateBitmapFromRaw(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha, resultPixels, stride: Image1.PixelWidth * TRANSITIONS_BPP);
+
+                ResultImage = MediaFactory.CloneBitmap(resImage);
 
                 OnResultUpdated();
-                VisualInvalidator?.InvalidateVisual();
             }
         }
         catch (TaskCanceledException)
