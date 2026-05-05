@@ -13,6 +13,8 @@
     <Copyright>Copyright © 2025 Jonas Nebel</Copyright>
     <Authors>Jonas Nebel</Authors>
 	<ApplicationIcon>Resources\TgaBuilder_icon.ico</ApplicationIcon>
+	<Platforms>AnyCPU;x64</Platforms>
+	<PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>

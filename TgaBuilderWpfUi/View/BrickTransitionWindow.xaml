@@ -19,10 +19,10 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     Title="MainWindow"
-    Width="800"
-    Height="520"
-    MinWidth="760"
-    MinHeight="460"
+    Width="640"
+    Height="360"
+    MinWidth="640"
+    MinHeight="320"
     d:Background="Black"
     d:DataContext="{d:DesignInstance Type=viewmodel:BrickTransitionViewModel, IsDesignTimeCreatable=False}"
     >
@@ -50,9 +50,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="5*"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
         <!-- Row 0: Title Bar -->
@@ -237,6 +235,8 @@
         </Grid>
 
         <!-- Row 2: From Selection / Mix buttons (aligned with image columns) -->
+
+        <!-- Row 3: Image Area (Sub Table) -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -258,57 +258,10 @@
                     </ColumnDefinition.Style>
                 </ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button
-                x:Name="BtnLoad1"
-                Grid.Column="0"
-                Margin="10,5"
-                Padding="5"
-                HorizontalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Load Bricks Texture from the current selection"
-                Command="{Binding LoadImage1Command}"
-                Content="From Selection"/>
-            <Button
-                x:Name="BtnLoad2"
-                Grid.Column="2"
-                Margin="10,5"
-                Padding="5"
-                HorizontalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Load Background Texture from the current selection"
-                Command="{Binding LoadImage2Command}"
-                Content="From Selection"/>
-            <Button
-                x:Name="BtnResult"
-                Grid.Column="4"
-                Margin="10,5"
-                Padding="5"
-                HorizontalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Generate the brick transition result image"
-                Command="{Binding MixCommand}"
-                Content="Mix"/>
-        </Grid>
-
-        <!-- Row 3: Image Area (Sub Table) -->
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="35"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="35"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition>
-                    <ColumnDefinition.Style>
-                        <Style TargetType="ColumnDefinition">
-                            <Setter Property="Width" Value="0"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsChecked, ElementName=LabelMapToggle}" Value="True">
-                                    <Setter Property="Width" Value="*"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ColumnDefinition.Style>
-                </ColumnDefinition>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
 
             <!-- Image 1 -->
             <Border
@@ -349,9 +302,13 @@
             <!-- Symbol: + -->
             <StackPanel
                 VerticalAlignment="Center"
-                Grid.Column="1">
-                <ui:SymbolIcon Symbol="Add24"/>
+                Grid.Column="1" Margin="0,38,0,0">
+                <ui:SymbolIcon Symbol="Add24" d:Foreground="White"/>
                 <ui:Button
+                    Width="30"
+                    Height="30"
+                    Padding="5"
+                    HorizontalAlignment="Center"
                     Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
                     ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture"
                     Command="{Binding SwapImagesCommand}"/>
@@ -399,6 +356,19 @@
                 Grid.Column="3"
                 Symbol="ArrowRight24"/>
 
+            <ui:Button
+                x:Name="BtnResult"
+                Appearance="Primary"
+                Foreground="White"
+                Grid.Column="3"
+                Width="30"
+                Height="30"
+                Padding="5"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Generate the brick transition result image"
+                Command="{Binding MixCommand}"
+                Icon="{ui:SymbolIcon ArrowRight24}"/>
+
             <!-- Result Image -->
             <Border
                 Grid.Column="4"
@@ -443,16 +413,45 @@
                     Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform"/>
             </Border>
-        </Grid>
 
-        <!-- Row 4: OK/Cancel Buttons -->
-        <Grid Grid.Row="4">
+            <ui:Button
+                x:Name="BtnLoad1"
+                Width="30"
+                Height="30"
+                Grid.Row="4"
+                Grid.Column="0"
+                Margin="10,5"
+                Padding="5"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
+                Icon="{ui:SymbolIcon ImageCopy24}"
+                Command="{Binding LoadImage1Command}"
+                CommandParameter="1"/>
+            <ui:Button
+                x:Name="BtnLoad2"
+                Width="30"
+                Height="30"
+                Grid.Row="4"
+                Grid.Column="2"
+                Margin="10,5"
+                Padding="5"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
+                Icon="{ui:SymbolIcon ImageCopy24}"
+                Command="{Binding LoadImage2Command}"
+                CommandParameter="2"/>
+
             <ui:Card
+                Grid.Row="1"
+                Grid.ColumnSpan="8"
+                
                 Margin="-10,0,-10,-10"
                 VerticalAlignment="Stretch"
                 IsHitTestVisible="False"/>
             <StackPanel
                 HorizontalAlignment="Right"
+                Grid.Row="1"
+                Grid.ColumnSpan="8"
                 Orientation="Horizontal">
                 <ui:Button
                     Width="75"
@@ -466,6 +465,8 @@
                 <ui:Button
                     Width="75"
                     Height="30"
+                    Appearance="Primary"
+                    Foreground="White"
                     Margin="0,0,15,0"
                     HorizontalAlignment="Right"
                     ap:MouseOverInfoAP.InfoText="Apply the brick transition and close"

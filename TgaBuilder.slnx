@@ -10,8 +10,12 @@
 
   <ProjectConfigurations>
   </ProjectConfigurations>
-  <Project Path="ColorPicker/ColorPicker.csproj" />
-  <Project Path="TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj" />
+  <Project Path="ColorPicker/ColorPicker.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj">
+    <Platform Project="x64" />
+  </Project>
   <Project Path="TgaBuilderLib/TgaBuilderLib.csproj">
     <Platform Project="x64" />
   </Project>

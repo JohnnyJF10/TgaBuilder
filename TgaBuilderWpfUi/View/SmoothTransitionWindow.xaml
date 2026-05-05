@@ -13,10 +13,10 @@
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
     xmlns:wpfzoompanel="clr-namespace:WPFZoomPanel;assembly=WPF.ZoomPanel"
     Title="MainWindow"
-    Width="620"
-    Height="460"
-    MinWidth="580"
-    MinHeight="410"
+    Width="640"
+    Height="360"
+    MinWidth="640"
+    MinHeight="320"
     d:Background="Black"
     d:DataContext="{d:DesignInstance Type=viewmodel:SmoothTransitionViewModel,
                                      IsDesignTimeCreatable=False}"
@@ -53,8 +53,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="5*" />
+            <RowDefinition />
             <RowDefinition Height="60" />
         </Grid.RowDefinitions>
 
@@ -187,45 +186,25 @@
             </TabControl>
         </Grid>
 
-        <!-- Row 2: From Selection / Mix buttons -->
-        <Button
-            x:Name="BtnLoad1"
-            Grid.Row="2"
-            Grid.Column="0"
-            Margin="10,5"
-            Padding="5"
-            HorizontalAlignment="Center"
-            ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
-            Command="{Binding LoadImage1Command}"
-            CommandParameter="1"
-            Content="From Selection" />
-        <Button
-            x:Name="BtnLoad2"
-            Grid.Row="2"
-            Grid.Column="2"
-            Margin="10,5"
-            Padding="5"
-            HorizontalAlignment="Center"
-            ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
-            Command="{Binding LoadImage2Command}"
-            CommandParameter="2"
-            Content="From Selection" />
-        <Button
+        <ui:Button
             x:Name="BtnResult"
             Grid.Row="2"
-            Grid.Column="4"
-            Margin="10,5"
+            Grid.Column="3"
+            Appearance="Primary"
+            Foreground="White"
+            Width="30"
+            Height="30"
             Padding="5"
             HorizontalAlignment="Center"
             ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
             Command="{Binding MixCommand}"
-            CommandParameter="2"
-            Content="Mix" />
+            Icon="{ui:SymbolIcon ArrowRight24}"
+            CommandParameter="2" />
 
         <!-- Row 3: Images -->
         <!--  Image 1  -->
         <Border
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.Column="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -257,18 +236,23 @@
 
         <StackPanel
             VerticalAlignment="Center"
-            Grid.Column="1"
-            Grid.Row="3">
-            <ui:SymbolIcon Symbol="Add24"/>
+            Grid.Row="2"
+            Grid.Column="1" 
+            Margin="0,38,0,0">
+            <ui:SymbolIcon Symbol="Add24" d:Foreground="White"/>
             <ui:Button
+                Width="30"
+                Height="30"
+                Padding="5"
+                HorizontalAlignment="Center"
                 Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
-                ap:MouseOverInfoAP.InfoText="Swap Texture 1 and Texture 2"
-                Command="{Binding SwapImagesCommand}" />
+                ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture"
+                Command="{Binding SwapImagesCommand}"/>
         </StackPanel>
 
         <!--  Image 2  -->
         <Border
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.Column="2"
             Margin="10"
             HorizontalAlignment="Stretch"
@@ -299,13 +283,8 @@
             </Grid>
         </Border>
 
-        <ui:SymbolIcon
-            Grid.Row="3"
-            Grid.Column="3"
-            Symbol="ArrowRight24" />
-
         <Border
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.Column="4"
             Margin="10"
             HorizontalAlignment="Stretch"
@@ -321,13 +300,40 @@
 
         <!-- Row 4: OK/Cancel -->
         <ui:Card
-            Grid.Row="4"
+            Grid.Row="3"
             Grid.ColumnSpan="5"
             Margin="-10,0,-10,-10"
             VerticalAlignment="Stretch"
             IsHitTestVisible="False" />
+
+        <ui:Button
+            x:Name="BtnLoad1"
+            Width="30"
+            Height="30"
+            Grid.Row="3"
+            Grid.Column="0"
+            Margin="10,5"
+            Padding="5"
+            HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
+            Icon="{ui:SymbolIcon ImageCopy24}"
+            Command="{Binding LoadImage1Command}"
+            CommandParameter="1"/>
+        <ui:Button
+            x:Name="BtnLoad2"
+            Width="30"
+            Height="30"
+            Grid.Row="3"
+            Grid.Column="2"
+            Margin="10,5"
+            Padding="5"
+            HorizontalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
+            Icon="{ui:SymbolIcon ImageCopy24}"
+            Command="{Binding LoadImage2Command}"
+            CommandParameter="2"/>
         <StackPanel
-            Grid.Row="4"
+            Grid.Row="3"
             Grid.ColumnSpan="5"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
@@ -343,6 +349,8 @@
             <ui:Button
                 Width="75"
                 Height="30"
+                Appearance="Primary"
+                Foreground="White"
                 Margin="0,0,15,0"
                 HorizontalAlignment="Right"
                 ap:MouseOverInfoAP.InfoText="Apply the smooth transition and close"
