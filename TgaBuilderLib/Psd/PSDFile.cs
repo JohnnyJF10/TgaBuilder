@@ -30,10 +30,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.PSD;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Psd
 {
@@ -161,22 +161,22 @@ namespace TgaBuilderLib.Psd
             }
         }
 
-        public PsdFile Load(string filename)
+        public PsdFile Load(string filename, IMediaFactory? mediaFactory = null)
         {
             using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
             {
-                return Load(stream);
+                return Load(stream, mediaFactory);
             }
         }
 
-        public PsdFile Load(byte[] data)
+        public PsdFile Load(byte[] data, IMediaFactory? mediaFactory = null)
         {
             var stream = new MemoryStream(data);
 
-            return Load(stream);
+            return Load(stream, mediaFactory);
         }
 
-        public PsdFile Load(Stream stream)
+        public PsdFile Load(Stream stream, IMediaFactory? mediaFactory = null)
         {
             //binary reverse reader reads data types in big-endian format.
             BinaryReverseReader reader = new BinaryReverseReader(stream);
@@ -242,7 +242,7 @@ namespace TgaBuilderLib.Psd
                         break;
                     case ResourceIDs.Thumbnail1:
                     case ResourceIDs.Thumbnail2:
-                        imgRes = new Thumbnail(imgRes);
+                        imgRes = new Thumbnail(imgRes, mediaFactory);
                         break;
                     case ResourceIDs.AlphaChannelNames:
                         imgRes = new AlphaChannels(imgRes);

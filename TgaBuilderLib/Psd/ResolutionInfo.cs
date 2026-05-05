@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
-using System.Drawing.PSD;
 using System.IO;
 
 namespace TgaBuilderLib.Psd

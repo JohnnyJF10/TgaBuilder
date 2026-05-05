@@ -27,9 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
 
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Psd
 {
@@ -38,9 +37,9 @@ namespace TgaBuilderLib.Psd
     /// </summary>
     public sealed class Thumbnail : ImageResource
     {
-        public Bitmap Image { get; private set; }
+        public IReadableBitmap? Image { get; private set; }
 
-        public Thumbnail(ImageResource imageResource)
+        public Thumbnail(ImageResource imageResource, IMediaFactory? mediaFactory = null)
             : base(imageResource)
         {
             using (BinaryReverseReader reverseReader = DataReader)
@@ -55,31 +54,14 @@ namespace TgaBuilderLib.Psd
                 reverseReader.ReadInt16(); // read bitPerPixel
                 reverseReader.ReadInt16(); // read planes
 
-                if (format == 1)
+                if (format == 1 && mediaFactory != null)
                 {
                     byte[] imgData = reverseReader.ReadBytes((int)(reverseReader.BaseStream.Length - reverseReader.BaseStream.Position));
 
                     using (MemoryStream strm = new MemoryStream(imgData))
                     {
-                        Image = (Bitmap)System.Drawing.Image.FromStream(strm).Clone();
+                        Image = mediaFactory.LoadBitmap(strm);
                     }
-
-                    if (ID == 1033)
-                    {
-                        //// BGR
-                        //for(int y=0;y<m_thumbnailImage.Height;y++)
-                        //  for (int x = 0; x < m_thumbnailImage.Width; x++)
-                        //  {
-                        //    Color c=m_thumbnailImage.GetPixel(x,y);
-                        //    Color c2=Color.FromArgb(c.B, c.G, c.R);
-                        //    m_thumbnailImage.SetPixel(x, y, c);
-                        //  }
-                    }
-
-                }
-                else
-                {
-                    Image = new Bitmap(width, height, PixelFormat.Format24bppRgb);
                 }
             }
         }

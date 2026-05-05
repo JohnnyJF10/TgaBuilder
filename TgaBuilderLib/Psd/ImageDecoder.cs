@@ -27,106 +27,128 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Drawing.PSD;
 using System.Threading.Tasks;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Psd
 {
     public class ImageDecoder
     {
-        public static Bitmap DecodeImage(PsdFile psdFile)
+        public static IWriteableBitmap DecodeImage(PsdFile psdFile, IMediaFactory mediaFactory)
         {
-            var bitmap = new Bitmap(psdFile.Columns, psdFile.Rows, PixelFormat.Format32bppArgb);
+            var bitmap = mediaFactory.CreateEmptyBitmap(psdFile.Columns, psdFile.Rows, hasAlpha: true);
+            int stride = bitmap.BackBufferStride;
+            var dirtyRect = new PixelRect(0, 0, psdFile.Columns, psdFile.Rows);
 
-            //Parallel load each row
-            Parallel.For(0, psdFile.Rows, y =>
-                                          {
-                                              int rowIndex = y * psdFile.Columns;
-
-                                              for (int x = 0; x < psdFile.Columns; x++)
-                                              {
-                                                  int pos = rowIndex + x;
-
-                                                  Color pixelColor = GetColor(psdFile, pos);
-
-                                                  lock (bitmap)
-                                                  {
-                                                      bitmap.SetPixel(x, y, pixelColor);
-                                                  }
-                                              }
-                                          });
+            using (var locker = bitmap.GetLocker(dirtyRect))
+            {
+                unsafe
+                {
+                    byte* ptr = (byte*)locker.BackBuffer.ToPointer();
+                    Parallel.For(0, psdFile.Rows, y =>
+                    {
+                        int rowIndex = y * psdFile.Columns;
+                        byte* rowPtr = ptr + y * stride;
+                        for (int x = 0; x < psdFile.Columns; x++)
+                        {
+                            int pos = rowIndex + x;
+                            GetColor(psdFile, pos, out byte r, out byte g, out byte b, out byte a);
+                            byte* pixel = rowPtr + x * 4;
+                            pixel[0] = b;
+                            pixel[1] = g;
+                            pixel[2] = r;
+                            pixel[3] = a;
+                        }
+                    });
+                }
+            }
 
             return bitmap;
         }
 
-        public static Bitmap DecodeImage(Layer layer)
+        public static IWriteableBitmap? DecodeImage(Layer layer, IMediaFactory mediaFactory)
         {
             if (layer.Rect.Width == 0 || layer.Rect.Height == 0) return null;
 
-            var bitmap = new Bitmap(layer.Rect.Width, layer.Rect.Height, PixelFormat.Format32bppArgb);
+            var bitmap = mediaFactory.CreateEmptyBitmap(layer.Rect.Width, layer.Rect.Height, hasAlpha: true);
+            int stride = bitmap.BackBufferStride;
+            var dirtyRect = new PixelRect(0, 0, layer.Rect.Width, layer.Rect.Height);
 
-            Parallel.For(0, layer.Rect.Height, y =>
+            bool hasMask = layer.SortedChannels.ContainsKey(-2);
+
+            using (var locker = bitmap.GetLocker(dirtyRect))
             {
-                int rowIndex = y * layer.Rect.Width;
-
-                for (int x = 0; x < layer.Rect.Width; x++)
+                unsafe
                 {
-                    int pos = rowIndex + x;
-
-                    Color pixelColor = GetColor(layer, pos);
-
-                    if (layer.SortedChannels.ContainsKey(-2))
+                    byte* ptr = (byte*)locker.BackBuffer.ToPointer();
+                    Parallel.For(0, layer.Rect.Height, y =>
                     {
-                        int maskAlpha = GetColor(layer.MaskData, x, y);
-                        int oldAlpha = pixelColor.A;
+                        int rowIndex = y * layer.Rect.Width;
+                        byte* rowPtr = ptr + y * stride;
+                        for (int x = 0; x < layer.Rect.Width; x++)
+                        {
+                            int pos = rowIndex + x;
+                            GetColor(layer, pos, out byte r, out byte g, out byte b, out byte a);
 
-                        int newAlpha = oldAlpha * maskAlpha / 255;
-                        pixelColor = Color.FromArgb(newAlpha, pixelColor);
-                    }
+                            if (hasMask)
+                            {
+                                int maskAlpha = GetMaskAlpha(layer.MaskData, x, y);
+                                a = (byte)(a * maskAlpha / 255);
+                            }
 
-                    lock (bitmap)
-                    {
-                        bitmap.SetPixel(x, y, pixelColor);
-                    }
+                            byte* pixel = rowPtr + x * 4;
+                            pixel[0] = b;
+                            pixel[1] = g;
+                            pixel[2] = r;
+                            pixel[3] = a;
+                        }
+                    });
                 }
-            });
+            }
 
             return bitmap;
         }
 
-        public static Bitmap DecodeImage(Layer.Mask mask)
+        public static IWriteableBitmap? DecodeImage(Layer.Mask mask, IMediaFactory mediaFactory)
         {
             Layer layer = mask.Layer;
 
             if (mask.Rect.Width == 0 || mask.Rect.Height == 0) return null;
 
-            Bitmap bitmap = new Bitmap(mask.Rect.Width, mask.Rect.Height, PixelFormat.Format32bppArgb);
+            var bitmap = mediaFactory.CreateEmptyBitmap(mask.Rect.Width, mask.Rect.Height, hasAlpha: true);
+            int stride = bitmap.BackBufferStride;
+            var dirtyRect = new PixelRect(0, 0, mask.Rect.Width, mask.Rect.Height);
 
-            Parallel.For(0, layer.Rect.Height, y =>
+            using (var locker = bitmap.GetLocker(dirtyRect))
             {
-                int rowIndex = y * layer.Rect.Width;
-
-                for (int x = 0; x < layer.Rect.Width; x++)
+                unsafe
                 {
-                    int pos = rowIndex + x;
-
-                    Color pixelColor = Color.FromArgb(mask.ImageData[pos], mask.ImageData[pos], mask.ImageData[pos]);
-
-                    lock (bitmap)
+                    byte* ptr = (byte*)locker.BackBuffer.ToPointer();
+                    Parallel.For(0, layer.Rect.Height, y =>
                     {
-                        bitmap.SetPixel(x, y, pixelColor);
-                    }
+                        int rowIndex = y * layer.Rect.Width;
+                        byte* rowPtr = ptr + y * stride;
+                        for (int x = 0; x < layer.Rect.Width; x++)
+                        {
+                            int pos = rowIndex + x;
+                            byte gray = mask.ImageData[pos];
+                            byte* pixel = rowPtr + x * 4;
+                            pixel[0] = gray;
+                            pixel[1] = gray;
+                            pixel[2] = gray;
+                            pixel[3] = 255;
+                        }
+                    });
                 }
-            });
+            }
 
             return bitmap;
         }
 
-        private static Color GetColor(PsdFile psdFile, int pos)
+        private static void GetColor(PsdFile psdFile, int pos, out byte r, out byte g, out byte b, out byte a)
         {
-            var c = Color.White;
+            r = g = b = 255;
+            a = 255;
 
             byte red = psdFile.ImageData[0][pos];
             byte green = psdFile.ImageData[1][pos];
@@ -134,75 +156,77 @@ namespace TgaBuilderLib.Psd
 
             byte alpha = 255;
             if (psdFile.ImageData.Length > 3)
-            {
                 alpha = psdFile.ImageData[3][pos];
-            }
 
             switch (psdFile.ColorMode)
             {
                 case ColorMode.RGB:
-                    c = Color.FromArgb(alpha, red, green, blue);
+                    r = red; g = green; b = blue; a = alpha;
                     break;
                 case ColorMode.CMYK:
-                    c = CMYKToRGB(red, green, blue, alpha);
+                    CMYKToRGB(red, green, blue, alpha, out r, out g, out b);
                     break;
                 case ColorMode.Multichannel:
-                    c = CMYKToRGB(red, green, blue, 0);
+                    CMYKToRGB(red, green, blue, 0, out r, out g, out b);
                     break;
                 case ColorMode.Grayscale:
                 case ColorMode.Duotone:
-                    c = Color.FromArgb(red, red, red);
+                    r = g = b = red;
                     break;
                 case ColorMode.Indexed:
-                    int index = red;
-                    c = Color.FromArgb(psdFile.ColorModeData[index], psdFile.ColorModeData[index + 256], psdFile.ColorModeData[index + 2 * 256]);
+                    {
+                        int index = red;
+                        r = psdFile.ColorModeData[index];
+                        g = psdFile.ColorModeData[index + 256];
+                        b = psdFile.ColorModeData[index + 2 * 256];
+                    }
                     break;
                 case ColorMode.Lab:
-                    c = LabToRGB(red, green, blue);
+                    LabToRGB(red, green, blue, out r, out g, out b);
                     break;
             }
-
-            return c;
         }
 
-        private static Color GetColor(Layer layer, int pos)
+        private static void GetColor(Layer layer, int pos, out byte r, out byte g, out byte b, out byte a)
         {
-            Color c = Color.White;
+            r = g = b = 255;
+            a = 255;
 
             switch (layer.PsdFile.ColorMode)
             {
                 case ColorMode.RGB:
-                    c = Color.FromArgb(layer.SortedChannels[0].ImageData[pos], layer.SortedChannels[1].ImageData[pos], layer.SortedChannels[2].ImageData[pos]);
+                    r = layer.SortedChannels[0].ImageData[pos];
+                    g = layer.SortedChannels[1].ImageData[pos];
+                    b = layer.SortedChannels[2].ImageData[pos];
                     break;
                 case ColorMode.CMYK:
-                    c = CMYKToRGB(layer.SortedChannels[0].ImageData[pos], layer.SortedChannels[1].ImageData[pos], layer.SortedChannels[2].ImageData[pos], layer.SortedChannels[3].ImageData[pos]);
+                    CMYKToRGB(layer.SortedChannels[0].ImageData[pos], layer.SortedChannels[1].ImageData[pos], layer.SortedChannels[2].ImageData[pos], layer.SortedChannels[3].ImageData[pos], out r, out g, out b);
                     break;
                 case ColorMode.Multichannel:
-                    c = CMYKToRGB(layer.SortedChannels[0].ImageData[pos], layer.SortedChannels[1].ImageData[pos], layer.SortedChannels[2].ImageData[pos], 0);
+                    CMYKToRGB(layer.SortedChannels[0].ImageData[pos], layer.SortedChannels[1].ImageData[pos], layer.SortedChannels[2].ImageData[pos], 0, out r, out g, out b);
                     break;
                 case ColorMode.Grayscale:
                 case ColorMode.Duotone:
-                    c = Color.FromArgb(layer.SortedChannels[0].ImageData[pos], layer.SortedChannels[0].ImageData[pos], layer.SortedChannels[0].ImageData[pos]);
+                    r = g = b = layer.SortedChannels[0].ImageData[pos];
                     break;
                 case ColorMode.Indexed:
                     {
                         int index = layer.SortedChannels[0].ImageData[pos];
-                        c = Color.FromArgb(layer.PsdFile.ColorModeData[index], layer.PsdFile.ColorModeData[index + 256], layer.PsdFile.ColorModeData[index + 2 * 256]);
+                        r = layer.PsdFile.ColorModeData[index];
+                        g = layer.PsdFile.ColorModeData[index + 256];
+                        b = layer.PsdFile.ColorModeData[index + 2 * 256];
                     }
                     break;
                 case ColorMode.Lab:
-                    {
-                        c = LabToRGB(layer.SortedChannels[0].ImageData[pos], layer.SortedChannels[1].ImageData[pos], layer.SortedChannels[2].ImageData[pos]);
-                    }
+                    LabToRGB(layer.SortedChannels[0].ImageData[pos], layer.SortedChannels[1].ImageData[pos], layer.SortedChannels[2].ImageData[pos], out r, out g, out b);
                     break;
             }
 
-            if (layer.SortedChannels.ContainsKey(-1)) c = Color.FromArgb(layer.SortedChannels[-1].ImageData[pos], c);
-
-            return c;
+            if (layer.SortedChannels.ContainsKey(-1))
+                a = layer.SortedChannels[-1].ImageData[pos];
         }
 
-        private static int GetColor(Layer.Mask mask, int x, int y)
+        private static int GetMaskAlpha(Layer.Mask mask, int x, int y)
         {
             int c = 255;
 
@@ -227,7 +251,7 @@ namespace TgaBuilderLib.Psd
             return c;
         }
 
-        private static Color LabToRGB(byte lb, byte ab, byte bb)
+        private static void LabToRGB(byte lb, byte ab, byte bb, out byte r, out byte g, out byte b)
         {
             double exL = lb;
             double exA = ab;
@@ -239,7 +263,7 @@ namespace TgaBuilderLib.Psd
 
             int l = (int)(exL / lCoef);
             int a = (int)(exA / aCoef - 128.0);
-            int b = (int)(exB / bCoef - 128.0);
+            int bVal = (int)(exB / bCoef - 128.0);
 
             // For the conversion we first convert values to XYZ and then to RGB
             // Standards used Observer = 2, Illuminant = D65
@@ -250,7 +274,7 @@ namespace TgaBuilderLib.Psd
 
             double varY = (l + 16.0) / 116.0;
             double varX = a / 500.0 + varY;
-            double varZ = varY - b / 200.0;
+            double varZ = varY - bVal / 200.0;
 
             varY = Math.Pow(varY, 3) > 0.008856 ? Math.Pow(varY, 3) : (varY - 16 / 116) / 7.787;
             varX = Math.Pow(varX, 3) > 0.008856 ? Math.Pow(varX, 3) : (varX - 16 / 116) / 7.787;
@@ -260,10 +284,10 @@ namespace TgaBuilderLib.Psd
             double y = refY * varY;
             double z = refZ * varZ;
 
-            return XYZToRGB(x, y, z);
+            XYZToRGB(x, y, z, out r, out g, out b);
         }
 
-        private static Color XYZToRGB(double x, double y, double z)
+        private static void XYZToRGB(double x, double y, double z, out byte r, out byte g, out byte b)
         {
             // Standards used Observer = 2, Illuminant = D65
             // ref_X = 95.047, ref_Y = 100.000, ref_Z = 108.883
@@ -292,7 +316,9 @@ namespace TgaBuilderLib.Psd
             nBlue = nBlue > 0 ? nBlue : 0;
             nBlue = nBlue < 255 ? nBlue : 255;
 
-            return Color.FromArgb(nRed, nGreen, nBlue);
+            r = (byte)nRed;
+            g = (byte)nGreen;
+            b = (byte)nBlue;
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -308,7 +334,7 @@ namespace TgaBuilderLib.Psd
         // Yellow  = (1-Blue-Black)/(1-Black)
         //
 
-        private static Color CMYKToRGB(byte c, byte m, byte y, byte k)
+        private static void CMYKToRGB(byte c, byte m, byte y, byte k, out byte r, out byte g, out byte b)
         {
             double dMaxColours = Math.Pow(2, 8);
 
@@ -335,7 +361,9 @@ namespace TgaBuilderLib.Psd
             nBlue = nBlue > 0 ? nBlue : 0;
             nBlue = nBlue < 255 ? nBlue : 255;
 
-            return Color.FromArgb(nRed, nGreen, nBlue);
+            r = (byte)nRed;
+            g = (byte)nGreen;
+            b = (byte)nBlue;
         }
     }
 }

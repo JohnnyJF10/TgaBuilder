@@ -26,12 +26,12 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using bzPSD;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
+using TgaBuilderLib.Abstraction;
 
-namespace System.Drawing.PSD
+namespace TgaBuilderLib.Psd
 {
     public partial class Layer
     {
@@ -60,13 +60,15 @@ namespace System.Drawing.PSD
 
                 long startPosition = reader.BaseStream.Position;
 
-                var localRectangle = new Rectangle
+                int rectY = reader.ReadInt32();
+                int rectX = reader.ReadInt32();
+                var localRectangle = new PixelRect
                 {
-                    Y = reader.ReadInt32(),
-                    X = reader.ReadInt32()
+                    Y = rectY,
+                    X = rectX,
+                    Height = reader.ReadInt32() - rectY,
+                    Width = reader.ReadInt32() - rectX,
                 };
-                localRectangle.Height = reader.ReadInt32() - localRectangle.Y;
-                localRectangle.Width = reader.ReadInt32() - localRectangle.X;
 
                 Rect = localRectangle;
 
@@ -81,13 +83,10 @@ namespace System.Drawing.PSD
 
                     byte realUserMaskBackground = reader.ReadByte();
 
-                    var rect = new Rectangle
-                    {
-                        Y = reader.ReadInt32(),
-                        X = reader.ReadInt32(),
-                        Height = reader.ReadInt32() - Rect.Y,
-                        Width = reader.ReadInt32() - Rect.X
-                    };
+                    int rY = reader.ReadInt32();
+                    int rX = reader.ReadInt32();
+                    int rH = reader.ReadInt32() - Rect.Y;
+                    int rW = reader.ReadInt32() - Rect.X;
                 }
 
                 // there is other stuff following, but we will ignore this.
@@ -130,7 +129,7 @@ namespace System.Drawing.PSD
             /// <summary>
             /// The rectangle enclosing the mask.
             /// </summary>
-            public Rectangle Rect { get; private set; }
+            public PixelRect Rect { get; private set; }
 
             public byte DefaultColor { get; private set; }
 

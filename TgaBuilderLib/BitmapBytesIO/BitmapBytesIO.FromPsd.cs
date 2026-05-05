@@ -1,4 +1,4 @@
-﻿using System.Drawing.PSD;
+﻿using TgaBuilderLib.Psd;
 using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.BitmapBytesIO

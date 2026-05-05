@@ -27,12 +27,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
 
-using bzPSD;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 
-namespace System.Drawing.PSD
+namespace TgaBuilderLib.Psd
 {
     public partial class Layer
     {

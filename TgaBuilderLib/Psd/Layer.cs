@@ -26,14 +26,14 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using bzPSD;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using TgaBuilderLib.Abstraction;
 
-namespace System.Drawing.PSD
+namespace TgaBuilderLib.Psd
 {
     public partial class Layer
     {
@@ -46,7 +46,7 @@ namespace System.Drawing.PSD
             SortedChannels = new SortedList<short, Channel>();
             AdjustmentInfo = new List<AdjusmentLayerInfo>();
             Channels = new List<Channel>();
-            Rect = Rectangle.Empty;
+            Rect = PixelRect.Empty;
             PsdFile = psdFile;
         }
 
@@ -59,14 +59,15 @@ namespace System.Drawing.PSD
 
             PsdFile = psdFile;
 
-            var localRectangle = new Rectangle
+            int rectY = reverseReader.ReadInt32();
+            int rectX = reverseReader.ReadInt32();
+            var localRectangle = new PixelRect
             {
-                Y = reverseReader.ReadInt32(),
-                X = reverseReader.ReadInt32()
+                Y = rectY,
+                X = rectX,
+                Height = reverseReader.ReadInt32() - rectY,
+                Width = reverseReader.ReadInt32() - rectX,
             };
-
-            localRectangle.Height = reverseReader.ReadInt32() - localRectangle.Y;
-            localRectangle.Width = reverseReader.ReadInt32() - localRectangle.X;
 
             Rect = localRectangle;
 
@@ -144,7 +145,7 @@ namespace System.Drawing.PSD
         /// <summary>
         /// The rectangle containing the contents of the layer.
         /// </summary>
-        public Rectangle Rect { get; }
+        public PixelRect Rect { get; }
 
         public List<Channel> Channels { get; }
 
