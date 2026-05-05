@@ -15,10 +15,10 @@
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Smooth Transition Helper"
-    Width="620"
-    Height="460"
-    MinWidth="580"
-    MinHeight="410"
+    Width="660"
+    Height="300"
+    MinWidth="660"
+    MinHeight="300"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
     <Window.Resources>
@@ -130,23 +130,47 @@
                         Maximum="1" Minimum="0" SmallChange="0.01"
                         Value="{Binding BlendHardnessValue}" />
                 </DockPanel>
+
+                <DockPanel Margin="30,0,0,0" VerticalAlignment="Center" Width="140" HorizontalAlignment="Left"
+                               ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)">
+                        <Path VerticalAlignment="Center"
+                              Stroke="{DynamicResource IconFillBrush}"
+                              StrokeThickness="1"
+                              Width="20" Height="14" Stretch="Uniform"
+                              Data="{StaticResource slide_layout_clean}" />
+                        <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                              Stroke="{DynamicResource IconFillBrush}"
+                              StrokeThickness="1"
+                              Fill="Transparent" Width="20" Height="14" Stretch="Uniform"
+                              Data="{StaticResource slide_layout_stroke}" />
+                        <Slider
+                            Margin="5,0"
+                            VerticalAlignment="Center"
+                            ToolTip.Tip="{Binding OffsetValue}"
+                            Maximum="1" Minimum="0" SmallChange="0.01"
+                            Value="{Binding OffsetValue}" />
+                    </DockPanel>
             </StackPanel>
 
-            <!-- Col 1, Row 0-1: Tab View -->
-            <TabControl
+            <!-- Col 1, Row 0-1: Tab View, will be implemented later, when more options are available -->
+            <!--<TabControl
                 Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                 Margin="0,5,5,5"
                 BorderBrush="Transparent"
                 TabStripPlacement="Top">
                 <TabItem Height="25" Header="Blend">
-                    <DockPanel Margin="0,6,5,0" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left"
+                    <DockPanel Margin="0,6,5,0" VerticalAlignment="Center" Width="140" HorizontalAlignment="Left"
                                ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)">
                         <Path VerticalAlignment="Center"
-                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
-                              Data="{StaticResource point_scan}" />
+                              Stroke="{DynamicResource IconFillBrush}"
+                              StrokeThickness="1"
+                              Width="20" Height="14" Stretch="Uniform"
+                              Data="{StaticResource slide_layout_clean}" />
                         <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                              Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
-                              Data="{StaticResource circle}" />
+                              Stroke="{DynamicResource IconFillBrush}"
+                              StrokeThickness="1"
+                              Fill="Transparent" Width="20" Height="14" Stretch="Uniform"
+                              Data="{StaticResource slide_layout_stroke}" />
                         <Slider
                             Margin="5,0"
                             VerticalAlignment="Center"
@@ -155,7 +179,7 @@
                             Value="{Binding OffsetValue}" />
                     </DockPanel>
                 </TabItem>
-            </TabControl>
+            </TabControl>-->
         </Grid>
 
         <!-- Row 1: Images -->
@@ -191,21 +215,22 @@
         </Border>
 
         <!-- + symbol and swap -->
-        <StackPanel
-            Grid.Row="1"
-            Grid.Column="1"
-            VerticalAlignment="Center">
-            <PathIcon Data="{StaticResource add}"
-                      Width="16" Height="16" />
-            <Button
-                Margin="0,9,0,0"
-                Command="{Binding SwapImagesCommand}"
-                ap:MouseOverInfoAP.InfoText="Swap Texture 1 and Texture 2"
-                ToolTip.Tip="Swap images">
-                <PathIcon Data="{StaticResource arrow_swap}"
+            <StackPanel
+                VerticalAlignment="Center"
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="0,45,0,0">
+                <PathIcon Data="{StaticResource add}"
                           Width="16" Height="16" />
-            </Button>
-        </StackPanel>
+                <elements:IconButton
+                    Classes="outlined"
+                    Margin="0,9,0,0"
+                    Padding="4,0,0,0"
+                    Command="{Binding SwapImagesCommand}"
+                    ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture"
+                    ToolTip.Tip="Swap images"
+                    Icon="{StaticResource arrow_swap}"/>
+            </StackPanel>
 
         <!-- Image 2 -->
         <Border
@@ -242,10 +267,12 @@
         <!-- Mix button (arrow) -->
         <elements:IconButton
             Classes="accent"
+            Foreground="White"
             Grid.Row="1"
             Grid.Column="3"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
+            Padding="0,0,0,-5"
             ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
             Icon="{StaticResource arrow_forward}"
             Command="{Binding MixCommand}" />
@@ -279,6 +306,7 @@
             CornerRadius="0" />
         <elements:IconButton
             x:Name="BtnLoad1"
+            Classes="outlined"
             Grid.Row="2"
             Grid.Column="0"
             Margin="10,5"
@@ -289,6 +317,7 @@
             Command="{Binding LoadImage1Command}" />
         <elements:IconButton
             x:Name="BtnLoad2"
+            Classes="outlined"
             Grid.Row="2"
             Grid.Column="2"
             Margin="10,5"

@@ -990,4 +990,8 @@
 <!-- === Hardness icons === -->
 <StreamGeometry x:Key="hardness_soft">M12,2 C9,7 7,10.5 7,15 A5,5 0 1,0 17,15 C17,10.5 15,7 12,2 Z</StreamGeometry>
 <StreamGeometry x:Key="hardness_sharp">M9,2 L15,2 L21,5.71 L12,15 L3,5.71 Z M9,2 L15,2 L16,5.71 L12,15 L8,5.71 Z M3,5.71 L21,5.71</StreamGeometry>
+
+<StreamGeometry x:Key="slide_layout_clean">M4.75 4 C3.23122 4 2 5.23122 2 6.75 V17.25 C2 18.7688 3.23122 20 4.75 20 H19.25 C20.7688 20 22 18.7688 22 17.25 V6.75 C22 5.23122 20.7688 4 19.25 4 H4.75 Z</StreamGeometry>
+<StreamGeometry x:Key="slide_layout_stroke">M4.75 4 C3.23122 4 2 5.23122 2 6.75 V17.25 C2 18.7688 3.23122 20 4.75 20 H19.25 C20.7688 20 22 18.7688 22 17.25 V6.75 C22 5.23122 20.7688 4 19.25 4 H4.75 Z M13 4 L13 20</StreamGeometry>
+
 </ResourceDictionary>
