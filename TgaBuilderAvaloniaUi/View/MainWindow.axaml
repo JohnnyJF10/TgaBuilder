@@ -56,14 +56,15 @@
             <converter:BitmapSourceConverter x:Key="BitmapSourceConverter" />
             <converter:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
             <converter:BrushToColorStruct x:Key="BrushToColorStruct" />
+            <converter:ColorStructToMediaColor x:Key="ColorStructToMediaColor" />
             <converter:BoolToStrokeDashStyleConverter x:Key="BoolToStrokeDashStyleConverter" />
             <converter:SignSwitchConverter x:Key="SignSwitchConverter" />
             <converter:ColorStructToBrush x:Key="ColorStructToBrush" />
-          <converter:TupleToPointConverter x:Key="TupleToPointConverter" />
-          <converter:ZoomToOffsetConverter x:Key="ZoomToOffsetConverter" />
-          <converter:PathToFriendlyPathConverter x:Key="PathToFriendlyPathConverter" />
-          <converter:PanelHelpConverter x:Key="PanelHelpConverter" />
-          <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+            <converter:TupleToPointConverter x:Key="TupleToPointConverter" />
+            <converter:ZoomToOffsetConverter x:Key="ZoomToOffsetConverter" />
+            <converter:PathToFriendlyPathConverter x:Key="PathToFriendlyPathConverter" />
+            <converter:PanelHelpConverter x:Key="PanelHelpConverter" />
+            <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -374,6 +375,8 @@
 
                             <ToggleSwitch
                                 Grid.Column="1"
+                                OffContent=""
+                                OnContent=""
                                 ap:MouseOverInfoAP.InfoText="Sets the Source image format"
                                 IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -399,15 +402,11 @@
                             Command="{Binding EyeDropperCommand}"
                             DockPanel.Dock="Left" />
 
-                        <Button
-                            Width="20"
-                            Height="20"
-                            Margin="2,0"
-                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color in the selection"
-                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
-                            BorderBrush="Gray"
-                            Command="{Binding SelectionMonoColorFillCommand}"
-                            CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
+                        <ColorPicker 
+                            x:Name="SourceColorPicker"
+                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            Color="{Binding ColorToReplace, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"                            
+                        />
 
                         <elements:IconToggleButton
                             Classes="outlined"
@@ -1078,6 +1077,8 @@
                             <ToggleSwitch
                                 x:Name="DestinationFormatSwitch"
                                 Grid.Column="1"
+                                OffContent=""
+                                OnContent=""
                                 ap:MouseOverInfoAP.InfoText="Sets the Destination image format. CAUTION: This clears the undo and redo stacks."
                                 IsChecked="{Binding IsBgra32}" 
                                 Click="DestinationFormatSwitch_Click"
@@ -1105,15 +1106,11 @@
                             Command="{Binding EyeDropperCommand}"
                             DockPanel.Dock="Left" />
 
-                        <Button
-                            Width="20"
-                            Height="20"
-                            Margin="2,0"
-                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color in the selection"
-                            Background="{Binding ColorSource, Converter={StaticResource ColorStructToBrush}}"
-                            BorderBrush="Gray"
-                            Command="{Binding SelectionMonoColorFillCommand}"
-                            CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorStruct}}" />
+                        <ColorPicker 
+                            x:Name="TargetColorPicker"
+                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            Color="{Binding ColorToReplace, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"                            
+                        />
 
                         <elements:IconToggleButton
                             Classes="outlined"

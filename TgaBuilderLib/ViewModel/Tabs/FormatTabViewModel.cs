@@ -22,8 +22,7 @@ namespace TgaBuilderLib.ViewModel
             _panel = panel;
 
             _eyeDropper = eyeDropper;
-            _colorSource = new Color(0, 0, 0, 0); // Default black
-            _colorTarget = new Color(0, 0, 0, 0); // Default black
+            _colorToReplace = new Color(0, 0, 0, 0); // Default black
 
             _panel.PresenterChanged += (_, _) => OnFormatBooleanPropertiesChanged();
         }
@@ -40,18 +39,11 @@ namespace TgaBuilderLib.ViewModel
         private AsyncCommand? _replaceSourceColorCommand;
 
         // Brushes
-        private Color _colorSource;
-        public Color ColorSource
+        private Color _colorToReplace;
+        public Color ColorToReplace
         {
-            get => _colorSource;
-            set => SetProperty(ref _colorSource, value, nameof(ColorSource));
-        }
-
-        private Color _colorTarget;
-        public Color ColorTarget
-        {
-            get => _colorTarget;
-            set => SetProperty(ref _colorTarget, value, nameof(ColorTarget));
+            get => _colorToReplace;
+            set => SetProperty(ref _colorToReplace, value, nameof(ColorToReplace));
         }
 
         // Eyedropper mode
@@ -144,13 +136,13 @@ namespace TgaBuilderLib.ViewModel
 
         internal void DoColorPicking()
         {
-            ColorSource = _eyeDropper.Color;
+            ColorToReplace = _eyeDropper.Color;
         }
 
         internal void EndColorPicking()
         {
             _eyeDropper.IsActive = false;
-            _eyeDropper.Color = ColorSource;
+            _eyeDropper.Color = ColorToReplace;
             IsEyedropperMode = false;
 
             _panel.EyedropperEnd();

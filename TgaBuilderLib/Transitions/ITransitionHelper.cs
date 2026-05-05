@@ -1,4 +1,6 @@
-﻿namespace TgaBuilderLib.Transitions
+﻿using TgaBuilderLib.Abstraction;
+
+namespace TgaBuilderLib.Transitions
 {
     public interface ITransitionHelper
     {
@@ -16,6 +18,7 @@
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
         SegmentationMethod SegmentationMethod { get; set; }
+        Color EdgeColor { get; set; }
         bool SliceCornerTiles { get; set; }
         int Stride { get; set; }
         int Width { get; set; }

@@ -127,8 +127,6 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
 
             if (LeavePanelCommand is not null && LeavePanelCommand.CanExecute(isDestination))
                 LeavePanelCommand.Execute(isDestination);
-
-            mainWindow.Cursor = new Cursor(StandardCursorType.Arrow);
         }
 
         public static readonly AttachedProperty<ICommand?> LeavePanelCommandProperty =

@@ -295,5 +295,10 @@ namespace TgaBuilderLib.ViewModel
             l |= (l >> 32);
             return l + 1;
         }
+
+        internal void MouseOverImage((int X, int Y) MousePos)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

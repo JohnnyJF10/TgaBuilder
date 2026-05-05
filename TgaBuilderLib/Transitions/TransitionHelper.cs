@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Transitions
 {
@@ -32,6 +33,8 @@ namespace TgaBuilderLib.Transitions
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Watershed;
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
 
+        public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
+
         public void CleanUp()
         {
             LastAnalysisMap = Array.Empty<byte>();
@@ -46,6 +49,8 @@ namespace TgaBuilderLib.Transitions
             ReversePivot = false;
             SliceCornerTiles = false;
             SegmentationMethod = SegmentationMethod.Watershed;
+            SelectedFilter = FilterType.BoxBlur;
+            EdgeColor = new Color(0, 0, 0, 128);
         }
     }
 }

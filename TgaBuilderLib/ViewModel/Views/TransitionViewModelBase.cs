@@ -57,6 +57,9 @@ public abstract class TransitionViewModelBase : ViewModelBase
     private TransitionMode _transitionMode = TransitionMode.Top;
     private float _pivotValue = 0.5f;
 
+    private Color _colorSource = new(0, 0, 0, 0);
+    private Color _colorTarget = new(0, 0, 0, 0);
+
     private RelayCommand? _loadImage1Command;
     private RelayCommand? _loadImage2Command;
     private RelayCommand? _swapImagesCommand;
@@ -109,6 +112,18 @@ public abstract class TransitionViewModelBase : ViewModelBase
     {
         get => _pivotValue;
         set => SetOneWayPropertyTriggerRecalculation(ref _pivotValue, value, RequiresFullAnalysisOnPivotChange);
+    }
+
+    public Color ColorSource
+    {
+        get => _colorSource;
+        set => SetCallerProperty(ref _colorSource, value);
+    }
+
+    public Color ColorTarget
+    {
+        get => _colorTarget;
+        set => SetCallerProperty(ref _colorTarget, value);
     }
 
     protected virtual bool RequiresFullAnalysisOnPivotChange => true;
