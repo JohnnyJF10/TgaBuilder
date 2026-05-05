@@ -26,10 +26,15 @@ namespace TgaBuilderAvaloniaUi.View
             else
             {
                 var FE = image.GetVisualParent();
+
+                if (FE is null)
+                    throw new ArgumentException("Image is not part of the visual tree", nameof(image));
+
                 while (FE.GetType() != typeof(ZoomBorder))
                 {
                     FE = FE.GetVisualParent();
-                    if (FE == null) throw new Exception("ZoomBorder not found");
+                    if (FE is null) 
+                        throw new Exception("ZoomBorder not found");
                 }
                 _imagePanelDict[image] = (ZoomBorder)FE;
                 return (ZoomBorder)FE;

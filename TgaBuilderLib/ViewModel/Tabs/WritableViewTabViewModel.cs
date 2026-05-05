@@ -36,8 +36,6 @@ namespace TgaBuilderLib.ViewModel
 
         private double _horizonatlMargin;
 
-        private Stopwatch? _stopwatch;
-
         private RelayCommand? _FillCommand;
         private RelayCommand? _FitCommand;
         private RelayCommand? _100PercentCommand;
@@ -198,7 +196,7 @@ namespace TgaBuilderLib.ViewModel
         {
             IsScrolling = true;
 
-            Stopwatch stopwatch = _stopwatch ?? new();
+            Stopwatch stopwatch = new();
             stopwatch.Start();
 
             long lastTicks = stopwatch.ElapsedTicks;

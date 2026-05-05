@@ -27,8 +27,6 @@ namespace TgaBuilderLib.ViewModel
             | FileTypes.TR4 | FileTypes.TRC | FileTypes.TEN;
 
 
-        private Dictionary<FileTypes, string>? _extensions;
-
         private string _previousFile = string.Empty;
         private string _nextFile = string.Empty;
 
@@ -276,7 +274,7 @@ namespace TgaBuilderLib.ViewModel
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException("The specified directory does not exist: " + directory);
 
-            var extensions = _extensions ?? Enum.GetValues(typeof(FileTypes))
+            var extensions = Enum.GetValues(typeof(FileTypes))
                 .Cast<FileTypes>()
                 .Where(ft => ft != FileTypes.None)
                 .ToDictionary(ft => ft, ft => $"*.{ft.ToString().ToLower()}");
