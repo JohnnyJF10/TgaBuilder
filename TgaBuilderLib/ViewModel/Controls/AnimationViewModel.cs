@@ -20,7 +20,7 @@ namespace TgaBuilderLib.ViewModel
 
         private Task? _animationTask;
 
-        private Stopwatch? _stopwatch;
+        private Stopwatch _stopwatch = new();
         private List<PixelRect> _frameRects = new();
 
         private readonly IMediaFactory _mediaFactory;
@@ -226,7 +226,7 @@ namespace TgaBuilderLib.ViewModel
             int offset = 100;
             Presenter = texScrollingSource;
 
-            Stopwatch stopwatch = _stopwatch ?? new();
+            Stopwatch stopwatch = new();
             stopwatch.Start();
 
             long lastTicks = stopwatch.ElapsedTicks;
