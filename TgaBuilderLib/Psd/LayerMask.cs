@@ -83,10 +83,11 @@ namespace TgaBuilderLib.Psd
 
                     byte realUserMaskBackground = reader.ReadByte();
 
-                    int rY = reader.ReadInt32();
-                    int rX = reader.ReadInt32();
-                    int rH = reader.ReadInt32() - Rect.Y;
-                    int rW = reader.ReadInt32() - Rect.X;
+                    // Read real user mask rect (top, left, bottom, right) to advance stream
+                    reader.ReadInt32();
+                    reader.ReadInt32();
+                    reader.ReadInt32();
+                    reader.ReadInt32();
                 }
 
                 // there is other stuff following, but we will ignore this.
