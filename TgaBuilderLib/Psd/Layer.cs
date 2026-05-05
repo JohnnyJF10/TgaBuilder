@@ -223,9 +223,9 @@ namespace TgaBuilderLib.Psd
         /// </summary>
         public string Name { get; }
 
-        public BlendingRanges BlendingRangesData { get; set; } = null!;
+        public BlendingRanges? BlendingRangesData { get; set; }
 
-        public Mask MaskData { get; private set; } = null!;
+        public Mask? MaskData { get; private set; }
 
         public List<AdjusmentLayerInfo> AdjustmentInfo { get; }
 
@@ -251,8 +251,15 @@ namespace TgaBuilderLib.Psd
 
             using (new LengthWriter(reverseWriter))
             {
-                MaskData.Save(reverseWriter);
-                BlendingRangesData.Save(reverseWriter);
+                if (MaskData != null)
+                    MaskData.Save(reverseWriter);
+                else
+                    reverseWriter.Write((uint)0);
+
+                if (BlendingRangesData != null)
+                    BlendingRangesData.Save(reverseWriter);
+                else
+                    reverseWriter.Write((uint)0);
 
                 long namePosition = reverseWriter.BaseStream.Position;
 

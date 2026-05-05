@@ -92,7 +92,7 @@ namespace TgaBuilderLib.Psd
 
                             if (hasMask)
                             {
-                                int maskAlpha = GetMaskAlpha(layer.MaskData, x, y);
+                                int maskAlpha = GetMaskAlpha(layer.MaskData!, x, y);
                                 a = (byte)(a * maskAlpha / 255);
                             }
 

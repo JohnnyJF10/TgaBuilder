@@ -157,7 +157,8 @@ namespace TgaBuilderLib.Psd
                     _imageResources.Remove(oldValue);
                 }
 
-                _imageResources.Add(value!);
+                if (value != null)
+                    _imageResources.Add(value);
             }
         }
 
@@ -386,7 +387,7 @@ namespace TgaBuilderLib.Psd
                 {
                     channel.LoadPixelData(reader);
                 }
-                layer.MaskData.LoadPixelData(reader);
+                layer.MaskData?.LoadPixelData(reader);
             }
 
 
