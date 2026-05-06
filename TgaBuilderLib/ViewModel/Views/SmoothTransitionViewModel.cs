@@ -1,5 +1,4 @@
-﻿using System;
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Transitions;
 
@@ -21,7 +20,7 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
     public float BlendHardnessValue
     {
         get => _blendHardnessValue;
-        set => SetPropertyTriggerRecalculation(ref _blendHardnessValue, value, BricksPipelineRequirements.RequiresAnalysis);
+        set => SetPropertyTriggerRecalculation(ref _blendHardnessValue, value);
     }
 
     private float _offsetValue = 0f;
@@ -29,10 +28,10 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
     public float OffsetValue
     {
         get => _offsetValue;
-        set => SetPropertyTriggerRecalculation(ref _offsetValue, value, BricksPipelineRequirements.RequiresAnalysis);
+        set => SetPropertyTriggerRecalculation(ref _offsetValue, value);
     }
 
-    protected override byte[] CreateMixedPixels(BricksPipelineRequirements pipelineRequirements)
+    protected override byte[] CreateMixedPixels()
         => TransitionHelper.MixSmooth(Pixels1, Pixels2);
 
     protected override void ConfigureTransitionHelperCore()

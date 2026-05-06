@@ -36,6 +36,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
     private Color _edgeColor = new Color(255, 255, 255, 128);
     private bool _isEyedropperMode;
+    private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
     private RelayCommand? _pickEdgeColorCommand;
     private RelayCommand<(int X, int Y, int imageNum)>? _mouseOverCommand;
@@ -49,19 +50,40 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public int MarkerRadius
     {
         get => _markerRadius;
-        set => SetPropertyTriggerRecalculation(ref _markerRadius, value, BricksPipelineRequirements.RequiresAnalysis);
+        set
+        {
+            if (SetCallerPropertyReturn(ref _markerRadius, value))
+            {
+                _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+                _ = TriggerRecalculation();
+            }
+        }
     }
 
     public bool ReversePivot
     {
         get => _reversePivot;
-        set => SetPropertyTriggerRecalculation(ref _reversePivot, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+        set
+        {
+            if (SetCallerPropertyReturn(ref _reversePivot, value))
+            {
+                _currentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
+                _ = TriggerRecalculation();
+            }
+        }
     }
 
     public bool SliceCornerTiles
     {
         get => _sliceCornerTiles;
-        set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+        set
+        {
+            if (SetCallerPropertyReturn(ref _sliceCornerTiles, value))
+            {
+                _currentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
+                _ = TriggerRecalculation();
+            }
+        }
     }
 
     public bool IsLabelMapExpanded
@@ -78,7 +100,8 @@ public class BrickTransitionViewModel : TransitionViewModelBase
             if (SetCallerPropertyReturn(ref _selectedFilter, value))
             {
                 OnPropertyChanged(nameof(SelectedFilterIndex));
-                _ = TriggerRecalculation(pipelineRequirements: BricksPipelineRequirements.RequiresAnalysis);
+                _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+                _ = TriggerRecalculation();
             }
         }
     }
@@ -97,7 +120,8 @@ public class BrickTransitionViewModel : TransitionViewModelBase
             if (SetCallerPropertyReturn(ref _selectedSegmentationMethod, value))
             {
                 OnPropertyChanged(nameof(SelectedSegmentationMethodIndex));
-                _ = TriggerRecalculation(pipelineRequirements: BricksPipelineRequirements.RequiresAnalysis);
+                _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+                _ = TriggerRecalculation();
             }
         }
     }
@@ -105,7 +129,14 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public Color EdgeColor 
     {         
         get => _edgeColor;
-        set => SetPropertyTriggerRecalculation(ref _edgeColor, value, BricksPipelineRequirements.RequiresEdgeColoring);
+        set
+        {
+            if (SetCallerPropertyReturn(ref _edgeColor, value))
+            {
+                _currentRequirements = BricksPipelineRequirements.RequiresEdgeColoring;
+                _ = TriggerRecalculation();
+            }
+        }
     }
 
     public bool IsEyedropperMode
@@ -158,11 +189,17 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         //_panel.EyedropperEnd();
     }
 
-    protected override byte[] CreateMixedPixels(BricksPipelineRequirements pipelineRequirements)
+    protected override void OnTransitionParametersChanged()
+        => _currentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
+
+    protected override void OnBeforeFullRecalculation()
+        => _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+
+    protected override byte[] CreateMixedPixels()
     {
         Debug.WriteLine($"Current Pivot: {TransitionHelper.Pivot}, Reverse: {TransitionHelper.ReversePivot}");
 
-        return TransitionHelper.MixBricks(Pixels1, Pixels2, pipelineRequirements);
+        return TransitionHelper.MixBricks(Pixels1, Pixels2, _currentRequirements);
     }
 
     protected override void ConfigureTransitionHelperCore()
