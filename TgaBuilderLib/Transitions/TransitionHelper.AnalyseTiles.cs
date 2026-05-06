@@ -71,8 +71,8 @@ namespace TgaBuilderLib.Transitions
                 _ => 0
             };
 
-            // 4. Centroids
-            var centroids = CalculateCentroids(labels, Width, Height, labelCount);
+            // 4. Build TileSegmentList (centroids + pixel offsets)
+            var tileSegmentList = BuildTileSegmentList(labels, Width, Height, labelCount);
 
             // 5. Generate label map
             GenerateLabelMap(Width, Height, labels, labelCount);
@@ -80,11 +80,11 @@ namespace TgaBuilderLib.Transitions
             // Assign labels to the class property
             Labels = labels;
 
-            Centroids = centroids;
+            TileSegmentList = tileSegmentList;
         }
 
 
-        private (float X, float Y)[] CalculateCentroids(int[] labels, int width, int height, int labelCount)
+        private List<TileSegment> BuildTileSegmentList(int[] labels, int width, int height, int labelCount)
         {
             // Arrays for summing coordinates and counting pixels for each label
             long[] sumX = new long[labelCount + 1];
@@ -104,25 +104,30 @@ namespace TgaBuilderLib.Transitions
                 }
             }
 
-            var centroids = new (float X, float Y)[labelCount];
-
+            var segments = new List<TileSegment>(labelCount);
             for (int i = 1; i <= labelCount; i++)
             {
+                var segment = new TileSegment();
                 if (counts[i] > 0)
                 {
                     // Divide the average coordinate by the dimension to get relative (0-1) values
-                    centroids[i - 1] = (
-                        ((float)sumX[i] / counts[i]) / width,
-                        ((float)sumY[i] / counts[i]) / height
-                    );
+                    segment.CentroidX = ((float)sumX[i] / counts[i]) / width;
+                    segment.CentroidY = ((float)sumY[i] / counts[i]) / height;
                 }
-                else
+                segments.Add(segment);
+            }
+
+            // Populate pixel offsets for each segment
+            for (int i = 0; i < totalPixels; i++)
+            {
+                int lbl = labels[i];
+                if (lbl > 0 && lbl <= labelCount)
                 {
-                    centroids[i - 1] = (0f, 0f);
+                    segments[lbl - 1].PixelOffsets.Add(i);
                 }
             }
 
-            return centroids;
+            return segments;
         }
 
 

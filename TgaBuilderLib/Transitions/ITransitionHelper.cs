@@ -1,4 +1,5 @@
-﻿using TgaBuilderLib.Abstraction;
+﻿using System.Collections.Generic;
+using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Transitions
 {
@@ -7,7 +8,7 @@ namespace TgaBuilderLib.Transitions
         float Hardness { get; set; }
         int Height { get; set; }
         int[] Labels { get; }
-        (float X, float Y)[] Centroids { get; set; }
+        List<TileSegment> TileSegmentList { get; set; }
         int LastAnalysisHeight { get; }
         byte[] LastAnalysisMap { get; }
         int LastAnalysisWidth { get; }

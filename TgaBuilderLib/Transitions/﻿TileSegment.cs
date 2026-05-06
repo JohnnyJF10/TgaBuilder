@@ -20,7 +20,6 @@ public class TileSegment : ICloneable
     public object Clone()
     {
         var pixelOffsets = new List<int>(this.PixelOffsets);
-        pixelOffsets.AddRange(this.PixelOffsets);
 
         return new TileSegment
         {

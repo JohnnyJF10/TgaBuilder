@@ -15,7 +15,7 @@ namespace TgaBuilderLib.Transitions
 
         public int[] Labels { get; private set; } = Array.Empty<int>();
 
-        public (float X, float Y)[] Centroids { get; set; } = Array.Empty<(float X, float Y)>();
+        public List<TileSegment> TileSegmentList { get; set; } = new List<TileSegment>();
 
         public int Width { get; set; }
         public int Height { get; set; }
@@ -41,7 +41,7 @@ namespace TgaBuilderLib.Transitions
             LastAnalysisWidth = 0;
             LastAnalysisHeight = 0;
             Labels = Array.Empty<int>();
-            Centroids = Array.Empty<(float X,float Y)>();
+            TileSegmentList = new List<TileSegment>();
             Hardness = 0.5f;
             Pivot = 0.5f;
             Offset = 0f;

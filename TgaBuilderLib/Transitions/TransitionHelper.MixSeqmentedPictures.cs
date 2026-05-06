@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Net.WebRequestMethods;
 
 namespace TgaBuilderLib.Transitions
@@ -15,13 +17,12 @@ namespace TgaBuilderLib.Transitions
             if (bgPixels.Length != tilePixels.Length)
                 throw new ArgumentException("Pixel arrays must have same length.");
 
-            var currentCentroids = new (float X, float Y)[Centroids.Length];
-            Array.Copy(Centroids, currentCentroids, Centroids.Length);
+            var currentTileSegments = TileSegmentList.ToList();
 
             var currentLabels = new int[Labels.Length];
             Array.Copy(Labels, currentLabels, Labels.Length);
 
-            if (currentLabels.Length > 0 && currentLabels.Max() > currentCentroids.Length)
+            if (currentLabels.Length > 0 && currentLabels.Max() > currentTileSegments.Count)
                 return bgPixels; // Fallback in case of race condition
 
             // Determine relevant edges based on mode and reverse pivot
@@ -29,7 +30,7 @@ namespace TgaBuilderLib.Transitions
                 GetDrawnEdgeTilesBools(Mode, ReversePivot);
 
             // Selection step: determine which pixels are drawn (Input → Label Map → Selection)
-            bool[] selection = BuildSelection(currentCentroids, currentLabels,
+            bool[] selection = BuildSelection(currentTileSegments, currentLabels,
                 checkTop, checkBottom, checkLeft, checkRight);
 
             byte[] result = new byte[bgPixels.Length];
@@ -115,43 +116,14 @@ namespace TgaBuilderLib.Transitions
         // The selection is the union of all qualified tiles' pixels, optionally filtered by
         // corner-slicing trigonometry as a pre-step when SliceCornerTiles is enabled.
         private bool[] BuildSelection(
-            (float X, float Y)[] centroids,
+            List<TileSegment> tileSegments,
             int[] labels,
             bool checkTop, bool checkBottom, bool checkLeft, bool checkRight)
         {
             bool[] selection = new bool[Width * Height];
-            int labelCount = centroids.Length;
+            int labelCount = tileSegments.Count;
 
-            // --- STEP 1: Fast Grouping of Offsets (CSR Approach) ---
-            int[] counts = new int[labelCount + 1];
-            for (int i = 0; i < labels.Length; i++)
-            {
-                int lbl = labels[i];
-                if (lbl > 0 && lbl <= labelCount) counts[lbl]++;
-            }
-
-            int[] startIndices = new int[labelCount + 2];
-            int currentPos = 0;
-            for (int i = 1; i <= labelCount; i++)
-            {
-                startIndices[i] = currentPos;
-                currentPos += counts[i];
-            }
-            startIndices[labelCount + 1] = currentPos;
-
-            int[] flatOffsets = new int[currentPos];
-            int[] writePos = (int[])startIndices.Clone();
-
-            for (int i = 0; i < labels.Length; i++)
-            {
-                int lbl = labels[i];
-                if (lbl > 0 && lbl <= labelCount)
-                {
-                    flatOffsets[writePos[lbl]++] = i;
-                }
-            }
-
-            // --- STEP 2: Selection Logic ---
+            // --- Selection Logic ---
             var cornerTileMap = SliceCornerTiles
                 ? BuildCornerTileMap(labels, checkTop, checkBottom, checkLeft, checkRight)
                 : null;
@@ -159,16 +131,14 @@ namespace TgaBuilderLib.Transitions
             for (int i = 0; i < labelCount; i++)
             {
                 int labelID = i + 1;
-                int start = startIndices[labelID];
-                int end = startIndices[labelID + 1];
+                var segment = tileSegments[i];
+                var pixelOffsets = segment.PixelOffsets;
+                if (pixelOffsets.Count == 0) continue;
 
-                // tileOffsets now contains PIXEL indices (0 to Width*Height)
-                ReadOnlySpan<int> tileOffsets = new ReadOnlySpan<int>(flatOffsets, start, end - start);
-                if (tileOffsets.Length == 0) continue;
-
-                var centroid = centroids[i];
-                float v = ComputeFocusV(Mode, centroid);
+                float v = ComputeFocusV(Mode, (segment.CentroidX, segment.CentroidY));
                 bool shouldDraw = ReversePivot ? (v <= Pivot) : (v >= Pivot);
+
+                ReadOnlySpan<int> tileOffsets = System.Runtime.InteropServices.CollectionsMarshal.AsSpan(pixelOffsets);
 
                 // DoesTileTouchRequiredEdge needs to handle pixel indices internally
                 if (shouldDraw)
