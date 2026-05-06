@@ -114,6 +114,8 @@ namespace TgaBuilderLib.Transitions
                     segment.CentroidX = ((float)sumX[i] / counts[i]) / width;
                     segment.CentroidY = ((float)sumY[i] / counts[i]) / height;
                 }
+                // Segments with counts[i] == 0 retain default centroid (0,0) and empty PixelOffsets;
+                // they are skipped during selection by the Count == 0 guard in BuildSelection.
                 segments.Add(segment);
             }
 

@@ -138,7 +138,7 @@ namespace TgaBuilderLib.Transitions
                 float v = ComputeFocusV(Mode, (segment.CentroidX, segment.CentroidY));
                 bool shouldDraw = ReversePivot ? (v <= Pivot) : (v >= Pivot);
 
-                ReadOnlySpan<int> tileOffsets = System.Runtime.InteropServices.CollectionsMarshal.AsSpan(pixelOffsets);
+                ReadOnlySpan<int> tileOffsets = CollectionsMarshal.AsSpan(pixelOffsets);
 
                 // DoesTileTouchRequiredEdge needs to handle pixel indices internally
                 if (shouldDraw)
