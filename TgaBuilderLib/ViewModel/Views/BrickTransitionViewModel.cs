@@ -189,6 +189,8 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         //_panel.EyedropperEnd();
     }
 
+    // TransitionMode/PivotValue changes don't require re-analyzing tile segments —
+    // only the selection step needs to be rebuilt with the updated mode/pivot.
     protected override void OnTransitionParametersChanged()
         => _currentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
 

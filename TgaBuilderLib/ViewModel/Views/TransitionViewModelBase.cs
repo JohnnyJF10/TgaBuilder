@@ -165,8 +165,18 @@ public abstract class TransitionViewModelBase : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Called when <see cref="TransitionMode"/> or <see cref="PivotValue"/> changes,
+    /// immediately before triggering a recalculation. Derived classes can override this
+    /// to adjust pipeline requirements without needing a full re-analysis.
+    /// </summary>
     protected virtual void OnTransitionParametersChanged() { }
 
+    /// <summary>
+    /// Called before a full forced recalculation (e.g., when images are swapped or the
+    /// Mix command is explicitly invoked). Derived classes should override this to reset
+    /// any pipeline requirement optimizations and ensure a complete pipeline run.
+    /// </summary>
     protected virtual void OnBeforeFullRecalculation() { }
 
     protected async Task TriggerRecalculation()
