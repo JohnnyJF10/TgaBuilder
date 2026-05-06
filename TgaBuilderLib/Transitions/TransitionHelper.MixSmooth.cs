@@ -6,7 +6,7 @@ namespace TgaBuilderLib.Transitions
     {
 
         // Mixes two pixel buffers into one based on transition mode, pivot, and hardness.
-        public byte[] MixPixels(
+        public byte[] MixSmooth(
             byte[] pixels1,
             byte[] pixels2)
         {

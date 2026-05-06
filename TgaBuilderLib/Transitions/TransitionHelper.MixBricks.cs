@@ -10,13 +10,26 @@ namespace TgaBuilderLib.Transitions
     {
         // Draws segmented tile pixels over a background using a pixel selection derived from
         // tile topology and optional corner slicing. Pipeline: Input → Label Map → Selection → Result.
-        public byte[] MixSmartTilesPixels(
+        public byte[] MixBricks(
           byte[] tilePixels,
-          byte[] bgPixels)
+          byte[] bgPixels,
+          BricksPipelineRequirements requirements = BricksPipelineRequirements.RequiresAnalysis)
         {
             if (bgPixels.Length != tilePixels.Length)
                 throw new ArgumentException("Pixel arrays must have same length.");
 
+
+            // Requirements correction in case this is first time use
+            if (Labels.Length == 0|| TileSegmentList.Count == 0)
+                requirements = BricksPipelineRequirements.RequiresAnalysis;
+
+
+            // Pipeline step: Analyze tile segments to build Label Map (Input → Label Map)
+            if (requirements == BricksPipelineRequirements.RequiresAnalysis)
+                AnalyzeTiles(tilePixels);
+
+
+            // Race condition check
             var currentTileSegments = TileSegmentList.ToList();
 
             var currentLabels = new int[Labels.Length];
@@ -25,15 +38,31 @@ namespace TgaBuilderLib.Transitions
             if (currentLabels.Length > 0 && currentLabels.Max() > currentTileSegments.Count)
                 return bgPixels; // Fallback in case of race condition
 
-            // Determine relevant edges based on mode and reverse pivot
-            (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) =
-                GetDrawnEdgeTilesBools(Mode, ReversePivot);
+
+            // Requirements correction in case this is first time use
+            if (Selection.Length == 0)
+                requirements |= BricksPipelineRequirements.RequiresSelectionBuilding;
 
             // Selection step: determine which pixels are drawn (Input → Label Map → Selection)
-            bool[] selection = BuildSelection(currentTileSegments, currentLabels,
-                checkTop, checkBottom, checkLeft, checkRight);
+            if (requirements == BricksPipelineRequirements.RequiresSelectionBuilding || requirements == BricksPipelineRequirements.RequiresAnalysis)
+                Selection = BuildSelection(currentTileSegments, currentLabels, Mode, ReversePivot);
 
-            byte[] result = new byte[bgPixels.Length];
+
+
+            // Draw Result step: blend selected tile pixels with background based on edge proximity and EdgeColor (Selection → Result)
+            byte[] result = DrawResult(tilePixels, bgPixels, Selection);
+            return result;
+        }
+
+        private byte[] DrawResult(byte[] tilePixels, byte[] bgPixels, bool[] selection)
+        {
+            if (bgPixels.Length != tilePixels.Length)
+                throw new ArgumentException("Input image raw arrays must have same length.");
+
+            if (bgPixels.Length != selection.Length * TRANSITIONS_BPP)
+                throw new ArgumentException("Input arrays length must match dimensions.");
+
+            var result = new byte[bgPixels.Length];
 
             unsafe
             {
@@ -109,6 +138,7 @@ namespace TgaBuilderLib.Transitions
                     }
                 }
             }
+
             return result;
         }
 
@@ -118,10 +148,16 @@ namespace TgaBuilderLib.Transitions
         private bool[] BuildSelection(
             List<TileSegment> tileSegments,
             int[] labels,
-            bool checkTop, bool checkBottom, bool checkLeft, bool checkRight)
+            TransitionMode mode,
+            bool reversePivot)
         {
             bool[] selection = new bool[Width * Height];
             int labelCount = tileSegments.Count;
+
+            // --- Preprocessing ---
+            // Determine relevant edges based on mode and reverse pivot
+            (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) =
+                GetDrawnEdgeTilesBools(mode, reversePivot);
 
             // --- Selection Logic ---
             var cornerTileMap = SliceCornerTiles

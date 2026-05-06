@@ -49,25 +49,19 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public int MarkerRadius
     {
         get => _markerRadius;
-        set => SetPropertyTriggerRecalculation(ref _markerRadius, value);
-    }
-
-    public int ExpectedRegionCount
-    {
-        get => _expectedRegionCount;
-        set => SetPropertyTriggerRecalculation(ref _expectedRegionCount, value);
+        set => SetPropertyTriggerRecalculation(ref _markerRadius, value, BricksPipelineRequirements.RequiresAnalysis);
     }
 
     public bool ReversePivot
     {
         get => _reversePivot;
-        set => SetPropertyTriggerRecalculation(ref _reversePivot, value);
+        set => SetPropertyTriggerRecalculation(ref _reversePivot, value, BricksPipelineRequirements.RequiresSelectionBuilding);
     }
 
     public bool SliceCornerTiles
     {
         get => _sliceCornerTiles;
-        set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value);
+        set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value, BricksPipelineRequirements.RequiresSelectionBuilding);
     }
 
     public bool IsLabelMapExpanded
@@ -84,7 +78,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
             if (SetCallerPropertyReturn(ref _selectedFilter, value))
             {
                 OnPropertyChanged(nameof(SelectedFilterIndex));
-                TriggerRecalculation(requiresAnalysis: true);
+                _ = TriggerRecalculation(pipelineRequirements: BricksPipelineRequirements.RequiresAnalysis);
             }
         }
     }
@@ -103,7 +97,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
             if (SetCallerPropertyReturn(ref _selectedSegmentationMethod, value))
             {
                 OnPropertyChanged(nameof(SelectedSegmentationMethodIndex));
-                TriggerRecalculation(requiresAnalysis: true);
+                _ = TriggerRecalculation(pipelineRequirements: BricksPipelineRequirements.RequiresAnalysis);
             }
         }
     }
@@ -111,7 +105,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public Color EdgeColor 
     {         
         get => _edgeColor;
-        set => SetPropertyTriggerRecalculation(ref _edgeColor, value);
+        set => SetPropertyTriggerRecalculation(ref _edgeColor, value, BricksPipelineRequirements.RequiresEdgeColoring);
     }
 
     public bool IsEyedropperMode
@@ -164,16 +158,11 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         //_panel.EyedropperEnd();
     }
 
-    protected override bool RequiresFullAnalysisOnPivotChange => false;
-
-    protected override byte[] CreateMixedPixels(bool requiresAnalysis)
+    protected override byte[] CreateMixedPixels(BricksPipelineRequirements pipelineRequirements)
     {
-        if (requiresAnalysis || TransitionHelper.LastAnalysisMap.Length == 0)
-            TransitionHelper.AnalyzeTiles(Pixels1);
-
         Debug.WriteLine($"Current Pivot: {TransitionHelper.Pivot}, Reverse: {TransitionHelper.ReversePivot}");
 
-        return TransitionHelper.MixSmartTilesPixels(Pixels1, Pixels2);
+        return TransitionHelper.MixBricks(Pixels1, Pixels2, pipelineRequirements);
     }
 
     protected override void ConfigureTransitionHelperCore()

@@ -25,7 +25,7 @@ namespace TgaBuilderLib.Transitions
     {
 
         // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
-        public unsafe void AnalyzeTiles(byte[] pixels)
+        private unsafe void AnalyzeTiles(byte[] pixels)
         {
             int totalPixels = Width * Height;
 

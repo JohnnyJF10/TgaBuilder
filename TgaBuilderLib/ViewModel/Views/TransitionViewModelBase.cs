@@ -105,13 +105,13 @@ public abstract class TransitionViewModelBase : ViewModelBase
     public TransitionMode TransitionMode
     {
         get => _transitionMode;
-        set => SetPropertyTriggerRecalculation(ref _transitionMode, value);
+        set => SetPropertyTriggerRecalculation(ref _transitionMode, value, BricksPipelineRequirements.RequiresSelectionBuilding);
     }
 
     public float PivotValue
     {
         get => _pivotValue;
-        set => SetOneWayPropertyTriggerRecalculation(ref _pivotValue, value, RequiresFullAnalysisOnPivotChange);
+        set => SetPropertyTriggerRecalculation(ref _pivotValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
     }
 
     public Color ColorSource
@@ -125,8 +125,6 @@ public abstract class TransitionViewModelBase : ViewModelBase
         get => _colorTarget;
         set => SetCallerProperty(ref _colorTarget, value);
     }
-
-    protected virtual bool RequiresFullAnalysisOnPivotChange => true;
 
     protected bool SetCallerPropertyReturn<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
@@ -143,27 +141,18 @@ public abstract class TransitionViewModelBase : ViewModelBase
     protected void SetPropertyTriggerRecalculation<T>(
         ref T field,
         T value,
-        bool requiresAnalysis = true,
+        BricksPipelineRequirements pipelineRequirements,
         [CallerMemberName] string? propertyName = null)
     {
         if (!EqualityComparer<T>.Default.Equals(field, value))
         {
             field = value;
             OnPropertyChanged(propertyName ?? string.Empty);
-            TriggerRecalculation(requiresAnalysis);
+            _ = TriggerRecalculation(pipelineRequirements);
         }
     }
 
-    protected void SetOneWayPropertyTriggerRecalculation<T>(
-        ref T field,
-        T value,
-        bool requiresAnalysis = true)
-    {
-        field = value;
-        TriggerRecalculation(requiresAnalysis);
-    }
-
-    protected async void TriggerRecalculation(bool requiresAnalysis = true)
+    protected async Task TriggerRecalculation(BricksPipelineRequirements pipelineRequirements)
     {
         _cts?.Cancel();
         var cts = new CancellationTokenSource();
@@ -181,7 +170,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
             ConfigureTransitionHelper(Image1.PixelWidth, Image1.PixelHeight);
 
-            var resultPixels = await Task.Run(() => CreateMixedPixels(requiresAnalysis), cts.Token);
+            var resultPixels = await Task.Run(() => CreateMixedPixels(pipelineRequirements), cts.Token);
 
             if (!cts.Token.IsCancellationRequested)
             {
@@ -202,7 +191,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
     {
     }
 
-    protected abstract byte[] CreateMixedPixels(bool requiresAnalysis);
+    protected abstract byte[] CreateMixedPixels(BricksPipelineRequirements pipelineRequirements);
 
     protected abstract void ConfigureTransitionHelperCore();
 
@@ -238,7 +227,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
         _pixels1 = _pixels2;
         _pixels2 = tempPixels;
 
-        TriggerRecalculation();
+        _ = TriggerRecalculation(BricksPipelineRequirements.RequiresAnalysis);
     }
 
     private void Mix()
@@ -248,7 +237,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
         ConfigureTransitionHelper(Image1.PixelWidth, Image1.PixelHeight);
 
-        var resultPixels = CreateMixedPixels(requiresAnalysis: true);
+        var resultPixels = CreateMixedPixels(BricksPipelineRequirements.RequiresAnalysis);
 
         ResultImage = MediaFactory.CreateEmptyBitmap(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha);
         ResultImage.WritePixels(

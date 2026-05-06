@@ -17,6 +17,8 @@ namespace TgaBuilderLib.Transitions
 
         public List<TileSegment> TileSegmentList { get; set; } = new List<TileSegment>();
 
+        public bool[] Selection { get; set; } = Array.Empty<bool>();
+
         public int Width { get; set; }
         public int Height { get; set; }
         public int Stride { get; set; }
@@ -42,6 +44,11 @@ namespace TgaBuilderLib.Transitions
             LastAnalysisHeight = 0;
             Labels = Array.Empty<int>();
             TileSegmentList = new List<TileSegment>();
+            Selection = Array.Empty<bool>();
+            Width = 0;
+            Height = 0;
+            Stride = 0;
+            Mode = TransitionMode.Top;
             Hardness = 0.5f;
             Pivot = 0.5f;
             Offset = 0f;

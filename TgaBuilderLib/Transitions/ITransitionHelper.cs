@@ -9,6 +9,9 @@ namespace TgaBuilderLib.Transitions
         int Height { get; set; }
         int[] Labels { get; }
         List<TileSegment> TileSegmentList { get; set; }
+
+        bool[] Selection { get; set; }
+
         int LastAnalysisHeight { get; }
         byte[] LastAnalysisMap { get; }
         int LastAnalysisWidth { get; }
@@ -24,9 +27,9 @@ namespace TgaBuilderLib.Transitions
         int Stride { get; set; }
         int Width { get; set; }
 
-        void AnalyzeTiles(byte[] pixels);
-        byte[] MixPixels(byte[] pixels1, byte[] pixels2);
-        byte[] MixSmartTilesPixels(byte[] tilePixels, byte[] bgPixels);
+
+        byte[] MixSmooth(byte[] pixels1, byte[] pixels2);
+        byte[] MixBricks(byte[] tilePixels, byte[] bgPixels, BricksPipelineRequirements pipelineRequirements);
 
         void CleanUp();
     }

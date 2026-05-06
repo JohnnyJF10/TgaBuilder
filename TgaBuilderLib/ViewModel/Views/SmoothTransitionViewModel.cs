@@ -21,7 +21,7 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
     public float BlendHardnessValue
     {
         get => _blendHardnessValue;
-        set => SetPropertyTriggerRecalculation(ref _blendHardnessValue, value);
+        set => SetPropertyTriggerRecalculation(ref _blendHardnessValue, value, BricksPipelineRequirements.RequiresAnalysis);
     }
 
     private float _offsetValue = 0f;
@@ -29,11 +29,11 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
     public float OffsetValue
     {
         get => _offsetValue;
-        set => SetPropertyTriggerRecalculation(ref _offsetValue, value);
+        set => SetPropertyTriggerRecalculation(ref _offsetValue, value, BricksPipelineRequirements.RequiresAnalysis);
     }
 
-    protected override byte[] CreateMixedPixels(bool requiresAnalysis)
-        => TransitionHelper.MixPixels(Pixels1, Pixels2);
+    protected override byte[] CreateMixedPixels(BricksPipelineRequirements pipelineRequirements)
+        => TransitionHelper.MixSmooth(Pixels1, Pixels2);
 
     protected override void ConfigureTransitionHelperCore()
     {
