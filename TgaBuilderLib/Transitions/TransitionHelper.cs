@@ -35,6 +35,7 @@ namespace TgaBuilderLib.Transitions
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
 
         public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
+        public int EdgeWidth { get; set; } = 1;
 
         public void CleanUp()
         {
@@ -53,6 +54,7 @@ namespace TgaBuilderLib.Transitions
             SegmentationMethod = SegmentationMethod.Watershed;
             SelectedFilter = FilterType.BoxBlur;
             EdgeColor = new Color(0, 0, 0, 128);
+            EdgeWidth = 1;
         }
     }
 }
