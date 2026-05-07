@@ -16,8 +16,8 @@ public partial class TransitionHelper
         if (bgPixels.Length != selection.Length * TRANSITIONS_BPP)
             throw new ArgumentException("Input arrays length must match dimensions.");
 
-        // Clamp the maximum edge width to the range 1 to 12
-        EdgeWidth = Math.Clamp(EdgeWidth, 1, 12);
+        // Clamp the maximum edge width to the range 0 to 12
+        EdgeWidth = Math.Clamp(EdgeWidth, 0, 12);
 
         int stride = Width * TRANSITIONS_BPP;
         var result = new byte[bgPixels.Length];

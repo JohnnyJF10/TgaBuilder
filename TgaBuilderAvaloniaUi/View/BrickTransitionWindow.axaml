@@ -216,7 +216,7 @@
                                 ToolTip.Tip="{Binding EdgeWidth}"
                                 IsSnapToTickEnabled="True"
                                 TickFrequency="1"
-                                Maximum="12" Minimum="1" SmallChange="1"
+                                Maximum="12" Minimum="0" SmallChange="1"
                                 Value="{Binding EdgeWidth}" />
                         </DockPanel>
                     </StackPanel>
