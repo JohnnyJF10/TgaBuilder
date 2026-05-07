@@ -43,6 +43,9 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
     private CancellationTokenSource? _cts;
 
+    private bool _pivotUpdateScheduled;
+    private readonly object _pivotLock = new();
+
     private const int TRANSITIONS_BPP = 4;
 
     private IWriteableBitmap _image1;
@@ -111,7 +114,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
     public virtual float PivotValue
     {
         get => _pivotValue;
-        set => SetPropertyTriggerRecalculation(ref _pivotValue, value);
+        set => SetPropertyTriggerRecalculationThrottled(ref _pivotValue, value);
     }
 
     public Color ColorSource
@@ -149,6 +152,52 @@ public abstract class TransitionViewModelBase : ViewModelBase
             OnPropertyChanged(propertyName ?? string.Empty);
             _ = TriggerRecalculation();
         }
+    }
+
+    /// <summary>
+    /// Updates <paramref name="field"/> and notifies the UI, then schedules a throttled
+    /// recalculation so that rapid slider movements only trigger one recalculation per
+    /// 50 ms window instead of one per slider tick.
+    /// </summary>
+    protected void SetPropertyTriggerRecalculationThrottled(
+        ref float field,
+        float value,
+        [CallerMemberName] string? propertyName = null)
+    {
+        if (field == value)
+            return;
+
+        field = value;
+        OnPropertyChanged(propertyName ?? string.Empty);
+        SchedulePivotRecalculation();
+    }
+
+    /// <summary>
+    /// Schedules a single recalculation after a 50 ms idle window. Multiple calls within
+    /// the window collapse into one recalculation, preventing CPU congestion when a float
+    /// slider fires continuous property-changed events.
+    /// </summary>
+    protected void SchedulePivotRecalculation()
+    {
+        lock (_pivotLock)
+        {
+            if (_pivotUpdateScheduled)
+                return;
+
+            _pivotUpdateScheduled = true;
+        }
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(50);
+
+            lock (_pivotLock)
+            {
+                _pivotUpdateScheduled = false;
+            }
+
+            await TriggerRecalculation();
+        });
     }
 
     protected async Task TriggerRecalculation()

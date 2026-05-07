@@ -50,7 +50,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public override float PivotValue
     {
         get => _pivotValue;
-        set => SetPropertyTriggerRecalculation(ref _pivotValue, value, BricksPipelineRequirements.RequiresSelectionBuilding, null);
+        set => SetPropertyTriggerRecalculationThrottled(ref _pivotValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
     }
 
 
@@ -220,6 +220,27 @@ public class BrickTransitionViewModel : TransitionViewModelBase
 
             _ = TriggerRecalculation();
         }
+    }
+
+    /// <summary>
+    /// Throttled variant for float properties that carry a pipeline requirement (e.g.
+    /// <see cref="PivotValue"/>). Updates <paramref name="field"/>, records the
+    /// <paramref name="requirements"/> level, then schedules a single recalculation per
+    /// 50 ms window so that rapid slider movements do not flood the brick pipeline.
+    /// </summary>
+    protected void SetPropertyTriggerRecalculationThrottled(
+        ref float field,
+        float value,
+        BricksPipelineRequirements requirements,
+        [CallerMemberName] string? propertyName = null)
+    {
+        if (field == value)
+            return;
+
+        field = value;
+        _currentRequirements = requirements;
+        OnPropertyChanged(propertyName ?? string.Empty);
+        SchedulePivotRecalculation();
     }
 }
 
