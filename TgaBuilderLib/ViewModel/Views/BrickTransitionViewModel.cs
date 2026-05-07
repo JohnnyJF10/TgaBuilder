@@ -41,16 +41,16 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private RelayCommand? _pickEdgeColorCommand;
     private RelayCommand<(int X, int Y, int imageNum)>? _mouseOverCommand;
 
-    public override TransitionMode TransitionMode
+    public override TransitionMode SelectedTransitionMode
     {
-        get => _transitionMode;
-        set => SetPropertyTriggerRecalculation(ref _transitionMode, value, BricksPipelineRequirements.RequiresSelectionBuilding, null);
+        get => _selectedtransitionMode;
+        set => SetPropertyTriggerRecalculation(ref _selectedtransitionMode, value, BricksPipelineRequirements.RequiresSelectionBuilding);
     }
 
     public override float PivotValue
     {
         get => _pivotValue;
-        set => SetPropertyTriggerRecalculationThrottled(ref _pivotValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+        set => SetPropertyTriggerRecalculation(ref _pivotValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
     }
 
 
@@ -63,7 +63,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public int MarkerRadius
     {
         get => _markerRadius;
-        set => SetPropertyTriggerRecalculation(ref _markerRadius, value, BricksPipelineRequirements.RequiresAnalysis, null);
+        set => SetPropertyTriggerRecalculation(ref _markerRadius, value, BricksPipelineRequirements.RequiresAnalysis);
     }
 
     public bool ReversePivot
@@ -105,7 +105,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public Color EdgeColor 
     {         
         get => _edgeColor;
-        set => SetPropertyTriggerRecalculation(ref _edgeColor, value, BricksPipelineRequirements.RequiresEdgeColoring, null);
+        set => SetPropertyTriggerRecalculation(ref _edgeColor, value, BricksPipelineRequirements.RequiresEdgeColoring);
     }
 
     public bool IsEyedropperMode
@@ -153,8 +153,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
 
     protected override byte[] CreateMixedPixels()
     {
-        Debug.WriteLine($"Current Pivot: {_transitionHelper.Pivot}, Reverse: {_transitionHelper.ReversePivot}");
-
         return _transitionHelper.MixBricks(Pixels1, Pixels2);
     }
 
@@ -188,9 +186,10 @@ public class BrickTransitionViewModel : TransitionViewModelBase
 
     private void UpdateLabelMapImage()
     {
-        byte[] mapData = _transitionHelper.LastAnalysisMap;
-        int mapW = _transitionHelper.LastAnalysisWidth;
-        int mapH = _transitionHelper.LastAnalysisHeight;
+        byte[] mapData = _transitionHelper.GetLabelMap();
+
+        int mapW = ResultImage?.PixelWidth ?? 0;
+        int mapH = ResultImage?.PixelHeight ?? 0;
 
         if (mapData.Length == 0 || mapW == 0 || mapH == 0)
             return;
@@ -220,27 +219,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
 
             _ = TriggerRecalculation();
         }
-    }
-
-    /// <summary>
-    /// Throttled variant for float properties that carry a pipeline requirement (e.g.
-    /// <see cref="PivotValue"/>). Updates <paramref name="field"/>, records the
-    /// <paramref name="requirements"/> level, then schedules a single recalculation per
-    /// 50 ms window so that rapid slider movements do not flood the brick pipeline.
-    /// </summary>
-    protected void SetPropertyTriggerRecalculationThrottled(
-        ref float field,
-        float value,
-        BricksPipelineRequirements requirements,
-        [CallerMemberName] string? propertyName = null)
-    {
-        if (field == value)
-            return;
-
-        field = value;
-        _currentRequirements = requirements;
-        OnPropertyChanged(propertyName ?? string.Empty);
-        SchedulePivotRecalculation();
     }
 }
 

@@ -30,6 +30,8 @@ namespace TgaBuilderLib.Transitions
             float upper = 1.0f - (1.0f - Pivot) * Hardness;
             bool isHardCut = (upper <= lower + 0.00001f);
 
+            int stride = Width * TRANSITIONS_BPP;
+
             unsafe
             {
                 fixed (byte* p1Start = pixels1)
@@ -38,9 +40,9 @@ namespace TgaBuilderLib.Transitions
                 {
                     for (int y = 0; y < Height; y++)
                     {
-                        byte* row1 = p1Start + y * Stride;
-                        byte* row2 = p2Start + y * Stride;
-                        byte* rowR = pResStart + y * Stride;
+                        byte* row1 = p1Start + y * stride;
+                        byte* row2 = p2Start + y * stride;
+                        byte* rowR = pResStart + y * stride;
 
                         float ny = (float)y / (Height - 1);
 

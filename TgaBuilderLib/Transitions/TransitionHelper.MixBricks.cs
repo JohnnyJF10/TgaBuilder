@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Net.WebRequestMethods;
@@ -62,6 +63,8 @@ namespace TgaBuilderLib.Transitions
             if (bgPixels.Length != selection.Length * TRANSITIONS_BPP)
                 throw new ArgumentException("Input arrays length must match dimensions.");
 
+            int stride = Width * TRANSITIONS_BPP;
+
             var result = new byte[bgPixels.Length];
 
             unsafe
@@ -71,7 +74,7 @@ namespace TgaBuilderLib.Transitions
                 fixed (byte* pRes = result)
                 {
                     // Copy the background first
-                    Buffer.MemoryCopy(pBg, pRes, Height * Stride, Height * Stride);
+                    Buffer.MemoryCopy(pBg, pRes, Height * stride, Height * stride);
 
                     // Pre-calculate alpha values for blending
                     int eA = EdgeColor.A ?? 255;      // Edge alpha (0-255)
@@ -82,7 +85,7 @@ namespace TgaBuilderLib.Transitions
 
                     for (int y = 0; y < Height; y++)
                     {
-                        int rowOffset = y * Stride;
+                        int rowOffset = y * stride;
                         for (int x = 0; x < Width; x++)
                         {
                             int pixelIndex = y * Width + x;

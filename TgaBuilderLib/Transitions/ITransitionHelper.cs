@@ -12,9 +12,9 @@ namespace TgaBuilderLib.Transitions
 
         bool[] Selection { get; set; }
 
-        int LastAnalysisHeight { get; }
-        byte[] LastAnalysisMap { get; }
-        int LastAnalysisWidth { get; }
+        //int LastAnalysisHeight { get; }
+        //byte[] LastAnalysisMap { get; }
+        //int LastAnalysisWidth { get; }
         int MarkerRadius { get; set; }
         TransitionMode Mode { get; set; }
         float Offset { get; set; }
@@ -26,12 +26,13 @@ namespace TgaBuilderLib.Transitions
         SegmentationMethod SegmentationMethod { get; set; }
         Color EdgeColor { get; set; }
         bool SliceCornerTiles { get; set; }
-        int Stride { get; set; }
         int Width { get; set; }
 
 
         byte[] MixSmooth(byte[] pixels1, byte[] pixels2);
         byte[] MixBricks(byte[] tilePixels, byte[] bgPixels);
+
+        byte[] GetLabelMap();
 
         void CleanUp();
     }

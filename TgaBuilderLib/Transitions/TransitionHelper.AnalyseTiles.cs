@@ -74,9 +74,6 @@ namespace TgaBuilderLib.Transitions
             // 4. Build TileSegmentList (centroids + pixel offsets)
             var tileSegmentList = BuildTileSegmentList(labels, Width, Height, labelCount);
 
-            // 5. Generate label map
-            GenerateLabelMap(Width, Height, labels, labelCount);
-
             // Assign labels to the class property
             Labels = labels;
 
@@ -130,60 +127,6 @@ namespace TgaBuilderLib.Transitions
             }
 
             return segments;
-        }
-
-
-
-
-        // Creates a colored debug map from label data and stores analysis dimensions.
-        private unsafe void GenerateLabelMap(int width, int height, int[] labels, int labelCount)
-        {
-            int stride = width * TRANSITIONS_BPP;
-
-            // Create target array
-            byte[] map = new byte[width * height * TRANSITIONS_BPP];
-
-            LastAnalysisMap = map;
-            LastAnalysisWidth = width;
-            LastAnalysisHeight = height;
-
-            // Generate colors deterministically
-            uint[] colors = new uint[labelCount + 1];
-            Random rnd = new Random(42);
-
-            for (int i = 1; i <= labelCount; i++)
-            {
-                byte r = (byte)rnd.Next(0, 256);
-                byte g = (byte)rnd.Next(0, 256);
-                byte b = (byte)rnd.Next(0, 256);
-
-                // ARGB (same as before)
-                colors[i] = (uint)(255 << 24 | r << 16 | g << 8 | b);
-            }
-
-            fixed (byte* pDebug = map)
-            fixed (int* pLabels = labels)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    int rowOffset = y * stride;
-                    int labelRow = y * width;
-
-                    for (int x = 0; x < width; x++)
-                    {
-                        int label = pLabels[labelRow + x];
-                        int offset = rowOffset + x * TRANSITIONS_BPP;
-
-                        uint color = (label == 0) ? 0xFF000000 : colors[label];
-
-                        // Write BGRA
-                        pDebug[offset + 0] = (byte)(color & 0xFF);          // B
-                        pDebug[offset + 1] = (byte)((color >> 8) & 0xFF);   // G
-                        pDebug[offset + 2] = (byte)((color >> 16) & 0xFF);  // R
-                        pDebug[offset + 3] = 255;                           // A
-                    }
-                }
-            }
         }
     }
 }

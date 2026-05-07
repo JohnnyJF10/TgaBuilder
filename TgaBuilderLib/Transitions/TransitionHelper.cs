@@ -9,9 +9,6 @@ namespace TgaBuilderLib.Transitions
     public partial class TransitionHelper : ITransitionHelper
     {
         private const int TRANSITIONS_BPP = 4; // Assuming RGBA format
-        public byte[] LastAnalysisMap { get; private set; } = Array.Empty<byte>();
-        public int LastAnalysisWidth { get; private set; }
-        public int LastAnalysisHeight { get; private set; }
 
         public int[] Labels { get; private set; } = Array.Empty<int>();
 
@@ -21,7 +18,6 @@ namespace TgaBuilderLib.Transitions
 
         public int Width { get; set; }
         public int Height { get; set; }
-        public int Stride { get; set; }
         public TransitionMode Mode { get; set; }
 
         public float Hardness { get; set; } = 0.5f;
@@ -42,15 +38,11 @@ namespace TgaBuilderLib.Transitions
 
         public void CleanUp()
         {
-            LastAnalysisMap = Array.Empty<byte>();
-            LastAnalysisWidth = 0;
-            LastAnalysisHeight = 0;
             Labels = Array.Empty<int>();
             TileSegmentList = new List<TileSegment>();
             Selection = Array.Empty<bool>();
             Width = 0;
             Height = 0;
-            Stride = 0;
             Mode = TransitionMode.Top;
             Hardness = 0.5f;
             Pivot = 0.5f;

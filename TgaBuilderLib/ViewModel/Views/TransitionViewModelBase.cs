@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,11 +58,14 @@ public abstract class TransitionViewModelBase : ViewModelBase
     private byte[] _pixels1;
     private byte[] _pixels2;
 
-    protected TransitionMode _transitionMode = TransitionMode.Top;
+    protected TransitionMode _selectedtransitionMode = TransitionMode.Top;
     protected float _pivotValue = 0.5f;
 
     private Color _colorSource = new(0, 0, 0, 0);
     private Color _colorTarget = new(0, 0, 0, 0);
+
+    private bool _pivotUpdateRunning;
+    private bool _pivotUpdatePending;
 
     private RelayCommand? _loadImage1Command;
     private RelayCommand? _loadImage2Command;
@@ -105,16 +109,16 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
     public IVisualInvalidator? VisualInvalidator { get; set; }
 
-    public virtual TransitionMode TransitionMode
+    public virtual TransitionMode SelectedTransitionMode
     {
-        get => _transitionMode;
-        set => SetPropertyTriggerRecalculation(ref _transitionMode, value);
+        get => _selectedtransitionMode;
+        set => SetPropertyTriggerRecalculation(ref _selectedtransitionMode, value);
     }
 
     public virtual float PivotValue
     {
         get => _pivotValue;
-        set => SetPropertyTriggerRecalculationThrottled(ref _pivotValue, value);
+        set => SetPropertyTriggerRecalculation(ref _pivotValue, value);
     }
 
     public Color ColorSource
@@ -154,101 +158,63 @@ public abstract class TransitionViewModelBase : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Updates <paramref name="field"/> and notifies the UI, then schedules a throttled
-    /// recalculation so that rapid slider movements only trigger one recalculation per
-    /// 50 ms window instead of one per slider tick.
-    /// </summary>
-    protected void SetPropertyTriggerRecalculationThrottled(
-        ref float field,
-        float value,
-        [CallerMemberName] string? propertyName = null)
-    {
-        if (field == value)
-            return;
-
-        field = value;
-        OnPropertyChanged(propertyName ?? string.Empty);
-        SchedulePivotRecalculation();
-    }
-
-    /// <summary>
-    /// Schedules a single recalculation after a 50 ms idle window. Multiple calls within
-    /// the window collapse into one recalculation, preventing CPU congestion when a float
-    /// slider fires continuous property-changed events.
-    /// <para>
-    /// Any recalculations that overlap at the narrow window boundary (between flag reset
-    /// and the awaited call) are harmlessly resolved by <see cref="TriggerRecalculation"/>'s
-    /// own CancellationTokenSource, which always ensures only the latest value is rendered.
-    /// </para>
-    /// </summary>
-    protected void SchedulePivotRecalculation()
+    protected async Task TriggerRecalculation()
     {
         lock (_pivotLock)
         {
-            if (_pivotUpdateScheduled)
+            if (_pivotUpdateRunning)
+            {
+                _pivotUpdatePending = true;
                 return;
+            }
 
-            _pivotUpdateScheduled = true;
+            _pivotUpdateRunning = true;
         }
-
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await Task.Delay(50);
-
-                lock (_pivotLock)
-                {
-                    _pivotUpdateScheduled = false;
-                }
-
-                await TriggerRecalculation();
-            }
-            catch (Exception)
-            {
-                // Ensure unhandled exceptions in the fire-and-forget task do not
-                // crash the application or produce unobserved task exceptions.
-                lock (_pivotLock)
-                {
-                    _pivotUpdateScheduled = false;
-                }
-            }
-        });
-    }
-
-    protected async Task TriggerRecalculation()
-    {
-        _cts?.Cancel();
-        var cts = new CancellationTokenSource();
-        _cts = cts;
 
         try
         {
-            await Task.Delay(10, cts.Token);
-
-            if (!CompareInputSpecs())
-                return;
-
-            if (!CompareResultsSpecs())
-                return;
-
-            ConfigureTransitionHelper(Image1.PixelWidth, Image1.PixelHeight);
-
-            var resultPixels = await Task.Run(() => CreateMixedPixels(), cts.Token);
-
-            if (!cts.Token.IsCancellationRequested)
+            do
             {
-                var resImage = _mediaFactory.CreateBitmapFromRaw(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha, resultPixels, stride: Image1.PixelWidth * TRANSITIONS_BPP);
+                lock (_pivotLock)
+                {
+                    _pivotUpdatePending = false;
+                }
+
+                if (!CompareInputSpecs())
+                    return;
+
+                if (!CompareResultsSpecs())
+                    return;
+
+                int width = Image1.PixelWidth;
+                int height = Image1.PixelHeight;
+
+                await Task.Delay(50);
+
+                ConfigureTransitionHelper(width, height);
+
+                byte[] resultPixels = await Task.Run(
+                    () => CreateMixedPixels());
+
+                var resImage = _mediaFactory.CreateBitmapFromRaw(
+                    width,
+                    height,
+                    hasAlpha: true,
+                    resultPixels,
+                    stride: width * 4);
 
                 ResultImage = _mediaFactory.CloneBitmap(resImage);
 
                 OnResultUpdated();
             }
+            while (_pivotUpdatePending);
         }
-        catch (TaskCanceledException)
+        finally
         {
-            // ignored
+            lock (_pivotLock)
+            {
+                _pivotUpdateRunning = false;
+            }
         }
     }
 
@@ -325,9 +291,8 @@ public abstract class TransitionViewModelBase : ViewModelBase
     {
         _transitionHelper.Width = width;
         _transitionHelper.Height = height;
-        _transitionHelper.Stride = width * TRANSITIONS_BPP;
 
-        _transitionHelper.Mode = _transitionMode;
+        _transitionHelper.Mode = SelectedTransitionMode;
         _transitionHelper.Pivot = PivotValue;
 
         ConfigureTransitionHelperCore();

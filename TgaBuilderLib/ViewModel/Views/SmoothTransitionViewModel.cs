@@ -17,6 +17,7 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
 
     private float _blendHardnessValue = 0.5f;
 
+
     public float BlendHardnessValue
     {
         get => _blendHardnessValue;
