@@ -1,5 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Net.WebRequestMethods;
 
 namespace TgaBuilderLib.Transitions
@@ -8,31 +11,61 @@ namespace TgaBuilderLib.Transitions
     {
         // Draws segmented tile pixels over a background using a pixel selection derived from
         // tile topology and optional corner slicing. Pipeline: Input → Label Map → Selection → Result.
-        public byte[] MixSmartTilesPixels(
+        public byte[] MixBricks(
           byte[] tilePixels,
           byte[] bgPixels)
         {
             if (bgPixels.Length != tilePixels.Length)
                 throw new ArgumentException("Pixel arrays must have same length.");
 
-            var currentCentroids = new (float X, float Y)[Centroids.Length];
-            Array.Copy(Centroids, currentCentroids, Centroids.Length);
+
+            // Requirements correction in case this is first time use
+            if (Labels.Length == 0|| TileSegmentList.Count == 0)
+                CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
+
+
+            // Pipeline step: Analyze tile segments to build Label Map (Input → Label Map)
+            if (CurrentBricksPipelineRequirements == BricksPipelineRequirements.RequiresAnalysis)
+                AnalyzeTiles(tilePixels);
+
+
+            // Race condition check
+            var currentTileSegments = TileSegmentList.ToList();
 
             var currentLabels = new int[Labels.Length];
             Array.Copy(Labels, currentLabels, Labels.Length);
 
-            if (currentLabels.Length > 0 && currentLabels.Max() > currentCentroids.Length)
+            if (currentLabels.Length > 0 && currentLabels.Max() > currentTileSegments.Count)
                 return bgPixels; // Fallback in case of race condition
 
-            // Determine relevant edges based on mode and reverse pivot
-            (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) =
-                GetDrawnEdgeTilesBools(Mode, ReversePivot);
+
+            // Requirements correction in case this is first time use
+            if (Selection.Length == 0)
+                CurrentBricksPipelineRequirements |= BricksPipelineRequirements.RequiresSelectionBuilding;
 
             // Selection step: determine which pixels are drawn (Input → Label Map → Selection)
-            bool[] selection = BuildSelection(currentCentroids, currentLabels,
-                checkTop, checkBottom, checkLeft, checkRight);
+            if (CurrentBricksPipelineRequirements == BricksPipelineRequirements.RequiresSelectionBuilding 
+                || CurrentBricksPipelineRequirements == BricksPipelineRequirements.RequiresAnalysis)
+                Selection = BuildSelection(currentTileSegments, currentLabels, Mode, ReversePivot);
 
-            byte[] result = new byte[bgPixels.Length];
+
+
+            // Draw Result step: blend selected tile pixels with background based on edge proximity and EdgeColor (Selection → Result)
+            byte[] result = DrawResult(tilePixels, bgPixels, Selection);
+            return result;
+        }
+
+        private byte[] DrawResult(byte[] tilePixels, byte[] bgPixels, bool[] selection)
+        {
+            if (bgPixels.Length != tilePixels.Length)
+                throw new ArgumentException("Input image raw arrays must have same length.");
+
+            if (bgPixels.Length != selection.Length * TRANSITIONS_BPP)
+                throw new ArgumentException("Input arrays length must match dimensions.");
+
+            int stride = Width * TRANSITIONS_BPP;
+
+            var result = new byte[bgPixels.Length];
 
             unsafe
             {
@@ -41,7 +74,7 @@ namespace TgaBuilderLib.Transitions
                 fixed (byte* pRes = result)
                 {
                     // Copy the background first
-                    Buffer.MemoryCopy(pBg, pRes, Height * Stride, Height * Stride);
+                    Buffer.MemoryCopy(pBg, pRes, Height * stride, Height * stride);
 
                     // Pre-calculate alpha values for blending
                     int eA = EdgeColor.A ?? 255;      // Edge alpha (0-255)
@@ -52,7 +85,7 @@ namespace TgaBuilderLib.Transitions
 
                     for (int y = 0; y < Height; y++)
                     {
-                        int rowOffset = y * Stride;
+                        int rowOffset = y * stride;
                         for (int x = 0; x < Width; x++)
                         {
                             int pixelIndex = y * Width + x;
@@ -108,6 +141,7 @@ namespace TgaBuilderLib.Transitions
                     }
                 }
             }
+
             return result;
         }
 
@@ -115,43 +149,20 @@ namespace TgaBuilderLib.Transitions
         // The selection is the union of all qualified tiles' pixels, optionally filtered by
         // corner-slicing trigonometry as a pre-step when SliceCornerTiles is enabled.
         private bool[] BuildSelection(
-            (float X, float Y)[] centroids,
+            List<TileSegment> tileSegments,
             int[] labels,
-            bool checkTop, bool checkBottom, bool checkLeft, bool checkRight)
+            TransitionMode mode,
+            bool reversePivot)
         {
             bool[] selection = new bool[Width * Height];
-            int labelCount = centroids.Length;
+            int labelCount = tileSegments.Count;
 
-            // --- STEP 1: Fast Grouping of Offsets (CSR Approach) ---
-            int[] counts = new int[labelCount + 1];
-            for (int i = 0; i < labels.Length; i++)
-            {
-                int lbl = labels[i];
-                if (lbl > 0 && lbl <= labelCount) counts[lbl]++;
-            }
+            // --- Preprocessing ---
+            // Determine relevant edges based on mode and reverse pivot
+            (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) =
+                GetDrawnEdgeTilesBools(mode, reversePivot);
 
-            int[] startIndices = new int[labelCount + 2];
-            int currentPos = 0;
-            for (int i = 1; i <= labelCount; i++)
-            {
-                startIndices[i] = currentPos;
-                currentPos += counts[i];
-            }
-            startIndices[labelCount + 1] = currentPos;
-
-            int[] flatOffsets = new int[currentPos];
-            int[] writePos = (int[])startIndices.Clone();
-
-            for (int i = 0; i < labels.Length; i++)
-            {
-                int lbl = labels[i];
-                if (lbl > 0 && lbl <= labelCount)
-                {
-                    flatOffsets[writePos[lbl]++] = i;
-                }
-            }
-
-            // --- STEP 2: Selection Logic ---
+            // --- Selection Logic ---
             var cornerTileMap = SliceCornerTiles
                 ? BuildCornerTileMap(labels, checkTop, checkBottom, checkLeft, checkRight)
                 : null;
@@ -159,16 +170,14 @@ namespace TgaBuilderLib.Transitions
             for (int i = 0; i < labelCount; i++)
             {
                 int labelID = i + 1;
-                int start = startIndices[labelID];
-                int end = startIndices[labelID + 1];
+                var segment = tileSegments[i];
+                var pixelOffsets = segment.PixelOffsets;
+                if (pixelOffsets.Count == 0) continue;
 
-                // tileOffsets now contains PIXEL indices (0 to Width*Height)
-                ReadOnlySpan<int> tileOffsets = new ReadOnlySpan<int>(flatOffsets, start, end - start);
-                if (tileOffsets.Length == 0) continue;
-
-                var centroid = centroids[i];
-                float v = ComputeFocusV(Mode, centroid);
+                float v = ComputeFocusV(Mode, (segment.CentroidX, segment.CentroidY));
                 bool shouldDraw = ReversePivot ? (v <= Pivot) : (v >= Pivot);
+
+                ReadOnlySpan<int> tileOffsets = CollectionsMarshal.AsSpan(pixelOffsets);
 
                 // DoesTileTouchRequiredEdge needs to handle pixel indices internally
                 if (shouldDraw)

@@ -25,7 +25,7 @@ namespace TgaBuilderLib.Transitions
     {
 
         // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
-        public unsafe void AnalyzeTiles(byte[] pixels)
+        private unsafe void AnalyzeTiles(byte[] pixels)
         {
             int totalPixels = Width * Height;
 
@@ -71,20 +71,17 @@ namespace TgaBuilderLib.Transitions
                 _ => 0
             };
 
-            // 4. Centroids
-            var centroids = CalculateCentroids(labels, Width, Height, labelCount);
-
-            // 5. Generate label map
-            GenerateLabelMap(Width, Height, labels, labelCount);
+            // 4. Build TileSegmentList (centroids + pixel offsets)
+            var tileSegmentList = BuildTileSegmentList(labels, Width, Height, labelCount);
 
             // Assign labels to the class property
             Labels = labels;
 
-            Centroids = centroids;
+            TileSegmentList = tileSegmentList;
         }
 
 
-        private (float X, float Y)[] CalculateCentroids(int[] labels, int width, int height, int labelCount)
+        private List<TileSegment> BuildTileSegmentList(int[] labels, int width, int height, int labelCount)
         {
             // Arrays for summing coordinates and counting pixels for each label
             long[] sumX = new long[labelCount + 1];
@@ -104,79 +101,32 @@ namespace TgaBuilderLib.Transitions
                 }
             }
 
-            var centroids = new (float X, float Y)[labelCount];
-
+            var segments = new List<TileSegment>(labelCount);
             for (int i = 1; i <= labelCount; i++)
             {
+                var segment = new TileSegment();
                 if (counts[i] > 0)
                 {
                     // Divide the average coordinate by the dimension to get relative (0-1) values
-                    centroids[i - 1] = (
-                        ((float)sumX[i] / counts[i]) / width,
-                        ((float)sumY[i] / counts[i]) / height
-                    );
+                    segment.CentroidX = ((float)sumX[i] / counts[i]) / width;
+                    segment.CentroidY = ((float)sumY[i] / counts[i]) / height;
                 }
-                else
-                {
-                    centroids[i - 1] = (0f, 0f);
-                }
+                // Segments with counts[i] == 0 retain default centroid (0,0) and empty PixelOffsets;
+                // they are skipped during selection by the Count == 0 guard in BuildSelection.
+                segments.Add(segment);
             }
 
-            return centroids;
-        }
-
-
-
-
-        // Creates a colored debug map from label data and stores analysis dimensions.
-        private unsafe void GenerateLabelMap(int width, int height, int[] labels, int labelCount)
-        {
-            int stride = width * TRANSITIONS_BPP;
-
-            // Create target array
-            byte[] map = new byte[width * height * TRANSITIONS_BPP];
-
-            LastAnalysisMap = map;
-            LastAnalysisWidth = width;
-            LastAnalysisHeight = height;
-
-            // Generate colors deterministically
-            uint[] colors = new uint[labelCount + 1];
-            Random rnd = new Random(42);
-
-            for (int i = 1; i <= labelCount; i++)
+            // Populate pixel offsets for each segment
+            for (int i = 0; i < totalPixels; i++)
             {
-                byte r = (byte)rnd.Next(0, 256);
-                byte g = (byte)rnd.Next(0, 256);
-                byte b = (byte)rnd.Next(0, 256);
-
-                // ARGB (same as before)
-                colors[i] = (uint)(255 << 24 | r << 16 | g << 8 | b);
-            }
-
-            fixed (byte* pDebug = map)
-            fixed (int* pLabels = labels)
-            {
-                for (int y = 0; y < height; y++)
+                int lbl = labels[i];
+                if (lbl > 0 && lbl <= labelCount)
                 {
-                    int rowOffset = y * stride;
-                    int labelRow = y * width;
-
-                    for (int x = 0; x < width; x++)
-                    {
-                        int label = pLabels[labelRow + x];
-                        int offset = rowOffset + x * TRANSITIONS_BPP;
-
-                        uint color = (label == 0) ? 0xFF000000 : colors[label];
-
-                        // Write BGRA
-                        pDebug[offset + 0] = (byte)(color & 0xFF);          // B
-                        pDebug[offset + 1] = (byte)((color >> 8) & 0xFF);   // G
-                        pDebug[offset + 2] = (byte)((color >> 16) & 0xFF);  // R
-                        pDebug[offset + 3] = 255;                           // A
-                    }
+                    segments[lbl - 1].PixelOffsets.Add(i);
                 }
             }
+
+            return segments;
         }
     }
 }
