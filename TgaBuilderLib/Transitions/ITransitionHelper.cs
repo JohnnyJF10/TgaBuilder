@@ -19,6 +19,8 @@ namespace TgaBuilderLib.Transitions
         TransitionMode Mode { get; set; }
         float Offset { get; set; }
         float Pivot { get; set; }
+
+        BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
         SegmentationMethod SegmentationMethod { get; set; }
@@ -29,7 +31,7 @@ namespace TgaBuilderLib.Transitions
 
 
         byte[] MixSmooth(byte[] pixels1, byte[] pixels2);
-        byte[] MixBricks(byte[] tilePixels, byte[] bgPixels, BricksPipelineRequirements pipelineRequirements);
+        byte[] MixBricks(byte[] tilePixels, byte[] bgPixels);
 
         void CleanUp();
     }

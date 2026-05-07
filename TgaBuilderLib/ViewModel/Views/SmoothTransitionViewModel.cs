@@ -32,11 +32,11 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
     }
 
     protected override byte[] CreateMixedPixels()
-        => TransitionHelper.MixSmooth(Pixels1, Pixels2);
+        => _transitionHelper.MixSmooth(Pixels1, Pixels2);
 
     protected override void ConfigureTransitionHelperCore()
     {
-        TransitionHelper.Hardness = _blendHardnessValue;
-        TransitionHelper.Offset = _offsetValue;
+        _transitionHelper.Hardness = _blendHardnessValue;
+        _transitionHelper.Offset = _offsetValue;
     }
 }

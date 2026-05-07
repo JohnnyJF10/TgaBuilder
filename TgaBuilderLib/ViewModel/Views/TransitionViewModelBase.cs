@@ -19,24 +19,24 @@ public abstract class TransitionViewModelBase : ViewModelBase
         IBitmapOperations bitmapOperations,
         MainViewModel mainViewModel)
     {
-        MediaFactory = mediaFactory;
-        TransitionHelper = transitionHelper;
-        BitmapOperations = bitmapOperations;
-        MainViewModel = mainViewModel;
+        _mediaFactory = mediaFactory;
+        _transitionHelper = transitionHelper;
+        _bitmapOperations = bitmapOperations;
+        _mainViewModel = mainViewModel;
 
-        _image1 = MediaFactory.CreateEmptyBitmap(64, 64, true);
-        _image2 = MediaFactory.CreateEmptyBitmap(64, 64, true);
-        _resultImage = MediaFactory.CreateEmptyBitmap(64, 64, true);
+        _image1 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
+        _image2 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
+        _resultImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
 
         _pixels1 = new byte[64 * 64 * 4];
         _pixels2 = new byte[64 * 64 * 4];
     }
 
-    protected IMediaFactory MediaFactory { get; }
-    protected ITransitionHelper TransitionHelper { get; }
-    protected MainViewModel MainViewModel { get; }
+    protected IMediaFactory _mediaFactory { get; }
+    protected ITransitionHelper _transitionHelper { get; }
+    protected MainViewModel _mainViewModel { get; }
 
-    protected IBitmapOperations BitmapOperations { get; }
+    protected IBitmapOperations _bitmapOperations { get; }
 
     protected byte[] Pixels1 => _pixels1;
     protected byte[] Pixels2 => _pixels2;
@@ -54,8 +54,8 @@ public abstract class TransitionViewModelBase : ViewModelBase
     private byte[] _pixels1;
     private byte[] _pixels2;
 
-    private TransitionMode _transitionMode = TransitionMode.Top;
-    private float _pivotValue = 0.5f;
+    protected TransitionMode _transitionMode = TransitionMode.Top;
+    protected float _pivotValue = 0.5f;
 
     private Color _colorSource = new(0, 0, 0, 0);
     private Color _colorTarget = new(0, 0, 0, 0);
@@ -102,30 +102,16 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
     public IVisualInvalidator? VisualInvalidator { get; set; }
 
-    public TransitionMode TransitionMode
+    public virtual TransitionMode TransitionMode
     {
         get => _transitionMode;
-        set
-        {
-            if (SetCallerPropertyReturn(ref _transitionMode, value))
-            {
-                OnTransitionParametersChanged();
-                _ = TriggerRecalculation();
-            }
-        }
+        set => SetPropertyTriggerRecalculation(ref _transitionMode, value);
     }
 
-    public float PivotValue
+    public virtual float PivotValue
     {
         get => _pivotValue;
-        set
-        {
-            if (SetCallerPropertyReturn(ref _pivotValue, value))
-            {
-                OnTransitionParametersChanged();
-                _ = TriggerRecalculation();
-            }
-        }
+        set => SetPropertyTriggerRecalculation(ref _pivotValue, value);
     }
 
     public Color ColorSource
@@ -165,20 +151,6 @@ public abstract class TransitionViewModelBase : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Called when <see cref="TransitionMode"/> or <see cref="PivotValue"/> changes,
-    /// immediately before triggering a recalculation. Derived classes can override this
-    /// to adjust pipeline requirements without needing a full re-analysis.
-    /// </summary>
-    protected virtual void OnTransitionParametersChanged() { }
-
-    /// <summary>
-    /// Called before a full forced recalculation (e.g., when images are swapped or the
-    /// Mix command is explicitly invoked). Derived classes should override this to reset
-    /// any pipeline requirement optimizations and ensure a complete pipeline run.
-    /// </summary>
-    protected virtual void OnBeforeFullRecalculation() { }
-
     protected async Task TriggerRecalculation()
     {
         _cts?.Cancel();
@@ -201,9 +173,9 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
             if (!cts.Token.IsCancellationRequested)
             {
-                var resImage = MediaFactory.CreateBitmapFromRaw(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha, resultPixels, stride: Image1.PixelWidth * TRANSITIONS_BPP);
+                var resImage = _mediaFactory.CreateBitmapFromRaw(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha, resultPixels, stride: Image1.PixelWidth * TRANSITIONS_BPP);
 
-                ResultImage = MediaFactory.CloneBitmap(resImage);
+                ResultImage = _mediaFactory.CloneBitmap(resImage);
 
                 OnResultUpdated();
             }
@@ -214,9 +186,7 @@ public abstract class TransitionViewModelBase : ViewModelBase
         }
     }
 
-    protected virtual void OnResultUpdated()
-    {
-    }
+    protected virtual void OnResultUpdated() { }
 
     protected abstract byte[] CreateMixedPixels();
 
@@ -224,9 +194,9 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
     private void LoadImage1()
     {
-        Image1 = MainViewModel.Selection.Presenter.HasAlpha 
-            ? MediaFactory.CloneBitmap(MainViewModel.Selection.Presenter)
-            : BitmapOperations.ConvertRGB24ToBGRA32(MainViewModel.Selection.Presenter);
+        Image1 = _mainViewModel.Selection.Presenter.HasAlpha 
+            ? _mediaFactory.CloneBitmap(_mainViewModel.Selection.Presenter)
+            : _bitmapOperations.ConvertRGB24ToBGRA32(_mainViewModel.Selection.Presenter);
 
         _pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
         Image1.CopyPixels(_pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
@@ -235,16 +205,16 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
     private void LoadImage2()
     {
-        Image2 = MainViewModel.Selection.Presenter.HasAlpha
-            ? MediaFactory.CloneBitmap(MainViewModel.Selection.Presenter)
-            : BitmapOperations.ConvertRGB24ToBGRA32(MainViewModel.Selection.Presenter);
+        Image2 = _mainViewModel.Selection.Presenter.HasAlpha
+            ? _mediaFactory.CloneBitmap(_mainViewModel.Selection.Presenter)
+            : _bitmapOperations.ConvertRGB24ToBGRA32(_mainViewModel.Selection.Presenter);
         
         _pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
         Image2.CopyPixels(_pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
         InitTextVisible = false;
     }
 
-    private void SwapImages()
+    protected virtual void SwapImages()
     {
         var tempImage = Image1;
         Image1 = Image2;
@@ -254,21 +224,19 @@ public abstract class TransitionViewModelBase : ViewModelBase
         _pixels1 = _pixels2;
         _pixels2 = tempPixels;
 
-        OnBeforeFullRecalculation();
         _ = TriggerRecalculation();
     }
 
-    private void Mix()
+    protected virtual void Mix()
     {
         if (!CompareInputSpecs())
             return;
 
-        OnBeforeFullRecalculation();
         ConfigureTransitionHelper(Image1.PixelWidth, Image1.PixelHeight);
 
         var resultPixels = CreateMixedPixels();
 
-        ResultImage = MediaFactory.CreateEmptyBitmap(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha);
+        ResultImage = _mediaFactory.CreateEmptyBitmap(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha);
         ResultImage.WritePixels(
             new PixelRect(0, 0, ResultImage.PixelWidth, ResultImage.PixelHeight),
             resultPixels,
@@ -289,25 +257,25 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
     private void ConfigureTransitionHelper(int width, int height)
     {
-        TransitionHelper.Width = width;
-        TransitionHelper.Height = height;
-        TransitionHelper.Stride = width * TRANSITIONS_BPP;
+        _transitionHelper.Width = width;
+        _transitionHelper.Height = height;
+        _transitionHelper.Stride = width * TRANSITIONS_BPP;
 
-        TransitionHelper.Mode = _transitionMode;
-        TransitionHelper.Pivot = PivotValue;
+        _transitionHelper.Mode = _transitionMode;
+        _transitionHelper.Pivot = PivotValue;
 
         ConfigureTransitionHelperCore();
     }
 
     private void MarkFinished()
     {
-        TransitionHelper.CleanUp();
-        MainViewModel.IsTransitionViewOpen = false;
+        _transitionHelper.CleanUp();
+        _mainViewModel.IsTransitionViewOpen = false;
     }
 
     private void OK(IView view)
     {
-        MainViewModel.Selection.Presenter = MediaFactory.CloneBitmap(ResultImage);
+        _mainViewModel.Selection.Presenter = _mediaFactory.CloneBitmap(ResultImage);
         MarkFinished();
         view.CloseAsync();
     }

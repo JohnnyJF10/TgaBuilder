@@ -12,8 +12,7 @@ namespace TgaBuilderLib.Transitions
         // tile topology and optional corner slicing. Pipeline: Input → Label Map → Selection → Result.
         public byte[] MixBricks(
           byte[] tilePixels,
-          byte[] bgPixels,
-          BricksPipelineRequirements requirements = BricksPipelineRequirements.RequiresAnalysis)
+          byte[] bgPixels)
         {
             if (bgPixels.Length != tilePixels.Length)
                 throw new ArgumentException("Pixel arrays must have same length.");
@@ -21,11 +20,11 @@ namespace TgaBuilderLib.Transitions
 
             // Requirements correction in case this is first time use
             if (Labels.Length == 0|| TileSegmentList.Count == 0)
-                requirements = BricksPipelineRequirements.RequiresAnalysis;
+                CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
 
             // Pipeline step: Analyze tile segments to build Label Map (Input → Label Map)
-            if (requirements == BricksPipelineRequirements.RequiresAnalysis)
+            if (CurrentBricksPipelineRequirements == BricksPipelineRequirements.RequiresAnalysis)
                 AnalyzeTiles(tilePixels);
 
 
@@ -41,10 +40,11 @@ namespace TgaBuilderLib.Transitions
 
             // Requirements correction in case this is first time use
             if (Selection.Length == 0)
-                requirements |= BricksPipelineRequirements.RequiresSelectionBuilding;
+                CurrentBricksPipelineRequirements |= BricksPipelineRequirements.RequiresSelectionBuilding;
 
             // Selection step: determine which pixels are drawn (Input → Label Map → Selection)
-            if (requirements == BricksPipelineRequirements.RequiresSelectionBuilding || requirements == BricksPipelineRequirements.RequiresAnalysis)
+            if (CurrentBricksPipelineRequirements == BricksPipelineRequirements.RequiresSelectionBuilding 
+                || CurrentBricksPipelineRequirements == BricksPipelineRequirements.RequiresAnalysis)
                 Selection = BuildSelection(currentTileSegments, currentLabels, Mode, ReversePivot);
 
 

@@ -29,6 +29,9 @@ namespace TgaBuilderLib.Transitions
         public float Offset { get; set; } = 0f;
 
 
+        public BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; } 
+            = BricksPipelineRequirements.RequiresAnalysis;
+
         public bool ReversePivot { get; set; } = false;
         public bool SliceCornerTiles { get; set; } = false;
         public int MarkerRadius { get; set; } = 3;
