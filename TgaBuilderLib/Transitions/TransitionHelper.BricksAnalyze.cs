@@ -25,7 +25,7 @@ namespace TgaBuilderLib.Transitions
     {
 
         // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
-        private unsafe void AnalyzeTiles(byte[] pixels)
+        private unsafe (int[] labels, List<TileSegment> tileSegmentList) BricksAnalyze(byte[] pixels)
         {
             int totalPixels = Width * Height;
 
@@ -74,10 +74,7 @@ namespace TgaBuilderLib.Transitions
             // 4. Build TileSegmentList (centroids + pixel offsets)
             var tileSegmentList = BuildTileSegmentList(labels, Width, Height, labelCount);
 
-            // Assign labels to the class property
-            Labels = labels;
-
-            TileSegmentList = tileSegmentList;
+            return (labels, tileSegmentList);
         }
 
 

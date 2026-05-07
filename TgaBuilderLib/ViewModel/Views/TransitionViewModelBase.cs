@@ -183,9 +183,6 @@ public abstract class TransitionViewModelBase : ViewModelBase
                 if (!CompareInputSpecs())
                     return;
 
-                if (!CompareResultsSpecs())
-                    return;
-
                 int width = Image1.PixelWidth;
                 int height = Image1.PixelHeight;
 
@@ -233,6 +230,8 @@ public abstract class TransitionViewModelBase : ViewModelBase
         _pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
         Image1.CopyPixels(_pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
         InitTextVisible = false;
+
+        _transitionHelper.CleanUp();
     }
 
     private void LoadImage2()
@@ -244,6 +243,8 @@ public abstract class TransitionViewModelBase : ViewModelBase
         _pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
         Image2.CopyPixels(_pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
         InitTextVisible = false;
+
+        _transitionHelper.CleanUp();
     }
 
     protected virtual void SwapImages()
@@ -281,11 +282,6 @@ public abstract class TransitionViewModelBase : ViewModelBase
         => Image1.PixelWidth == Image2.PixelWidth &&
            Image1.PixelHeight == Image2.PixelHeight &&
            Image1.HasAlpha == Image2.HasAlpha;
-
-    private bool CompareResultsSpecs()
-        => ResultImage.PixelWidth == Image1.PixelWidth &&
-           ResultImage.PixelHeight == Image1.PixelHeight &&
-           ResultImage.HasAlpha == Image1.HasAlpha;
 
     private void ConfigureTransitionHelper(int width, int height)
     {
