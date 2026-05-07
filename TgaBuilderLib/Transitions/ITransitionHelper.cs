@@ -25,6 +25,7 @@ namespace TgaBuilderLib.Transitions
         FilterType SelectedFilter { get; set; }
         SegmentationMethod SegmentationMethod { get; set; }
         Color EdgeColor { get; set; }
+        int EdgeWidth { get; set; }
         bool SliceCornerTiles { get; set; }
         int Width { get; set; }
 
