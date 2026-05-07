@@ -176,6 +176,11 @@ public abstract class TransitionViewModelBase : ViewModelBase
     /// Schedules a single recalculation after a 50 ms idle window. Multiple calls within
     /// the window collapse into one recalculation, preventing CPU congestion when a float
     /// slider fires continuous property-changed events.
+    /// <para>
+    /// Any recalculations that overlap at the narrow window boundary (between flag reset
+    /// and the awaited call) are harmlessly resolved by <see cref="TriggerRecalculation"/>'s
+    /// own CancellationTokenSource, which always ensures only the latest value is rendered.
+    /// </para>
     /// </summary>
     protected void SchedulePivotRecalculation()
     {
@@ -189,14 +194,26 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
         _ = Task.Run(async () =>
         {
-            await Task.Delay(50);
-
-            lock (_pivotLock)
+            try
             {
-                _pivotUpdateScheduled = false;
-            }
+                await Task.Delay(50);
 
-            await TriggerRecalculation();
+                lock (_pivotLock)
+                {
+                    _pivotUpdateScheduled = false;
+                }
+
+                await TriggerRecalculation();
+            }
+            catch (Exception)
+            {
+                // Ensure unhandled exceptions in the fire-and-forget task do not
+                // crash the application or produce unobserved task exceptions.
+                lock (_pivotLock)
+                {
+                    _pivotUpdateScheduled = false;
+                }
+            }
         });
     }
 
