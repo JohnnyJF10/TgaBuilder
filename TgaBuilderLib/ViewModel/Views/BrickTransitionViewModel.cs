@@ -35,6 +35,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private FilterType _selectedFilter = FilterType.BoxBlur;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
     private Color _edgeColor = new Color(255, 255, 255, 128);
+    private int _edgeWidth = 1;
     private bool _isEyedropperMode;
     private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
@@ -108,6 +109,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _edgeColor, value, BricksPipelineRequirements.RequiresEdgeColoring);
     }
 
+    public int EdgeWidth
+    {
+        get => _edgeWidth;
+        set => SetPropertyTriggerRecalculation(ref _edgeWidth, value, BricksPipelineRequirements.RequiresEdgeColoring);
+    }
+
     public bool IsEyedropperMode
     {
         get => _isEyedropperMode;
@@ -165,6 +172,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         _transitionHelper.SelectedFilter = SelectedFilter;
         _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
         _transitionHelper.EdgeColor = EdgeColor;
+        _transitionHelper.EdgeWidth = EdgeWidth;
     }
 
     protected override void OnResultUpdated()
@@ -221,4 +229,3 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         }
     }
 }
-

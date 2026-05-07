@@ -202,6 +202,23 @@
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
                             Color="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"                            
                         />
+                        <DockPanel Width="130" VerticalAlignment="Center" Margin="8,0,0,0"
+                                   ap:MouseOverInfoAP.InfoText="Edge Width: edge smoothing width for brick transitions (1 = narrow, 12 = wide)">
+                            <Path VerticalAlignment="Center"
+                                  Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                                  Data="{StaticResource line_horizontal_1}" />
+                            <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                                  Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                                  Data="{StaticResource line_horizontal_3}" />
+                            <Slider
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                ToolTip.Tip="{Binding EdgeWidth}"
+                                IsSnapToTickEnabled="True"
+                                TickFrequency="1"
+                                Maximum="12" Minimum="1" SmallChange="1"
+                                Value="{Binding EdgeWidth}" />
+                        </DockPanel>
                     </StackPanel>
                 </TabItem>
             </TabControl>
