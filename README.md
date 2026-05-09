@@ -320,19 +320,21 @@ This project is licensed under the MIT License.
 
 For WPFZoomPanel, bzPSD and ColorPicker, I did a significant amount of custom modifications, so it was not sufficient to just add them as NuGet packages. This modified project is included in this reporsitory as well. bzPSD has been modernized to .net core and is fully integrated into the TgaBuildeLib assembly. WPFZoomPanel and ColorPicker have own assemblies.
 
-| Package                          | Version | Source      | License               | Project URL                                                          |
-|----------------------------------|---------|-------------|-----------------------|----------------------------------------------------------------------|
-| WPFZoomPanel                     | -       | GitHub      | MIT                   | [GitHub](https://github.com/Moravuscz/WPFZoomPanel)                  |
-| Pfim                             | 0.11.4  | NuGet       | MIT                   | [GitHub](https://github.com/nickbabcock/Pfim)                        |
-| bzPSD                            | -       | GitHub      | BSD-3-Clause license  | [GitHub](https://github.com/DsonKing/System.Drawing.PSD)             |
-| WPF UI                           | 4.0.3   | NuGet       | MIT                   | [GitHub](https://github.com/lepoco/wpfui)                            |
-| Microsoft Dependency Injection   | 9.0.9   | NuGet       | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
-| SharpZipLib                      | 1.4.2   | NuGet       | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
-| ColorPicker                      | 1.0.11  | GitHub      | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
-| *For the Avalonia UI Port:*      |         |             |                       |                                                                      |
-| Avalonia UI                      | 11.3.7  | Avalonia UI | MIT                   | [Avalonia UI](https://avaloniaui.net/)                               |
-| PanAndZoom                       | 11.3.6  | NuGet       | MIT                   | [GitHub](https://github.com/wieslawsoltes/PanAndZoom)                |
-| Notification.Avalonia            | 2.1.0   | NuGet       | MIT                   | [GitHub](https://github.com/AvaloniaCommunity/Notification.Avalonia) |
+| Package                          | Version  | Source      | License               | Project URL                                                          |
+|----------------------------------|----------|-------------|-----------------------|----------------------------------------------------------------------|
+| *WPF UI version:*                |          |             |                       |                                                                      |
+| WPF UI                           | 4.0.3    | NuGet       | MIT                   | [GitHub](https://github.com/lepoco/wpfui)                            |
+| WPFZoomPanel                     | -        | GitHub      | MIT                   | [GitHub](https://github.com/Moravuscz/WPFZoomPanel)                  |
+| ColorPicker                      | 1.0.11   | GitHub      | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
+| Microsoft Dependency Injection   | 9.0.9    | NuGet       | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
+| *Avalonia UI version:*           |          |             |                       |                                                                      |
+| Avalonia UI                      | 12.0.2   | Avalonia UI | MIT                   | [Avalonia UI](https://avaloniaui.net/)                               |
+| PanAndZoom                       | 12.0.0.1 | NuGet       | MIT                   | [GitHub](https://github.com/wieslawsoltes/PanAndZoom)                |
+| Microsoft Dependency Injection   | 9.0.9    | NuGet       | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
+| *Core Library:*                  |          |             |                       |                                                                      |
+| Pfim                             | 0.11.4   | NuGet       | MIT                   | [GitHub](https://github.com/nickbabcock/Pfim)                        |
+| bzPSD                            | -        | GitHub      | BSD-3-Clause license  | [GitHub](https://github.com/DsonKing/System.Drawing.PSD)             |
+| SharpZipLib                      | 1.4.2    | NuGet       | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
 
 I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their imppressive public contributions immensely helped me understanding the TR level file format. 
 
