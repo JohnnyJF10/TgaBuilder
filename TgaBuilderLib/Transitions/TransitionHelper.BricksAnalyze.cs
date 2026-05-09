@@ -38,10 +38,21 @@ namespace TgaBuilderLib.Transitions
 
             fixed (byte* p = pixels)
             {
-                for (int i = 0; i < totalPixels; i++)
+                if (!InvertGrayscale)
                 {
-                    byte* px = p + (i * TRANSITIONS_BPP);
-                    gray[i] = px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f;
+                    for (int i = 0; i < totalPixels; i++)
+                    {
+                        byte* px = p + (i * TRANSITIONS_BPP);
+                        gray[i] = px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < totalPixels; i++)
+                    {
+                        byte* px = p + (i * TRANSITIONS_BPP);
+                        gray[i] = 255f - (px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f);
+                    }
                 }
             }
 
@@ -71,7 +82,7 @@ namespace TgaBuilderLib.Transitions
                 _ => 0
             };
 
-            // 4. Build TileSegmentList (centroids + pixel offsets)
+            // 4. Build _tileSegmentList (centroids + pixel offsets)
             var tileSegmentList = BuildTileSegmentList(labels, Width, Height, labelCount);
 
             return (labels, tileSegmentList);

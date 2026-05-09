@@ -3,7 +3,7 @@
 partial class TransitionHelper
 {
     // Draws segmented tile pixels over a background using a pixel selection derived from
-    // tile topology and optional corner slicing. Pipeline: Input → Label Map → Selection → Result.
+    // tile topology and optional corner slicing. Pipeline: Input → Label Map → _selection → Result.
     public byte[] MixBricks(
       byte[] tilePixels,
       byte[] bgPixels)
@@ -13,30 +13,30 @@ partial class TransitionHelper
 
 
         // Requirements correction in case this is first time use
-        if (Labels.Length == 0|| TileSegmentList.Count == 0)
+        if (_labels.Length == 0|| _tileSegmentList.Count == 0)
             CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
         // Pipeline step 1: Analyze tile segments to build Label Map (Input → Label Map)
-        var currentLabels = new int[Labels.Length];
+        var currentLabels = new int[_labels.Length];
         var currentTileSegments = new List<TileSegment>();
         (currentLabels, currentTileSegments) = CurrentBricksPipelineRequirements == BricksPipelineRequirements.RequiresAnalysis
             ? BricksAnalyze(tilePixels)
-            : (Labels, TileSegmentList);
+            : (_labels, _tileSegmentList);
 
 
         // Requirements correction in case this is first time use
-        if (Selection.Length == 0
+        if (_selection.Length == 0
             && CurrentBricksPipelineRequirements > BricksPipelineRequirements.RequiresSelectionBuilding)
             CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
 
-        // Pipeline step 2: Determine which pixels are drawn (Input → Label Map → Selection)
+        // Pipeline step 2: Determine which pixels are drawn (Input → Label Map → _selection)
         var currentSelection = new bool[Width * Height];
         currentSelection = CurrentBricksPipelineRequirements <= BricksPipelineRequirements.RequiresSelectionBuilding
             ? BuildSelection(currentTileSegments, currentLabels, Mode, ReversePivot)
-            : Selection;
+            : _selection;
 
 
-        // Pipeline step 3: Blend selected tile pixels with background based on edge proximity and EdgeColor (Selection → Result)
+        // Pipeline step 3: Blend selected tile pixels with background based on edge proximity and EdgeColor (_selection → Result)
         // If statement here, todo
         byte[] result = BricksDraw(tilePixels, bgPixels, currentSelection);
 
@@ -45,12 +45,12 @@ partial class TransitionHelper
         switch (CurrentBricksPipelineRequirements)
         {
             case BricksPipelineRequirements.RequiresAnalysis:
-                Labels = currentLabels;
-                TileSegmentList = currentTileSegments;
+                _labels = currentLabels;
+                _tileSegmentList = currentTileSegments;
                 goto case BricksPipelineRequirements.RequiresSelectionBuilding;
 
             case BricksPipelineRequirements.RequiresSelectionBuilding:
-                Selection = currentSelection;
+                _selection = currentSelection;
                 goto case BricksPipelineRequirements.RequiresEdgeColoring;
 
             case BricksPipelineRequirements.RequiresEdgeColoring:

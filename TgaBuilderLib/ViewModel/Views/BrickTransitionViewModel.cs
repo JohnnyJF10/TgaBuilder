@@ -27,6 +27,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     }
 
     private IWriteableBitmap? _labelMapImage;
+    bool _invertGrayscale;
     private int _markerRadius = 3;
     private int _expectedRegionCount = -1;
     private bool _reversePivot;
@@ -59,6 +60,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     {
         get => _labelMapImage;
         set => SetCallerProperty(ref _labelMapImage, value);
+    }
+
+    public bool InvertGrayscale
+    {
+        get => _invertGrayscale;
+        set => SetPropertyTriggerRecalculation(ref _invertGrayscale, value, BricksPipelineRequirements.RequiresAnalysis, null);
     }
 
     public int MarkerRadius
@@ -166,6 +173,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     protected override void ConfigureTransitionHelperCore()
     {
         _transitionHelper.CurrentBricksPipelineRequirements = _currentRequirements;
+        _transitionHelper.InvertGrayscale = InvertGrayscale;
         _transitionHelper.ReversePivot = ReversePivot;
         _transitionHelper.SliceCornerTiles = SliceCornerTiles;
         _transitionHelper.MarkerRadius = MarkerRadius;

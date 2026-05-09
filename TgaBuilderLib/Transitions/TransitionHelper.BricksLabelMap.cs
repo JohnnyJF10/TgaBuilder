@@ -12,11 +12,11 @@ public partial class TransitionHelper
     public byte[] GetLabelMap()
     {
         int[] currentLabels = new int[Width * Height];
-        int labelCount = Labels[0];
+        int labelCount = _labels[0];
 
-        for (int i = 0; i < Labels.Length; i++)
+        for (int i = 0; i < _labels.Length; i++)
         {
-            int label = Labels[i];
+            int label = _labels[i];
 
             currentLabels[i] = label;
 

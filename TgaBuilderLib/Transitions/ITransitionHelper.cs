@@ -5,36 +5,33 @@ namespace TgaBuilderLib.Transitions
 {
     public interface ITransitionHelper
     {
-        float Hardness { get; set; }
+        // Source Image Dimensions
+        int Width { get; set; }
         int Height { get; set; }
-        int[] Labels { get; }
-        List<TileSegment> TileSegmentList { get; set; }
 
-        bool[] Selection { get; set; }
-
-        //int LastAnalysisHeight { get; }
-        //byte[] LastAnalysisMap { get; }
-        //int LastAnalysisWidth { get; }
-        int MarkerRadius { get; set; }
+        // Shared Transition Parameters
         TransitionMode Mode { get; set; }
-        float Offset { get; set; }
         float Pivot { get; set; }
 
+        // Smooth Transition Parameters
+        float Hardness { get; set; }
+        float Offset { get; set; }
+
+        // Bricks / Segmented Transition Parameters
         BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
+        bool InvertGrayscale { get; set; }
+        int MarkerRadius { get; set; }
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
         SegmentationMethod SegmentationMethod { get; set; }
         Color EdgeColor { get; set; }
         int EdgeWidth { get; set; }
         bool SliceCornerTiles { get; set; }
-        int Width { get; set; }
 
-
+        // Methods
         byte[] MixSmooth(byte[] pixels1, byte[] pixels2);
         byte[] MixBricks(byte[] tilePixels, byte[] bgPixels);
-
         byte[] GetLabelMap();
-
         void CleanUp();
     }
 }
