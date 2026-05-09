@@ -201,7 +201,7 @@
                             IsChecked="{Binding SliceCornerTiles}" />
                         <elements:IconButton
                             Classes="outlined"
-                            Icon="{StaticResource color_line}"
+                            Icon="{StaticResource eye_dropper}"
                             Margin="5,0,5,0"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
                             Command="{Binding PickEdgeColorCommand}"
