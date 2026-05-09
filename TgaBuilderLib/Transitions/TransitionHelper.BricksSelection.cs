@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -12,7 +11,9 @@ public partial class TransitionHelper
 {
     // Builds a pixel selection (bool[Width*Height]) as the _selection pipeline step.
     // The selection is the union of all qualified tiles' pixels, optionally filtered by
-    // corner-slicing trigonometry as a pre-step when SliceCornerTiles is enabled.
+    // a per-pixel topology test for corner tiles when SliceCornerTiles is enabled.
+    // The per-pixel cut uses the same ComputeFocusV logic as MixSmooth at hardness=1 and
+    // offset=0, so the resulting border exactly follows the ComputeTopology boundary.
     private bool[] BuildSelection(
         List<TileSegment> tileSegments,
         int[] labels,
@@ -28,9 +29,20 @@ public partial class TransitionHelper
             GetDrawnEdgeTilesBools(mode, reversePivot);
 
         // --- _selection Logic ---
-        var cornerTileMap = SliceCornerTiles
-            ? BuildCornerTileMap(labels, checkTop, checkBottom, checkLeft, checkRight)
+        // cornerTileSet: labels of tiles that sit at a "boundary corner" — an image corner
+        // where exactly one axis (horizontal or vertical) is a drawn edge.  Only those tiles
+        // need per-pixel topology testing; all others are fully included or excluded.
+        var cornerTileSet = SliceCornerTiles
+            ? BuildCornerTileSet(labels, checkTop, checkBottom, checkLeft, checkRight)
             : null;
+
+        // Precompute reciprocals (only needed when corner-tile slicing is active).
+        float wInv = 0f, hInv = 0f;
+        if (cornerTileSet != null)
+        {
+            wInv = Width  > 1 ? 1f / (Width  - 1) : 1f;
+            hInv = Height > 1 ? 1f / (Height - 1) : 1f;
+        }
 
         for (int i = 0; i < labelCount; i++)
         {
@@ -53,50 +65,23 @@ public partial class TransitionHelper
 
             if (!shouldDraw) continue;
 
-            if (cornerTileMap != null && cornerTileMap.TryGetValue(labelID, out var cornerList))
+            if (cornerTileSet != null && cornerTileSet.Contains(labelID))
             {
-                // Collect corners that need a single-axis angular cut:
-                // exactly one of drawsHoriz/drawsVert is set (XOR).
-                // Corners with both flags or no flags impose no angular constraint.
-                var cuttingCorners = cornerList.Where(c => c.drawsHoriz != c.drawsVert).ToList();
-
-                if (cuttingCorners.Count == 0)
+                // Per-pixel topology cut: identical to MixSmooth at hardness=1 and offset=0.
+                // Each pixel is kept only if its own ComputeFocusV value satisfies the same
+                // draw condition, giving a cut that exactly follows the ComputeTopology boundary
+                // (including the trapezoid shape at low pivot values).
+                foreach (int pixelIdx in tileOffsets)
                 {
-                    // All touching corners lie on both drawn edges (or none): include all pixels.
-                    foreach (int pixelIdx in tileOffsets)
-                    {
-                        selection[pixelIdx] = true;
-                    }
-                }
-                else
-                {
-                    // A pixel must pass every per-corner angular cut (intersection).
-                    // Applying cuts from all corners produces the topology-consistent shape
-                    // (e.g. trapezoid when the tile spans an entire edge).
-                    foreach (int pixelIdx in tileOffsets)
-                    {
-                        int px = pixelIdx % Width;
-                        int py = pixelIdx / Width;
+                    int px = pixelIdx % Width;
+                    int py = pixelIdx / Width;
 
-                        bool include = true;
-                        foreach (var (drawsHoriz, _, cx, cy) in cuttingCorners)
-                        {
-                            float tanAngle = ComputeCornerSliceTanAngle(cx, cy);
-                            float dx = MathF.Abs(px - cx);
-                            float dy = MathF.Abs(py - cy);
+                    float nx = px * wInv;
+                    float ny = py * hInv;
 
-                            // drawsHoriz: keep pixels closer to the horizontal edge (dy < dx·tan)
-                            // drawsVert:  keep pixels closer to the vertical edge  (dy ≥ dx·tan)
-                            bool passesThisCut = drawsHoriz ? (dy < dx * tanAngle) : (dy >= dx * tanAngle);
-                            if (!passesThisCut)
-                            {
-                                include = false;
-                                break;
-                            }
-                        }
-
-                        if (include) selection[pixelIdx] = true;
-                    }
+                    float pv = ComputeFocusV(Mode, (nx, ny));
+                    bool include = ReversePivot ? (pv <= Pivot) : (pv >= Pivot);
+                    if (include) selection[pixelIdx] = true;
                 }
             }
             else
@@ -111,14 +96,12 @@ public partial class TransitionHelper
         return selection;
     }
 
-    // Builds a map from label ID to the list of image-corner slicing infos for tiles that
-    // contain at least one image corner pixel.  Each entry records whether that particular
-    // corner touches a drawn horizontal edge (top/bottom), a drawn vertical edge (left/right),
-    // and the corner's pixel coordinates.  Corners that are covered by the same pixel (can
-    // occur when Width==1 or Height==1) are deduplicated so each physical pixel is recorded
-    // at most once per tile.  Corners where neither edge flag is set are omitted because
-    // they impose no angular constraint.
-    private Dictionary<int, List<(bool drawsHoriz, bool drawsVert, int cx, int cy)>> BuildCornerTileMap(
+    // Returns the set of label IDs for tiles that require a per-pixel topology cut.
+    // A tile qualifies when it touches at least one image corner that lies at the boundary
+    // between a drawn edge and a non-drawn edge (exactly one of the two meeting edges is
+    // a drawn edge — the XOR condition).  Corners that collapse to the same pixel index
+    // (degenerate Width==1 or Height==1 images) are deduplicated.
+    private HashSet<int> BuildCornerTileSet(
         int[] labels,
         bool checkTop, bool checkBottom, bool checkLeft, bool checkRight)
     {
@@ -138,9 +121,7 @@ public partial class TransitionHelper
                 (Width - 1, Height - 1)
         };
 
-        var map = new Dictionary<int, List<(bool drawsHoriz, bool drawsVert, int cx, int cy)>>();
-        // Track which pixel indices have already been recorded to deduplicate corners that
-        // collapse to the same pixel when Width==1 or Height==1.
+        var set = new HashSet<int>();
         var processedPixels = new HashSet<int>();
 
         for (int i = 0; i < cornerPixelIndices.Length; i++)
@@ -154,41 +135,15 @@ public partial class TransitionHelper
 
             (int cornX, int cornY) = cornerCoords[i];
 
-            // Determine whether this image-corner position touches a drawn horizontal or vertical edge.
             bool thisHoriz = (cornY == 0 && checkTop) || (cornY == Height - 1 && checkBottom);
-            bool thisVert = (cornX == 0 && checkLeft) || (cornX == Width - 1 && checkRight);
+            bool thisVert  = (cornX == 0 && checkLeft) || (cornX == Width  - 1 && checkRight);
 
-            // Skip corners that carry no edge information — they never constrain slicing.
-            if (!thisHoriz && !thisVert) continue;
-
-            if (!map.TryGetValue(label, out var list))
-            {
-                list = new List<(bool, bool, int, int)>();
-                map[label] = list;
-            }
-            list.Add((thisHoriz, thisVert, cornX, cornY));
+            // Only corners where exactly one axis is a drawn edge (XOR) define the transition
+            // boundary and require per-pixel cutting.
+            if (thisHoriz != thisVert)
+                set.Add(label);
         }
-        return map;
-    }
-
-    // Computes the tangent of the pivot-driven corner slice angle for the given corner position.
-    //   Left / Right modes        : angle = 10° + Pivot×70°  (Pivot=0→10°, 0.5→45°, 1→80°)
-    //   Top  / Bottom modes       : angle = 80° − Pivot×70°  (reversed)
-    //   Diagonal modes, top corner: reversed; bottom corner: original
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private float ComputeCornerSliceTanAngle(int cornerX, int cornerY)
-    {
-        bool reverseAngle = Mode switch
-        {
-            TransitionMode.Top => true,
-            TransitionMode.Bottom => true,
-            TransitionMode.DiagonalTopLeft => cornerY == 0,
-            TransitionMode.DiagonalTopRight => cornerY == 0,
-            _ => false  // Left, Right: original mapping
-        };
-
-        float angleDeg = reverseAngle ? 80f - Pivot * 70f : 10f + Pivot * 70f;
-        return MathF.Tan(angleDeg * MathF.PI / 180f);
+        return set;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
