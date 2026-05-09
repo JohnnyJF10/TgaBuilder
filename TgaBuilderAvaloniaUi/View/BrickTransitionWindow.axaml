@@ -122,11 +122,20 @@
 
                 <!-- Tab: Analysis -->
                 <TabItem Height="25" Header="Analysis">
-                    <StackPanel Orientation="Horizontal" Margin="5,6,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
+                         <elements:IconToggleButton
+                            Classes="outlined"
+                            Width="36"
+                            Height="36"
+                            Icon="{StaticResource table}"
+                            IsChecked="{Binding InvertGrayscale}"
+                            ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)"
+                            />
+
                         <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,15,0"
                                    ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
                             <Path VerticalAlignment="Center"
-                                  Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                                  Fill="{DynamicResource IconFillBrush}" Width="5" Height="5" Stretch="Uniform" Margin="10,5,0,5"
                                   Data="{StaticResource circle_small}" />
                             <Path DockPanel.Dock="Right" VerticalAlignment="Center"
                                   Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
@@ -182,26 +191,54 @@
 
                 <!-- Tab: Options -->
                 <TabItem Height="25" Header="Options">
-                    <StackPanel Orientation="Horizontal" Margin="5,6,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
                         <elements:IconToggleButton
                             Classes="outlined"
                             VerticalAlignment="Center"
                             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
                             Icon="{StaticResource cut}"
                             IsChecked="{Binding SliceCornerTiles}" />
-                        <elements:IconButton
+                        <elements:IconToggleButton
                             Classes="outlined"
-                            Icon="{StaticResource color_line}"
+                            Width="36"
+                            Height="36"
+                            Padding="-6,0,15,0"
                             Margin="5,0,5,0"
+                            IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
-                            Command="{Binding PickEdgeColorCommand}"
-                            DockPanel.Dock="Left" />
+                            DockPanel.Dock="Left">
+                            <ToggleButton.Content>
+								<Path VerticalAlignment="Center"
+                                  Fill="Transparent" Width="15" Height="15" Stretch="Uniform"
+                                  StrokeThickness="1.5"
+                                  Stroke="{DynamicResource IconFillBrush}"
+                                  Data="{StaticResource eye_dropper}" />
+                            </ToggleButton.Content>       
+                        
+                        </elements:IconToggleButton>
 
                         <ColorPicker 
                             x:Name="SourceColorPicker"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
                             Color="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"                            
                         />
+                        <DockPanel Width="130" VerticalAlignment="Center" Margin="8,0,0,0"
+                                   ap:MouseOverInfoAP.InfoText="Edge Width: edge smoothing width for brick transitions (1 = narrow, 12 = wide)">
+                            <Path VerticalAlignment="Center"
+                                  Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                                  Data="{StaticResource tab}" />
+                            <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                                  Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                                  Data="{StaticResource tab_in_private}" />
+                            <Slider
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                ToolTip.Tip="{Binding EdgeWidth}"
+                                IsSnapToTickEnabled="True"
+                                TickFrequency="1"
+                                Maximum="12" Minimum="0" SmallChange="1"
+                                Value="{Binding EdgeWidth}" />
+                        </DockPanel>
                     </StackPanel>
                 </TabItem>
             </TabControl>

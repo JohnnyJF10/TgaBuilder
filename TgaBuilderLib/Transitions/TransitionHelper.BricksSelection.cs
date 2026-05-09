@@ -10,7 +10,7 @@ namespace TgaBuilderLib.Transitions;
 
 public partial class TransitionHelper
 {
-    // Builds a pixel selection (bool[Width*Height]) as the Selection pipeline step.
+    // Builds a pixel selection (bool[Width*Height]) as the _selection pipeline step.
     // The selection is the union of all qualified tiles' pixels, optionally filtered by
     // corner-slicing trigonometry as a pre-step when SliceCornerTiles is enabled.
     private bool[] BuildSelection(
@@ -27,7 +27,7 @@ public partial class TransitionHelper
         (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) =
             GetDrawnEdgeTilesBools(mode, reversePivot);
 
-        // --- Selection Logic ---
+        // --- _selection Logic ---
         var cornerTileMap = SliceCornerTiles
             ? BuildCornerTileMap(labels, checkTop, checkBottom, checkLeft, checkRight)
             : null;

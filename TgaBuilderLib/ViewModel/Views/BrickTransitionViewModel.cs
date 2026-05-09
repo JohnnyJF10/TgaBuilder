@@ -27,6 +27,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     }
 
     private IWriteableBitmap? _labelMapImage;
+    bool _invertGrayscale;
     private int _markerRadius = 3;
     private int _expectedRegionCount = -1;
     private bool _reversePivot;
@@ -35,10 +36,10 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private FilterType _selectedFilter = FilterType.BoxBlur;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
     private Color _edgeColor = new Color(255, 255, 255, 128);
+    private int _edgeWidth = 1;
     private bool _isEyedropperMode;
     private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
-    private RelayCommand? _pickEdgeColorCommand;
     private RelayCommand<(int X, int Y, int imageNum)>? _mouseOverCommand;
 
     public override TransitionMode SelectedTransitionMode
@@ -58,6 +59,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     {
         get => _labelMapImage;
         set => SetCallerProperty(ref _labelMapImage, value);
+    }
+
+    public bool InvertGrayscale
+    {
+        get => _invertGrayscale;
+        set => SetPropertyTriggerRecalculation(ref _invertGrayscale, value, BricksPipelineRequirements.RequiresAnalysis, null);
     }
 
     public int MarkerRadius
@@ -108,6 +115,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _edgeColor, value, BricksPipelineRequirements.RequiresEdgeColoring);
     }
 
+    public int EdgeWidth
+    {
+        get => _edgeWidth;
+        set => SetPropertyTriggerRecalculation(ref _edgeWidth, value, BricksPipelineRequirements.RequiresEdgeColoring);
+    }
+
     public bool IsEyedropperMode
     {
         get => _isEyedropperMode;
@@ -120,8 +133,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SelectedSegmentationMethod = (SegmentationMethod)value;
     }
 
-    public ICommand PickEdgeColorCommand => _pickEdgeColorCommand
-        ??= new RelayCommand(PickEdgeColor);
     public ICommand MouseOverCommand => _mouseOverCommand
         ??= new RelayCommand<(int X, int Y, int imageNum)>(MouseOverImages);
 
@@ -131,19 +142,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         {
             DoColorPicking(MouseOverImagesArgs.X, MouseOverImagesArgs.Y, MouseOverImagesArgs.imageNum);
         }
-    }
-
-    public event EventHandler? EyedroppingRequested;
-
-
-
-    private void PickEdgeColor() => StartColorPicking();
-
-    private void StartColorPicking()
-    {
-        IsEyedropperMode = true;
-
-        EyedroppingRequested?.Invoke(this, EventArgs.Empty);
     }
 
     private void DoColorPicking(int X, int Y, int imageNum)
@@ -159,12 +157,14 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     protected override void ConfigureTransitionHelperCore()
     {
         _transitionHelper.CurrentBricksPipelineRequirements = _currentRequirements;
+        _transitionHelper.InvertGrayscale = InvertGrayscale;
         _transitionHelper.ReversePivot = ReversePivot;
         _transitionHelper.SliceCornerTiles = SliceCornerTiles;
         _transitionHelper.MarkerRadius = MarkerRadius;
         _transitionHelper.SelectedFilter = SelectedFilter;
         _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
         _transitionHelper.EdgeColor = EdgeColor;
+        _transitionHelper.EdgeWidth = EdgeWidth;
     }
 
     protected override void OnResultUpdated()
@@ -221,4 +221,3 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         }
     }
 }
-
