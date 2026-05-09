@@ -40,7 +40,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private bool _isEyedropperMode;
     private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
-    private RelayCommand? _pickEdgeColorCommand;
     private RelayCommand<(int X, int Y, int imageNum)>? _mouseOverCommand;
 
     public override TransitionMode SelectedTransitionMode
@@ -134,8 +133,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SelectedSegmentationMethod = (SegmentationMethod)value;
     }
 
-    public ICommand PickEdgeColorCommand => _pickEdgeColorCommand
-        ??= new RelayCommand(PickEdgeColor);
     public ICommand MouseOverCommand => _mouseOverCommand
         ??= new RelayCommand<(int X, int Y, int imageNum)>(MouseOverImages);
 
@@ -145,19 +142,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         {
             DoColorPicking(MouseOverImagesArgs.X, MouseOverImagesArgs.Y, MouseOverImagesArgs.imageNum);
         }
-    }
-
-    public event EventHandler? EyedroppingRequested;
-
-
-
-    private void PickEdgeColor() => StartColorPicking();
-
-    private void StartColorPicking()
-    {
-        IsEyedropperMode = true;
-
-        EyedroppingRequested?.Invoke(this, EventArgs.Empty);
     }
 
     private void DoColorPicking(int X, int Y, int imageNum)

@@ -224,13 +224,13 @@
                             Icon="{ui:SymbolIcon Cut24}"
                             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
                             IsChecked="{Binding SliceCornerTiles}"/>
-                        <ui:Button
+                        <elements:ToggleButtonEx
                             Icon="{ui:SymbolIcon EyeDropper24}"
                             Width="36"
                             Height="36"
                             Margin="5,0,5,0"
                             DockPanel.Dock="Left"
-                            Command="{Binding PickEdgeColorCommand}"
+                            IsChecked="{Binding IsEyedropperMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
                         <cp:PortableColorPicker
                             Width="34"
@@ -238,7 +238,7 @@
                             SelectedColor="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                             ap:MouseOverInfoAP.InfoText="Open color picker to source color for transparency"
                             Margin="4,0,0,0"/>
-                        <DockPanel Width="130" VerticalAlignment="Center" Margin="8,0,0,0"
+                        <DockPanel Width="150" VerticalAlignment="Center" Margin="8,0,0,0"
                                    ap:MouseOverInfoAP.InfoText="Edge Width: edge smoothing width for brick transitions (1 = narrow, 12 = wide)">
                             <ui:SymbolIcon VerticalAlignment="Center"
                                   Width="14" Height="14"

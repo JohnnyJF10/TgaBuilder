@@ -67,11 +67,17 @@ namespace TgaBuilderLib.ViewModel
             if (usageData != null)
                 _ = CheckUsageDataLoading(usageData);
 
-            SourceFormatTab.EyedroppingRequested += (_, _)
-                => _currnetlyEyedroppingTab = SourceFormatTab;
+            SourceFormatTab.EyedroppingRequested += (sender, _)
+                => HanldeEyedropperStart((sender as FormatTabViewModel)!);
 
-            DestinationFormatTab.EyedroppingRequested += (_, _)
-                => _currnetlyEyedroppingTab = DestinationFormatTab;
+            DestinationFormatTab.EyedroppingRequested += (sender, _)
+                => HanldeEyedropperStart((sender as FormatTabViewModel)!);
+
+            SourceFormatTab.EyedroppingFinished += (_, _)
+                => HanldeEyedropperEnd();
+
+            DestinationFormatTab.EyedroppingFinished += (_, _)
+                => HanldeEyedropperEnd();
 
             SourceIO.LoadedSuccessfully += (_, _)
                 => OnSourceLoadedSuccessfully();
@@ -390,6 +396,16 @@ namespace TgaBuilderLib.ViewModel
 
             _undoCommand?.RaiseCanExecuteChanged();
             _redoCommand?.RaiseCanExecuteChanged();
+        }
+
+        private void HanldeEyedropperStart(FormatTabViewModel formatTab)
+        {
+            if (_currnetlyEyedroppingTab is not null && _currnetlyEyedroppingTab != formatTab)
+                _currnetlyEyedroppingTab.EndColorPicking();
+
+            _currnetlyEyedroppingTab = formatTab;
+
+            _currnetlyEyedroppingTab.StartColorPicking();
         }
 
         private void HanldeEyedropperEnd()

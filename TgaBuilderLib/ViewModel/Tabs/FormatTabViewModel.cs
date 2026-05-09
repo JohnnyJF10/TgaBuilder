@@ -34,7 +34,6 @@ namespace TgaBuilderLib.ViewModel
         private readonly IEyeDropper _eyeDropper;
 
         // Commands
-        private RelayCommand? _eyedropperCommand;
         private RelayCommand<Color>? _selectionMonoColorFillCommand;
         private AsyncCommand? _replaceSourceColorCommand;
 
@@ -51,11 +50,8 @@ namespace TgaBuilderLib.ViewModel
         public bool IsEyedropperMode
         {
             get => _isEyedropperMode;
-            set => SetProperty(ref _isEyedropperMode, value, nameof(IsEyedropperMode));
+            set => SetIsEyedropperMode(value);
         }
-
-        public ICommand EyeDropperCommand => _eyedropperCommand
-            ??= new RelayCommand(StartColorPicking);
 
         public ICommand SelectionMonoColorFillCommand => _selectionMonoColorFillCommand
             ??= new RelayCommand<Color>(SelectionMonoColorFill);
@@ -75,6 +71,7 @@ namespace TgaBuilderLib.ViewModel
         }
 
         public event EventHandler? EyedroppingRequested;
+        public event EventHandler? EyedroppingFinished;
 
 
         public bool IsReplaceSelectionColor
@@ -126,12 +123,26 @@ namespace TgaBuilderLib.ViewModel
         }
 
         // Color picking operations
+
+        private void SetIsEyedropperMode(bool newValue)
+        {
+            if (newValue == _isEyedropperMode)
+                return;
+
+            _isEyedropperMode = newValue;
+
+            if (newValue)
+                EyedroppingRequested?.Invoke(this, EventArgs.Empty);
+            else
+                EyedroppingFinished?.Invoke(this, EventArgs.Empty);
+
+            OnPropertyChanged(nameof(IsEyedropperMode));
+        }
+
         internal void StartColorPicking()
         {
             _eyeDropper.IsActive = true;
             IsEyedropperMode = true;
-
-            EyedroppingRequested?.Invoke(this, EventArgs.Empty);
         }
 
         internal void DoColorPicking()

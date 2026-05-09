@@ -480,13 +480,13 @@
                             Visibility="{Binding IsRgb24, Converter={StaticResource BoolToVisibilityConverter}}"
                             />
                         </Grid>
-                        <ui:Button
+                        <elements:ToggleButtonEx
                             Icon="{ui:SymbolIcon EyeDropper24}"
                             Width="36"
                             Height="36"
                             Margin="5,0,5,0"
                             DockPanel.Dock="Left"
-                            Command="{Binding EyeDropperCommand}"
+                            IsChecked="{Binding IsEyedropperMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
 
                         <cp:PortableColorPicker
@@ -1245,13 +1245,13 @@
                             Visibility="{Binding IsRgb24, Converter={StaticResource BoolToVisibilityConverter}}"
                             />
                         </Grid>
-                        <ui:Button
+                        <elements:ToggleButtonEx
                             Icon="{ui:SymbolIcon EyeDropper24}"
                             Width="36"
                             Height="36"
                             Margin="5,0,5,0"
                             DockPanel.Dock="Left"
-                            Command="{Binding EyeDropperCommand}"
+                            IsChecked="{Binding IsEyedropperMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
 
                         <cp:PortableColorPicker
