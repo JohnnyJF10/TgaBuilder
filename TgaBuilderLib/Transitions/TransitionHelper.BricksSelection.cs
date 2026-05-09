@@ -53,10 +53,16 @@ public partial class TransitionHelper
 
             if (!shouldDraw) continue;
 
-            if (cornerTileMap != null && cornerTileMap.TryGetValue(labelID, out var cornerInfo))
+            if (cornerTileMap != null && cornerTileMap.TryGetValue(labelID, out var cornerList))
             {
-                if (cornerInfo.drawsHoriz && cornerInfo.drawsVert)
+                // Collect corners that need a single-axis angular cut:
+                // exactly one of drawsHoriz/drawsVert is set (XOR).
+                // Corners with both flags or no flags impose no angular constraint.
+                var cuttingCorners = cornerList.Where(c => c.drawsHoriz != c.drawsVert).ToList();
+
+                if (cuttingCorners.Count == 0)
                 {
+                    // All touching corners lie on both drawn edges (or none): include all pixels.
                     foreach (int pixelIdx in tileOffsets)
                     {
                         selection[pixelIdx] = true;
@@ -64,19 +70,31 @@ public partial class TransitionHelper
                 }
                 else
                 {
-                    float tanAngle = ComputeCornerSliceTanAngle(cornerInfo.cx, cornerInfo.cy);
-                    bool keepHorizSide = cornerInfo.drawsHoriz;
-
+                    // A pixel must pass every per-corner angular cut (intersection).
+                    // Applying cuts from all corners produces the topology-consistent shape
+                    // (e.g. trapezoid when the tile spans an entire edge).
                     foreach (int pixelIdx in tileOffsets)
                     {
-                        // Convert pixel index to coordinates
                         int px = pixelIdx % Width;
                         int py = pixelIdx / Width;
 
-                        float dx = MathF.Abs(px - cornerInfo.cx);
-                        float dy = MathF.Abs(py - cornerInfo.cy);
+                        bool include = true;
+                        foreach (var (drawsHoriz, _, cx, cy) in cuttingCorners)
+                        {
+                            float tanAngle = ComputeCornerSliceTanAngle(cx, cy);
+                            float dx = MathF.Abs(px - cx);
+                            float dy = MathF.Abs(py - cy);
 
-                        bool include = keepHorizSide ? (dy < dx * tanAngle) : (dy >= dx * tanAngle);
+                            // drawsHoriz: keep pixels closer to the horizontal edge (dy < dx·tan)
+                            // drawsVert:  keep pixels closer to the vertical edge  (dy ≥ dx·tan)
+                            bool passesThisCut = drawsHoriz ? (dy < dx * tanAngle) : (dy >= dx * tanAngle);
+                            if (!passesThisCut)
+                            {
+                                include = false;
+                                break;
+                            }
+                        }
+
                         if (include) selection[pixelIdx] = true;
                     }
                 }
@@ -93,10 +111,14 @@ public partial class TransitionHelper
         return selection;
     }
 
-    // Builds a map from label ID to corner slicing info for tiles containing an image corner pixel.
-    // For each tile, records whether it touches a drawn horizontal edge (top/bottom),
-    // a drawn vertical edge (left/right), or both, and the first corner coordinate encountered.
-    private Dictionary<int, (bool drawsHoriz, bool drawsVert, int cx, int cy)> BuildCornerTileMap(
+    // Builds a map from label ID to the list of image-corner slicing infos for tiles that
+    // contain at least one image corner pixel.  Each entry records whether that particular
+    // corner touches a drawn horizontal edge (top/bottom), a drawn vertical edge (left/right),
+    // and the corner's pixel coordinates.  Corners that are covered by the same pixel (can
+    // occur when Width==1 or Height==1) are deduplicated so each physical pixel is recorded
+    // at most once per tile.  Corners where neither edge flag is set are omitted because
+    // they impose no angular constraint.
+    private Dictionary<int, List<(bool drawsHoriz, bool drawsVert, int cx, int cy)>> BuildCornerTileMap(
         int[] labels,
         bool checkTop, bool checkBottom, bool checkLeft, bool checkRight)
     {
@@ -116,11 +138,16 @@ public partial class TransitionHelper
                 (Width - 1, Height - 1)
         };
 
-        var map = new Dictionary<int, (bool drawsHoriz, bool drawsVert, int cx, int cy)>();
+        var map = new Dictionary<int, List<(bool drawsHoriz, bool drawsVert, int cx, int cy)>>();
+        // Track which pixel indices have already been recorded to deduplicate corners that
+        // collapse to the same pixel when Width==1 or Height==1.
+        var processedPixels = new HashSet<int>();
+
         for (int i = 0; i < cornerPixelIndices.Length; i++)
         {
             int pixelIdx = cornerPixelIndices[i];
             if (pixelIdx >= labels.Length) continue;
+            if (!processedPixels.Add(pixelIdx)) continue; // skip duplicate corner positions
 
             int label = labels[pixelIdx];
             if (label <= 0) continue;
@@ -131,16 +158,15 @@ public partial class TransitionHelper
             bool thisHoriz = (cornY == 0 && checkTop) || (cornY == Height - 1 && checkBottom);
             bool thisVert = (cornX == 0 && checkLeft) || (cornX == Width - 1 && checkRight);
 
-            if (map.TryGetValue(label, out var existing))
+            // Skip corners that carry no edge information — they never constrain slicing.
+            if (!thisHoriz && !thisVert) continue;
+
+            if (!map.TryGetValue(label, out var list))
             {
-                // Tile spans multiple image corners: accumulate edge-type flags.
-                map[label] = (existing.drawsHoriz || thisHoriz, existing.drawsVert || thisVert,
-                              existing.cx, existing.cy);
+                list = new List<(bool, bool, int, int)>();
+                map[label] = list;
             }
-            else
-            {
-                map[label] = (thisHoriz, thisVert, cornX, cornY);
-            }
+            list.Add((thisHoriz, thisVert, cornX, cornY));
         }
         return map;
     }
