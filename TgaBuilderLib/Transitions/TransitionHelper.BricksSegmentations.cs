@@ -20,6 +20,7 @@ public partial class TransitionHelper
         // Seed candidates (keep all valid local maxima)
         var seedCandidates = new List<(int idx, float val)>(128);
 
+
         for (int y = MarkerRadius; y < Height - MarkerRadius; y++)
         {
             int row = y * Width;
@@ -83,6 +84,17 @@ public partial class TransitionHelper
                 // Removed AddPixelToTile logic.
                 EnqueueNeighbors(idx, label, labels, filtered, buckets, b);
             }
+        }
+
+        // Fallback: if no seeds were found (e.g. image too small for MarkerRadius, or
+        // all values are identical), return a single tile that covers every pixel so that
+        // the selection pipeline has at least one segment to work with.
+        // This check is placed before FinalFill to avoid a no-op pass over unlabeled pixels.
+        if (seedCandidates.Count == 0)
+        {
+            for (int i = 0; i < labels.Length; i++)
+                labels[i] = 1;
+            return 1;
         }
 
         // Final fill
