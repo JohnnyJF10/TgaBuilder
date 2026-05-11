@@ -15,7 +15,10 @@ public partial class TransitionHelper
         Screen,         // Multiply negatively (Lightens, like projection)
         Additive,       // Add (Extremely lightens, glow effect)
         Overlay,        // Copy into each other (Enhances contrast)
-        HardLight       // Hard light (Strong effect)
+        HardLight,      // Hard light (Strong effect)
+        SoftLight,      // Soft light (Smooth contrast effect)
+        ColorDodge,     // Brightens strongly with edge color
+        ColorBurn       // Darkens strongly with edge color
     }
 
     private byte[] BricksDraw(byte[] tilePixels, byte[] bgPixels, bool[] selection)
@@ -151,6 +154,30 @@ public partial class TransitionHelper
                                         tintedB = (tB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
                                         tintedG = (tG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
                                         tintedR = (tR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
+                                        break;
+
+                                    case EdgeBlendMode.HardLight:
+                                        tintedB = (eB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
+                                        tintedG = (eG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
+                                        tintedR = (eR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
+                                        break;
+
+                                    case EdgeBlendMode.SoftLight:
+                                        tintedB = (int)Math.Clamp((((1.0 - 2.0 * eB / 255.0) * (tB / 255.0) * (tB / 255.0) + 2.0 * eB / 255.0 * (tB / 255.0)) * 255.0), 0, 255);
+                                        tintedG = (int)Math.Clamp((((1.0 - 2.0 * eG / 255.0) * (tG / 255.0) * (tG / 255.0) + 2.0 * eG / 255.0 * (tG / 255.0)) * 255.0), 0, 255);
+                                        tintedR = (int)Math.Clamp((((1.0 - 2.0 * eR / 255.0) * (tR / 255.0) * (tR / 255.0) + 2.0 * eR / 255.0 * (tR / 255.0)) * 255.0), 0, 255);
+                                        break;
+
+                                    case EdgeBlendMode.ColorDodge:
+                                        tintedB = eB == 255 ? 255 : Math.Min(255, (tB * 255) / (255 - eB));
+                                        tintedG = eG == 255 ? 255 : Math.Min(255, (tG * 255) / (255 - eG));
+                                        tintedR = eR == 255 ? 255 : Math.Min(255, (tR * 255) / (255 - eR));
+                                        break;
+
+                                    case EdgeBlendMode.ColorBurn:
+                                        tintedB = eB == 0 ? 0 : Math.Max(0, 255 - ((255 - tB) * 255) / eB);
+                                        tintedG = eG == 0 ? 0 : Math.Max(0, 255 - ((255 - tG) * 255) / eG);
+                                        tintedR = eR == 0 ? 0 : Math.Max(0, 255 - ((255 - tR) * 255) / eR);
                                         break;
 
                                     case EdgeBlendMode.Multiply: // Standard: Multiply

@@ -332,6 +332,15 @@
                             SelectedColor="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                             ap:MouseOverInfoAP.InfoText="Open color picker to source color for transparency"
                             Margin="4,0,0,0"/>
+                        <ComboBox
+                            Width="130"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            ap:MouseOverInfoAP.InfoText="Blend Mode: defines how edge color combines with tile color"
+                            ItemsSource="{Binding EdgeBlendModes}"
+                            SelectedItem="{Binding BlendMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <DockPanel Width="150" VerticalAlignment="Center" Margin="8,0,0,0"
                                    ap:MouseOverInfoAP.InfoText="Edge Width: edge smoothing width for brick transitions (1 = narrow, 12 = wide)">
                             <ui:SymbolIcon VerticalAlignment="Center"

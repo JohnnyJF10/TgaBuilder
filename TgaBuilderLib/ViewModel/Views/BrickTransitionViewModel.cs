@@ -12,6 +12,7 @@ using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
 using TgaBuilderLib.Utils;
+using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.ViewModel;
 
@@ -37,6 +38,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private FilterType _selectedFilter = FilterType.BoxBlur;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
     private Color _edgeColor = new Color(255, 255, 255, 128);
+    private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
     private int _edgeWidth = 1;
     private bool _isEyedropperMode;
     private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
@@ -134,6 +136,14 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _edgeColor, value, BricksPipelineRequirements.RequiresEdgeColoring);
     }
 
+    public EdgeBlendMode BlendMode
+    {
+        get => _blendMode;
+        set => SetPropertyTriggerRecalculation(ref _blendMode, value, BricksPipelineRequirements.RequiresEdgeColoring);
+    }
+
+    public Array EdgeBlendModes => Enum.GetValues(typeof(EdgeBlendMode));
+
     public int EdgeWidth
     {
         get => _edgeWidth;
@@ -184,6 +194,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         _transitionHelper.SelectedFilter = SelectedFilter;
         _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
         _transitionHelper.EdgeColor = EdgeColor;
+        _transitionHelper.BlendMode = BlendMode;
         _transitionHelper.EdgeWidth = EdgeWidth;
     }
 

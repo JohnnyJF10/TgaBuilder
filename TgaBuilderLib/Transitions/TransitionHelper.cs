@@ -60,6 +60,7 @@ namespace TgaBuilderLib.Transitions
             SegmentationMethod = SegmentationMethod.Watershed;
             SelectedFilter = FilterType.BoxBlur;
             EdgeColor = new Color(0, 0, 0, 128);
+            BlendMode = EdgeBlendMode.Multiply;
             EdgeWidth = 1;
         }
     }
