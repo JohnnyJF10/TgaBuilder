@@ -24,12 +24,20 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _blendHardnessValue, value);
     }
 
-    private float _offsetValue = 0f;
+    private float _wideningValue = 0f;
 
-    public float OffsetValue
+    public float WideningValue
     {
-        get => _offsetValue;
-        set => SetPropertyTriggerRecalculation(ref _offsetValue, value);
+        get => _wideningValue;
+        set => SetPropertyTriggerRecalculation(ref _wideningValue, value);
+    }
+
+    private float _tiltValue = 0f;
+
+    public float TiltValue
+    {
+        get => _tiltValue;
+        set => SetPropertyTriggerRecalculation(ref _tiltValue, value);
     }
 
     protected override byte[] CreateMixedPixels()
@@ -38,6 +46,7 @@ public class SmoothTransitionViewModel : TransitionViewModelBase
     protected override void ConfigureTransitionHelperCore()
     {
         _transitionHelper.Hardness = _blendHardnessValue;
-        _transitionHelper.Offset = _offsetValue;
+        _transitionHelper.Widening = _wideningValue;
+        _transitionHelper.Shift = _tiltValue;
     }
 }

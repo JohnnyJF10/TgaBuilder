@@ -12,7 +12,7 @@ public partial class TransitionHelper
     // Builds a pixel selection (bool[Width*Height]) as the _selection pipeline step.
     // The selection is the union of all qualified tiles' pixels, optionally filtered by
     // a per-pixel topology test for corner tiles when SliceCornerTiles is enabled.
-    // The per-pixel cut uses the same ComputeFocusV logic as MixSmooth at hardness=1 and
+    // The per-pixel cut uses the same ComputeFocusValue logic as MixSmooth at hardness=1 and
     // offset=0, so the resulting border exactly follows the ComputeTopology boundary.
     private bool[] BuildSelection(
         List<TileSegment> tileSegments,
@@ -51,7 +51,7 @@ public partial class TransitionHelper
             var pixelOffsets = segment.PixelOffsets;
             if (pixelOffsets.Count == 0) continue;
 
-            float v = ComputeFocusV(Mode, (segment.CentroidX, segment.CentroidY));
+            float v = ComputeFocusValue(Mode, (segment.CentroidX, segment.CentroidY));
             bool shouldDraw = ReversePivot ? (v <= Pivot) : (v >= Pivot);
 
             ReadOnlySpan<int> tileOffsets = CollectionsMarshal.AsSpan(pixelOffsets);
@@ -68,7 +68,7 @@ public partial class TransitionHelper
             if (cornerTileSet != null && cornerTileSet.Contains(labelID))
             {
                 // Per-pixel topology cut: identical to MixSmooth at hardness=1 and offset=0.
-                // Each pixel is kept only if its own ComputeFocusV value satisfies the same
+                // Each pixel is kept only if its own ComputeFocusValue value satisfies the same
                 // draw condition, giving a cut that exactly follows the ComputeTopology boundary
                 // (including the trapezoid shape at low pivot values).
                 foreach (int pixelIdx in tileOffsets)
@@ -79,7 +79,7 @@ public partial class TransitionHelper
                     float nx = px * wInv;
                     float ny = py * hInv;
 
-                    float pv = ComputeFocusV(Mode, (nx, ny));
+                    float pv = ComputeFocusValue(Mode, (nx, ny));
                     bool include = ReversePivot ? (pv <= Pivot) : (pv >= Pivot);
                     if (include) selection[pixelIdx] = true;
                 }
@@ -199,7 +199,7 @@ public partial class TransitionHelper
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     // Computes a normalized focus value for a tile based on its centroid.
-    private float ComputeFocusV(TransitionMode mode, (float X, float Y) centroid)
+    private float ComputeFocusValue(TransitionMode mode, (float X, float Y) centroid)
     {
         float nx = centroid.X;
         float ny = centroid.Y;
@@ -215,19 +215,4 @@ public partial class TransitionHelper
         else v = distToT1 / (distToT1 + distToT2);
         return v;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    // Computes directional distances to texture domains for the selected transition mode.
-    // Used as-is by brick transitions. Smooth transitions use ComputeTopologicyForSmooth.
-    private (float distToT1, float distToT2) ComputeTopologicy(TransitionMode mode, float nx, float ny)
-        => mode switch
-        {
-            TransitionMode.Top => (Math.Min(nx, Math.Min(1.0f - nx, 1.0f - ny)), ny),
-            TransitionMode.Bottom => (Math.Min(nx, Math.Min(1.0f - nx, ny)), 1.0f - ny),
-            TransitionMode.Left => (Math.Min(ny, Math.Min(1.0f - ny, 1.0f - nx)), nx),
-            TransitionMode.Right => (Math.Min(ny, Math.Min(1.0f - ny, nx)), 1.0f - nx),
-            TransitionMode.DiagonalTopLeft => (Math.Min(1.0f - nx, 1.0f - ny), Math.Min(nx, ny)),
-            TransitionMode.DiagonalTopRight => (Math.Min(nx, 1.0f - ny), Math.Min(1.0f - nx, ny)),
-            _ => (0f, 0f)
-        };
 }

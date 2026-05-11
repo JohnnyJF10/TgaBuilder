@@ -15,7 +15,7 @@ namespace TgaBuilderLib.Transitions
 
         // Smooth Transition Parameters
         float Hardness { get; set; }
-        float Offset { get; set; }
+        float Widening { get; set; }
 
         // Bricks / Segmented Transition Parameters
         BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
@@ -27,6 +27,7 @@ namespace TgaBuilderLib.Transitions
         Color EdgeColor { get; set; }
         int EdgeWidth { get; set; }
         bool SliceCornerTiles { get; set; }
+        float Shift { get; set; }
 
         // Methods
         byte[] MixSmooth(byte[] pixels1, byte[] pixels2);

@@ -21,7 +21,8 @@ namespace TgaBuilderLib.Transitions
         public float Pivot { get; set; } = 0.5f;
 
         public float Hardness { get; set; } = 0.5f;
-        public float Offset { get; set; } = 0f;
+        public float Widening { get; set; } = 0f;
+        public float Shift { get; set; } = 0f;
 
 
         public BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
@@ -48,7 +49,7 @@ namespace TgaBuilderLib.Transitions
             Pivot = 0.5f;
 
             Hardness = 0.5f;
-            Offset = 0f;
+            Widening = 0f;
 
             MarkerRadius = 3; 
             ReversePivot = false;

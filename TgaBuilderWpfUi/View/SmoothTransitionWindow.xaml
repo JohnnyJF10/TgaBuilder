@@ -167,7 +167,23 @@
                             AutoToolTipPlacement="BottomRight"
                             AutoToolTipPrecision="2"
                             Maximum="1" Minimum="0" SmallChange="0.01"
-                            Value="{Binding OffsetValue}" />
+                            Value="{Binding WideningValue}" />
+                </DockPanel>
+                <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left"
+                               ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)">
+                    <Path DockPanel.Dock="Left" VerticalAlignment="Center"
+                              Stroke="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                              Data="{StaticResource slide_layout_clean}" />
+                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
+                              Stroke="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
+                              Data="{StaticResource slide_layout_stroke}" />
+                    <Slider
+                            Margin="5,0"
+                            VerticalAlignment="Center"
+                            AutoToolTipPlacement="BottomRight"
+                            AutoToolTipPrecision="2"
+                            Maximum="1" Minimum="-1" SmallChange="0.01"
+                            Value="{Binding TiltValue}" />
                 </DockPanel>
             </StackPanel>
 
