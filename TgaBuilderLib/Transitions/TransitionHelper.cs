@@ -30,10 +30,12 @@ namespace TgaBuilderLib.Transitions
         public bool ReversePivot { get; set; } = false;
         public bool InvertGrayscale { get; set; } = false;
         public bool SliceCornerTiles { get; set; } = false;
+        public bool ProtectEdges { get; set; } = true;
         public int MarkerRadius { get; set; } = 3;
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Watershed;
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
         public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
+        public EdgeBlendMode BlendMode { get; set; } = EdgeBlendMode.Multiply;
         public int EdgeWidth { get; set; } = 1;
 
         public void CleanUp()
@@ -54,6 +56,7 @@ namespace TgaBuilderLib.Transitions
             MarkerRadius = 3; 
             ReversePivot = false;
             SliceCornerTiles = false;
+            ProtectEdges = true;
             SegmentationMethod = SegmentationMethod.Watershed;
             SelectedFilter = FilterType.BoxBlur;
             EdgeColor = new Color(0, 0, 0, 128);

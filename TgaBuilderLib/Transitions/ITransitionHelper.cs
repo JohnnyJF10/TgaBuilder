@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TgaBuilderLib.Abstraction;
+using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.Transitions
 {
@@ -26,7 +27,9 @@ namespace TgaBuilderLib.Transitions
         SegmentationMethod SegmentationMethod { get; set; }
         Color EdgeColor { get; set; }
         int EdgeWidth { get; set; }
+        EdgeBlendMode BlendMode { get; set; }
         bool SliceCornerTiles { get; set; }
+        bool ProtectEdges { get; set; }
         float Shift { get; set; }
 
         // Methods

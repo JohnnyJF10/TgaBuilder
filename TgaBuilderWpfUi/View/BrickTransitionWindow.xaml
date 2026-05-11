@@ -225,7 +225,18 @@
                             MinWidth="36"
                             Icon="{ui:SymbolIcon Cut24}"
                             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
+                            IsEnabled="{Binding IsChecked, ElementName=ProtectEdgesToggleButton}"
                             IsChecked="{Binding SliceCornerTiles}"/>
+
+                        <elements:ToggleButtonEx
+                            x:Name="ProtectEdgesToggleButton"
+                            VerticalAlignment="Center"
+                            MinHeight="36"
+                            MinWidth="36"
+                            Margin="5,0,0,0"
+                            Icon="{ui:SymbolIcon Shield24}"
+                            ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
+                            IsChecked="{Binding ProtectEdges}"/>
 
                         <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left"
                                ap:MouseOverInfoAP.InfoText="Widening: 0 = Adds or enlarges the plateau at the transition front until it touches the edges at value 1">

@@ -122,7 +122,7 @@
 
                 <!-- Tab: Analysis -->
                 <TabItem Height="25" Header="Analysis">
-                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal"  VerticalAlignment="Center">
                          <elements:IconToggleButton
                             Classes="outlined"
                             Width="36"
@@ -191,13 +191,25 @@
 
                 <!-- Tab: Pivot -->
                 <TabItem Height="25" Header="Pivot">
-                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <elements:IconToggleButton
+                            x:Name="SliceCornersToggleButton"
                             Classes="outlined"
                             VerticalAlignment="Center"
                             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
                             Icon="{StaticResource cut}"
+                            IsEnabled="{Binding #ProtectEdgesToggleButton.IsChecked}"
                             IsChecked="{Binding SliceCornerTiles}" />
+                        <elements:IconToggleButton
+                            x:Name="ProtectEdgesToggleButton"
+                            Classes="outlined"
+                            VerticalAlignment="Center"
+                            MinHeight="36"
+                            MinWidth="36"
+                            Margin="5,0,0,0"
+                            Icon="{StaticResource shield}"
+                            ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
+                            IsChecked="{Binding ProtectEdges}"/>
                         <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
                                    ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
                             <Grid
@@ -285,13 +297,13 @@
 
                 <!-- Tab: Edge -->
                 <TabItem Height="25" Header="Edge">
-                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal"  VerticalAlignment="Center">
                         <elements:IconToggleButton
                             Classes="outlined"
                             Width="36"
                             Height="36"
                             Padding="-6,0,15,0"
-                            Margin="5,0,5,0"
+                            Margin="0,0,5,0"
                             IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
                             DockPanel.Dock="Left">

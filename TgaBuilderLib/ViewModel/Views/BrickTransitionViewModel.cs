@@ -32,6 +32,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private int _expectedRegionCount = -1;
     private bool _reversePivot;
     private bool _sliceCornerTiles;
+    private bool _protectEdges = true;
     private bool _isLabelMapExpanded;
     private FilterType _selectedFilter = FilterType.BoxBlur;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
@@ -95,6 +96,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     {
         get => _sliceCornerTiles;
         set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value, BricksPipelineRequirements.RequiresSelectionBuilding, null);
+    }
+
+    public bool ProtectEdges
+    {
+        get => _protectEdges;
+        set => SetPropertyTriggerRecalculation(ref _protectEdges, value, BricksPipelineRequirements.RequiresSelectionBuilding, null);
     }
 
     public bool IsLabelMapExpanded
@@ -172,6 +179,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         _transitionHelper.InvertGrayscale = InvertGrayscale;
         _transitionHelper.ReversePivot = ReversePivot;
         _transitionHelper.SliceCornerTiles = SliceCornerTiles;
+        _transitionHelper.ProtectEdges = ProtectEdges;
         _transitionHelper.MarkerRadius = MarkerRadius;
         _transitionHelper.SelectedFilter = SelectedFilter;
         _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;

@@ -32,7 +32,7 @@ public partial class TransitionHelper
         // cornerTileSet: labels of tiles that sit at a "boundary corner" — an image corner
         // where exactly one axis (horizontal or vertical) is a drawn edge.  Only those tiles
         // need per-pixel topology testing; all others are fully included or excluded.
-        var cornerTileSet = SliceCornerTiles
+        var cornerTileSet = SliceCornerTiles && ProtectEdges
             ? BuildCornerTileSet(labels, checkTop, checkBottom, checkLeft, checkRight)
             : null;
 
@@ -57,11 +57,14 @@ public partial class TransitionHelper
             ReadOnlySpan<int> tileOffsets = CollectionsMarshal.AsSpan(pixelOffsets);
 
             // DoesTileTouchRequiredEdge needs to handle pixel indices internally
-            if (shouldDraw)
-                shouldDraw = !DoesTileTouchRequiredEdge(tileOffsets, !checkTop, !checkBottom, !checkLeft, !checkRight);
+            if (ProtectEdges)
+            {
+                if (shouldDraw)
+                    shouldDraw = !DoesTileTouchRequiredEdge(tileOffsets, !checkTop, !checkBottom, !checkLeft, !checkRight);
 
-            if (!shouldDraw)
-                shouldDraw = DoesTileTouchRequiredEdge(tileOffsets, checkTop, checkBottom, checkLeft, checkRight);
+                if (!shouldDraw)
+                    shouldDraw = DoesTileTouchRequiredEdge(tileOffsets, checkTop, checkBottom, checkLeft, checkRight); 
+            }
 
             if (!shouldDraw) continue;
 

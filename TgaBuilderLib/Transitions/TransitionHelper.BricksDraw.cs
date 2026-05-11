@@ -8,6 +8,16 @@ namespace TgaBuilderLib.Transitions;
 
 public partial class TransitionHelper
 {
+
+    public enum EdgeBlendMode
+    {
+        Multiply,       // Multiply (Darkens, like a glaze)
+        Screen,         // Multiply negatively (Lightens, like projection)
+        Additive,       // Add (Extremely lightens, glow effect)
+        Overlay,        // Copy into each other (Enhances contrast)
+        HardLight       // Hard light (Strong effect)
+    }
+
     private byte[] BricksDraw(byte[] tilePixels, byte[] bgPixels, bool[] selection)
     {
         if (bgPixels.Length != tilePixels.Length)
@@ -109,30 +119,61 @@ public partial class TransitionHelper
                         // 3. Color the pixel based on the distance (Gradient Blending)
                         if (dynamicEdgeWidth > 0 && minDist <= dynamicEdgeWidth)
                         {
-                            // Calculate weight (0 to 255). 
-                            // minDist = 1 -> weight = 255 (100% Blending)
-                            // minDist = dynamicEdgeWidth -> weight is fractional based on dynamic width
-                            int weight255 = ((dynamicEdgeWidth - minDist + 1) * 255) / dynamicEdgeWidth;
-                            int invWeight255 = 255 - weight255;
+                            if (dynamicEdgeWidth > 0 && minDist <= dynamicEdgeWidth)
+                            {
+                                int weight255 = ((dynamicEdgeWidth - minDist + 1) * 255) / dynamicEdgeWidth;
+                                int invWeight255 = 255 - weight255;
 
-                            // -- Blue --
-                            int tintedB = (pTile[offset + 0] * eB) / 255;
-                            int maxEdgeB = (tintedB * eA + pBg[offset + 0] * invA) / 255;
-                            pRes[offset + 0] = (byte)((maxEdgeB * weight255 + pTile[offset + 0] * invWeight255) / 255);
+                                // Current channels of the tile pixel
+                                int tB = pTile[offset + 0];
+                                int tG = pTile[offset + 1];
+                                int tR = pTile[offset + 2];
+                                int tA = pTile[offset + 3];
 
-                            // -- Green --
-                            int tintedG = (pTile[offset + 1] * eG) / 255;
-                            int maxEdgeG = (tintedG * eA + pBg[offset + 1] * invA) / 255;
-                            pRes[offset + 1] = (byte)((maxEdgeG * weight255 + pTile[offset + 1] * invWeight255) / 255);
+                                int tintedB, tintedG, tintedR;
 
-                            // -- Red --
-                            int tintedR = (pTile[offset + 2] * eR) / 255;
-                            int maxEdgeR = (tintedR * eA + pBg[offset + 2] * invA) / 255;
-                            pRes[offset + 2] = (byte)((maxEdgeR * weight255 + pTile[offset + 2] * invWeight255) / 255);
+                                // 1. Application mode for the edge color
+                                switch (BlendMode)
+                                {
+                                    case EdgeBlendMode.Screen: // Multiply negatively
+                                        tintedB = 255 - ((255 - tB) * (255 - eB) / 255);
+                                        tintedG = 255 - ((255 - tG) * (255 - eG) / 255);
+                                        tintedR = 255 - ((255 - tR) * (255 - eR) / 255);
+                                        break;
 
-                            // -- Alpha --
-                            int maxEdgeAlpha = (pTile[offset + 3] * eA + pBg[offset + 3] * invA) / 255;
-                            pRes[offset + 3] = (byte)((maxEdgeAlpha * weight255 + pTile[offset + 3] * invWeight255) / 255);
+                                    case EdgeBlendMode.Additive: // Add
+                                        tintedB = Math.Min(255, tB + eB);
+                                        tintedG = Math.Min(255, tG + eG);
+                                        tintedR = Math.Min(255, tR + eR);
+                                        break;
+
+                                    case EdgeBlendMode.Overlay: // Copy into each other
+                                        tintedB = (tB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
+                                        tintedG = (tG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
+                                        tintedR = (tR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
+                                        break;
+
+                                    case EdgeBlendMode.Multiply: // Standard: Multiply
+                                    default:
+                                        tintedB = (tB * eB) / 255;
+                                        tintedG = (tG * eG) / 255;
+                                        tintedR = (tR * eR) / 255;
+                                        break;
+                                }
+
+                                // 2. Background influence
+                                // How strongly does the edge color influence the original background?
+                                int maxEdgeB = (tintedB * eA + pBg[offset + 0] * invA) / 255;
+                                int maxEdgeG = (tintedG * eA + pBg[offset + 1] * invA) / 255;
+                                int maxEdgeR = (tintedR * eA + pBg[offset + 2] * invA) / 255;
+                                int maxEdgeAlpha = (tA * eA + pBg[offset + 3] * invA) / 255;
+
+                                // 3. Final gradient blending based on distance to edge
+                                pRes[offset + 0] = (byte)((maxEdgeB * weight255 + tB * invWeight255) / 255);
+                                pRes[offset + 1] = (byte)((maxEdgeG * weight255 + tG * invWeight255) / 255);
+                                pRes[offset + 2] = (byte)((maxEdgeR * weight255 + tR * invWeight255) / 255);
+                                pRes[offset + 3] = (byte)((maxEdgeAlpha * weight255 + tA * invWeight255) / 255);
+                            }
                         }
                         else
                         {
