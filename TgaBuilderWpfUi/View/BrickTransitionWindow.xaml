@@ -181,7 +181,9 @@
                         </DockPanel>
                         <DockPanel
                             ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
-                            <Path VerticalAlignment="Center" Margin="5,15,0,0"
+                            <Path VerticalAlignment="Center" Margin="5,0,0,0"
+                                  d:Fill="White"
+                                  StrokeThickness="2"
                               Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
                               Data="{StaticResource filter}"/>
                             <ComboBox
@@ -200,6 +202,7 @@
                             MinWidth="130"
                             >
                             <Path VerticalAlignment="Center" Margin="5,0,0,0"
+                                d:Fill="White"
                                 Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="18" Height="18" Stretch="Uniform"
                                 Data="{StaticResource shapes}"/>
                             <ComboBox
@@ -332,6 +335,9 @@
                             SelectedColor="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                             ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
                             Margin="4,0,0,0"/>
+                        <ui:SymbolIcon VerticalAlignment="Center"
+                                  Width="14" Height="14"
+                                  Symbol="PaintBrush24" Margin="15,0,-10,0"/>
                         <ComboBox
                             Width="130"
                             Margin="8,0,0,0"

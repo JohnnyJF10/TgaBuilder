@@ -152,7 +152,10 @@
                         <DockPanel
                             ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
 						    	  <Path VerticalAlignment="Center" Margin="5,0,0,0"
-                                  Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
+                                  Fill="{DynamicResource IconFillBrush}" 
+                                  Width="18" 
+                                  Height="18" 
+                                  Stretch="Uniform"
                                   Data="{StaticResource filter}" />
                             <ComboBox
                                 VerticalAlignment="Center"
@@ -322,8 +325,18 @@
                             ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
                             Color="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"                            
                         />
+                        <Path
+                            Fill="{DynamicResource IconFillBrush}"
+                            Data="{StaticResource paint_brush}"
+                            Margin="15,0,-10,0"
+                            Width="18" 
+                            Height="18" 
+                            Stretch="Uniform"
+                            />
                         <ComboBox
                             Width="130"
+                            BorderThickness="0"
+                            Background="Transparent"
                             Margin="8,0,0,0"
                             VerticalAlignment="Center"
                             ap:MouseOverInfoAP.InfoText="Blend Mode: defines how edge color combines with tile color"

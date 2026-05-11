@@ -40,12 +40,14 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
         public static void SetEnableMouseUpdates(AvaloniaObject obj, bool value)
             => obj.SetValue(EnableMouseUpdatesProperty, value);
 
-        private static void OnPropertyChanged(AvaloniaObject obj, AvaloniaPropertyChangedEventArgs args)
+        private static void OnPropertyChanged(
+            AvaloniaObject obj,
+            AvaloniaPropertyChangedEventArgs args)
         {
-            if (obj is Control control)
-            {
-                UpdateHandlers(control);
-            }
+            if (obj is not Control control)
+                return;
+
+            UpdateHandlers(control);
         }
 
         private static void UpdateHandlers(Control control)
@@ -53,77 +55,58 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
             Cleanup(control);
 
             var infoText = GetInfoText(control);
-            var enableMouse = GetEnableMouseUpdates(control);
 
-            var isActive = !string.IsNullOrEmpty(infoText);
-
-            if (!isActive)
+            if (string.IsNullOrWhiteSpace(infoText))
                 return;
 
-            control.PointerEntered += Control_PointerEntered;
-            control.PointerExited += Control_PointerExited;
+            control.PointerEntered += Control_UpdateText;
+            control.PointerExited += Control_ClearText;
 
-            if (enableMouse)
+            if (GetEnableMouseUpdates(control))
             {
-                control.PointerMoved += Control_PointerMoved;
+                control.PointerMoved += Control_UpdateText;
+                control.PointerReleased += Control_UpdateText;
 
                 control.AddHandler(
                     InputElement.PointerWheelChangedEvent,
                     Control_PointerWheelChanged,
                     handledEventsToo: true);
-
-                control.PointerReleased += Control_PointerReleased;
             }
-
-            control.DetachedFromVisualTree -= Control_Detached;
-            control.DetachedFromVisualTree += Control_Detached;
         }
 
         private static void Cleanup(Control control)
         {
-            control.PointerEntered -= Control_PointerEntered;
-            control.PointerExited -= Control_PointerExited;
-            control.PointerMoved -= Control_PointerMoved;
-            control.PointerReleased -= Control_PointerReleased;
+            control.PointerEntered -= Control_UpdateText;
+            control.PointerExited -= Control_ClearText;
+
+            control.PointerMoved -= Control_UpdateText;
+            control.PointerReleased -= Control_UpdateText;
 
             control.RemoveHandler(
                 InputElement.PointerWheelChangedEvent,
                 Control_PointerWheelChanged);
-
-            control.DetachedFromVisualTree -= Control_Detached;
         }
 
-        private static void Control_Detached(object? sender, VisualTreeAttachmentEventArgs e)
+        private static void Control_UpdateText(
+            object? sender,
+            PointerEventArgs e)
         {
-            if (sender is Control control)
+            UpdateText(sender as Control);
+        }
+
+        private static void Control_ClearText(
+            object? sender,
+            PointerEventArgs e)
+        {
+            if (GetMainWindow() is MainWindow mainWindow)
             {
-                Cleanup(control);
+                mainWindow.MouseOverInfoTextBlock.Text = string.Empty;
             }
         }
 
-        private static void Control_PointerEntered(object? sender, PointerEventArgs e)
-        {
-            UpdateText(sender as Control);
-        }
-
-        private static void Control_PointerExited(object? sender, PointerEventArgs e)
-        {
-            var mainWindow = GetMainWindow();
-            if (mainWindow != null)
-                mainWindow.MouseOverInfoTextBlock.Text = string.Empty;
-        }
-
-        private static void Control_PointerMoved(object? sender, PointerEventArgs e)
-        {
-            UpdateText(sender as Control);
-        }
-
-        private static void Control_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
-        {
-            UpdateText(sender as Control);
-        }
-
-        private static void Control_PointerReleased(object? sender, PointerReleasedEventArgs e)
+        private static void Control_PointerWheelChanged(
+            object? sender,
+            PointerWheelEventArgs e)
         {
             UpdateText(sender as Control);
         }
@@ -133,22 +116,24 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
             if (control == null)
                 return;
 
-            var mainWindow = GetMainWindow();
-            if (mainWindow != null)
+            if (GetMainWindow() is not MainWindow mainWindow)
+                return;
+
+            var text = GetInfoText(control);
+
+            if (mainWindow.MouseOverInfoTextBlock.Text != text)
             {
-                mainWindow.MouseOverInfoTextBlock.Text = GetInfoText(control);
+                mainWindow.MouseOverInfoTextBlock.Text = text;
             }
         }
 
-        private static MainWindow GetMainWindow()
+        private static MainWindow? GetMainWindow()
         {
-            if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                throw new InvalidOperationException("This attached property can only be used in a classic desktop application.");
+            if (Application.Current?.ApplicationLifetime
+                is not IClassicDesktopStyleApplicationLifetime desktop)
+                return null;
 
-            if (desktop.MainWindow is not MainWindow mainWindow)
-                throw new InvalidOperationException("The main window of the application must be of type MainWindow.");
-
-            return mainWindow;
+            return desktop.MainWindow as MainWindow;
         }
     }
 }
