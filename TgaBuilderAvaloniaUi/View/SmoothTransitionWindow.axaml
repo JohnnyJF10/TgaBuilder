@@ -132,7 +132,7 @@
                 </DockPanel>
 
                 <DockPanel Margin="30,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
-                           ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1">
+                           ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
                     <Grid
                         VerticalAlignment="Top"
                         Margin="-5,11,8,0"
