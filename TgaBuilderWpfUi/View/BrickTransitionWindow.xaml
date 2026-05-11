@@ -330,7 +330,7 @@
                             Width="34"
                             Height="30"
                             SelectedColor="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                            ap:MouseOverInfoAP.InfoText="Open color picker to source color for transparency"
+                            ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
                             Margin="4,0,0,0"/>
                         <ComboBox
                             Width="130"

@@ -305,7 +305,7 @@
                             Padding="-6,0,15,0"
                             Margin="0,0,5,0"
                             IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
                             DockPanel.Dock="Left">
                             <ToggleButton.Content>
 								<Path VerticalAlignment="Center"
@@ -319,7 +319,7 @@
 
                         <ColorPicker 
                             x:Name="SourceColorPicker"
-                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
                             Color="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"                            
                         />
                         <ComboBox

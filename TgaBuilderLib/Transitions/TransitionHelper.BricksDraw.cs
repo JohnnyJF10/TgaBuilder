@@ -165,9 +165,9 @@ public partial class TransitionHelper
                                         break;
 
                                     case EdgeBlendMode.HardLight:
-                                        tintedB = (tB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
-                                        tintedG = (tG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
-                                        tintedR = (tR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
+                                        tintedB = (eB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
+                                        tintedG = (eG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
+                                        tintedR = (eR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
                                         break;
 
                                     case EdgeBlendMode.SoftLight:
