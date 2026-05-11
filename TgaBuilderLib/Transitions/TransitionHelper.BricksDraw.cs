@@ -23,6 +23,14 @@ public partial class TransitionHelper
 
     private byte[] BricksDraw(byte[] tilePixels, byte[] bgPixels, bool[] selection)
     {
+        static int SoftLightChannel(int tileChannel, int edgeChannel)
+        {
+            double tileNorm = tileChannel / 255.0;
+            double edgeNorm = edgeChannel / 255.0;
+            double blended = ((1.0 - (2.0 * edgeNorm)) * tileNorm * tileNorm) + (2.0 * edgeNorm * tileNorm);
+            return (int)Math.Clamp(blended * 255.0, 0, 255);
+        }
+
         if (bgPixels.Length != tilePixels.Length)
             throw new ArgumentException("Input image raw arrays must have same length.");
 
@@ -157,15 +165,15 @@ public partial class TransitionHelper
                                         break;
 
                                     case EdgeBlendMode.HardLight:
-                                        tintedB = (eB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
-                                        tintedG = (eG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
-                                        tintedR = (eR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
+                                        tintedB = (tB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
+                                        tintedG = (tG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
+                                        tintedR = (tR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
                                         break;
 
                                     case EdgeBlendMode.SoftLight:
-                                        tintedB = (int)Math.Clamp((((1.0 - 2.0 * eB / 255.0) * (tB / 255.0) * (tB / 255.0) + 2.0 * eB / 255.0 * (tB / 255.0)) * 255.0), 0, 255);
-                                        tintedG = (int)Math.Clamp((((1.0 - 2.0 * eG / 255.0) * (tG / 255.0) * (tG / 255.0) + 2.0 * eG / 255.0 * (tG / 255.0)) * 255.0), 0, 255);
-                                        tintedR = (int)Math.Clamp((((1.0 - 2.0 * eR / 255.0) * (tR / 255.0) * (tR / 255.0) + 2.0 * eR / 255.0 * (tR / 255.0)) * 255.0), 0, 255);
+                                        tintedB = SoftLightChannel(tB, eB);
+                                        tintedG = SoftLightChannel(tG, eG);
+                                        tintedR = SoftLightChannel(tR, eR);
                                         break;
 
                                     case EdgeBlendMode.ColorDodge:
