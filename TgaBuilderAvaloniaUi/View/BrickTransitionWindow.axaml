@@ -199,7 +199,7 @@
                             Icon="{StaticResource cut}"
                             IsChecked="{Binding SliceCornerTiles}" />
                         <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
-                                   ap:MouseOverInfoAP.InfoText="Widening: 0 = Adds or enlarges the plateau at the transition front until it touches the edges at value 1">
+                                   ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1">
                             <Grid
                                 VerticalAlignment="Top"
                                 Margin="-5,11,8,0"
@@ -240,7 +240,7 @@
                                 Value="{Binding WideningValue}" />
                         </DockPanel>
                         <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
-                                   ap:MouseOverInfoAP.InfoText="Shift: moves the transition fron point or plateau left (negative) or right (positive)">
+                                   ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
                             <Grid
                                 VerticalAlignment="Top"
                                 Margin="-5,11,8,0"
