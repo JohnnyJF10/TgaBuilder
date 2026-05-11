@@ -12,6 +12,7 @@ using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
 using TgaBuilderLib.Utils;
+using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.ViewModel;
 
@@ -32,10 +33,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private int _expectedRegionCount = -1;
     private bool _reversePivot;
     private bool _sliceCornerTiles;
+    private bool _protectEdges = true;
     private bool _isLabelMapExpanded;
     private FilterType _selectedFilter = FilterType.BoxBlur;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
     private Color _edgeColor = new Color(255, 255, 255, 128);
+    private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
     private int _edgeWidth = 1;
     private bool _isEyedropperMode;
     private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
@@ -52,6 +55,18 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     {
         get => _pivotValue;
         set => SetPropertyTriggerRecalculation(ref _pivotValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
+    public override float WideningValue
+    {
+        get => _wideningValue;
+        set => SetPropertyTriggerRecalculation(ref _wideningValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
+    public override float ShiftValue
+    {
+        get => _shiftValue;
+        set => SetPropertyTriggerRecalculation(ref _shiftValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
     }
 
 
@@ -85,6 +100,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value, BricksPipelineRequirements.RequiresSelectionBuilding, null);
     }
 
+    public bool ProtectEdges
+    {
+        get => _protectEdges;
+        set => SetPropertyTriggerRecalculation(ref _protectEdges, value, BricksPipelineRequirements.RequiresSelectionBuilding, null);
+    }
+
     public bool IsLabelMapExpanded
     {
         get => _isLabelMapExpanded;
@@ -114,6 +135,14 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         get => _edgeColor;
         set => SetPropertyTriggerRecalculation(ref _edgeColor, value, BricksPipelineRequirements.RequiresEdgeColoring);
     }
+
+    public EdgeBlendMode BlendMode
+    {
+        get => _blendMode;
+        set => SetPropertyTriggerRecalculation(ref _blendMode, value, BricksPipelineRequirements.RequiresEdgeColoring);
+    }
+
+    public Array EdgeBlendModes => Enum.GetValues(typeof(EdgeBlendMode));
 
     public int EdgeWidth
     {
@@ -160,10 +189,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         _transitionHelper.InvertGrayscale = InvertGrayscale;
         _transitionHelper.ReversePivot = ReversePivot;
         _transitionHelper.SliceCornerTiles = SliceCornerTiles;
+        _transitionHelper.ProtectEdges = ProtectEdges;
         _transitionHelper.MarkerRadius = MarkerRadius;
         _transitionHelper.SelectedFilter = SelectedFilter;
         _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
         _transitionHelper.EdgeColor = EdgeColor;
+        _transitionHelper.BlendMode = BlendMode;
         _transitionHelper.EdgeWidth = EdgeWidth;
     }
 

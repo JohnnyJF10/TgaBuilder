@@ -122,7 +122,7 @@
 
                 <!-- Tab: Analysis -->
                 <TabItem Height="25" Header="Analysis">
-                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal"  VerticalAlignment="Center">
                          <elements:IconToggleButton
                             Classes="outlined"
                             Width="36"
@@ -189,23 +189,123 @@
                     </StackPanel>
                 </TabItem>
 
-                <!-- Tab: Options -->
-                <TabItem Height="25" Header="Options">
-                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
+                <!-- Tab: Pivot -->
+                <TabItem Height="25" Header="Pivot">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <elements:IconToggleButton
+                            x:Name="SliceCornersToggleButton"
                             Classes="outlined"
                             VerticalAlignment="Center"
                             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
                             Icon="{StaticResource cut}"
+                            IsEnabled="{Binding #ProtectEdgesToggleButton.IsChecked}"
                             IsChecked="{Binding SliceCornerTiles}" />
+                        <elements:IconToggleButton
+                            x:Name="ProtectEdgesToggleButton"
+                            Classes="outlined"
+                            VerticalAlignment="Center"
+                            MinHeight="36"
+                            MinWidth="36"
+                            Margin="5,0,0,0"
+                            Icon="{StaticResource shield}"
+                            ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
+                            IsChecked="{Binding ProtectEdges}"/>
+                        <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
+                                   ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
+                            <Grid
+                                VerticalAlignment="Top"
+                                Margin="-5,11,8,0"
+                                DockPanel.Dock="Left">
+                                <Path VerticalAlignment="Bottom"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeThickness="1"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_low}"/>
+                                <Path VerticalAlignment="Bottom"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeDashArray="2,2"
+                                      StrokeThickness="1"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_high}"/>
+                            </Grid>
+                            <Grid
+                                VerticalAlignment="Top"
+                                Margin="-5,11,8,0"
+                                DockPanel.Dock="Right">
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeDashArray="2,2"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_high}"/>
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_widening}"/>
+                            </Grid>
+                            <Slider
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                ToolTip.Tip="{Binding WideningValue}"
+                                Maximum="1" Minimum="0" SmallChange="0.01"
+                                Value="{Binding WideningValue}" />
+                        </DockPanel>
+                        <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
+                                   ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
+                            <Grid
+                                VerticalAlignment="Top"
+                                Margin="-5,11,8,0"
+                                DockPanel.Dock="Left">
+                                <Path VerticalAlignment="Bottom"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeDashArray="2,2"
+                                      StrokeThickness="1"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_high}"/>
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_shift_left}"/>
+                            </Grid>
+                            <Grid
+                                VerticalAlignment="Top"
+                                Margin="-5,11,8,0"
+                                DockPanel.Dock="Right">
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeDashArray="2,2"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_high}"/>
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_shift_right}"/>
+                            </Grid>
+                            <Slider
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                ToolTip.Tip="{Binding ShiftValue}"
+                                Maximum="1" Minimum="-1" SmallChange="0.01"
+                                Value="{Binding ShiftValue}" />
+                        </DockPanel>
+                    </StackPanel>
+                </TabItem>
+
+                <!-- Tab: Edge -->
+                <TabItem Height="25" Header="Edge">
+                    <StackPanel Orientation="Horizontal"  VerticalAlignment="Center">
                         <elements:IconToggleButton
                             Classes="outlined"
                             Width="36"
                             Height="36"
                             Padding="-6,0,15,0"
-                            Margin="5,0,5,0"
+                            Margin="0,0,5,0"
                             IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            ap:MouseOverInfoAP.InfoText="Pick edge color from image"
                             DockPanel.Dock="Left">
                             <ToggleButton.Content>
 								<Path VerticalAlignment="Center"
@@ -219,9 +319,16 @@
 
                         <ColorPicker 
                             x:Name="SourceColorPicker"
-                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
                             Color="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"                            
                         />
+                        <ComboBox
+                            Width="130"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            ap:MouseOverInfoAP.InfoText="Blend Mode: defines how edge color combines with tile color"
+                            ItemsSource="{Binding EdgeBlendModes}"
+                            SelectedItem="{Binding BlendMode, Mode=TwoWay}" />
                         <DockPanel Width="130" VerticalAlignment="Center" Margin="8,0,0,0"
                                    ap:MouseOverInfoAP.InfoText="Edge Width: edge smoothing width for brick transitions (1 = narrow, 12 = wide)">
                             <Path VerticalAlignment="Center"

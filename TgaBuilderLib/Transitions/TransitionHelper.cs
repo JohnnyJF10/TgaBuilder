@@ -21,7 +21,8 @@ namespace TgaBuilderLib.Transitions
         public float Pivot { get; set; } = 0.5f;
 
         public float Hardness { get; set; } = 0.5f;
-        public float Offset { get; set; } = 0f;
+        public float Widening { get; set; } = 0f;
+        public float Shift { get; set; } = 0f;
 
 
         public BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
@@ -29,10 +30,12 @@ namespace TgaBuilderLib.Transitions
         public bool ReversePivot { get; set; } = false;
         public bool InvertGrayscale { get; set; } = false;
         public bool SliceCornerTiles { get; set; } = false;
+        public bool ProtectEdges { get; set; } = true;
         public int MarkerRadius { get; set; } = 3;
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Watershed;
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
         public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
+        public EdgeBlendMode BlendMode { get; set; } = EdgeBlendMode.Multiply;
         public int EdgeWidth { get; set; } = 1;
 
         public void CleanUp()
@@ -48,14 +51,16 @@ namespace TgaBuilderLib.Transitions
             Pivot = 0.5f;
 
             Hardness = 0.5f;
-            Offset = 0f;
+            Widening = 0f;
 
             MarkerRadius = 3; 
             ReversePivot = false;
             SliceCornerTiles = false;
+            ProtectEdges = true;
             SegmentationMethod = SegmentationMethod.Watershed;
             SelectedFilter = FilterType.BoxBlur;
             EdgeColor = new Color(0, 0, 0, 128);
+            BlendMode = EdgeBlendMode.Multiply;
             EdgeWidth = 1;
         }
     }
