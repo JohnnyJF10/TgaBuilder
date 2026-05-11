@@ -325,7 +325,7 @@
                             Margin="0,0,5,0"
                             DockPanel.Dock="Left"
                             IsChecked="{Binding IsEyedropperMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"/>
+                            ap:MouseOverInfoAP.InfoText="Pick edge color from image"/>
                         <cp:PortableColorPicker
                             Width="34"
                             Height="30"

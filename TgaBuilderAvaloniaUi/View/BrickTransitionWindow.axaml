@@ -305,7 +305,7 @@
                             Padding="-6,0,15,0"
                             Margin="0,0,5,0"
                             IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                            ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
+                            ap:MouseOverInfoAP.InfoText="Pick edge color from image"
                             DockPanel.Dock="Left">
                             <ToggleButton.Content>
 								<Path VerticalAlignment="Center"
