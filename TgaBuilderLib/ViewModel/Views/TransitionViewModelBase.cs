@@ -60,6 +60,8 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
     protected TransitionMode _selectedtransitionMode = TransitionMode.Top;
     protected float _pivotValue = 0.5f;
+    protected float _wideningValue = 0f;
+    protected float _shiftValue = 0f;
 
     private Color _colorSource = new(0, 0, 0, 0);
     private Color _colorTarget = new(0, 0, 0, 0);
@@ -119,6 +121,18 @@ public abstract class TransitionViewModelBase : ViewModelBase
     {
         get => _pivotValue;
         set => SetPropertyTriggerRecalculation(ref _pivotValue, value);
+    }
+
+    public virtual float WideningValue
+    {
+        get => _wideningValue;
+        set => SetPropertyTriggerRecalculation(ref _wideningValue, value);
+    }
+
+    public virtual float ShiftValue
+    {
+        get => _shiftValue;
+        set => SetPropertyTriggerRecalculation(ref _shiftValue, value);
     }
 
     public Color ColorSource
@@ -290,6 +304,8 @@ public abstract class TransitionViewModelBase : ViewModelBase
 
         _transitionHelper.Mode = SelectedTransitionMode;
         _transitionHelper.Pivot = PivotValue;
+        _transitionHelper.Widening = WideningValue;
+        _transitionHelper.Shift = ShiftValue;
 
         ConfigureTransitionHelperCore();
     }

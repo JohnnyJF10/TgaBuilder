@@ -54,6 +54,18 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetPropertyTriggerRecalculation(ref _pivotValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
     }
 
+    public override float WideningValue
+    {
+        get => _wideningValue;
+        set => SetPropertyTriggerRecalculation(ref _wideningValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
+    public override float ShiftValue
+    {
+        get => _shiftValue;
+        set => SetPropertyTriggerRecalculation(ref _shiftValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
 
     public IWriteableBitmap? LabelMapImage
     {

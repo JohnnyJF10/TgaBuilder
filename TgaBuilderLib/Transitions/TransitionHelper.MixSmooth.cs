@@ -65,28 +65,19 @@ public partial class TransitionHelper
     // Computes the blend weight for one normalized pixel position.
     private float ComputeWeight(TransitionMode mode, float pivot, float lower, float upper, bool isHardCut, float nx, float ny)
     {
-
-        (float distToT1, float distToT2) = ComputeTopologicy(mode, nx, ny);
-
         // 1. Compute the base V field (native 0.0 to 1.0 field)
-        float v;
-        if (distToT2 <= 0.00001f)
-            v = 1.0f; // Strict boundary condition: we are on a texture-2 edge
-        else if (distToT1 <= 0.00001f)
-            v = 0.0f; // Strict boundary condition: we are on a texture-1 edge
-        else
-            v = distToT1 / (distToT1 + distToT2); // Smooth gradient in between
+        float focus = ComputeFocus(mode, nx, ny);
 
         // 2. Apply pivot and hardness
         float weight;
         if (isHardCut)
         {
-            weight = v >= pivot ? 1.0f : 0.0f;
+            weight = focus >= pivot ? 1.0f : 0.0f;
         }
         else
         {
             // Clamping ensures the value stays within 0 and 1
-            weight = Math.Clamp((v - lower) / (upper - lower), 0.0f, 1.0f);
+            weight = Math.Clamp((focus - lower) / (upper - lower), 0.0f, 1.0f);
         }
 
         return weight;
