@@ -189,8 +189,8 @@
                     </StackPanel>
                 </TabItem>
 
-                <!-- Tab: Options -->
-                <TabItem Height="25" Header="Options">
+                <!-- Tab: Pivot -->
+                <TabItem Height="25" Header="Pivot">
                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
                         <elements:IconToggleButton
                             Classes="outlined"
@@ -198,6 +198,94 @@
                             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
                             Icon="{StaticResource cut}"
                             IsChecked="{Binding SliceCornerTiles}" />
+                        <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
+                                   ap:MouseOverInfoAP.InfoText="Widening: 0 = Adds or enlarges the plateau at the transition front until it touches the edges at value 1">
+                            <Grid
+                                VerticalAlignment="Top"
+                                Margin="-5,11,8,0"
+                                DockPanel.Dock="Left">
+                                <Path VerticalAlignment="Bottom"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeThickness="1"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_low}"/>
+                                <Path VerticalAlignment="Bottom"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeDashArray="2,2"
+                                      StrokeThickness="1"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_high}"/>
+                            </Grid>
+                            <Grid
+                                VerticalAlignment="Top"
+                                Margin="-5,11,8,0"
+                                DockPanel.Dock="Right">
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeDashArray="2,2"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_high}"/>
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_widening}"/>
+                            </Grid>
+                            <Slider
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                ToolTip.Tip="{Binding WideningValue}"
+                                Maximum="1" Minimum="0" SmallChange="0.01"
+                                Value="{Binding WideningValue}" />
+                        </DockPanel>
+                        <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
+                                   ap:MouseOverInfoAP.InfoText="Shift: moves the transition fron point or plateau left (negative) or right (positive)">
+                            <Grid
+                                VerticalAlignment="Top"
+                                Margin="-5,11,8,0"
+                                DockPanel.Dock="Left">
+                                <Path VerticalAlignment="Bottom"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeDashArray="2,2"
+                                      StrokeThickness="1"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_high}"/>
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_shift_left}"/>
+                            </Grid>
+                            <Grid
+                                VerticalAlignment="Top"
+                                Margin="-5,11,8,0"
+                                DockPanel.Dock="Right">
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      StrokeDashArray="2,2"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_high}"/>
+                                <Path VerticalAlignment="Bottom"
+                                      StrokeThickness="1"
+                                      Stroke="{DynamicResource IconFillBrush}"
+                                      Fill="Transparent" Width="10" Height="10"
+                                      Data="{StaticResource pivot_shift_right}"/>
+                            </Grid>
+                            <Slider
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                ToolTip.Tip="{Binding ShiftValue}"
+                                Maximum="1" Minimum="-1" SmallChange="0.01"
+                                Value="{Binding ShiftValue}" />
+                        </DockPanel>
+                    </StackPanel>
+                </TabItem>
+
+                <!-- Tab: Edge -->
+                <TabItem Height="25" Header="Edge">
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
                         <elements:IconToggleButton
                             Classes="outlined"
                             Width="36"
