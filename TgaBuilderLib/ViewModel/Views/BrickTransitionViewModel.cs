@@ -12,6 +12,7 @@ using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
 using TgaBuilderLib.Utils;
+using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.ViewModel;
 
@@ -27,18 +28,47 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     }
 
     private IWriteableBitmap? _labelMapImage;
+    bool _invertGrayscale;
     private int _markerRadius = 3;
     private int _expectedRegionCount = -1;
     private bool _reversePivot;
     private bool _sliceCornerTiles;
+    private bool _protectEdges = true;
     private bool _isLabelMapExpanded;
     private FilterType _selectedFilter = FilterType.BoxBlur;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
     private Color _edgeColor = new Color(255, 255, 255, 128);
+    private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
+    private int _edgeWidth = 1;
     private bool _isEyedropperMode;
+    private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
-    private RelayCommand? _pickEdgeColorCommand;
     private RelayCommand<(int X, int Y, int imageNum)>? _mouseOverCommand;
+
+    public override TransitionMode SelectedTransitionMode
+    {
+        get => _selectedtransitionMode;
+        set => SetPropertyTriggerRecalculation(ref _selectedtransitionMode, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
+    public override float PivotValue
+    {
+        get => _pivotValue;
+        set => SetPropertyTriggerRecalculation(ref _pivotValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
+    public override float WideningValue
+    {
+        get => _wideningValue;
+        set => SetPropertyTriggerRecalculation(ref _wideningValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
+    public override float ShiftValue
+    {
+        get => _shiftValue;
+        set => SetPropertyTriggerRecalculation(ref _shiftValue, value, BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
 
     public IWriteableBitmap? LabelMapImage
     {
@@ -46,28 +76,34 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SetCallerProperty(ref _labelMapImage, value);
     }
 
+    public bool InvertGrayscale
+    {
+        get => _invertGrayscale;
+        set => SetPropertyTriggerRecalculation(ref _invertGrayscale, value, BricksPipelineRequirements.RequiresAnalysis, null);
+    }
+
     public int MarkerRadius
     {
         get => _markerRadius;
-        set => SetPropertyTriggerRecalculation(ref _markerRadius, value);
-    }
-
-    public int ExpectedRegionCount
-    {
-        get => _expectedRegionCount;
-        set => SetPropertyTriggerRecalculation(ref _expectedRegionCount, value);
+        set => SetPropertyTriggerRecalculation(ref _markerRadius, value, BricksPipelineRequirements.RequiresAnalysis);
     }
 
     public bool ReversePivot
     {
         get => _reversePivot;
-        set => SetPropertyTriggerRecalculation(ref _reversePivot, value);
+        set => SetPropertyTriggerRecalculation(ref _reversePivot, value, BricksPipelineRequirements.RequiresSelectionBuilding, null);
     }
 
     public bool SliceCornerTiles
     {
         get => _sliceCornerTiles;
-        set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value);
+        set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value, BricksPipelineRequirements.RequiresSelectionBuilding, null);
+    }
+
+    public bool ProtectEdges
+    {
+        get => _protectEdges;
+        set => SetPropertyTriggerRecalculation(ref _protectEdges, value, BricksPipelineRequirements.RequiresSelectionBuilding, null);
     }
 
     public bool IsLabelMapExpanded
@@ -79,14 +115,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public FilterType SelectedFilter
     {
         get => _selectedFilter;
-        set
-        {
-            if (SetCallerPropertyReturn(ref _selectedFilter, value))
-            {
-                OnPropertyChanged(nameof(SelectedFilterIndex));
-                TriggerRecalculation(requiresAnalysis: true);
-            }
-        }
+        set => SetPropertyTriggerRecalculation(ref _selectedFilter, value, BricksPipelineRequirements.RequiresAnalysis, null);
     }
 
     public int SelectedFilterIndex
@@ -98,20 +127,27 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public SegmentationMethod SelectedSegmentationMethod
     {
         get => _selectedSegmentationMethod;
-        set
-        {
-            if (SetCallerPropertyReturn(ref _selectedSegmentationMethod, value))
-            {
-                OnPropertyChanged(nameof(SelectedSegmentationMethodIndex));
-                TriggerRecalculation(requiresAnalysis: true);
-            }
-        }
+        set => SetPropertyTriggerRecalculation(ref _selectedSegmentationMethod, value, BricksPipelineRequirements.RequiresAnalysis, null);
     }
 
     public Color EdgeColor 
     {         
         get => _edgeColor;
-        set => SetPropertyTriggerRecalculation(ref _edgeColor, value);
+        set => SetPropertyTriggerRecalculation(ref _edgeColor, value, BricksPipelineRequirements.RequiresEdgeColoring);
+    }
+
+    public EdgeBlendMode BlendMode
+    {
+        get => _blendMode;
+        set => SetPropertyTriggerRecalculation(ref _blendMode, value, BricksPipelineRequirements.RequiresEdgeColoring);
+    }
+
+    public Array EdgeBlendModes => Enum.GetValues(typeof(EdgeBlendMode));
+
+    public int EdgeWidth
+    {
+        get => _edgeWidth;
+        set => SetPropertyTriggerRecalculation(ref _edgeWidth, value, BricksPipelineRequirements.RequiresEdgeColoring);
     }
 
     public bool IsEyedropperMode
@@ -126,8 +162,6 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         set => SelectedSegmentationMethod = (SegmentationMethod)value;
     }
 
-    public ICommand PickEdgeColorCommand => _pickEdgeColorCommand
-        ??= new RelayCommand(PickEdgeColor);
     public ICommand MouseOverCommand => _mouseOverCommand
         ??= new RelayCommand<(int X, int Y, int imageNum)>(MouseOverImages);
 
@@ -139,51 +173,29 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         }
     }
 
-    public event EventHandler? EyedroppingRequested;
-
-
-
-    private void PickEdgeColor() => StartColorPicking();
-
-    private void StartColorPicking()
-    {
-        IsEyedropperMode = true;
-
-        EyedroppingRequested?.Invoke(this, EventArgs.Empty);
-    }
-
     private void DoColorPicking(int X, int Y, int imageNum)
     {
-        EdgeColor = BitmapOperations.GetPixelBrush(imageNum == 1 ? Image1 : Image2, X, Y);
+        EdgeColor = _bitmapOperations.GetPixelBrush(imageNum == 1 ? Image1 : Image2, X, Y);
     }
 
-    private void EndColorPicking()
+    protected override byte[] CreateMixedPixels()
     {
-        IsEyedropperMode = false;
-
-        //_panel.EyedropperEnd();
-    }
-
-    protected override bool RequiresFullAnalysisOnPivotChange => false;
-
-    protected override byte[] CreateMixedPixels(bool requiresAnalysis)
-    {
-        if (requiresAnalysis || TransitionHelper.LastAnalysisMap.Length == 0)
-            TransitionHelper.AnalyzeTiles(Pixels1);
-
-        Debug.WriteLine($"Current Pivot: {TransitionHelper.Pivot}, Reverse: {TransitionHelper.ReversePivot}");
-
-        return TransitionHelper.MixSmartTilesPixels(Pixels1, Pixels2);
+        return _transitionHelper.MixBricks(Pixels1, Pixels2);
     }
 
     protected override void ConfigureTransitionHelperCore()
     {
-        TransitionHelper.ReversePivot = ReversePivot;
-        TransitionHelper.SliceCornerTiles = SliceCornerTiles;
-        TransitionHelper.MarkerRadius = MarkerRadius;
-        TransitionHelper.SelectedFilter = SelectedFilter;
-        TransitionHelper.SegmentationMethod = SelectedSegmentationMethod;
-        TransitionHelper.EdgeColor = EdgeColor;
+        _transitionHelper.CurrentBricksPipelineRequirements = _currentRequirements;
+        _transitionHelper.InvertGrayscale = InvertGrayscale;
+        _transitionHelper.ReversePivot = ReversePivot;
+        _transitionHelper.SliceCornerTiles = SliceCornerTiles;
+        _transitionHelper.ProtectEdges = ProtectEdges;
+        _transitionHelper.MarkerRadius = MarkerRadius;
+        _transitionHelper.SelectedFilter = SelectedFilter;
+        _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
+        _transitionHelper.EdgeColor = EdgeColor;
+        _transitionHelper.BlendMode = BlendMode;
+        _transitionHelper.EdgeWidth = EdgeWidth;
     }
 
     protected override void OnResultUpdated()
@@ -191,16 +203,29 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         UpdateLabelMapImage();
     }
 
+    protected override void SwapImages()
+    {
+        _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+        base.SwapImages();
+    }
+
+    protected override void Mix()
+    {
+        _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+        base.Mix();
+    }
+
     private void UpdateLabelMapImage()
     {
-        byte[] mapData = TransitionHelper.LastAnalysisMap;
-        int mapW = TransitionHelper.LastAnalysisWidth;
-        int mapH = TransitionHelper.LastAnalysisHeight;
+        byte[] mapData = _transitionHelper.GetLabelMap();
+
+        int mapW = ResultImage?.PixelWidth ?? 0;
+        int mapH = ResultImage?.PixelHeight ?? 0;
 
         if (mapData.Length == 0 || mapW == 0 || mapH == 0)
             return;
 
-        var labelBmp = MediaFactory.CreateEmptyBitmap(mapW, mapH, true);
+        var labelBmp = _mediaFactory.CreateEmptyBitmap(mapW, mapH, true);
         labelBmp.WritePixels(
             new PixelRect(0, 0, mapW, mapH),
             mapData,
@@ -208,5 +233,22 @@ public class BrickTransitionViewModel : TransitionViewModelBase
 
         LabelMapImage = labelBmp;
     }
-}
 
+    protected void SetPropertyTriggerRecalculation<T>(
+        ref T field,
+        T value,
+        BricksPipelineRequirements requirements,
+        [CallerMemberName] string? propertyName = null)
+    {
+        if (!EqualityComparer<T>.Default.Equals(field, value))
+        {
+            field = value;
+            _currentRequirements = requirements;
+
+            if (!string.IsNullOrEmpty(propertyName))
+                OnPropertyChanged(propertyName);
+
+            _ = TriggerRecalculation();
+        }
+    }
+}

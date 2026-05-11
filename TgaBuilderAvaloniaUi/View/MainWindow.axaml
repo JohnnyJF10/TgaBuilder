@@ -394,13 +394,25 @@
                                 IsVisible="{Binding IsRgb24}"
                                 Text="32" />
                         </Grid>
-                        <elements:IconButton
+
+                        <elements:IconToggleButton
                             Classes="outlined"
-                            Icon="{StaticResource color_line}"
+                            Width="36"
+                            Height="36"
+                            Padding="-6,0,15,0"
                             Margin="5,0,5,0"
+                            IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
-                            Command="{Binding EyeDropperCommand}"
-                            DockPanel.Dock="Left" />
+                            DockPanel.Dock="Left">
+                            <ToggleButton.Content>
+								<Path VerticalAlignment="Center"
+                                  Fill="Transparent" Width="15" Height="15" Stretch="Uniform"
+                                  StrokeThickness="1.5"
+                                  Stroke="{DynamicResource IconFillBrush}"
+                                  Data="{StaticResource eye_dropper}" />
+                            </ToggleButton.Content>       
+                        
+                        </elements:IconToggleButton>
 
                         <ColorPicker 
                             x:Name="SourceColorPicker"
@@ -1081,13 +1093,24 @@
                                 IsVisible="{Binding IsRgb24}"
                                 Text="32" />
                         </Grid>
-                        <elements:IconButton
+                        <elements:IconToggleButton
                             Classes="outlined"
-                            Icon="{StaticResource color_line}"
+                            Width="36"
+                            Height="36"
+                            Padding="-6,0,15,0"
                             Margin="5,0,5,0"
+                            IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
-                            Command="{Binding EyeDropperCommand}"
-                            DockPanel.Dock="Left" />
+                            DockPanel.Dock="Left">
+                            <ToggleButton.Content>
+								<Path VerticalAlignment="Center"
+                                  Fill="Transparent" Width="15" Height="15" Stretch="Uniform"
+                                  StrokeThickness="1.5"
+                                  Stroke="{DynamicResource IconFillBrush}"
+                                  Data="{StaticResource eye_dropper}" />
+                            </ToggleButton.Content>       
+                        
+                        </elements:IconToggleButton>
 
                         <ColorPicker 
                             x:Name="TargetColorPicker"

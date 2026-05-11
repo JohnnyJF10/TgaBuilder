@@ -1,32 +1,41 @@
-﻿using TgaBuilderLib.Abstraction;
+﻿using System.Collections.Generic;
+using TgaBuilderLib.Abstraction;
+using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.Transitions
 {
     public interface ITransitionHelper
     {
-        float Hardness { get; set; }
+        // Source Image Dimensions
+        int Width { get; set; }
         int Height { get; set; }
-        int[] Labels { get; }
-        (float X, float Y)[] Centroids { get; set; }
-        int LastAnalysisHeight { get; }
-        byte[] LastAnalysisMap { get; }
-        int LastAnalysisWidth { get; }
-        int MarkerRadius { get; set; }
+
+        // Shared Transition Parameters
         TransitionMode Mode { get; set; }
-        float Offset { get; set; }
         float Pivot { get; set; }
+
+        // Smooth Transition Parameters
+        float Hardness { get; set; }
+        float Widening { get; set; }
+
+        // Bricks / Segmented Transition Parameters
+        BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
+        bool InvertGrayscale { get; set; }
+        int MarkerRadius { get; set; }
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
         SegmentationMethod SegmentationMethod { get; set; }
         Color EdgeColor { get; set; }
+        int EdgeWidth { get; set; }
+        EdgeBlendMode BlendMode { get; set; }
         bool SliceCornerTiles { get; set; }
-        int Stride { get; set; }
-        int Width { get; set; }
+        bool ProtectEdges { get; set; }
+        float Shift { get; set; }
 
-        void AnalyzeTiles(byte[] pixels);
-        byte[] MixPixels(byte[] pixels1, byte[] pixels2);
-        byte[] MixSmartTilesPixels(byte[] tilePixels, byte[] bgPixels);
-
+        // Methods
+        byte[] MixSmooth(byte[] pixels1, byte[] pixels2);
+        byte[] MixBricks(byte[] tilePixels, byte[] bgPixels);
+        byte[] GetLabelMap();
         void CleanUp();
     }
 }

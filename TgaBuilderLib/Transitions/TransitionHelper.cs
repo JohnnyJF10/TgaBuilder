@@ -8,49 +8,60 @@ namespace TgaBuilderLib.Transitions
 {
     public partial class TransitionHelper : ITransitionHelper
     {
-        private const int TRANSITIONS_BPP = 4; // Assuming RGBA format
-        public byte[] LastAnalysisMap { get; private set; } = Array.Empty<byte>();
-        public int LastAnalysisWidth { get; private set; }
-        public int LastAnalysisHeight { get; private set; }
+        private const int TRANSITIONS_BPP = 4; // Allways BGRA32
 
-        public int[] Labels { get; private set; } = Array.Empty<int>();
-
-        public (float X, float Y)[] Centroids { get; set; } = Array.Empty<(float X, float Y)>();
+        private int[] _labels = Array.Empty<int>();
+        private List<TileSegment> _tileSegmentList = new();
+        private bool[] _selection = Array.Empty<bool>();
 
         public int Width { get; set; }
         public int Height { get; set; }
-        public int Stride { get; set; }
+
         public TransitionMode Mode { get; set; }
+        public float Pivot { get; set; } = 0.5f;
 
         public float Hardness { get; set; } = 0.5f;
-        public float Pivot { get; set; } = 0.5f;
-        public float Offset { get; set; } = 0f;
+        public float Widening { get; set; } = 0f;
+        public float Shift { get; set; } = 0f;
 
 
+        public BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
+            = BricksPipelineRequirements.RequiresAnalysis;
         public bool ReversePivot { get; set; } = false;
+        public bool InvertGrayscale { get; set; } = false;
         public bool SliceCornerTiles { get; set; } = false;
+        public bool ProtectEdges { get; set; } = true;
         public int MarkerRadius { get; set; } = 3;
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Watershed;
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
-
         public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
+        public EdgeBlendMode BlendMode { get; set; } = EdgeBlendMode.Multiply;
+        public int EdgeWidth { get; set; } = 1;
 
         public void CleanUp()
         {
-            LastAnalysisMap = Array.Empty<byte>();
-            LastAnalysisWidth = 0;
-            LastAnalysisHeight = 0;
-            Labels = Array.Empty<int>();
-            Centroids = Array.Empty<(float X,float Y)>();
-            Hardness = 0.5f;
+            _labels = Array.Empty<int>();
+            _tileSegmentList = new List<TileSegment>();
+            _selection = Array.Empty<bool>();
+
+            Width = 0;
+            Height = 0;
+
+            Mode = TransitionMode.Top;
             Pivot = 0.5f;
-            Offset = 0f;
+
+            Hardness = 0.5f;
+            Widening = 0f;
+
             MarkerRadius = 3; 
             ReversePivot = false;
             SliceCornerTiles = false;
+            ProtectEdges = true;
             SegmentationMethod = SegmentationMethod.Watershed;
             SelectedFilter = FilterType.BoxBlur;
             EdgeColor = new Color(0, 0, 0, 128);
+            BlendMode = EdgeBlendMode.Multiply;
+            EdgeWidth = 1;
         }
     }
 }

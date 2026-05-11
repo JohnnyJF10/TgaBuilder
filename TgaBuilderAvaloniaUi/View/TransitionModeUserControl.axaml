@@ -61,9 +61,9 @@
         <!-- Top edge -->
         <RadioButton
             Classes="toggle-look"
-            GroupName="TransitionMode"
+            GroupName="SelectedTransitionMode"
             ap:MouseOverInfoAP.InfoText="Transition from top edge"
-            IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Top}}"
+            IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Top}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
@@ -78,9 +78,9 @@
         <!-- Right edge -->
         <RadioButton
             Classes="toggle-look"
-            GroupName="TransitionMode"
+            GroupName="SelectedTransitionMode"
             ap:MouseOverInfoAP.InfoText="Transition from right edge"
-            IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Right}}"
+            IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Right}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
@@ -95,9 +95,9 @@
         <!-- Bottom edge -->
         <RadioButton
             Classes="toggle-look"
-            GroupName="TransitionMode"
+            GroupName="SelectedTransitionMode"
             ap:MouseOverInfoAP.InfoText="Transition from bottom edge"
-            IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Bottom}}"
+            IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Bottom}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
@@ -112,9 +112,9 @@
         <!-- Left edge -->
         <RadioButton
             Classes="toggle-look"
-            GroupName="TransitionMode"
+            GroupName="SelectedTransitionMode"
             ap:MouseOverInfoAP.InfoText="Transition from left edge"
-            IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Left}}"
+            IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Left}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
@@ -129,9 +129,9 @@
         <!-- Diagonal top-left -->
         <RadioButton
             Classes="toggle-look"
-            GroupName="TransitionMode"
+            GroupName="SelectedTransitionMode"
             ap:MouseOverInfoAP.InfoText="Transition from diagonal (top-left)"
-            IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopLeft}}"
+            IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopLeft}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
@@ -146,9 +146,9 @@
         <!-- Diagonal top-right -->
         <RadioButton
             Classes="toggle-look"
-            GroupName="TransitionMode"
+            GroupName="SelectedTransitionMode"
             ap:MouseOverInfoAP.InfoText="Transition from diagonal (top-right)"
-            IsChecked="{Binding TransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopRight}}"
+            IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopRight}}"
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
