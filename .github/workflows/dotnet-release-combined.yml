@@ -117,7 +117,7 @@ jobs:
             -c Release `
             -f net8.0 `
             --self-contained false `
-            /p:PublishReadyToRun=true `
+            /p:PublishReadyToRun=false `
             /p:PublishSingleFile=false `
             -o publish/avalonia-net8
 
