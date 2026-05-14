@@ -10,8 +10,6 @@ namespace TgaBuilderLib.BitmapOperations
             if (targetHeight == -1)
                 targetHeight = targetWidth;
 
-            //PixelFormat format = source.Format;
-
             int sourceWidth = source.PixelWidth;
             int sourceHeight = source.PixelHeight;
 

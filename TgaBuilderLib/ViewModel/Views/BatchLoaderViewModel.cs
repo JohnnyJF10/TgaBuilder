@@ -178,7 +178,6 @@ namespace TgaBuilderLib.ViewModel
             _viewportWidth = width;
             _viewportHeight = height;
 
-            Debug.WriteLine($"Viewport size set to: {width}x{height}");
 
             OnPropertyChanged(nameof(ViewportWidth));
             OnPropertyChanged(nameof(ViewportHeight));

@@ -27,7 +27,6 @@ namespace TgaBuilderLib.ViewModel
             field = value;
             OnPropertyChanged(propertyName);
 
-            Debug.WriteLine($"{propertyName}: {value}");
         }
     }
 }

@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 namespace TgaBuilderWpfUi.View
 {
     /// <summary>
-    /// Interaktionslogik für TransitionModeUserControl.xaml
+    /// Interaction logic for TransitionModeUserControl.xaml
     /// </summary>
     public partial class TransitionModeUserControl : UserControl
     {

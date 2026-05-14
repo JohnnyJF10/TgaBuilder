@@ -46,7 +46,6 @@ namespace TgaBuilderLib.Psd
 
             public AdjustmentLayerInfo(BinaryReverseReader reader, Layer layer)
             {
-                Debug.WriteLine("AdjustmentLayerInfo started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 Layer = layer;
 
@@ -75,7 +74,6 @@ namespace TgaBuilderLib.Psd
 
             public void Save(BinaryReverseWriter writer)
             {
-                Debug.WriteLine("AdjustmentLayerInfo Save started at " + writer.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 const string signature = "8BIM";
 

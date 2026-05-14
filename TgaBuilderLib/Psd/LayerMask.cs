@@ -49,7 +49,6 @@ namespace TgaBuilderLib.Psd
 
             internal Mask(BinaryReverseReader reader, Layer layer)
             {
-                Debug.WriteLine("Mask started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 Layer = layer;
 
@@ -96,7 +95,6 @@ namespace TgaBuilderLib.Psd
 
             public void Save(BinaryReverseWriter writer)
             {
-                Debug.WriteLine("Mask Save started at " + writer.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 if (Rect.IsEmpty)
                 {
@@ -162,7 +160,6 @@ namespace TgaBuilderLib.Psd
 
             internal void LoadPixelData(BinaryReverseReader reader)
             {
-                Debug.WriteLine("Mask.LoadPixelData started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 if (Layer.SortedChannels.ContainsKey(-2) == false)
                     return;

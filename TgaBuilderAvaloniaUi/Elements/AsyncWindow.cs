@@ -53,13 +53,11 @@ namespace TgaBuilderAvaloniaUi.Elements
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             {
-                Debug.WriteLine("The application is not running in desktop mode.");
                 return null;
             }
 
             if (desktop.MainWindow is not Window mainWindow)
             {
-                Debug.WriteLine("The main window is not available.");
                 return null;
             }
 

@@ -56,7 +56,6 @@ namespace TgaBuilderLib.Psd
             SortedChannels = new SortedList<short, Channel>();
             AdjustmentInfo = new List<AdjustmentLayerInfo>();
             Channels = new List<Channel>();
-            Debug.WriteLine("Layer started at " + reverseReader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
             PsdFile = psdFile;
 
@@ -98,7 +97,6 @@ namespace TgaBuilderLib.Psd
 
             reverseReader.ReadByte(); //padding
 
-            Debug.WriteLine("Layer extraDataSize started at " + reverseReader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
             // this is the total size of the MaskData, the BlendingRangesData, the 
             // Name and the AdjustmenLayerInfo
@@ -231,7 +229,6 @@ namespace TgaBuilderLib.Psd
 
         public void Save(BinaryReverseWriter reverseWriter)
         {
-            Debug.WriteLine("Layer Save started at " + reverseWriter.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
             reverseWriter.Write(Rect.Top);
             reverseWriter.Write(Rect.Left);

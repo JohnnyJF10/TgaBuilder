@@ -73,7 +73,6 @@ public static class CursorProvider
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to load custom cursor: {ex.Message}");
             return new Cursor(StandardCursorType.Hand);
         }
     }

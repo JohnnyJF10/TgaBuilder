@@ -231,36 +231,6 @@
                 </DockPanel>
             </StackPanel>
 
-            <!-- Col 1, Row 0-1: Tab View -->
-            <!--<TabControl
-                Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
-                Margin="0,5,5,5"
-                BorderBrush="Transparent"
-                TabStripPlacement="Top">
-                <TabControl.Resources>
-                    <Style TargetType="TabItem" BasedOn="{StaticResource NavTabItemStyle}">
-                        <Setter Property="Height" Value="20" />
-                    </Style>
-                </TabControl.Resources>
-                <TabItem Header="Blend" Height="25" Width="Auto">
-                    <DockPanel Margin="5,15,5,0" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left"
-                               ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)">
-                        <Path DockPanel.Dock="Left" VerticalAlignment="Center"
-                              Stroke="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                              Data="{StaticResource slide_layout_clean}" />
-                        <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                              Stroke="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                              Data="{StaticResource slide_layout_stroke}" />
-                        <Slider
-                            Margin="5,0"
-                            VerticalAlignment="Center"
-                            AutoToolTipPlacement="BottomRight"
-                            AutoToolTipPrecision="2"
-                            Maximum="1" Minimum="0" SmallChange="0.01"
-                            Value="{Binding OffsetValue}" />
-                    </DockPanel>
-                </TabItem>
-            </TabControl>-->
         </Grid>
 
         <ui:Button

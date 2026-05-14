@@ -777,7 +777,6 @@ namespace WPFZoomPanel
 
         private static void ZoomAndPanInitialPositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            //ZoomAndPanControl zoomAndPanControl = (ZoomAndPanControl)d;
         }
 
         /// <summary>

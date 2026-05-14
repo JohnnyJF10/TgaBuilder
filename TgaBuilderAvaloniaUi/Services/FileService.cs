@@ -29,13 +29,11 @@ namespace TgaBuilderAvaloniaUi.Services
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             {
-                Debug.WriteLine("The application is not running in desktop mode.");
                 return false;
             }
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
             {
-                Debug.WriteLine("Could not get the top-level window.");
                 return false;
             }
 
@@ -73,13 +71,11 @@ namespace TgaBuilderAvaloniaUi.Services
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             {
-                Debug.WriteLine("The application is not running in desktop mode.");
                 return false;
             }
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
             {
-                Debug.WriteLine("Could not get the top-level window.");
                 return false;
             }
 
@@ -136,13 +132,11 @@ namespace TgaBuilderAvaloniaUi.Services
 
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             {
-                Debug.WriteLine("The application is not running in desktop mode.");
                 return false;
             }
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
             {
-                Debug.WriteLine("Could not get the top-level window.");
                 return false;
             }
 
@@ -179,13 +173,11 @@ namespace TgaBuilderAvaloniaUi.Services
         {
             if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             {
-                Debug.WriteLine("The application is not running in desktop mode.");
                 return false;
             }
 
             if (TopLevel.GetTopLevel(desktop.MainWindow) is not TopLevel topLevel)
             {
-                Debug.WriteLine("Could not get the top-level window.");
                 return false;
             }
 

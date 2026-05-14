@@ -17,12 +17,6 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
                 name: "ObserveSize",
                 ownerType: typeof(SizeObserverAP),
                 defaultValue: false);
-        //public static readonly DependencyProperty ObserveSizeProperty =
-        //    DependencyProperty.RegisterAttached(
-        //        "ObserveSize",
-        //        typeof(bool),
-        //        typeof(SizeObserverAP),
-        //        new PropertyMetadata(false, OnObserveSizeChanged));
 
         public static void SetObserveSize(Control obj, bool value) =>
             obj.SetValue(ObserveSizeProperty, value);
@@ -49,12 +43,6 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
                 ownerType: typeof(SizeObserverAP),
                 defaultValue: 0.0,
                 inherits: false);
-        //public static readonly DependencyProperty ObservedWidthProperty =
-        //    DependencyProperty.RegisterAttached(
-        //        "ObservedWidth",
-        //        typeof(double),
-        //        typeof(SizeObserverAP),
-        //        new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static void SetObservedWidth(Control obj, double value) =>
             obj.SetValue(ObservedWidthProperty, value);
@@ -69,12 +57,6 @@ namespace TgaBuilderAvaloniaUi.AttachedProperties
                 ownerType: typeof(SizeObserverAP),
                 defaultValue: 0.0,
                 inherits: false);
-        //public static readonly DependencyProperty ObservedHeightProperty =
-        //    DependencyProperty.RegisterAttached(
-        //        "ObservedHeight",
-        //        typeof(double),
-        //        typeof(SizeObserverAP),
-        //        new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static void SetObservedHeight(Control obj, double value) =>
             obj.SetValue(ObservedHeightProperty, value);

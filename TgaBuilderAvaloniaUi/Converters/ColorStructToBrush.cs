@@ -25,7 +25,6 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                Debug.WriteLine("ColorStructToWpfColor: Value is not of type Color. Returning Fallback color.");
 
                 return new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
             }
@@ -39,7 +38,6 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                Debug.WriteLine("ColorStructToWpfColor: Value is not of type SolidColorBrush. Returning Fallback color.");
                 return new TgaBuilderLib.Abstraction.Color(0, 0, 0, 0);
             }
         }

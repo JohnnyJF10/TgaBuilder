@@ -177,7 +177,6 @@ namespace WPFZoomPanel
             {
                 if (UseDoubleClickSnapping && (Keyboard.Modifiers & MouseDragZoomModifier) == 0)
                 {
-                    //AnimatedSnapTo(e.GetPosition(_content));
                     if (UseAnimations) { AnimatedSnapTo(e.GetPosition(_content)); }
                     else { SnapTo(e.GetPosition(_content)); }
 
@@ -333,7 +332,6 @@ namespace WPFZoomPanel
             Rect rect = ViewportHelpers.Clip(finalContentMousePoint, _origContentMouseDownPoint, new Point(0, 0),
                 new Point(_partDragZoomCanvas.ActualWidth, _partDragZoomCanvas.ActualHeight));
             AnimatedZoomTo(rect);
-            // new Rect(contentX, contentY, contentWidth, contentHeight));
             FadeOutDragZoomRect();
         }
 

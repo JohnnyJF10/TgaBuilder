@@ -72,7 +72,6 @@ namespace TgaBuilderLib.Psd
 
             internal Channel(BinaryReverseReader reverseReader, Layer layer)
             {
-                Debug.WriteLine("Channel started at " + reverseReader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 ID = reverseReader.ReadInt16();
                 Length = reverseReader.ReadInt32();
@@ -82,7 +81,6 @@ namespace TgaBuilderLib.Psd
 
             internal void Save(BinaryReverseWriter reverseWriter)
             {
-                Debug.WriteLine("Channel Save started at " + reverseWriter.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 reverseWriter.Write(ID);
 
@@ -93,7 +91,6 @@ namespace TgaBuilderLib.Psd
 
             internal void LoadPixelData(BinaryReverseReader reverseReader)
             {
-                Debug.WriteLine("Channel.LoadPixelData started at " + reverseReader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 Data = reverseReader.ReadBytes(Length);
 
@@ -137,9 +134,6 @@ namespace TgaBuilderLib.Psd
                                     int rowIndex = i * Layer.Rect.Width;
 
                                     RleHelper.DecodedRow(imageReader.BaseStream, ImageData, rowIndex, bytesPerRow);
-
-                                    //if (rowLengthList[i] % 2 == 1)
-                                    //  readerImg.ReadByte();
                                 }
                             }
                             break;
@@ -215,7 +209,6 @@ namespace TgaBuilderLib.Psd
 
             internal void SavePixelData(BinaryReverseWriter writer)
             {
-                Debug.WriteLine("Channel SavePixelData started at " + writer.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 writer.Write((short)ImageCompression);
                 writer.Write(ImageData);

@@ -21,7 +21,7 @@ using Wpf.Ui.Controls;
 namespace TgaBuilderWpfUi.View
 {
     /// <summary>
-    /// Interaktionslogik für SmoothTransitionWindow.xaml
+    /// Interaction logic for SmoothTransitionWindow.xaml
     /// </summary>
     public partial class SmoothTransitionWindow : AsyncWindow
     {

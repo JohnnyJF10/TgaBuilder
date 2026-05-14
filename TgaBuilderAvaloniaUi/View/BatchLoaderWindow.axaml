@@ -246,29 +246,6 @@ Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
 
         <Border/>
 
-        <!--<Path
-        Margin="0,15,0,0"
-        Fill="Black"
-        Data="{StaticResource zoom_out}"
-        ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-        DockPanel.Dock="Left"
-        />
-        <Path
-        Margin="0,15,10,0"
-        Fill="Black"
-        Data="{StaticResource zoom_in}"
-        ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)"
-        DockPanel.Dock="Right"
-        />
-
-        <Slider VerticalAlignment="Center"
-        HorizontalAlignment="Stretch"
-        Margin="5,0"
-        Minimum="0.1"
-        Maximum="10"
-        MinWidth="3"
-        Value="{Binding Zoom, Mode=TwoWay}"
-        ap:MouseOverInfoAP.InfoText="Zoom level (Ctrl + Mouse Wheel on the panel)" />-->
       </DockPanel>
     </Border>
 

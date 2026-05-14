@@ -62,10 +62,6 @@ namespace TgaBuilderLib.Commands
         }
 
         public event EventHandler? CanExecuteChanged;
-        //{
-        //    add => CommandManagerProxy.RequerySuggested += value!;
-        //    remove => CommandManagerProxy.RequerySuggested -= value!;
-        //}
 
         public void RaiseCanExecuteChanged()
         {

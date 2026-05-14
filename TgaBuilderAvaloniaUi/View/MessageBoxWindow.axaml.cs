@@ -30,7 +30,7 @@ public partial class MessageBoxWindow : AsyncWindow
         YesButton.IsVisible = false;
         NoButton.IsVisible = false;
 
-        // Abhängig vom Typ Buttons anzeigen
+        // Show buttons depending on the type
         switch (type)
         {
             case "Error":

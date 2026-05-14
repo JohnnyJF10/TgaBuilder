@@ -85,7 +85,6 @@ namespace TgaBuilderLib.ViewModel
 
             RefreshPresenter();
             OnPresenterChanged();
-            Debug.WriteLine($"Presenter set to {bitmap.PixelWidth}x{bitmap.PixelHeight} pixels.");
         }
 
         public override void SetZoom(double zoom)

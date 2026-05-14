@@ -45,7 +45,6 @@ namespace TgaBuilderLib.Psd
             public BlendingRanges(BinaryReverseReader reader, Layer layer)
             {
                 Data = new byte[0];
-                Debug.WriteLine("BlendingRanges started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 Layer = layer;
                 int dataLength = reader.ReadInt32();
@@ -56,7 +55,6 @@ namespace TgaBuilderLib.Psd
 
             public void Save(BinaryReverseWriter writer)
             {
-                Debug.WriteLine("BlendingRanges Save started at " + writer.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 writer.Write((uint)Data.Length);
                 writer.Write(Data);

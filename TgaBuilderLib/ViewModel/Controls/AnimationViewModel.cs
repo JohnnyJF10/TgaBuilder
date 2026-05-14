@@ -186,7 +186,6 @@ namespace TgaBuilderLib.ViewModel
                 {
                     if (token.IsCancellationRequested) break;
 
-                    //var frameBitmap = new CroppedBitmap(_spriteSheet, rect);
                     var frameBitmap = _bitmapOperations.CropIReadableBitmap(_spriteSheet, rect, pixelBuffer);
                     Presenter = frameBitmap;
 
