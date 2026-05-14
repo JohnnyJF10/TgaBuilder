@@ -193,12 +193,12 @@ namespace TgaBuilderLib.Psd
             //get the version number, should be 1 always
             if ((Version = reader.ReadInt16()) != 1) throw new IOException("Invalid version number supplied");
 
-            //get rid of the 6 bytes reserverd in PSD format
+            //get rid of the 6 bytes reserved in PSD format
             reader.BaseStream.Position += 6;
 
             //get the rest of the information from the PSD file.
-            //Everytime ReadInt16() is called, it reads 2 bytes.
-            //Everytime ReadInt32() is called, it reads 4 bytes.
+            //Every time ReadInt16() is called, it reads 2 bytes.
+            //Every time ReadInt32() is called, it reads 4 bytes.
             _channels = reader.ReadInt16();
             _rows = reader.ReadInt32();
             _columns = reader.ReadInt32();
@@ -309,7 +309,7 @@ namespace TgaBuilderLib.Psd
             switch (_depth)
             {
                 case 1:
-                    bytesPerRow = _columns;//NOT Shure
+                    bytesPerRow = _columns;//NOT Sure
                     break;
                 case 8:
                     bytesPerRow = _columns;

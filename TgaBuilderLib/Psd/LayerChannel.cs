@@ -138,7 +138,7 @@ namespace TgaBuilderLib.Psd
 
                                     RleHelper.DecodedRow(imageReader.BaseStream, ImageData, rowIndex, bytesPerRow);
 
-                                    //if (rowLenghtList[i] % 2 == 1)
+                                    //if (rowLengthList[i] % 2 == 1)
                                     //  readerImg.ReadByte();
                                 }
                             }
@@ -158,11 +158,11 @@ namespace TgaBuilderLib.Psd
                     // the position
                     long lengthPosition = reverseWriter.BaseStream.Position;
 
-                    var rleRowLenghs = new int[Layer.Rect.Height];
+                    var rleRowLengths = new int[Layer.Rect.Height];
 
                     if (ImageCompression == ImageCompression.Rle)
                     {
-                        for (int i = 0; i < rleRowLenghs.Length; i++)
+                        for (int i = 0; i < rleRowLengths.Length; i++)
                         {
                             reverseWriter.Write((short)0x1234);
                         }
@@ -173,7 +173,7 @@ namespace TgaBuilderLib.Psd
                     switch (Layer.PsdFile.Depth)
                     {
                         case 1:
-                            bytesPerRow = Layer.Rect.Width;//NOT Shure
+                            bytesPerRow = Layer.Rect.Width;//NOT Sure
                             break;
                         case 8:
                             bytesPerRow = Layer.Rect.Width;
@@ -186,14 +186,14 @@ namespace TgaBuilderLib.Psd
                     for (int row = 0; row < Layer.Rect.Height; row++)
                     {
                         int rowIndex = row * Layer.Rect.Width;
-                        rleRowLenghs[row] = RleHelper.EncodedRow(reverseWriter.BaseStream, ImageData, rowIndex, bytesPerRow);
+                        rleRowLengths[row] = RleHelper.EncodedRow(reverseWriter.BaseStream, ImageData, rowIndex, bytesPerRow);
                     }
 
                     long endPosition = reverseWriter.BaseStream.Position;
 
                     reverseWriter.BaseStream.Position = lengthPosition;
 
-                    foreach (int length in rleRowLenghs)
+                    foreach (int length in rleRowLengths)
                     {
                         reverseWriter.Write((short)length);
                     }

@@ -79,7 +79,7 @@ namespace TgaBuilderWpfUi.Services
         {
             var saveFileDialog = new SaveFileDialog();
 
-            saveFileDialog.Filter = GetSeperatedFilter(types);
+            saveFileDialog.Filter = GetSeparatedFilter(types);
             saveFileDialog.Title = title ?? DEFAULT_SAVE_FILE_TITLE;
             if (initDir != null) saveFileDialog.InitialDirectory = initDir;
 
@@ -128,7 +128,7 @@ namespace TgaBuilderWpfUi.Services
             return $"{OptionName} ({allSupportedExtensions})|{allSupportedExtensions}";
         }
 
-        private string GetSeperatedFilter(FileTypes types)
+        private string GetSeparatedFilter(FileTypes types)
         {
             var filters = new List<string>();
 

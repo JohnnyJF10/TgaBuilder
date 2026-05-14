@@ -208,7 +208,7 @@ namespace TgaBuilderLib.ViewModel
             var resMessage = _imageManager.ResultInfo switch
             {
                 ResultStatus.Success => MessageType.DestinationOpenSuccess,
-                ResultStatus.RezisingRequired => MessageType.DestinationOpenSuccessButResized,
+                ResultStatus.ResizingRequired => MessageType.DestinationOpenSuccessButResized,
                 ResultStatus.BitmapAreaNotSufficient => MessageType.DestinationOpenSuccessButIncomplete,
                 _ => MessageType.UnknownError
             };

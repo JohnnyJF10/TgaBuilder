@@ -193,7 +193,7 @@
                         Value="{Binding WideningValue}" />
                 </DockPanel>
                 <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left"
-                               ap:MouseOverInfoAP.InfoText="Shift: moves the transition fron point or plateau left (negative) or right (positive)">
+                               ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
                     <Grid
                         VerticalAlignment="Center"
                         DockPanel.Dock="Left">

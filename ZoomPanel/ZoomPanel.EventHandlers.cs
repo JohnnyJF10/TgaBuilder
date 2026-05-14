@@ -248,7 +248,7 @@ namespace WPFZoomPanel
             }
             else if (_mouseHandlingMode == MouseHandlingMode.DragZooming)
             {
-                // When in drag zooming mode continously update the position of
+                // When in drag zooming mode continuously update the position of
                 // the rectangle that the user is dragging out.
                 curContentMousePoint = e.GetPosition(this);
                 SetDragZoomRect(_origZoomAndPanControlMouseDownPoint, curContentMousePoint);
@@ -330,7 +330,7 @@ namespace WPFZoomPanel
         /// </summary>
         private void ApplyDragZoomRect(Point finalContentMousePoint)
         {
-            Rect rect = ViewporTgaBuilders.Clip(finalContentMousePoint, _origContentMouseDownPoint, new Point(0, 0),
+            Rect rect = ViewportHelpers.Clip(finalContentMousePoint, _origContentMouseDownPoint, new Point(0, 0),
                 new Point(_partDragZoomCanvas.ActualWidth, _partDragZoomCanvas.ActualHeight));
             AnimatedZoomTo(rect);
             // new Rect(contentX, contentY, contentWidth, contentHeight));
@@ -355,7 +355,7 @@ namespace WPFZoomPanel
         }
 
         /// <summary>
-        /// Scroll the view horizontally when mouse tilt/horizontal scrol wheel
+        /// Scroll the view horizontally when mouse tilt/horizontal scroll wheel
         /// is used
         /// </summary>
         /// <param name="sender"></param>
@@ -380,9 +380,9 @@ namespace WPFZoomPanel
         {
             // Update the coordinates of the rectangle that is being dragged out
             // by the user. The we offset and rescale to convert from content coordinates.
-            Rect rect = ViewporTgaBuilders.Clip(pt1, pt2, new Point(0, 0),
+            Rect rect = ViewportHelpers.Clip(pt1, pt2, new Point(0, 0),
                 new Point(_partDragZoomCanvas.ActualWidth, _partDragZoomCanvas.ActualHeight));
-            ViewporTgaBuilders.PositionBorderOnCanvas(_partDragZoomBorder, rect);
+            ViewportHelpers.PositionBorderOnCanvas(_partDragZoomBorder, rect);
         }
 
         /// <summary>

@@ -66,7 +66,7 @@ namespace TgaBuilderLib.Psd
         Thumbnail2 = 1036,
         GlobalAngle = 1037,
         ColorSamplers = 1038,
-        ICCProfile = 1039, //The raw bytes of an ICC format profile, see the ICC34.pdf and ICC34.h files from the Internation Color Consortium located in the documentation section
+        ICCProfile = 1039, //The raw bytes of an ICC format profile, see the ICC34.pdf and ICC34.h files from the International Color Consortium located in the documentation section
         Watermark = 1040,
         ICCUntagged = 1041, //1 byte that disables any assumed profile handling when opening the file. 1 = intentionally untagged.
         EffectsVisible = 1042, //1 byte global flag to show/hide all the effects layer. Only present when they are hidden.

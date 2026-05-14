@@ -29,7 +29,7 @@ namespace TgaBuilderWpfUi.Services
                 MessageType.SourceOpenSuccessButIncomplete,
                 new WpfUiMessage(
                     "File Opened partially",
-                    "The file was opened successfully, but the Bitmap space ist not sufficient. Please try again with more horizantal pages.",
+                    "The file was opened successfully, but the Bitmap space is not sufficient. Please try again with more horizontal pages.",
                     ControlAppearance.Info,
                     new SymbolIcon(SymbolRegular.Warning24),
                     TimeSpan.FromSeconds(10))
@@ -155,7 +155,7 @@ namespace TgaBuilderWpfUi.Services
                 MessageType.BatchLoaderPanelExceedsMaxDimensions,
                 new WpfUiMessage(
                     "Batch Loader Import Warning",
-                    "The BatchLoader panel exceeds the maximum allowed dimensions. Please reduce the amount of tectures or their size.",
+                    "The BatchLoader panel exceeds the maximum allowed dimensions. Please reduce the amount of textures or their size.",
                     ControlAppearance.Danger,
                     new SymbolIcon(SymbolRegular.ErrorCircle24),
                     TimeSpan.FromSeconds(10))
@@ -163,7 +163,7 @@ namespace TgaBuilderWpfUi.Services
             {
                 MessageType.BatchLoaderFolderSetSuccess,
                 new WpfUiMessage(
-                    "Folder Set Succesfully",
+                    "Folder Set Successfully",
                     "The folder was set successfully.",
                     ControlAppearance.Success,
                     new SymbolIcon(SymbolRegular.CheckboxChecked24),
@@ -173,7 +173,7 @@ namespace TgaBuilderWpfUi.Services
                 MessageType.BatchLoaderFolderSetNoImageFiles,
                 new WpfUiMessage(
                     "No Image Files Found",
-                    "The specified folder does not contain any supported image files the Batch File Loader." +
+                    "The specified folder does not contain any supported image files in the Batch Loader." +
                     "Supported formats are: PNG, JPG, JPEG, TGA, BMP, DDS.",
                     ControlAppearance.Caution,
                     new SymbolIcon(SymbolRegular.Warning24),
@@ -192,7 +192,7 @@ namespace TgaBuilderWpfUi.Services
                 MessageType.BatchLoaderPanelLoadIssues,
                 new WpfUiMessage(
                     "Batch Loader Panel Load Issues",
-                    "Some file could not been loaded into the Batch Loader panel. Please find more information in the log file.",
+                    "Some files could not be loaded into the Batch Loader panel. Please find more information in the log file.",
                     ControlAppearance.Caution,
                     new SymbolIcon(SymbolRegular.Warning24),
                     TimeSpan.FromSeconds(10))
@@ -234,7 +234,7 @@ namespace TgaBuilderWpfUi.Services
                     TimeSpan.FromSeconds(10))
             },
             {
-                MessageType.SortedRezisingNoPossible,
+                MessageType.SortedResizingNotPossible,
                 new WpfUiMessage(
                     "Sorted Resizing Not Possible",
                     $"Sorted resizing is not possible as the resulting new number of pages in Y direction would be larger than {MAX_NUM_PAGES}. " +

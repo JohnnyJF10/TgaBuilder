@@ -43,7 +43,7 @@ namespace TgaBuilderLib.Psd
         /// <summary>
         /// ZIP without prediction.
         /// <remarks>
-        /// This is currently not supported since it is ot documented.
+        /// This is currently not supported since it is not documented.
         /// Loading will result in an image where all channels are set to zero.
         /// </remarks>
         /// </summary>
@@ -51,7 +51,7 @@ namespace TgaBuilderLib.Psd
         /// <summary>
         /// ZIP with prediction.
         /// <remarks>
-        /// This is currently not supported since it is ot documented. 
+        /// This is currently not supported since it is not documented. 
         /// Loading will result in an image where all channels are set to zero.
         /// </remarks>
         /// </summary>

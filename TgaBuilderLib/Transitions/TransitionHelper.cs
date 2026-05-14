@@ -8,7 +8,7 @@ namespace TgaBuilderLib.Transitions
 {
     public partial class TransitionHelper : ITransitionHelper
     {
-        private const int TRANSITIONS_BPP = 4; // Allways BGRA32
+        private const int TRANSITIONS_BPP = 4; // Always BGRA32
 
         private int[] _labels = Array.Empty<int>();
         private List<TileSegment> _tileSegmentList = new();

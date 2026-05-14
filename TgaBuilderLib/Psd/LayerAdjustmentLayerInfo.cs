@@ -35,18 +35,18 @@ namespace TgaBuilderLib.Psd
 {
     public partial class Layer
     {
-        public class AdjusmentLayerInfo
+        public class AdjustmentLayerInfo
         {
-            public AdjusmentLayerInfo(string key, Layer layer)
+            public AdjustmentLayerInfo(string key, Layer layer)
             {
                 Key = key;
                 Layer = layer;
                 Layer.AdjustmentInfo.Add(this);
             }
 
-            public AdjusmentLayerInfo(BinaryReverseReader reader, Layer layer)
+            public AdjustmentLayerInfo(BinaryReverseReader reader, Layer layer)
             {
-                Debug.WriteLine("AdjusmentLayerInfo started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
+                Debug.WriteLine("AdjustmentLayerInfo started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 Layer = layer;
 
@@ -75,7 +75,7 @@ namespace TgaBuilderLib.Psd
 
             public void Save(BinaryReverseWriter writer)
             {
-                Debug.WriteLine("AdjusmentLayerInfo Save started at " + writer.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
+                Debug.WriteLine("AdjustmentLayerInfo Save started at " + writer.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 const string signature = "8BIM";
 

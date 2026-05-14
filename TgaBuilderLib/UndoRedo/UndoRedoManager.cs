@@ -140,7 +140,7 @@ namespace TgaBuilderLib.UndoRedo
             isDirty |= _hadOutOfMemoryClearance != _snapshot.HadOutOfMemoryClearance;
             isDirty |= _redoStackClearanceCount != _snapshot.RedoStackClearanceCount;
 
-            Debug.WriteLine($"IsTargetDirty: {isDirty}. Comparisson: \n" +
+            Debug.WriteLine($"IsTargetDirty: {isDirty}. Comparison: \n" +
                 $"UndoStackCount: {_undoStack.Count} vs {_snapshot.UndoStackCount}, \n" +
                 $"HadOutOfMemoryClearance: {_hadOutOfMemoryClearance} vs {_snapshot.HadOutOfMemoryClearance}, \n" +
                 $"RedoStackClearanceCount: {_redoStackClearanceCount} vs {_snapshot.RedoStackClearanceCount}.");
