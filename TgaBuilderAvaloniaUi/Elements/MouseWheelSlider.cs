@@ -10,6 +10,8 @@ namespace TgaBuilderAvaloniaUi.Elements
     {
         private readonly DispatcherTimer _toolTipTimer;
 
+        protected override Type StyleKeyOverride => typeof(Slider);
+
         public MouseWheelSlider()
         {
             _toolTipTimer = new DispatcherTimer
