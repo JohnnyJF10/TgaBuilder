@@ -19,7 +19,6 @@ namespace WPFZoomPanel
             }
 
             ZoomTo(FillZoomValue);
-            //AnimatedZoomTo(new Rect(0, 0, _content.ActualWidth, _content.ActualHeight));
         }
 
         /// <summary>
@@ -128,7 +127,6 @@ namespace WPFZoomPanel
             }
 
             ZoomTo(FitZoomValue);
-            //ZoomTo(new Rect(0, 0, _content.ActualWidth, _content.ActualHeight));
         }
 
         /// <summary>
@@ -147,8 +145,6 @@ namespace WPFZoomPanel
         /// </summary>
         public void SnapTo(Point contentPoint)
         {
-            //AnimationHelper.CancelAnimation(this, ContentOffsetXProperty);
-            //AnimationHelper.CancelAnimation(this, ContentOffsetYProperty);
             ContentOffsetX = contentPoint.X - (ContentViewportWidth / 2);
             ContentOffsetY = contentPoint.Y - (ContentViewportHeight / 2);
         }

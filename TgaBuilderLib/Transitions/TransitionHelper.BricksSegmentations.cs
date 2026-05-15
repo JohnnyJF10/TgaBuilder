@@ -243,7 +243,7 @@ public partial class TransitionHelper
             for (int j = -radius; j <= radius; j++)
             {
                 if (j == 0) continue;
-                if (profile[i + j] < profile[i]) // Falls ein Nachbar dunkler ist, kein Minimum
+                if (profile[i + j] < profile[i]) // If a neighbor is darker, it is not a minimum
                 {
                     isMin = false;
                     break;

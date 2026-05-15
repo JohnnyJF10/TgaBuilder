@@ -18,7 +18,6 @@ namespace TgaBuilderAvaloniaUi.Converters
             if (value is WriteableBitmapWrapper wrapper)
                 return wrapper.InnerBitmap;
 
-            Debug.WriteLine("WriteableBitmapConverter: Value is not of type WriteableBitmapWrapper. Returning Fallback image.");
 
             return new WriteableBitmap(new PixelSize(42, 42), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
         }

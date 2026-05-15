@@ -152,7 +152,7 @@ namespace TgaBuilderAvaloniaUi.Services
                     timeout: 15)
             },
             {
-                MessageType.SortedRezisingNoPossible,
+                MessageType.SortedResizingNotPossible,
                 new AvaloniaUIMessage(
                     title: "Error",
                     message: "Sorted resizing is not possible with the current image dimensions. Please use images with dimensions that are powers of two (e.g., 64x64, 128x128, 256x256).",

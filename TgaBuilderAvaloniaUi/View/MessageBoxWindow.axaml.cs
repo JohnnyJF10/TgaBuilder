@@ -24,13 +24,13 @@ public partial class MessageBoxWindow : AsyncWindow
         Message = message;
         DataContext = this;
 
-        // Alle Buttons erstmal verstecken
+        // Hide all buttons initially
         OkButton.IsVisible = false;
         CancelButton.IsVisible = false;
         YesButton.IsVisible = false;
         NoButton.IsVisible = false;
 
-        // Abhängig vom Typ Buttons anzeigen
+        // Show buttons depending on the type
         switch (type)
         {
             case "Error":

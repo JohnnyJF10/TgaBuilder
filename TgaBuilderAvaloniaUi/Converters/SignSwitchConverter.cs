@@ -20,7 +20,6 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                Debug.WriteLine($"SignSwitchConverter: Unsupported type {value?.GetType().Name}");
                 return value;
             }
         }
@@ -37,7 +36,6 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                Debug.WriteLine($"SignSwitchConverter: Unsupported type {value?.GetType().Name}");
                 return value;
             }
         }

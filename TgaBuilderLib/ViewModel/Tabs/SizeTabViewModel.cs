@@ -107,7 +107,7 @@ namespace TgaBuilderLib.ViewModel
                 if ((int)(_numPagesY / widthRatio) > MAX_NUM_PAGES)
                 {
                     _messageService.SendMessage(
-                        MessageType.SortedRezisingNoPossible);
+                        MessageType.SortedResizingNotPossible);
                     return;
                 }
             }

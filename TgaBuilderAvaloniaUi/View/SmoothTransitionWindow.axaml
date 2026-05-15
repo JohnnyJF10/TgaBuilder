@@ -215,34 +215,6 @@
                 </DockPanel>
             </StackPanel>
 
-            <!-- Col 1, Row 0-1: Tab View, will be implemented later, when more options are available -->
-            <!--<TabControl
-                Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
-                Margin="0,5,5,5"
-                BorderBrush="Transparent"
-                TabStripPlacement="Top">
-                <TabItem Height="25" Header="Blend">
-                    <DockPanel Margin="0,6,5,0" VerticalAlignment="Center" Width="140" HorizontalAlignment="Left"
-                               ap:MouseOverInfoAP.InfoText="Offset: shifts the blend position along the image (0 = no offset, 1 = full offset)">
-                        <Path VerticalAlignment="Center"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              StrokeThickness="1"
-                              Width="20" Height="14" Stretch="Uniform"
-                              Data="{StaticResource slide_layout_clean}" />
-                        <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              StrokeThickness="1"
-                              Fill="Transparent" Width="20" Height="14" Stretch="Uniform"
-                              Data="{StaticResource slide_layout_stroke}" />
-                        <Slider
-                            Margin="5,0"
-                            VerticalAlignment="Center"
-                            ToolTip.Tip="{Binding OffsetValue}"
-                            Maximum="1" Minimum="0" SmallChange="0.01"
-                            Value="{Binding OffsetValue}" />
-                    </DockPanel>
-                </TabItem>
-            </TabControl>-->
         </Grid>
 
         <!-- Row 1: Images -->

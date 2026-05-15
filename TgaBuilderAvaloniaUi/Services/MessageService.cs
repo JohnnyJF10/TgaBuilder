@@ -21,7 +21,6 @@ namespace TgaBuilderAvaloniaUi.Services
         {
             if (!_messageDict.TryGetValue(message, out var uiMessage))
             {
-                Debug.WriteLine($"Unknown MessageType: {message}");
                 return;
             }
 

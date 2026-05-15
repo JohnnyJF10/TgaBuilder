@@ -72,7 +72,6 @@ namespace TgaBuilderLib.UndoRedo
 
             if (totalSizeInBytes > _maxMemoryBytes)
             {
-                Debug.WriteLine($"Requested rent size {totalSizeInBytes} exceeds MaxMemoryBytes {_maxMemoryBytes}.");
                 return false;
             }
 
@@ -82,7 +81,6 @@ namespace TgaBuilderLib.UndoRedo
             _arraysToRent = arraysNeeded;
             _arraysRented = 0;
             _state = State.Renting;
-            Debug.WriteLine($"Entering Renting mode with total size {totalSizeInBytes} bytes for {arraysNeeded} array(s).");
             return true;
         }
 
@@ -103,7 +101,6 @@ namespace TgaBuilderLib.UndoRedo
             _arraysRented++;
             var array = _byteArrayPool.Rent(size);
 
-            Debug.WriteLine($"Renting array {_arraysRented}/{_arraysToRent}, size {size} bytes.");
 
             if (_arraysRented == _arraysToRent)
             {
@@ -111,7 +108,6 @@ namespace TgaBuilderLib.UndoRedo
                 _currentRentSize = 0;
                 _arraysToRent = 0;
                 _arraysRented = 0;
-                Debug.WriteLine("All arrays rented. Returning to Acting mode.");
             }
 
             return array;
@@ -126,10 +122,6 @@ namespace TgaBuilderLib.UndoRedo
                 HadOutOfMemoryClearance = _hadOutOfMemoryClearance,
                 RedoStackClearanceCount = _redoStackClearanceCount,
             };
-            Debug.WriteLine("Status snapshot taken: \n" +
-                $"UndoStackCount: {_snapshot.UndoStackCount}, \n" +
-                $"HadOutOfMemoryClearance: {_snapshot.HadOutOfMemoryClearance}, \n" +
-                $"RedoStackClearanceCount: {_snapshot.RedoStackClearanceCount}.");
         }
 
         public bool IsTargetDirty()
@@ -140,10 +132,6 @@ namespace TgaBuilderLib.UndoRedo
             isDirty |= _hadOutOfMemoryClearance != _snapshot.HadOutOfMemoryClearance;
             isDirty |= _redoStackClearanceCount != _snapshot.RedoStackClearanceCount;
 
-            Debug.WriteLine($"IsTargetDirty: {isDirty}. Comparisson: \n" +
-                $"UndoStackCount: {_undoStack.Count} vs {_snapshot.UndoStackCount}, \n" +
-                $"HadOutOfMemoryClearance: {_hadOutOfMemoryClearance} vs {_snapshot.HadOutOfMemoryClearance}, \n" +
-                $"RedoStackClearanceCount: {_redoStackClearanceCount} vs {_snapshot.RedoStackClearanceCount}.");
 
             return isDirty;
         }
@@ -163,7 +151,6 @@ namespace TgaBuilderLib.UndoRedo
                 placingCallback: placingCallback);
             Push(action);
 
-            Debug.WriteLine("Pushed bitmap edit action.");
         }
 
         public void PushResizeSmallerAction(
@@ -187,7 +174,6 @@ namespace TgaBuilderLib.UndoRedo
                 redoCallback: resizeSmallerCallback);
 
             Push(action);
-            Debug.WriteLine("Pushed region resize smaller action.");
         }
 
         public void PushResizeLargerAction(
@@ -202,7 +188,6 @@ namespace TgaBuilderLib.UndoRedo
                 undo: () => resizeSmallerCallback(oldWidth, oldHeight),
                 redo: () => resizeLargerCallback(newWidth, newHeight));
             Push(action);
-            Debug.WriteLine("Pushed region resize larger action.");
         }
 
         public void PushResizeSortedAction(
@@ -218,7 +203,6 @@ namespace TgaBuilderLib.UndoRedo
                 redo: () => resizeSortedCallback(newWidth, newHeight, pickerSize));
             Push(action);
 
-            Debug.WriteLine("Pushed region rotate action.");
         }
 
         public void PushRegionRotateAction(PixelRect rectangle, Action<PixelRect, bool> rotatingCallback)
@@ -231,7 +215,6 @@ namespace TgaBuilderLib.UndoRedo
                 redo: () => rotatingCallback(rectangle, false));
             Push(action);
 
-            Debug.WriteLine("Pushed region rotate action.");
         }
 
         public void PushRegionFlipAction(PixelRect rectangle, Action<PixelRect> flippingCallback)
@@ -242,7 +225,6 @@ namespace TgaBuilderLib.UndoRedo
                 undo: () => flippingCallback(rectangle),
                 redo: () => flippingCallback(rectangle));
             Push(action);
-            Debug.WriteLine("Pushed region flip action.");
         }
 
         public void PushRegionMoveAction((int X, int Y) origPos, (int X, int Y) targetPos, int tileSize,
@@ -254,7 +236,6 @@ namespace TgaBuilderLib.UndoRedo
                 undo: () => movingCallback(targetPos, origPos, tileSize),
                 redo: () => movingCallback(origPos, targetPos, tileSize));
             Push(action);
-            Debug.WriteLine("Pushed region move action.");
         }
 
         public void Undo()
@@ -277,8 +258,6 @@ namespace TgaBuilderLib.UndoRedo
         {
             _undoStack.Push(action);
             ClearRedoStack();
-            Debug.WriteLine($"Pushed action. Undo stack size: {_undoStack.Count}, " +
-                $"Current memory usage: {CurrentMemoryBytes} bytes, Usage: {100.0 * CurrentMemoryBytes / _maxMemoryBytes}%");
         }
 
         private void EnsureMemoryAvailable(long requiredBytes)
@@ -292,11 +271,9 @@ namespace TgaBuilderLib.UndoRedo
 
                 bytesCount -= oldest.SizeInBytes;
                 oldest.ReturnData();
-                Debug.WriteLine($"Cleared action. Undo stack size: {_undoStack.Count}");
             }
             if (_undoStack.Count == 0)
             {
-                Debug.WriteLine("Cleared all actions. Undo stack is empty.");
             }
         }
 
@@ -324,7 +301,6 @@ namespace TgaBuilderLib.UndoRedo
             _redoStack.Clear();
 
             _hadOutOfMemoryClearance = true;
-            Debug.WriteLine("Cleared undo and redo stacks as unmonitored action was performed.");
         }
 
         public void ClearAllNewFile()
@@ -342,7 +318,6 @@ namespace TgaBuilderLib.UndoRedo
 
             TakeStatusSnapshot();
 
-            Debug.WriteLine("Cleared undo and redo stacks as new file was created.");
         }
 
         private void RemoveBottomElement<T>(Stack<T> stack)

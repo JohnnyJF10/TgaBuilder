@@ -32,15 +32,6 @@ namespace TgaBuilderWpfUi.Wrappers
                 DirtyRect.X + DirtyRect.Width > bitmap.PixelWidth ||
                 DirtyRect.Y + DirtyRect.Height > bitmap.PixelHeight)
             {
-                Debug.WriteLine(false, "CAUTION: DirtyRect is out of bounds. Fallback to full bitmap." +
-                    $"Violated Conditions: " +
-                    $"DirtyRect.X < 0: {DirtyRect.X < 0}, " +
-                    $"DirtyRect.Y < 0: {DirtyRect.Y < 0}, " +
-                    $"DirtyRect.Width <= 0: {DirtyRect.Width <= 0}, " +
-                    $"DirtyRect.Height <= 0: {DirtyRect.Height <= 0}, " +
-                    $"DirtyRect.X + DirtyRect.Width > bitmap.PixelWidth: {DirtyRect.X + DirtyRect.Width > bitmap.PixelWidth}, " +
-                    $"DirtyRect.Y + DirtyRect.Height > bitmap.PixelHeight: {DirtyRect.Y + DirtyRect.Height > bitmap.PixelHeight}"
-                    );
                 DirtyRect = new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight);
             }
 

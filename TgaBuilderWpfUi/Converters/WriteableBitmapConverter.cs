@@ -14,7 +14,6 @@ namespace TgaBuilderWpfUi.Converters
             if (value is WriteableBitmapWrapper wrapper)
                 return wrapper.InnerWriteableBitmap;
 
-            Debug.WriteLine("WriteableBitmapConverter: Value is not of type WriteableBitmapWrapper. Returning Fallback image.");
 
             return new WriteableBitmap(42, 42, 96, 96, System.Windows.Media.PixelFormats.Rgb24, null);
         }

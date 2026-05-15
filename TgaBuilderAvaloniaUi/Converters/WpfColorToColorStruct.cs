@@ -22,7 +22,6 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("WpfColorToColorStruct: Value is not of type Color. Returning Fallback color.");
                 return new TgaBuilderLib.Abstraction.Color(0, 0, 0, 0);
             }
         }
@@ -41,7 +40,6 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("WpfColorToColorStruct: Value is not of type Color. Returning Fallback color.");
                 return Colors.Transparent;
             }
         }

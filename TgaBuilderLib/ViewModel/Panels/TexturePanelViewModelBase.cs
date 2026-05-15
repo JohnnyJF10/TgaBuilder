@@ -157,7 +157,6 @@ namespace TgaBuilderLib.ViewModel
 
             AnimSelectShape.SetShapeProperties(xGrid, yGrid, Picker.Size);
 
-            Debug.WriteLine($"AnimSelectShape: {AnimSelectShape.X}, {AnimSelectShape.Y}, {AnimSelectShape.Width}, {AnimSelectShape.Height}");
         }
 
         public void SetupAnimation()

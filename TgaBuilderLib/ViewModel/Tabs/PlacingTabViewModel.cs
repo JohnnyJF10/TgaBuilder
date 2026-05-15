@@ -84,7 +84,6 @@ namespace TgaBuilderLib.ViewModel
                 _destination.placingMode &= ~modeFlag;
 
             OnPropertyChanged(propertyName);
-            Debug.WriteLine($"Current Mode Flags: {_destination.placingMode}");
         }
 
         private void SetPickerSize(int value)

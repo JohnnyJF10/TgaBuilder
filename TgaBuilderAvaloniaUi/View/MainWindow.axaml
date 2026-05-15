@@ -906,7 +906,7 @@
                             Classes="outlined"
                             Icon="{StaticResource scale_fill}"
                             Margin="0,0,5,0"
-                            ap:MouseOverInfoAP.InfoText="Rezise Selection to Picker Size"
+                            ap:MouseOverInfoAP.InfoText="Resize Selection to Picker Size"
                             DockPanel.Dock="Left"
                             IsChecked="{Binding ResizeToPickerModeSelected, Mode=OneWayToSource}" />
                         <elements:IconToggleButton
@@ -982,7 +982,7 @@
                             Classes="outlined"
                             Icon="{StaticResource pane_open}"
                             Grid.Column="2"
-                            ap:MouseOverInfoAP.InfoText="Rearrange Tiles duirng Resizing the panel width based on the picker width"
+                            ap:MouseOverInfoAP.InfoText="Rearrange Tiles during Resizing the panel width based on the picker width"
                             IsChecked="{Binding SortedResizing}" />
                     </Grid>
 

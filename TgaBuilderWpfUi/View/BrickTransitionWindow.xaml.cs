@@ -8,7 +8,7 @@ using Image = System.Windows.Controls.Image;
 namespace TgaBuilderWpfUi.View
 {
     /// <summary>
-    /// Interaktionslogik für BrickTransitionWindow.xaml
+    /// Interaction logic for BrickTransitionWindow.xaml
     /// </summary>
     public partial class BrickTransitionWindow : AsyncWindow
     {
