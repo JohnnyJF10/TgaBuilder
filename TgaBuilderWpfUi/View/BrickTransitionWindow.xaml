@@ -121,7 +121,7 @@
                           Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
                           Data="{StaticResource pivot_low}"/>
                     </Grid>
-                    <Slider
+                    <elements:MouseWheelSlider
                         Margin="5,0"
                         VerticalAlignment="Center"
                         AutoToolTipPlacement="BottomRight"
@@ -170,7 +170,7 @@
                             <Path DockPanel.Dock="Right" VerticalAlignment="Center"
                                   Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
                                   Data="{StaticResource circle}"/>
-                            <Slider
+                            <elements:MouseWheelSlider
                                 Margin="5,0"
                                 VerticalAlignment="Center"
                                 AutoToolTipPlacement="BottomRight"
@@ -355,7 +355,7 @@
                             <ui:SymbolIcon DockPanel.Dock="Right" VerticalAlignment="Center"
                                   Width="14" Height="14" 
                                   Symbol="TabInPrivate24"/>
-                            <Slider
+                            <elements:MouseWheelSlider
                                 Margin="5,0"
                                 VerticalAlignment="Center"
                                 AutoToolTipPlacement="BottomRight"
