@@ -275,7 +275,7 @@
                             ap:MouseOverInfoAP.InfoText="Open Batch Loader... (Ctrl + W)"
                             Command="{Binding BatchLoaderCommand}"
                             DockPanel.Dock="Right" />
-                        <NumericUpDown
+                        <elements:MouseWheelNumericUpDown
                             Margin="5,0"
                             Minimum="1"
                             Maximum="16"
@@ -295,14 +295,14 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <NumericUpDown
+                        <elements:MouseWheelNumericUpDown
                             Margin="0,0,2.5,0"
                             HorizontalAlignment="Stretch"
                             FormatString="N0"
                             ParsingNumberStyle="Integer"
                             ap:MouseOverInfoAP.InfoText="Set the offset of the source texture panel in X direction"
                             Value="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged}" />
-                        <NumericUpDown
+                        <elements:MouseWheelNumericUpDown
                             Grid.Column="1"
                             Margin="2.5,0,0,0"
                             HorizontalAlignment="Stretch"
@@ -624,7 +624,7 @@
                     DockPanel.Dock="Left"
                     FontWeight="DemiBold"
                     Text="{Binding SourceIO.LastFileName}" />
-                <NumericUpDown
+                <elements:MouseWheelNumericUpDown
                     Width="115"
                     Height="23"
                     Margin="0,0,0,4"
@@ -960,7 +960,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <NumericUpDown
+                        <elements:MouseWheelNumericUpDown
                             HorizontalAlignment="Stretch"
                             Minimum="1"
                             Maximum="128"
@@ -968,7 +968,7 @@
                             ParsingNumberStyle="Integer"
                             ap:MouseOverInfoAP.InfoText="Set the number of pages of the target texture panel in Y direction. Each page has a height of 256 pix."
                             Value="{Binding NumPagesY, UpdateSourceTrigger=PropertyChanged}" />
-                        <NumericUpDown
+                        <elements:MouseWheelNumericUpDown
                             Grid.Column="1"
                             Margin="5,0"
                             HorizontalAlignment="Stretch"
@@ -1362,7 +1362,7 @@
                     DockPanel.Dock="Left"
                     FontWeight="DemiBold"
                     Text="{Binding TargetIO.LastFileName}" />
-                <NumericUpDown
+                <elements:MouseWheelNumericUpDown
                     Width="115"
                     Height="23"
                     Margin="0,0,0,4"
