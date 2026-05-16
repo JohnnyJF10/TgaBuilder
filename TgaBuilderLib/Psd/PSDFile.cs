@@ -177,6 +177,156 @@ namespace TgaBuilderLib.Psd
             return Load(stream, mediaFactory);
         }
 
+        /// <summary>
+        /// Saves a 32-bit RGBA PSD file containing a merged background image and a set of layers.
+        /// </summary>
+        /// <param name="filename">Destination file path.</param>
+        /// <param name="background">
+        /// Merged/composite background bitmap in BGRA 32-bit format.
+        /// Its dimensions define the PSD canvas size.
+        /// </param>
+        /// <param name="layerInfos">
+        /// Layers to include in the PSD, listed from bottom to top.
+        /// Each layer bitmap must be in BGRA 32-bit format.
+        /// </param>
+        public void Save(string filename, IReadableBitmap background, IEnumerable<PsdLayerInfo> layerInfos)
+        {
+            using var stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
+            Save(stream, background, layerInfos);
+        }
+
+        /// <summary>
+        /// Writes a 32-bit RGBA PSD file to the given stream.
+        /// </summary>
+        /// <param name="stream">Output stream (must be writable and seekable).</param>
+        /// <param name="background">
+        /// Merged/composite background bitmap in BGRA 32-bit format.
+        /// Its dimensions define the PSD canvas size.
+        /// </param>
+        /// <param name="layerInfos">
+        /// Layers to include in the PSD, listed from bottom to top.
+        /// Each layer bitmap must be in BGRA 32-bit format.
+        /// </param>
+        public void Save(Stream stream, IReadableBitmap background, IEnumerable<PsdLayerInfo> layerInfos)
+        {
+            int width  = background.PixelWidth;
+            int height = background.PixelHeight;
+            const short depth        = 8;
+            const short channelCount = 4;  // RGBA
+
+            var writer    = new BinaryReverseWriter(stream);
+            var layerList = layerInfos.Select(CreateLayerFromInfo).ToList();
+
+            // ── Header ──────────────────────────────────────────────────────────
+            writer.Write("8BPS".ToCharArray());       // PSD signature
+            writer.Write((short)1);                   // version (always 1)
+            writer.Write(new byte[6]);                // reserved (6 zero bytes)
+            writer.Write(channelCount);               // number of channels (RGBA = 4)
+            writer.Write(height);                     // rows
+            writer.Write(width);                      // columns
+            writer.Write(depth);                      // bits per channel (8)
+            writer.Write((short)ColorMode.RGB);       // colour mode
+
+            // ── Colour Mode Data (empty for RGB) ────────────────────────────────
+            writer.Write((uint)0);
+
+            // ── Image Resources (none) ──────────────────────────────────────────
+            writer.Write((uint)0);
+
+            // ── Layer and Mask Info ──────────────────────────────────────────────
+            using (new LengthWriter(writer))
+            {
+                // ── Layer Info ──
+                using (new LengthWriter(writer))
+                {
+                    // Negative count: signals that the merged image's first alpha
+                    // channel carries the transparency of the flattened result.
+                    writer.Write((short)-layerList.Count);
+
+                    // Layer record headers (rect, channel list, blend info, name …)
+                    foreach (var layer in layerList)
+                        layer.Save(writer);
+
+                    // Channel pixel data for every layer
+                    foreach (var layer in layerList)
+                        foreach (var channel in layer.Channels)
+                            channel.SavePixelData(writer);
+
+                    // Pad the layer info to an even byte boundary
+                    if (writer.BaseStream.Position % 2 == 1)
+                        writer.Write((byte)0);
+                }
+
+                // ── Global Layer Mask (none) ──
+                writer.Write((uint)0);
+            }
+
+            // ── Merged Image Data (Raw / uncompressed) ───────────────────────────
+            writer.Write((short)0);   // compression = Raw
+
+            int   pixelCount = width * height;
+            var   bgra       = new byte[pixelCount * 4];
+            background.CopyPixels(new PixelRect(0, 0, width, height), bgra, width * 4, 0);
+
+            // PSD stores channels as separate planar arrays: R, G, B, A
+            // BGRA layout: [0]=B  [1]=G  [2]=R  [3]=A
+            var rPlane = new byte[pixelCount];
+            var gPlane = new byte[pixelCount];
+            var bPlane = new byte[pixelCount];
+            var aPlane = new byte[pixelCount];
+
+            for (int i = 0; i < pixelCount; i++)
+            {
+                bPlane[i] = bgra[i * 4];
+                gPlane[i] = bgra[i * 4 + 1];
+                rPlane[i] = bgra[i * 4 + 2];
+                aPlane[i] = bgra[i * 4 + 3];
+            }
+
+            writer.Write(rPlane);
+            writer.Write(gPlane);
+            writer.Write(bPlane);
+            writer.Write(aPlane);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Layer"/> with four RGBA channels from a <see cref="PsdLayerInfo"/>.
+        /// </summary>
+        private Layer CreateLayerFromInfo(PsdLayerInfo info)
+        {
+            var layer = new Layer(this, info.Rect, info.Name, info.Opacity,
+                                  info.Visible, clipping: false, info.BlendModeKey);
+
+            int pixelCount = info.Rect.Width * info.Rect.Height;
+            var bgra       = new byte[pixelCount * 4];
+            info.Bitmap.CopyPixels(
+                new PixelRect(0, 0, info.Rect.Width, info.Rect.Height),
+                bgra, info.Rect.Width * 4, 0);
+
+            // Separate BGRA interleaved pixels into planar channel arrays
+            var rData = new byte[pixelCount];
+            var gData = new byte[pixelCount];
+            var bData = new byte[pixelCount];
+            var aData = new byte[pixelCount];
+
+            for (int i = 0; i < pixelCount; i++)
+            {
+                bData[i] = bgra[i * 4];
+                gData[i] = bgra[i * 4 + 1];
+                rData[i] = bgra[i * 4 + 2];
+                aData[i] = bgra[i * 4 + 3];
+            }
+
+            // Channel ID -1 = alpha/transparency; 0 = red; 1 = green; 2 = blue.
+            // Insertion order determines the write order for both the header and the pixel data.
+            _ = new Layer.Channel(-1, layer) { ImageData = aData, ImageCompression = ImageCompression.Raw };
+            _ = new Layer.Channel(0,  layer) { ImageData = rData, ImageCompression = ImageCompression.Raw };
+            _ = new Layer.Channel(1,  layer) { ImageData = gData, ImageCompression = ImageCompression.Raw };
+            _ = new Layer.Channel(2,  layer) { ImageData = bData, ImageCompression = ImageCompression.Raw };
+
+            return layer;
+        }
+
         public PsdFile? Load(Stream stream, IMediaFactory? mediaFactory = null)
         {
             //binary reverse reader reads data types in big-endian format.

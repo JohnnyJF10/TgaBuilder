@@ -49,7 +49,6 @@ namespace TgaBuilderLib.Psd
             // resources length
             _startPosition = _reverseWriter.BaseStream.Position;
 
-            _lengthPosition = long.MinValue;
         }
 
         public void Write()
@@ -63,7 +62,6 @@ namespace TgaBuilderLib.Psd
             _reverseWriter.Write((uint)length);
             _reverseWriter.BaseStream.Position = endPosition;
 
-            _lengthPosition = long.MinValue;
         }
 
         public void Dispose()
