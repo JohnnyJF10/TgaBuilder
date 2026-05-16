@@ -74,12 +74,12 @@ namespace TgaBuilderAvaloniaUi.View
                 mousePanelCommand.Execute((newPixX, newPixY, isDestination, MouseAction.Move, _modifier));
         }
 
-        public void RegisterPresenterChangedCallback(
+        public void SubscribeToPresenterChangedEvent(
             TexturePanelViewModelBase panelVm,
             ZoomBorder zoomBorder,
             ScrollViewer scrollViewer)
         {
-            panelVm.PresenterChangedCallback = () =>
+            panelVm.PresenterChanged += (_, _) =>
             {
                 Dispatcher.UIThread.Post(() =>
                 {
@@ -104,39 +104,41 @@ namespace TgaBuilderAvaloniaUi.View
                     || e.KeyModifiers.HasFlag(KeyModifiers.Alt))
                     return;
 
+                Debug.WriteLine($"PointerWheelChanged: Delta=({e.Delta.X}, {e.Delta.Y}), Modifiers={e.KeyModifiers}");
+
                 bool isFromMouse = PointerWheelIsFromMouse(e);
 
                 if (sender is ScrollViewer sv)
                 {
-                    var deltaY = e.Delta.Y;
+                    var delta = e.Delta.Y;
                     var deltaX = e.Delta.X;
 
                     double speedFactor = 150.0;
 
-                    if (deltaY > 0 && sv.Offset.Y < 0.00001)
-                        deltaY = 0;
+                    if (delta > 0 && sv.Offset.Y < 0.00001)
+                        delta = 0;
 
-                    if (deltaY < 0 && sv.Offset.Y > sv.ScrollBarMaximum.Y - 0.00001)
-                        deltaY = 0;
+                    if (delta < 0 && sv.Offset.Y > sv.ScrollBarMaximum.Y - 0.00001)
+                        delta = 0;
 
                     if (deltaX > 0 && sv.Offset.X < 0.00001)
                         deltaX = 0;
-
+                  
                     if (deltaX < 0 && sv.Offset.X > sv.ScrollBarMaximum.X - 0.00001)
                         deltaX = 0;
 
-                    if (sv.Content is ZoomBorder zb)
+                        if (sv.Content is ZoomBorder zb)
                     {
                         zb.Pan(
                             x: zb.OffsetX + deltaX * speedFactor,
-                            y: zb.OffsetY + deltaY * speedFactor, 
+                            y: zb.OffsetY + delta * speedFactor,
                             skipTransitions: !isFromMouse);
                     }
 
                     if (CurrentImage is not null)
                     {
                         bool isDestination = IsElementFromDestinationPanel(CurrentImage);
-                        double PointerPosY = e.GetCurrentPoint(CurrentImage).Position.Y - deltaY * speedFactor / (CurrentPanel?.ZoomX ?? 1);
+                        double PointerPosY = e.GetCurrentPoint(CurrentImage).Position.Y - delta * speedFactor / (CurrentPanel?.ZoomX ?? 1);
 
                         if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                             mousePanelCommand.Execute(((int)_lastPointerPosition.X, (int)PointerPosY, isDestination, MouseAction.Move, _modifier));
@@ -158,7 +160,8 @@ namespace TgaBuilderAvaloniaUi.View
 
             return (Math.Abs(absDeltaY - 0.25) < epsilon 
             || Math.Abs(absDeltaY - 0.5) < epsilon 
-            || Math.Abs(absDeltaY - 0.75) < epsilon)
+            || Math.Abs(absDeltaY - 0.75) < epsilon
+            || Math.Abs(absDeltaY - 1.0) < epsilon)
                 && absDeltaX < epsilon;
         }
 

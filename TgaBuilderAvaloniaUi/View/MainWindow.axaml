@@ -101,6 +101,7 @@
                         Orientation="Horizontal"
                         Spacing="5">
                       <SplitButton
+                          x:Name="OpenSourceSplitButton"
                           Width="70"
                           Background="Transparent"
                           Height="36"
@@ -117,17 +118,32 @@
                               />
                         </SplitButton.Content>
                         <SplitButton.Flyout>
-                          <MenuFlyout
-                            ItemsSource="{Binding SourceIO.RecentSourceFileNames}"
-                            >
-                            <MenuFlyout.ItemTemplate>
-                              <DataTemplate>
-                                <MenuItem Header="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
-                                          Command="{Binding DataContext.OpenRecentSourceCommand, ElementName=MainWin }"
-                                          CommandParameter="{Binding .}" />
-                              </DataTemplate>
-                            </MenuFlyout.ItemTemplate>
-                          </MenuFlyout>
+                            <Flyout>
+								<Grid>
+									<ItemsControl ItemsSource="{Binding SourceIO.RecentSourceFileNames}">
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<Button
+                                                    x:Name="RecentSourceButton"
+                                                    Tag="Source"
+                                                    Click="RecentSourceButton_Click"
+                                                    MaxWidth="420"
+                                                    Command="{Binding #MainWin.DataContext.OpenRecentSourceCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    Background="Transparent"
+                                                    >
+													<Button.Content>
+														<TextBlock
+                                                            Text="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                        />
+                                                    </Button.Content>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Flyout>
                         </SplitButton.Flyout>
                       </SplitButton>
 
@@ -193,6 +209,7 @@
 
 
                       <SplitButton
+                          x:Name="OpenDestinationSplitButton"
                           Width="70"
                           Height="36"
                           Background="Transparent"
@@ -209,18 +226,32 @@
                               />
                         </SplitButton.Content>
                         <SplitButton.Flyout>
-                          <MenuFlyout
-                            ItemsSource="{Binding TargetIO.RecentDestinationFileNames}"
-                            
-                            >
-                            <MenuFlyout.ItemTemplate>
-                              <DataTemplate>
-                                <MenuItem Header="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
-                                          Command="{Binding DataContext.OpenRecentDestinationCommand, ElementName=MainWin }"
-                                          CommandParameter="{Binding .}" />
-                              </DataTemplate>
-                            </MenuFlyout.ItemTemplate>
-                          </MenuFlyout>
+                            <Flyout>
+								<Grid>
+									<ItemsControl ItemsSource="{Binding TargetIO.RecentDestinationFileNames}">
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<Button
+                                                    x:Name="RecentTargetButton"
+                                                    Tag="Destination"
+                                                    Click="RecentTargetButton_Click"
+                                                    MaxWidth="420"
+                                                    Command="{Binding #MainWin.DataContext.OpenRecentDestinationCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    Background="Transparent"
+                                                    >
+													<Button.Content>
+														<TextBlock
+                                                            Text="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                        />
+                                                    </Button.Content>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Flyout>
                         </SplitButton.Flyout>
                       </SplitButton>
 
