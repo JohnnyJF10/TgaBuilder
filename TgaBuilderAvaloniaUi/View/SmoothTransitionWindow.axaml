@@ -103,7 +103,7 @@
                           Fill="Transparent" Width="10" Height="10" 
                           Data="{StaticResource pivot_low}"/>
                     </Grid>
-                    <Slider
+                    <elements:MouseWheelSlider
                         Margin="5,0"
                         VerticalAlignment="Center"
                         ToolTip.Tip="{Binding PivotValue}"
@@ -123,7 +123,7 @@
                           Stroke="{DynamicResource IconFillBrush}"
                           Width="14" Height="20" 
                           Data="{StaticResource hardness_sharp}" />
-                    <Slider
+                    <elements:MouseWheelSlider
                         Margin="5,0"
                         VerticalAlignment="Center"
                         ToolTip.Tip="{Binding BlendHardnessValue}"
@@ -165,7 +165,7 @@
                               Fill="Transparent" Width="10" Height="10"
                               Data="{StaticResource pivot_widening}"/>
                     </Grid>
-                    <Slider
+                    <elements:MouseWheelSlider
                         Margin="5,0"
                         VerticalAlignment="Center"
                         ToolTip.Tip="{Binding WideningValue}"
@@ -206,7 +206,7 @@
                               Fill="Transparent" Width="10" Height="10"
                               Data="{StaticResource pivot_shift_right}"/>
                     </Grid>
-                    <Slider
+                    <elements:MouseWheelSlider
                         Margin="5,0"
                         VerticalAlignment="Center"
                         ToolTip.Tip="{Binding ShiftValue}"

@@ -97,7 +97,7 @@
                           Fill="Transparent" Width="10" Height="10" 
                           Data="{StaticResource pivot_low}"/>
                     </Grid>
-                    <Slider
+                    <elements:MouseWheelSlider
                         Margin="5,0"
                         VerticalAlignment="Center"
                         ToolTip.Tip="{Binding PivotValue}"
@@ -140,7 +140,7 @@
                             <Path DockPanel.Dock="Right" VerticalAlignment="Center"
                                   Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
                                   Data="{StaticResource circle}" />
-                            <Slider
+                            <elements:MouseWheelSlider
                                 Margin="5,0"
                                 VerticalAlignment="Center"
                                 ToolTip.Tip="{Binding MarkerRadius}"
@@ -247,7 +247,7 @@
                                       Fill="Transparent" Width="10" Height="10"
                                       Data="{StaticResource pivot_widening}"/>
                             </Grid>
-                            <Slider
+                            <elements:MouseWheelSlider
                                 Margin="5,0"
                                 VerticalAlignment="Center"
                                 ToolTip.Tip="{Binding WideningValue}"
@@ -288,7 +288,7 @@
                                       Fill="Transparent" Width="10" Height="10"
                                       Data="{StaticResource pivot_shift_right}"/>
                             </Grid>
-                            <Slider
+                            <elements:MouseWheelSlider
                                 Margin="5,0"
                                 VerticalAlignment="Center"
                                 ToolTip.Tip="{Binding ShiftValue}"
@@ -350,7 +350,7 @@
                             <Path DockPanel.Dock="Right" VerticalAlignment="Center"
                                   Fill="{DynamicResource IconFillBrush}" Width="14" Height="14" Stretch="Uniform"
                                   Data="{StaticResource tab_in_private}" />
-                            <Slider
+                            <elements:MouseWheelSlider
                                 Margin="5,0"
                                 VerticalAlignment="Center"
                                 ToolTip.Tip="{Binding EdgeWidth}"

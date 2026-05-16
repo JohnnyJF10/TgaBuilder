@@ -104,30 +104,39 @@ namespace TgaBuilderAvaloniaUi.View
                     || e.KeyModifiers.HasFlag(KeyModifiers.Alt))
                     return;
 
+                bool isFromMouse = PointerWheelIsFromMouse(e);
+
                 if (sender is ScrollViewer sv)
                 {
-                    var delta = e.Delta.Y;
+                    var deltaY = e.Delta.Y;
+                    var deltaX = e.Delta.X;
 
                     double speedFactor = 150.0;
 
-                    if (delta > 0 && sv.Offset.Y < 0.00001)
-                        delta = 0;
+                    if (deltaY > 0 && sv.Offset.Y < 0.00001)
+                        deltaY = 0;
 
-                    if (delta < 0 && sv.Offset.Y > sv.ScrollBarMaximum.Y - 0.00001)
-                        delta = 0;
+                    if (deltaY < 0 && sv.Offset.Y > sv.ScrollBarMaximum.Y - 0.00001)
+                        deltaY = 0;
+
+                    if (deltaX > 0 && sv.Offset.X < 0.00001)
+                        deltaX = 0;
+
+                    if (deltaX < 0 && sv.Offset.X > sv.ScrollBarMaximum.X - 0.00001)
+                        deltaX = 0;
 
                     if (sv.Content is ZoomBorder zb)
                     {
                         zb.Pan(
-                            x: zb.OffsetX, 
-                            y: zb.OffsetY + delta * speedFactor, 
-                            skipTransitions: false);
+                            x: zb.OffsetX + deltaX * speedFactor,
+                            y: zb.OffsetY + deltaY * speedFactor, 
+                            skipTransitions: !isFromMouse);
                     }
 
                     if (CurrentImage is not null)
                     {
                         bool isDestination = IsElementFromDestinationPanel(CurrentImage);
-                        double PointerPosY = e.GetCurrentPoint(CurrentImage).Position.Y - delta * speedFactor / (CurrentPanel?.ZoomX ?? 1);
+                        double PointerPosY = e.GetCurrentPoint(CurrentImage).Position.Y - deltaY * speedFactor / (CurrentPanel?.ZoomX ?? 1);
 
                         if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                             mousePanelCommand.Execute(((int)_lastPointerPosition.X, (int)PointerPosY, isDestination, MouseAction.Move, _modifier));
@@ -137,5 +146,21 @@ namespace TgaBuilderAvaloniaUi.View
                 }
             }, RoutingStrategies.Tunnel);
         }
+
+        private bool PointerWheelIsFromMouse(PointerWheelEventArgs e)
+        {
+            // Assumption: From Mouse absDeltaY is always 0.25, 0.5 oder 0.75, while deltaX is 0.
+            // This is not guaranteed, but in practice it seems to be the case for most mice.
+
+            double absDeltaY = Math.Abs(e.Delta.Y);
+            double absDeltaX = Math.Abs(e.Delta.X);
+            var epsilon = 0.0001;
+
+            return (Math.Abs(absDeltaY - 0.25) < epsilon 
+            || Math.Abs(absDeltaY - 0.5) < epsilon 
+            || Math.Abs(absDeltaY - 0.75) < epsilon)
+                && absDeltaX < epsilon;
+        }
+
     }
 }

@@ -107,26 +107,26 @@ Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
       <TextBlock Text="First Texture Index:"
                  Margin="10,10,10,0" />
 
-      <NumericUpDown Margin="10,0,10,10"
-                     Value="{Binding StartTexIndex, UpdateSourceTrigger=PropertyChanged}" />
+      <elements:MouseWheelNumericUpDown Margin="10,0,10,10"
+                                        Value="{Binding StartTexIndex, UpdateSourceTrigger=PropertyChanged}" />
 
       <TextBlock Text="Number of Textures:"
                  Margin="10,10,10,0" />
 
-      <NumericUpDown Margin="10,0,10,10"
-                     Value="{Binding NumTextures, UpdateSourceTrigger=PropertyChanged}" />
+      <elements:MouseWheelNumericUpDown Margin="10,0,10,10"
+                                        Value="{Binding NumTextures, UpdateSourceTrigger=PropertyChanged}" />
 
       <TextBlock Text="Texture Size:"
                  Margin="10,10,10,0" />
 
-      <NumericUpDown Margin="10,0,10,10"
-                     Value="{Binding TextureSize, UpdateSourceTrigger=PropertyChanged}" />
+      <elements:MouseWheelNumericUpDown Margin="10,0,10,10"
+                                        Value="{Binding TextureSize, UpdateSourceTrigger=PropertyChanged}" />
 
       <TextBlock Text="Import Panel Width:"
                  Margin="10,10,10,0" />
 
-      <NumericUpDown Margin="10,0,10,10"
-                     Value="{Binding PanelWidth, UpdateSourceTrigger=PropertyChanged}" />
+      <elements:MouseWheelNumericUpDown Margin="10,0,10,10"
+                                        Value="{Binding PanelWidth, UpdateSourceTrigger=PropertyChanged}" />
 
       <TextBlock Text="Scaling Mode:"
                  Margin="10,10,10,0" />
