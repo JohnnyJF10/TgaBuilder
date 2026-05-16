@@ -8,6 +8,7 @@ using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.ViewModel;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using System.Threading.Tasks;
 
 namespace TgaBuilderAvaloniaUi.View
 {
@@ -112,7 +113,7 @@ namespace TgaBuilderAvaloniaUi.View
             }
         }
 
-                public void RegisterScrollViewScrollSpeedModification(ScrollViewer scrollViewer)
+        public void RegisterScrollViewScrollSpeedModification(ScrollViewer scrollViewer)
         {
             scrollViewer.AddHandler(InputElement.PointerWheelChangedEvent, (sender, e) =>
             {
@@ -149,6 +150,12 @@ namespace TgaBuilderAvaloniaUi.View
                     e.Handled = true;
                 }
             }, RoutingStrategies.Tunnel);
+        }
+
+        private async void RecentBatchLoaderFoldersButton_Click(object sender, RoutedEventArgs e) 
+        { 
+            await Task.Delay(42);
+            RecentBatchLoaderFoldersDropDown.Flyout?.Hide();
         }
     }
 }

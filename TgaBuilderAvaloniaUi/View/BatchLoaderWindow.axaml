@@ -32,6 +32,7 @@ Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
         <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
       </ResourceDictionary.MergedDictionaries>
       <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
+      <converters:PathToFriendlyPathConverter x:Key="PathToFriendlyPathConverter" />
       <sys:Boolean x:Key="True">True</sys:Boolean>
       <sys:Boolean x:Key="False">False</sys:Boolean>
     </ResourceDictionary>
@@ -55,11 +56,38 @@ Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
               Command="{Binding SelectTRRFolderCommand}"
               CommandParameter="{StaticResource False}" />
 
-      <DropDownButton Margin="10"
+      <DropDownButton 
+                      Margin="10"
+                      x:Name="RecentBatchLoaderFoldersDropDown"
                       Content="Open Recent Folders"
                       >
         <DropDownButton.Flyout>
-          <MenuFlyout
+        <Flyout>
+		    <Grid>
+			    <ItemsControl ItemsSource="{Binding RecentBatchLoaderFolders}">
+				    <ItemsControl.ItemTemplate>
+					    <DataTemplate>
+						    <Button
+                                x:Name="RecentBatchLoaderFoldersButton"
+                                Click="RecentBatchLoaderFoldersButton_Click"
+                                MaxWidth="420"
+                                Command="{Binding #BatchLoaderWin.DataContext.OpenRecentFolderCommand}"
+                                CommandParameter="{Binding .}"
+                                Background="Transparent"
+                                >
+							    <Button.Content>
+								    <TextBlock
+                                        Text="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
+                                        TextTrimming="CharacterEllipsis"
+                                        />
+                                  </Button.Content>
+                              </Button>
+                          </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+              </Grid>
+          </Flyout>
+          <!---<MenuFlyout
           ItemsSource="{Binding RecentBatchLoaderFolders}"
           >
 
@@ -70,7 +98,7 @@ Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
                           CommandParameter="{Binding .}" />
               </DataTemplate>
             </MenuFlyout.ItemTemplate>
-          </MenuFlyout>
+          </MenuFlyout>-->
         </DropDownButton.Flyout>
       </DropDownButton>
       <elements:IconButton
