@@ -297,7 +297,12 @@
                         </Grid.ColumnDefinitions>
                         <elements:MouseWheelNumericUpDown
                             Margin="0,0,2.5,0"
+                            Padding="-5,0,-5,0"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
                             HorizontalAlignment="Stretch"
+                            Maximum="{Binding CellSize, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
                             FormatString="N0"
                             ParsingNumberStyle="Integer"
                             ap:MouseOverInfoAP.InfoText="Set the offset of the source texture panel in X direction"
@@ -305,6 +310,11 @@
                         <elements:MouseWheelNumericUpDown
                             Grid.Column="1"
                             Margin="2.5,0,0,0"
+                            Padding="-5,0,-5,0"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Minimum="0"
+                            Maximum="{Binding CellSize, UpdateSourceTrigger=PropertyChanged}"
                             HorizontalAlignment="Stretch"
                             FormatString="N0"
                             ParsingNumberStyle="Integer"
@@ -573,7 +583,7 @@
                                 IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}"
                                 MainDashStyle="{Binding GridPointedSelected, Converter={StaticResource BoolToStrokeDashStyleConverter}}"
                                 Stroke="DarkGoldenrod"
-                                StrokeThickness="{Binding StrokeThickness}" />
+                                StrokeThickness="{Binding StrokeThickness, UpdateSourceTrigger=PropertyChanged}" />
                         </Canvas>
                     </paz:ZoomBorder>
                 </ScrollViewer>
@@ -940,7 +950,7 @@
                             DockPanel.Dock="Right"
                             Fill="{DynamicResource IconFillBrush}"
                             Data="{StaticResource slide_add}" />
-                        <Slider
+                        <elements:MouseWheelSlider
                             Margin="5,0"
                             Padding="0,-5"
                             ap:MouseOverInfoAP.InfoText="Set Opacity of placed image data"
@@ -948,6 +958,7 @@
                             Maximum="1"
                             Minimum="0"
                             SmallChange="0.1"
+                            ToolTip.Tip="{Binding Opacity}"
                             Value="{Binding Opacity}" />
 
                     </DockPanel>

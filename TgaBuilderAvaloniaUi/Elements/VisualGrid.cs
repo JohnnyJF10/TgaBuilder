@@ -8,7 +8,7 @@ namespace TgaBuilderAvaloniaUi.Elements
     {
         // --- Properties ---
         public static readonly StyledProperty<int> CellSizeProperty =
-            AvaloniaProperty.Register<VisualGrid, int>(nameof(CellSize), 20);
+            AvaloniaProperty.Register<VisualGrid, int>(nameof(CellSize), 64);
 
         public int CellSize
         {
@@ -44,7 +44,7 @@ namespace TgaBuilderAvaloniaUi.Elements
         }
 
         public static readonly StyledProperty<IBrush> StrokeProperty =
-            AvaloniaProperty.Register<VisualGrid, IBrush>(nameof(Stroke), Brushes.Black);
+            AvaloniaProperty.Register<VisualGrid, IBrush>(nameof(Stroke), Brushes.Goldenrod);
 
         public IBrush Stroke
         {
@@ -53,7 +53,7 @@ namespace TgaBuilderAvaloniaUi.Elements
         }
 
         public static readonly StyledProperty<IDashStyle> MainDashStyleProperty =
-            AvaloniaProperty.Register<VisualGrid, IDashStyle>(nameof(MainDashStyle), DashStyle.Dash);
+            AvaloniaProperty.Register<VisualGrid, IDashStyle>(nameof(MainDashStyle), DashStyle.DashDot);
 
         public IDashStyle MainDashStyle
         {
@@ -97,10 +97,12 @@ namespace TgaBuilderAvaloniaUi.Elements
             int offsetY = GridOffsetY;
 
             var mainPen = new Pen(
+                thickness: StrokeThickness,
                 brush: Stroke,
                 dashStyle: MainDashStyle);
 
             var borderPen = new Pen(
+                thickness: StrokeThickness,
                 brush: Stroke,
                 dashStyle: BorderAreasDashStyle);
 

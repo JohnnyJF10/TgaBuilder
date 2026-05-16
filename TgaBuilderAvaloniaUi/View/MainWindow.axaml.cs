@@ -45,10 +45,7 @@ namespace TgaBuilderAvaloniaUi.View
                     var targetPanel = this.FindControl<ZoomBorder>("TargetPanel");
                     var sourceScrollViewer = this.FindControl<ScrollViewer>("SourceScrollViewer");
                     var targetScrollViewer = this.FindControl<ScrollViewer>("TargetScrollViewer");
-                    if (sourcePanel != null && vm.SourceViewTab is ReadOnlyViewTabViewModel sourceVm)
-                        RegisterZoomBorderCallbacks(sourceVm, sourcePanel);
-                    if (targetPanel != null && vm.DestinationViewTab is ReadOnlyViewTabViewModel targetVm)
-                        RegisterZoomBorderCallbacks(targetVm, targetPanel);
+
                     if (sourcePanel != null && sourceScrollViewer != null)
                         RegisterPresenterChangedCallback(vm.Source, sourcePanel, sourceScrollViewer);
                     if (targetPanel != null && targetScrollViewer != null)
@@ -57,6 +54,17 @@ namespace TgaBuilderAvaloniaUi.View
                         RegisterScrollViewScrollSpeedModification(sourceScrollViewer);
                     if (targetScrollViewer != null)
                         RegisterScrollViewScrollSpeedModification(targetScrollViewer);
+
+                    if (sourcePanel != null && vm.SourceViewTab is ReadOnlyViewTabViewModel sourceVm)
+                    {
+                        RegisterZoomBorderCallbacks(sourceVm, sourcePanel);
+                        sourceVm?.Fit();
+                    }
+                    if (targetPanel != null && vm.DestinationViewTab is ReadOnlyViewTabViewModel targetVm)
+                    { 
+                        RegisterZoomBorderCallbacks(targetVm, targetPanel);
+                        targetVm?.Fit();
+                    }
                 };
             }
         }
