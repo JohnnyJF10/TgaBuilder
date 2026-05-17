@@ -15,248 +15,166 @@
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Smooth Transition Helper"
-    Width="660"
+    Width="680"
     Height="300"
-    MinWidth="660"
+    MinWidth="640"
     MinHeight="300"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
+<!-- ========================================================================= -->
+    <!-- WINDOW RESOURCES & CONVERTERS                                             -->
+    <!-- ========================================================================= -->
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
-                <ResourceInclude Source="/Styles/TabControlStyles.axaml" />
-                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml"/>
-                <ResourceInclude Source="/Styles/IconButtonStyle.axaml"/>
+                <ResourceInclude
+                    Source="/Styles/CheckerBrush.axaml" />
+                <ResourceInclude
+                    Source="/Styles/TabControlStyles.axaml" />
+                <ResourceInclude
+                    Source="/Styles/IconToggleButtonStyle.axaml" />
+                <ResourceInclude
+                    Source="/Styles/IconButtonStyle.axaml" />
             </ResourceDictionary.MergedDictionaries>
-            <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
+            
+            <converters:WriteableBitmapConverter
+                x:Key="WriteableBitmapConverter" />
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>
+    <!-- ========================================================================= -->
+    <!-- MAIN CONTENT LAYOUT                                                       -->
+    <!-- ========================================================================= -->
+    <Grid
+        RowDefinitions="Auto,*,60">
+
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="35" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="35" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition
+                Width="3*"
+                MinWidth="420" />
+            <ColumnDefinition
+                Width="*"
+                MinWidth="220" />
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="5*" />
-            <RowDefinition Height="60" />
-        </Grid.RowDefinitions>
 
-        <!-- Row 0: Settings / Options -->
-        <Grid Grid.Row="0" Grid.ColumnSpan="5" Margin="5,5,5,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <!-- Col 0, Row 0: Transition Mode (always visible) -->
-            <local:TransitionModeUserControl
-                Grid.Column="0" Grid.Row="0"
-                Margin="5,5,10,5" />
-
-            <!-- Col 0, Row 1: Always-visible sliders -->
-            <StackPanel
-                Grid.Column="0" Grid.Row="1"
-                Orientation="Horizontal"
-                VerticalAlignment="Center"
-                Margin="5,0,10,5">
-                <DockPanel Width="130" VerticalAlignment="Center" Margin="0,0,8,0"
-                           ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
-                    <Grid
-                        VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
-                        DockPanel.Dock="Left">
-                        <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource IconFillBrush}"
-                          StrokeThickness="1"
-                          Fill="Transparent" Width="10" Height="10" 
-                          Data="{StaticResource pivot_low}"/>
-                        <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource IconFillBrush}"
-                          StrokeDashArray="2,2"
-                          StrokeThickness="1"
-                          Fill="Transparent" Width="10" Height="10" 
-                          Data="{StaticResource pivot_high}"/>
-                    </Grid>
-                    <Grid
-                        VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
-                        DockPanel.Dock="Right">
-                        <Path VerticalAlignment="Bottom"
-                              StrokeThickness="1"
-                          Stroke="{DynamicResource IconFillBrush}"
-                          Fill="Transparent" Width="10" Height="10" 
-                          Data="{StaticResource pivot_high}"/>
-                        <Path VerticalAlignment="Bottom" 
-                              StrokeThickness="1"
-                          Stroke="{DynamicResource IconFillBrush}"
-                          StrokeDashArray="2,2"
-                          Fill="Transparent" Width="10" Height="10" 
-                          Data="{StaticResource pivot_low}"/>
-                    </Grid>
-                    <elements:MouseWheelSlider
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        ToolTip.Tip="{Binding PivotValue}"
-                        Maximum="1" Minimum="0" SmallChange="0.01"
-                        Value="{Binding PivotValue}" />
-                </DockPanel>
-                <DockPanel Width="130" VerticalAlignment="Center" Margin="10,0,0,0"
-                           ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
-                    <Path VerticalAlignment="Center"
-                          StrokeThickness="1"
-                          Stroke="{DynamicResource IconFillBrush}"
-                          Width="14" Height="24" 
-                          Margin="0,0,5,0"
-                          Data="{StaticResource hardness_soft}" />
-                    <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                          StrokeThickness="1"
-                          Stroke="{DynamicResource IconFillBrush}"
-                          Width="14" Height="20" 
-                          Data="{StaticResource hardness_sharp}" />
-                    <elements:MouseWheelSlider
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        ToolTip.Tip="{Binding BlendHardnessValue}"
-                        Maximum="1" Minimum="0" SmallChange="0.01"
-                        Value="{Binding BlendHardnessValue}" />
-                </DockPanel>
-
-                <DockPanel Margin="30,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
-                           ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
-                    <Grid
-                        VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
-                        DockPanel.Dock="Left">
-                        <Path VerticalAlignment="Bottom"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              StrokeThickness="1"
-                              Fill="Transparent" Width="10" Height="10"
-                              Data="{StaticResource pivot_low}"/>
-                        <Path VerticalAlignment="Bottom"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              StrokeDashArray="2,2"
-                              StrokeThickness="1"
-                              Fill="Transparent" Width="10" Height="10"
-                              Data="{StaticResource pivot_high}"/>
-                    </Grid>
-                    <Grid
-                        VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
-                        DockPanel.Dock="Right">
-                        <Path VerticalAlignment="Bottom"
-                              StrokeThickness="1"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              StrokeDashArray="2,2"
-                              Fill="Transparent" Width="10" Height="10"
-                              Data="{StaticResource pivot_high}"/>
-                        <Path VerticalAlignment="Bottom"
-                              StrokeThickness="1"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              Fill="Transparent" Width="10" Height="10"
-                              Data="{StaticResource pivot_widening}"/>
-                    </Grid>
-                    <elements:MouseWheelSlider
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        ToolTip.Tip="{Binding WideningValue}"
-                        Maximum="1" Minimum="0" SmallChange="0.01"
-                        Value="{Binding WideningValue}" />
-                </DockPanel>
-                <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="130" HorizontalAlignment="Left"
-                           ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
-                    <Grid
-                        VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
-                        DockPanel.Dock="Left">
-                        <Path VerticalAlignment="Bottom"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              StrokeDashArray="2,2"
-                              StrokeThickness="1"
-                              Fill="Transparent" Width="10" Height="10"
-                              Data="{StaticResource pivot_high}"/>
-                        <Path VerticalAlignment="Bottom"
-                              StrokeThickness="1"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              Fill="Transparent" Width="10" Height="10"
-                              Data="{StaticResource pivot_shift_left}"/>
-                    </Grid>
-                    <Grid
-                        VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
-                        DockPanel.Dock="Right">
-                        <Path VerticalAlignment="Bottom"
-                              StrokeThickness="1"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              StrokeDashArray="2,2"
-                              Fill="Transparent" Width="10" Height="10"
-                              Data="{StaticResource pivot_high}"/>
-                        <Path VerticalAlignment="Bottom"
-                              StrokeThickness="1"
-                              Stroke="{DynamicResource IconFillBrush}"
-                              Fill="Transparent" Width="10" Height="10"
-                              Data="{StaticResource pivot_shift_right}"/>
-                    </Grid>
-                    <elements:MouseWheelSlider
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        ToolTip.Tip="{Binding ShiftValue}"
-                        Maximum="1" Minimum="-1" SmallChange="0.01"
-                        Value="{Binding ShiftValue}" />
-                </DockPanel>
-            </StackPanel>
-
-        </Grid>
-
-        <!-- Row 1: Images -->
-        <!-- Image 1 -->
-        <Border
-            Grid.Row="1"
+        <!-- Top row: transition mode + pivot above images -->
+        <DockPanel
+            Grid.Row="0"
             Grid.Column="0"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Background="Transparent">
-            <Grid>
-                <Viewbox Stretch="Uniform" Margin="10"
-                         RenderOptions.BitmapInterpolationMode="None">
-                    <Grid Width="{Binding Image1.PixelWidth, FallbackValue=128}"
-                          Height="{Binding Image1.PixelHeight, FallbackValue=128}">
-                        <elements:CheckerRectangle TileDensity="1" />
-                        <Image
-                            x:Name="Image1"
-                            RenderOptions.BitmapInterpolationMode="None"
-                            Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
-                            Stretch="Fill" />
-                    </Grid>
-                </Viewbox>
-                <TextBlock
-                    Text="Texture 1"
-                    HorizontalAlignment="Center"
+            Margin="7,0,10,0">
+            <local:TransitionModeUserControl />
+            <DockPanel
+                Margin="0,2,0,0"
+                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
+                <Grid
+                    VerticalAlignment="Top"
+                    Margin="0,11,8,0"
+                    DockPanel.Dock="Left">
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        StrokeThickness="1"
+                        Fill="Transparent"
+                        Width="10"
+                        Height="10"
+                        Data="{StaticResource pivot_low}" />
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        StrokeDashArray="2,2"
+                        StrokeThickness="1"
+                        Fill="Transparent"
+                        Width="10"
+                        Height="10"
+                        Data="{StaticResource pivot_high}" />
+                </Grid>
+                <Grid
+                    VerticalAlignment="Top"
+                    Margin="-5,11,8,0"
+                    DockPanel.Dock="Right">
+                    <Path
+                        VerticalAlignment="Bottom"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        Fill="Transparent"
+                        Width="10"
+                        Height="10"
+                        Data="{StaticResource pivot_high}" />
+                    <Path
+                        VerticalAlignment="Bottom"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        StrokeDashArray="2,2"
+                        Fill="Transparent"
+                        Width="10"
+                        Height="10"
+                        Data="{StaticResource pivot_low}" />
+                </Grid>
+                <elements:MouseWheelSlider
+                    Margin="5,0"
                     VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                    FontSize="24"
-                    IsVisible="{Binding InitTextVisible}"
-                    IsHitTestVisible="False" />
-            </Grid>
-        </Border>
+                    ToolTip.Tip="{Binding PivotValue}"
+                    Maximum="1"
+                    Minimum="0"
+                    SmallChange="0.01"
+                    Value="{Binding PivotValue}" />
+            </DockPanel>
+        </DockPanel>
 
-        <!-- + symbol and swap -->
+        <!-- ========================================================================= -->
+        <!-- LEFT PANEL: IMAGE PREVIEWS & PROCESSING                                   -->
+        <!-- ========================================================================= -->
+        <Grid
+            ColumnDefinitions="*,35,*,35,*"
+            RowDefinitions="*,60"
+            Grid.Row="1"
+            Grid.RowSpan="2">
+
+            <!-- Source Image 1: Texture 1 Preview -->
+            <Border
+                Grid.Row="0"
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent">
+                <Grid>
+                    <Viewbox
+                        Stretch="Uniform"
+                        Margin="10"
+                        RenderOptions.BitmapInterpolationMode="None">
+                        <Grid
+                            Width="{Binding Image1.PixelWidth, FallbackValue=128}"
+                            Height="{Binding Image1.PixelHeight, FallbackValue=128}">
+                            <elements:CheckerRectangle
+                                TileDensity="1" />
+                            <Image
+                                x:Name="Image1"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Fill" />
+                        </Grid>
+                    </Viewbox>
+                    <TextBlock
+                        Text="Texture 1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        FontSize="24"
+                        IsVisible="{Binding InitTextVisible}"
+                        IsHitTestVisible="False" />
+                </Grid>
+            </Border>
+
+            <!-- Image Management: Swap Controls -->
             <StackPanel
                 VerticalAlignment="Center"
-                Grid.Row="1"
+                Grid.Row="0"
                 Grid.Column="1"
                 Margin="0,45,0,0">
-                <PathIcon Data="{StaticResource add}"
-                          Width="16" Height="16" />
+                <PathIcon
+                    Data="{StaticResource add}"
+                    Width="16"
+                    Height="16" />
                 <elements:IconButton
                     Classes="outlined"
                     Margin="0,9,0,0"
@@ -264,74 +182,298 @@
                     Command="{Binding SwapImagesCommand}"
                     ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture"
                     ToolTip.Tip="Swap images"
-                    Icon="{StaticResource arrow_swap}"/>
+                    Icon="{StaticResource arrow_swap}" />
             </StackPanel>
 
-        <!-- Image 2 -->
-        <Border
+            <!-- Source Image 2: Texture 2 Preview -->
+            <Border
+                Grid.Row="0"
+                Grid.Column="2"
+                Margin="10"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent">
+                <Grid>
+                    <Viewbox
+                        Stretch="Uniform"
+                        RenderOptions.BitmapInterpolationMode="None">
+                        <Grid
+                            Width="{Binding Image2.PixelWidth, FallbackValue=128}"
+                            Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            <elements:CheckerRectangle
+                                TileDensity="1" />
+                            <Image
+                                x:Name="Image2"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Fill" />
+                        </Grid>
+                    </Viewbox>
+                    <TextBlock
+                        Text="Texture 2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        FontSize="24"
+                        IsVisible="{Binding InitTextVisible}"
+                        IsHitTestVisible="False" />
+                </Grid>
+            </Border>
+
+            <!-- Execution Trigger: Mix Command -->
+            <elements:IconButton
+                Classes="accent"
+                Foreground="White"
+                Grid.Row="0"
+                Grid.Column="3"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="0,0,0,-5"
+                ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
+                Icon="{StaticResource arrow_forward}"
+                Command="{Binding MixCommand}" />
+
+            <!-- Output Preview: Result Image -->
+            <Border
+                Grid.Row="0"
+                Grid.Column="4"
+                Margin="10"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent">
+                <Image
+                    x:Name="ResultImage"
+                    Margin="0,4,0,0"
+                    RenderOptions.BitmapInterpolationMode="None"
+                    Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                    Stretch="Uniform" />
+            </Border>
+
+            <!-- Image Loading Actions -->
+            <elements:IconButton
+                x:Name="BtnLoad1"
+                Classes="outlined"
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="10,5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
+                Icon="{StaticResource image_copy}"
+                Command="{Binding LoadImage1Command}" />
+                
+            <elements:IconButton
+                x:Name="BtnLoad2"
+                Classes="outlined"
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="10,5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
+                Icon="{StaticResource image_copy}"
+                Command="{Binding LoadImage2Command}" />
+        </Grid>
+
+        <!-- UI Layout Adjuster: Splitter -->
+        <GridSplitter
             Grid.Row="1"
-            Grid.Column="2"
-            Margin="10"
-            HorizontalAlignment="Stretch"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Width="4"
             VerticalAlignment="Stretch"
-            Background="Transparent">
-            <Grid>
-                <Viewbox Stretch="Uniform"
-                         RenderOptions.BitmapInterpolationMode="None">
-                    <Grid Width="{Binding Image2.PixelWidth, FallbackValue=128}"
-                          Height="{Binding Image2.PixelHeight, FallbackValue=128}">
-                        <elements:CheckerRectangle TileDensity="1" />
-                        <Image
-                            x:Name="Image2"
-                            RenderOptions.BitmapInterpolationMode="None"
-                            Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
-                            Stretch="Fill" />
+            HorizontalAlignment="Left"
+            Background="Transparent"
+            ResizeDirection="Columns" />
+
+        <!-- ========================================================================= -->
+        <!-- RIGHT PANEL: CONFIGURATION & PARAMETERS                                   -->
+        <!-- ========================================================================= -->
+        <Grid
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Margin="10,2,10,10"
+            RowDefinitions="*">
+
+            <!-- Parameter Section: Blend Settings -->
+            <StackPanel
+                Grid.Row="0">
+                
+                <!-- Hardness Slider -->
+                <DockPanel
+                    ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
+                    <Path
+                        VerticalAlignment="Center"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        Width="14"
+                        Height="24"
+                        Margin="-5,0,5,0"
+                        Data="{StaticResource hardness_soft}" />
+                    <Path
+                        DockPanel.Dock="Right"
+                        VerticalAlignment="Center"
+                        Margin="-5,0,5,0"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        Width="14"
+                        Height="20"
+                        Data="{StaticResource hardness_sharp}" />
+                    <elements:MouseWheelSlider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{Binding BlendHardnessValue}"
+                        Maximum="1"
+                        Minimum="0"
+                        SmallChange="0.01"
+                        Value="{Binding BlendHardnessValue}" />
+                </DockPanel>
+
+                <!-- Widening Slider -->
+                <DockPanel
+                    ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Left">
+                        <Path
+                            VerticalAlignment="Bottom"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeThickness="1"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_low}" />
+                        <Path
+                            VerticalAlignment="Bottom"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeDashArray="2,2"
+                            StrokeThickness="1"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_high}" />
                     </Grid>
-                </Viewbox>
-                <TextBlock
-                    Text="Texture 2"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                    FontSize="24"
-                    IsVisible="{Binding InitTextVisible}"
-                    IsHitTestVisible="False" />
-            </Grid>
-        </Border>
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Right">
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeDashArray="2,2"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_high}" />
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_widening}" />
+                    </Grid>
+                    <elements:MouseWheelSlider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{Binding WideningValue}"
+                        Maximum="1"
+                        Minimum="0"
+                        SmallChange="0.01"
+                        Value="{Binding WideningValue}" />
+                </DockPanel>
 
-        <!-- Mix button (arrow) -->
-        <elements:IconButton
-            Classes="accent"
-            Foreground="White"
-            Grid.Row="1"
-            Grid.Column="3"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Padding="0,0,0,-5"
-            ap:MouseOverInfoAP.InfoText="Generate the smooth transition result image"
-            Icon="{StaticResource arrow_forward}"
-            Command="{Binding MixCommand}" />
+                <!-- Shift Slider -->
+                <DockPanel
+                    ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Left">
+                        <Path
+                            VerticalAlignment="Bottom"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeDashArray="2,2"
+                            StrokeThickness="1"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_high}" />
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_shift_left}" />
+                    </Grid>
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Right">
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeDashArray="2,2"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_high}" />
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_shift_right}" />
+                    </Grid>
+                    <elements:MouseWheelSlider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{Binding ShiftValue}"
+                        Maximum="1"
+                        Minimum="-1"
+                        SmallChange="0.01"
+                        Value="{Binding ShiftValue}" />
+                </DockPanel>
+            </StackPanel>
+        </Grid>
 
-        <!-- Result Image -->
-        <Border
-            Grid.Row="1"
-            Grid.Column="4"
-            Margin="10"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Background="Transparent">
-            <Image
-                x:Name="ResultImage"
-                Margin="0,4,0,0"
-                RenderOptions.BitmapInterpolationMode="None"
-                Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
-                Stretch="Uniform" />
-        </Border>
+        <!-- ========================================================================= -->
+        <!-- BOTTOM PANEL: WINDOW CONTROLS & STATUS FOOTER                             -->
+        <!-- ========================================================================= -->
+        <!-- Form Submission Control Actions -->
+        <StackPanel
+            Grid.Row="2"
+            Grid.Column="1"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            Spacing="8"
+            Margin="8">
+            <Button
+                Content="Apply"
+                Command="{Binding MixCommand}" />
+            <Button
+                Content="Cancel"
+                Command="{Binding CancelCommand}"
+                CommandParameter="{Binding $parent[Window]}" />
+            <Button
+                Classes="accent"
+                Content="OK"
+                Command="{Binding OKCommand}"
+                CommandParameter="{Binding $parent[Window]}" />
+        </StackPanel>
 
-        <!-- Row 2: OK/Cancel bar -->
+        <!-- Decorative Background Frame for Footer -->
         <Border
             Grid.Row="2"
-            Grid.ColumnSpan="5"
+            Grid.ColumnSpan="2"
             Margin="-10,0,-10,-10"
             VerticalAlignment="Stretch"
             IsHitTestVisible="False"
@@ -339,54 +481,6 @@
             BorderBrush="{DynamicResource SeparatorBrush}"
             BorderThickness="0,1,0,0"
             CornerRadius="0" />
-        <elements:IconButton
-            x:Name="BtnLoad1"
-            Classes="outlined"
-            Grid.Row="2"
-            Grid.Column="0"
-            Margin="10,5"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
-            Icon="{StaticResource image_copy}"
-            Command="{Binding LoadImage1Command}" />
-        <elements:IconButton
-            x:Name="BtnLoad2"
-            Classes="outlined"
-            Grid.Row="2"
-            Grid.Column="2"
-            Margin="10,5"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
-            Icon="{StaticResource image_copy}"
-            Command="{Binding LoadImage2Command}" />
-        <StackPanel
-            Grid.Row="2"
-            Grid.ColumnSpan="5"
-            HorizontalAlignment="Right"
-            Orientation="Horizontal">
-            <Button
-                Width="80"
-                Height="32"
-                Margin="0,0,15,0"
-                HorizontalAlignment="Right"
-                HorizontalContentAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Cancel and close the dialog"
-                Command="{Binding CancelCommand}"
-                CommandParameter="{Binding $parent[Window]}"
-                Content="Cancel" />
-            <Button
-                Classes="accent"
-                Width="80"
-                Height="32"
-                Margin="0,0,15,0"
-                HorizontalAlignment="Right"
-                HorizontalContentAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Apply the smooth transition and close"
-                Command="{Binding OKCommand}"
-                CommandParameter="{Binding $parent[Window]}"
-                Content="OK" />
-        </StackPanel>
+
     </Grid>
 </elements:AsyncWindow>
