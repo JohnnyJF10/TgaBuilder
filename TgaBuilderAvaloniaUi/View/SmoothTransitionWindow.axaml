@@ -46,7 +46,7 @@
     <!-- MAIN CONTENT LAYOUT                                                       -->
     <!-- ========================================================================= -->
     <Grid
-        RowDefinitions="*,60">
+        RowDefinitions="Auto,*,60">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition
@@ -57,12 +57,77 @@
                 MinWidth="220" />
         </Grid.ColumnDefinitions>
 
+        <!-- Top row: transition mode + pivot above images -->
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="7,0,10,0">
+            <local:TransitionModeUserControl />
+            <DockPanel
+                Margin="0,2,0,0"
+                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
+                <Grid
+                    VerticalAlignment="Top"
+                    Margin="-5,11,8,0"
+                    DockPanel.Dock="Left">
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        StrokeThickness="1"
+                        Fill="Transparent"
+                        Width="10"
+                        Height="10"
+                        Data="{StaticResource pivot_low}" />
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        StrokeDashArray="2,2"
+                        StrokeThickness="1"
+                        Fill="Transparent"
+                        Width="10"
+                        Height="10"
+                        Data="{StaticResource pivot_high}" />
+                </Grid>
+                <Grid
+                    VerticalAlignment="Top"
+                    Margin="-5,11,8,0"
+                    DockPanel.Dock="Right">
+                    <Path
+                        VerticalAlignment="Bottom"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        Fill="Transparent"
+                        Width="10"
+                        Height="10"
+                        Data="{StaticResource pivot_high}" />
+                    <Path
+                        VerticalAlignment="Bottom"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        StrokeDashArray="2,2"
+                        Fill="Transparent"
+                        Width="10"
+                        Height="10"
+                        Data="{StaticResource pivot_low}" />
+                </Grid>
+                <elements:MouseWheelSlider
+                    Margin="5,0"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="{Binding PivotValue}"
+                    Maximum="1"
+                    Minimum="0"
+                    SmallChange="0.01"
+                    Value="{Binding PivotValue}" />
+            </DockPanel>
+        </StackPanel>
+
         <!-- ========================================================================= -->
         <!-- LEFT PANEL: IMAGE PREVIEWS & PROCESSING                                   -->
         <!-- ========================================================================= -->
         <Grid
             ColumnDefinitions="*,35,*,35,*"
             RowDefinitions="*,60"
+            Grid.Row="1"
             Grid.RowSpan="2">
 
             <!-- Source Image 1: Texture 1 Preview -->
@@ -212,6 +277,8 @@
 
         <!-- UI Layout Adjuster: Splitter -->
         <GridSplitter
+            Grid.Row="1"
+            Grid.RowSpan="2"
             Grid.Column="1"
             Width="4"
             VerticalAlignment="Stretch"
@@ -223,75 +290,15 @@
         <!-- RIGHT PANEL: CONFIGURATION & PARAMETERS                                   -->
         <!-- ========================================================================= -->
         <Grid
+            Grid.Row="1"
+            Grid.RowSpan="2"
             Grid.Column="1"
-            Margin="10,10,10,10"
-            RowDefinitions="Auto,Auto,*,Auto">
-            
-            <!-- Global Mode Selector -->
-            <local:TransitionModeUserControl
-                Grid.Row="0" />
-
-            <!-- Parameter: Pivot Control Slider -->
-            <DockPanel
-                Grid.Row="1"
-                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
-                <Grid
-                    VerticalAlignment="Top"
-                    Margin="-5,11,8,0"
-                    DockPanel.Dock="Left">
-                    <Path
-                        VerticalAlignment="Bottom"
-                        Stroke="{DynamicResource IconFillBrush}"
-                        StrokeThickness="1"
-                        Fill="Transparent"
-                        Width="10"
-                        Height="10"
-                        Data="{StaticResource pivot_low}" />
-                    <Path
-                        VerticalAlignment="Bottom"
-                        Stroke="{DynamicResource IconFillBrush}"
-                        StrokeDashArray="2,2"
-                        StrokeThickness="1"
-                        Fill="Transparent"
-                        Width="10"
-                        Height="10"
-                        Data="{StaticResource pivot_high}" />
-                </Grid>
-                <Grid
-                    VerticalAlignment="Top"
-                    Margin="-5,11,8,0"
-                    DockPanel.Dock="Right">
-                    <Path
-                        VerticalAlignment="Bottom"
-                        StrokeThickness="1"
-                        Stroke="{DynamicResource IconFillBrush}"
-                        Fill="Transparent"
-                        Width="10"
-                        Height="10"
-                        Data="{StaticResource pivot_high}" />
-                    <Path
-                        VerticalAlignment="Bottom"
-                        StrokeThickness="1"
-                        Stroke="{DynamicResource IconFillBrush}"
-                        StrokeDashArray="2,2"
-                        Fill="Transparent"
-                        Width="10"
-                        Height="10"
-                        Data="{StaticResource pivot_low}" />
-                </Grid>
-                <elements:MouseWheelSlider
-                    Margin="5,0"
-                    VerticalAlignment="Center"
-                    ToolTip.Tip="{Binding PivotValue}"
-                    Maximum="1"
-                    Minimum="0"
-                    SmallChange="0.01"
-                    Value="{Binding PivotValue}" />
-            </DockPanel>
+            Margin="10,0,10,10"
+            RowDefinitions="*">
 
             <!-- Parameter Section: Blend Settings -->
             <StackPanel
-                Grid.Row="2">
+                Grid.Row="0">
                 
                 <!-- Hardness Slider -->
                 <DockPanel
@@ -444,7 +451,7 @@
         <!-- ========================================================================= -->
         <!-- Form Submission Control Actions -->
         <StackPanel
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="1"
             Orientation="Horizontal"
             HorizontalAlignment="Right"
@@ -466,7 +473,7 @@
 
         <!-- Decorative Background Frame for Footer -->
         <Border
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.ColumnSpan="2"
             Margin="-10,0,-10,-10"
             VerticalAlignment="Stretch"
