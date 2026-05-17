@@ -58,17 +58,17 @@
         </Grid.ColumnDefinitions>
 
         <!-- Top row: transition mode + pivot above images -->
-        <StackPanel
+        <DockPanel
             Grid.Row="0"
             Grid.Column="0"
             Margin="7,0,10,0">
             <local:TransitionModeUserControl />
             <DockPanel
                 Margin="0,2,0,0"
-                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
+                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
                 <Grid
                     VerticalAlignment="Top"
-                    Margin="-5,11,8,0"
+                    Margin="0,11,8,0"
                     DockPanel.Dock="Left">
                     <Path
                         VerticalAlignment="Bottom"
@@ -119,7 +119,7 @@
                     SmallChange="0.01"
                     Value="{Binding PivotValue}" />
             </DockPanel>
-        </StackPanel>
+        </DockPanel>
 
         <!-- ========================================================================= -->
         <!-- LEFT PANEL: IMAGE PREVIEWS & PROCESSING                                   -->
@@ -290,10 +290,9 @@
         <!-- RIGHT PANEL: CONFIGURATION & PARAMETERS                                   -->
         <!-- ========================================================================= -->
         <Grid
-            Grid.Row="1"
             Grid.RowSpan="2"
             Grid.Column="1"
-            Margin="10,0,10,10"
+            Margin="10,2,10,10"
             RowDefinitions="*">
 
             <!-- Parameter Section: Blend Settings -->
