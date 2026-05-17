@@ -154,8 +154,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public bool ShowGrayBasedSegmentationInputs =>
         SelectedSegmentationMethod == SegmentationMethod.Watershed
         || SelectedSegmentationMethod == SegmentationMethod.XYProjection
-        || SelectedSegmentationMethod == SegmentationMethod.YXProjection
-        || SelectedSegmentationMethod == SegmentationMethod.Rectilinear;
+        || SelectedSegmentationMethod == SegmentationMethod.YXProjection;
 
     public int FelzenszwalbMinSize
     {

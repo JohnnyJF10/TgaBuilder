@@ -23,7 +23,6 @@ namespace TgaBuilderLib.Transitions
         Watershed,
         XYProjection,
         YXProjection,
-        Rectilinear,
     }
 
     public partial class TransitionHelper
@@ -68,7 +67,6 @@ namespace TgaBuilderLib.Transitions
                 SegmentationMethod.Watershed => WatershedSegmentation(filtered, labels),
                 SegmentationMethod.XYProjection => XYProjectionSegmentation(filtered, labels),
                 SegmentationMethod.YXProjection => YXProjectionSegmentation(filtered, labels),
-                SegmentationMethod.Rectilinear => OrthogonalLineSegmentation(filtered, labels),
                 _ => 0
             };
 

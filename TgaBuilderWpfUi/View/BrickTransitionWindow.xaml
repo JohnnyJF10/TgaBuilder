@@ -437,7 +437,7 @@
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">
                         <StackPanel
-                            Margin="8,6,8,8">
+                            Margin="8,6,0,8">
                             <DockPanel
                                 Margin="0,8,0,0"
                                 ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
@@ -454,55 +454,18 @@
                                     VerticalAlignment="Center"
                                     Background="Transparent"
                                     BorderThickness="0"
-                                    Margin="8,0,0,0"
                                     SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
-                                    <ComboBoxItem
-                                        HorizontalContentAlignment="Stretch">
-                                        <TextBlock
-                                            Text="Felzenszwalb"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalContentAlignment="Stretch">
-                                        <TextBlock
-                                            Text="SLIC"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalContentAlignment="Stretch">
-                                        <TextBlock
-                                            Text="Quickshift"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalContentAlignment="Stretch">
-                                        <TextBlock
-                                            Text="Watershed"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalContentAlignment="Stretch">
-                                        <TextBlock
-                                            Text="XY Projection"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalContentAlignment="Stretch">
-                                        <TextBlock
-                                            Text="YX Projection"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalContentAlignment="Stretch">
-                                        <TextBlock
-                                            Text="Rectilinear"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
+                                    <ComboBoxItem Content="Felzenszwalb" />
+                                    <ComboBoxItem Content="SLIC" />
+                                    <ComboBoxItem Content="Quickshift" />
+                                    <ComboBoxItem Content="Watershed" />
+                                    <ComboBoxItem Content="XY Projection" />
+                                    <ComboBoxItem Content="YX Projection" />
                                 </ComboBox>
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,0,0"
+                                Margin="0,0,0,1"
                                 Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <elements:ToggleButtonEx
                                     Width="36"
@@ -511,7 +474,6 @@
                                     IsChecked="{Binding InvertGrayscale}"
                                     ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
                                 <DockPanel
-                                    Margin="8,0,0,0"
                                     LastChildFill="True"
                                     ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
                                     <Path
@@ -527,38 +489,17 @@
                                         VerticalAlignment="Center"
                                         Background="Transparent"
                                         BorderThickness="0"
-                                        Margin="8,0,0,0"
                                         SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
-                                        <ComboBoxItem
-                                            HorizontalContentAlignment="Stretch">
-                                            <TextBlock
-                                                Text="None"
-                                                TextTrimming="CharacterEllipsis" />
-                                        </ComboBoxItem>
-                                        <ComboBoxItem
-                                            HorizontalContentAlignment="Stretch">
-                                            <TextBlock
-                                                Text="Box Blur"
-                                                TextTrimming="CharacterEllipsis" />
-                                        </ComboBoxItem>
-                                        <ComboBoxItem
-                                            HorizontalContentAlignment="Stretch">
-                                            <TextBlock
-                                                Text="Median"
-                                                TextTrimming="CharacterEllipsis" />
-                                        </ComboBoxItem>
-                                        <ComboBoxItem
-                                            HorizontalContentAlignment="Stretch">
-                                            <TextBlock
-                                                Text="Bilateral"
-                                                TextTrimming="CharacterEllipsis" />
-                                        </ComboBoxItem>
+                                        <ComboBoxItem Content="None"/>
+                                        <ComboBoxItem Content="Box Blur"/>
+                                        <ComboBoxItem Content="Median"/>
+                                        <ComboBoxItem Content="Bilateral"/>
                                     </ComboBox>
                                 </DockPanel>
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,0,0"
+                                Margin="0,8,8,0"
                                 Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
                                 <Path
@@ -592,7 +533,7 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,0,0"
+                                Margin="0,8,8,8"
                                 Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging">
                                 <Path
@@ -625,7 +566,7 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,0,0"
+                                Margin="0,8,8,0"
                                 Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor">
                                 <Path
@@ -656,7 +597,7 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,0,0"
+                                Margin="0,8,8,8"
                                 Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels">
                                 <Path
@@ -689,7 +630,7 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,0,0"
+                                Margin="0,8,8,0"
                                 Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity">
                                 <Path
@@ -720,7 +661,7 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,0,0"
+                                Margin="0,8,8,8"
                                 Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed">
                                 <Path
@@ -753,7 +694,7 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,0,0"
+                                Margin="0,8,8,0"
                                 Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling">
                                 <Path
@@ -879,7 +820,7 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,0,0"
+                                Margin="0,16,0,0"
                                 ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
                                 <Grid
                                     VerticalAlignment="Center"

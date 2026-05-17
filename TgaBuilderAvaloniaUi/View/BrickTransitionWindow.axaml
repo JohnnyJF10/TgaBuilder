@@ -361,58 +361,21 @@
                                 <ComboBox
                                     VerticalAlignment="Center"
                                     HorizontalAlignment="Stretch"
-                                    MinWidth="140"
-                                    Margin="8,0,0,0"
                                     BorderThickness="0"
                                     Background="Transparent"
                                     TextBlock.TextTrimming="CharacterEllipsis"
                                     SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
-                                    <ComboBoxItem
-                                        HorizontalAlignment="Stretch">
-                                        <TextBlock
-                                            Text="Felzenszwalb"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalAlignment="Stretch">
-                                        <TextBlock
-                                            Text="SLIC"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalAlignment="Stretch">
-                                        <TextBlock
-                                            Text="Quickshift"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalAlignment="Stretch">
-                                        <TextBlock
-                                            Text="Watershed"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalAlignment="Stretch">
-                                        <TextBlock
-                                            Text="XY Projection"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalAlignment="Stretch">
-                                        <TextBlock
-                                            Text="YX Projection"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem
-                                        HorizontalAlignment="Stretch">
-                                        <TextBlock
-                                            Text="Rectilinear"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </ComboBoxItem>
+                                    <ComboBoxItem Content="Felzenszwalb" />
+                                    <ComboBoxItem Content="SLIC" />
+                                    <ComboBoxItem Content="Quickshift" />
+                                    <ComboBoxItem Content="Watershed" />
+                                    <ComboBoxItem Content="XY Projection" />
+                                    <ComboBoxItem Content="YX Projection" />
                                 </ComboBox>
                             </DockPanel>
 
                             <DockPanel
+                                Margin="0,14,0,0"
                                 IsVisible="{Binding ShowGrayBasedSegmentationInputs}">
                                 <elements:IconToggleButton
                                     Classes="outlined"
@@ -422,8 +385,9 @@
                                     IsChecked="{Binding InvertGrayscale}"
                                     ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
                                 <DockPanel
-                                    Margin="8,0,0,0"
+                                    Margin="8,5,0,0"
                                     LastChildFill="True"
+                                    VerticalAlignment="Center"
                                     ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
                                     <Path
                                         VerticalAlignment="Center"
@@ -436,35 +400,14 @@
                                     <ComboBox
                                         VerticalAlignment="Center"
                                         HorizontalAlignment="Stretch"
-                                        Margin="8,0,0,0"
                                         BorderThickness="0"
                                         Background="Transparent"
                                         TextBlock.TextTrimming="CharacterEllipsis"
                                         SelectedIndex="{Binding SelectedFilterIndex}">
-                                        <ComboBoxItem
-                                            HorizontalAlignment="Stretch">
-                                            <TextBlock
-                                                Text="None"
-                                                TextTrimming="CharacterEllipsis" />
-                                        </ComboBoxItem>
-                                        <ComboBoxItem
-                                            HorizontalAlignment="Stretch">
-                                            <TextBlock
-                                                Text="Box Blur"
-                                                TextTrimming="CharacterEllipsis" />
-                                        </ComboBoxItem>
-                                        <ComboBoxItem
-                                            HorizontalAlignment="Stretch">
-                                            <TextBlock
-                                                Text="Median"
-                                                TextTrimming="CharacterEllipsis" />
-                                        </ComboBoxItem>
-                                        <ComboBoxItem
-                                            HorizontalAlignment="Stretch">
-                                            <TextBlock
-                                                Text="Bilateral"
-                                                TextTrimming="CharacterEllipsis" />
-                                        </ComboBoxItem>
+                                        <ComboBoxItem Content="None"/>
+                                        <ComboBoxItem Content="Box Blur"/>
+                                        <ComboBoxItem Content="Median"/>
+                                        <ComboBoxItem Content="Bilateral"/>
                                     </ComboBox>
                                 </DockPanel>
                             </DockPanel>
