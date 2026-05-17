@@ -19,13 +19,12 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     Title="MainWindow"
-    Width="700"
+    Width="980"
     Height="360"
-    MinWidth="700"
+    MinWidth="940"
     MinHeight="320"
     d:Background="Black"
-    d:DataContext="{d:DesignInstance Type=viewmodel:BrickTransitionViewModel, IsDesignTimeCreatable=False}"
-    >
+    d:DataContext="{d:DesignInstance Type=viewmodel:BrickTransitionViewModel, IsDesignTimeCreatable=False}">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -38,341 +37,35 @@
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <converters:WriteableBitmapConverter x:Key="WriteableBitmapConverter"/>
-            <converters:ColorStructToMediaColorConverter   x:Key="ColorStructToMediaColorConverter"/>
+            <converters:ColorStructToMediaColorConverter x:Key="ColorStructToMediaColorConverter"/>
             <sys:Boolean x:Key="True">True</sys:Boolean>
             <sys:Boolean x:Key="False">False</sys:Boolean>
-            <Style TargetType="{x:Type elements:ContextMenuButton}"
-                    BasedOn="{StaticResource {x:Type ui:Button}}"/>
+            <Style TargetType="{x:Type elements:ContextMenuButton}" BasedOn="{StaticResource {x:Type ui:Button}}"/>
         </ResourceDictionary>
     </Window.Resources>
-    <!-- Outer Grid: 5 Rows -->
+
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" MinWidth="600"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" MinWidth="300"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
 
-        <!-- Row 0: Title Bar -->
-        <DockPanel Grid.Row="0">
-            <ui:TitleBar
-                DockPanel.Dock="Right"
-                Width="133"
-                Style="{StaticResource TitleBarNavigationAreaStyle}"/>
-            <ui:TitleBar
-                Title="Brick Transition Helper"
-                ShowMinimize="False"
-                ShowMaximize="False"
-                ShowClose="False"
-                Margin="3,3,0,0">
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="3">
+            <ui:TitleBar DockPanel.Dock="Right" Width="133" Style="{StaticResource TitleBarNavigationAreaStyle}"/>
+            <ui:TitleBar Title="Brick Transition Helper" ShowMinimize="False" ShowMaximize="False" ShowClose="False" Margin="3,3,0,0">
                 <ui:TitleBar.Icon>
                     <ui:ImageIcon Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
                 </ui:TitleBar.Icon>
             </ui:TitleBar>
         </DockPanel>
 
-        <!-- Row 1: Settings / Options -->
-        <Grid Grid.Row="1" Margin="5,5,5,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <!-- Col 0, Row 0: Transition Mode (always visible) -->
-            <local:TransitionModeUserControl
-                Grid.Column="0" Grid.Row="0"
-                Margin="5,5,10,5"/>
-
-            <!-- Col 0, Row 1: Always-visible sliders -->
-            <StackPanel
-                Grid.Column="0" Grid.Row="1"
-                Orientation="Horizontal"
-                VerticalAlignment="Center"
-                Margin="5,0,10,5">
-                <DockPanel Width="196.3" VerticalAlignment="Center" Margin="0,0,8,0"
-                           ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
-                    <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Left">
-                        <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_low}"/>
-                        <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          StrokeDashArray="2.2"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_high}"/>
-                    </Grid>
-                    <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Right">
-                        <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_high}"/>
-                        <Path VerticalAlignment="Bottom" 
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          StrokeDashArray="2.2"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_low}"/>
-                    </Grid>
-                    <elements:MouseWheelSlider
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        AutoToolTipPlacement="BottomRight"
-                        AutoToolTipPrecision="2"
-                        Maximum="1" Minimum="0" SmallChange="0.01"
-                        Value="{Binding PivotValue}"/>
-                </DockPanel>
-                <elements:ToggleButtonEx
-                    VerticalAlignment="Center"
-                    ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
-                    Icon="{ui:SymbolIcon FlipHorizontal24}"
-                    MinHeight="36"
-                    MinWidth="36"
-                    IsChecked="{Binding ReversePivot}"/>
-            </StackPanel>
-
-            <!-- Col 1, Row 0-1: Tab View -->
-            <TabControl
-                Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
-                Margin="0,5,5,5"
-                BorderBrush="Transparent"
-                TabStripPlacement="Top">
-                <TabControl.Resources>
-                    <Style TargetType="TabItem" BasedOn="{StaticResource NavTabItemStyle}">
-                        <Setter Property="Height" Value="20"/>
-                    </Style>
-                </TabControl.Resources>
-
-                <!-- Tab: Analysis -->
-                <TabItem Header="Analysis" Height="25" Width="Auto">
-                    <StackPanel Orientation="Horizontal" Margin="5,15,0,0" VerticalAlignment="Center" MinHeight="36">
-
-                        <elements:ToggleButtonEx
-                            Width="36"
-                            Height="36"
-                            Icon="{ui:SymbolIcon Table24}"
-                            IsChecked="{Binding InvertGrayscale}"
-                            ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)"
-                            />
-
-                        <DockPanel Width="150" VerticalAlignment="Center" Margin="8,0,15,0"
-                                   ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
-                            <Path DockPanel.Dock="Left" VerticalAlignment="Center"
-                                  Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="5" Height="5" Stretch="Uniform" Margin="5"
-                                  Data="{StaticResource circle_small}"/>
-                            <Path DockPanel.Dock="Right" VerticalAlignment="Center"
-                                  Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                                  Data="{StaticResource circle}"/>
-                            <elements:MouseWheelSlider
-                                Margin="5,0"
-                                VerticalAlignment="Center"
-                                AutoToolTipPlacement="BottomRight"
-                                IsSnapToTickEnabled="True"
-                                TickFrequency="1"
-                                Maximum="20" Minimum="1" SmallChange="1"
-                                Value="{Binding MarkerRadius}"/>
-                        </DockPanel>
-                        <DockPanel
-                            ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
-                            <Path VerticalAlignment="Center" Margin="5,0,0,0"
-                                  d:Fill="White"
-                                  StrokeThickness="2"
-                              Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform"
-                              Data="{StaticResource filter}"/>
-                            <ComboBox
-                                VerticalAlignment="Center"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
-                                <ComboBoxItem Content="None"/>
-                                <ComboBoxItem Content="Box Blur"/>
-                                <ComboBoxItem Content="Median"/>
-                                <ComboBoxItem Content="Bilateral"/>
-                            </ComboBox>
-                        </DockPanel>
-                        <DockPanel
-                            ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions"
-                            MinWidth="130"
-                            >
-                            <Path VerticalAlignment="Center" Margin="5,0,0,0"
-                                d:Fill="White"
-                                Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="18" Height="18" Stretch="Uniform"
-                                Data="{StaticResource shapes}"/>
-                            <ComboBox
-                                VerticalAlignment="Center"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
-                                <ComboBoxItem Content="Watershed"/>
-                                <ComboBoxItem Content="XY Projection"/>
-                            </ComboBox>
-                        </DockPanel>
-                    </StackPanel>
-                </TabItem>
-
-                <TabItem Header="Pivot">
-                    <StackPanel
-                        Orientation="Horizontal"
-                        VerticalAlignment="Center"
-                        Margin="5,15,0,0">
-                        <elements:ToggleButtonEx
-                            VerticalAlignment="Center"
-                            MinHeight="36"
-                            MinWidth="36"
-                            Icon="{ui:SymbolIcon Cut24}"
-                            ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
-                            IsEnabled="{Binding IsChecked, ElementName=ProtectEdgesToggleButton}"
-                            IsChecked="{Binding SliceCornerTiles}"/>
-
-                        <elements:ToggleButtonEx
-                            x:Name="ProtectEdgesToggleButton"
-                            VerticalAlignment="Center"
-                            MinHeight="36"
-                            MinWidth="36"
-                            Margin="5,0,0,0"
-                            Icon="{ui:SymbolIcon Shield24}"
-                            ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
-                            IsChecked="{Binding ProtectEdges}"/>
-
-                        <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left"
-                               ap:MouseOverInfoAP.InfoText="Widening: 0 = Adds or enlarges the plateau at the transition front until it touches the edges at value 1">
-                            <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Left">
-                                <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_low}"/>
-                                <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          StrokeDashArray="2.2"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_high}"/>
-                            </Grid>
-                            <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Right">
-                                <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          StrokeDashArray="2.2"
-                          Data="{StaticResource pivot_high}"/>
-                                <Path VerticalAlignment="Bottom" 
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_widening}"/>
-                            </Grid>
-                            <elements:MouseWheelSlider
-                        Style="{StaticResource MouseWheelSliderStyle}"  
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        AutoToolTipPlacement="BottomRight"
-                        AutoToolTipPrecision="2"
-                        Maximum="1" Minimum="0" SmallChange="0.01"
-                        Value="{Binding WideningValue}" />
-                        </DockPanel>
-                        <DockPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left"
-                               ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
-                            <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Left">
-                                <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          StrokeDashArray="2.2"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_high}"/>
-                                <Path VerticalAlignment="Bottom" 
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_shift_left}"/>
-                            </Grid>
-                            <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Right">
-                                <Path VerticalAlignment="Bottom"
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          StrokeDashArray="2.2"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_high}"/>
-                                <Path VerticalAlignment="Bottom" 
-                          Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                          Fill="Transparent" Width="14" Height="14" Stretch="Uniform"
-                          Data="{StaticResource pivot_shift_right}"/>
-                            </Grid>
-                            <elements:MouseWheelSlider
-                        Style="{StaticResource MouseWheelSliderStyle}"  
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        AutoToolTipPlacement="BottomRight"
-                        AutoToolTipPrecision="2"
-                        Maximum="1" Minimum="-1" SmallChange="0.01"
-                        Value="{Binding ShiftValue}" />
-                        </DockPanel>
-                    </StackPanel>
-                </TabItem>
-                
-                <!-- Tab: Edge -->
-                <TabItem Header="Edge" Height="25" Width="Auto">
-                    <StackPanel Orientation="Horizontal" Margin="5,15,0,0" VerticalAlignment="Center" MinHeight="36">
-                        <elements:ToggleButtonEx
-                            Icon="{ui:SymbolIcon EyeDropper24}"
-                            Width="36"
-                            Height="36"
-                            Margin="0,0,5,0"
-                            DockPanel.Dock="Left"
-                            IsChecked="{Binding IsEyedropperMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ap:MouseOverInfoAP.InfoText="Pick edge color from image"/>
-                        <cp:PortableColorPicker
-                            Width="34"
-                            Height="30"
-                            SelectedColor="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                            ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
-                            Margin="4,0,0,0"/>
-                        <ui:SymbolIcon VerticalAlignment="Center"
-                                  Width="14" Height="14"
-                                  Symbol="PaintBrush24" Margin="15,0,-10,0"/>
-                        <ComboBox
-                            Width="130"
-                            Margin="8,0,0,0"
-                            VerticalAlignment="Center"
-                            BorderThickness="0"
-                            Background="Transparent"
-                            ap:MouseOverInfoAP.InfoText="Blend Mode: defines how edge color combines with tile color"
-                            ItemsSource="{Binding EdgeBlendModes}"
-                            SelectedItem="{Binding BlendMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <DockPanel Width="150" VerticalAlignment="Center" Margin="8,0,0,0"
-                                   ap:MouseOverInfoAP.InfoText="Edge Width: edge smoothing width for brick transitions (1 = narrow, 12 = wide)">
-                            <ui:SymbolIcon VerticalAlignment="Center"
-                                  Width="14" Height="14"
-                                  Symbol="Tab24"/>
-                            <ui:SymbolIcon DockPanel.Dock="Right" VerticalAlignment="Center"
-                                  Width="14" Height="14" 
-                                  Symbol="TabInPrivate24"/>
-                            <elements:MouseWheelSlider
-                                Margin="5,0"
-                                VerticalAlignment="Center"
-                                AutoToolTipPlacement="BottomRight"
-                                IsSnapToTickEnabled="True"
-                                TickFrequency="1"
-                                Maximum="12" Minimum="0" SmallChange="1"
-                                Value="{Binding EdgeWidth}"/>
-                        </DockPanel>
-                    </StackPanel>
-                </TabItem>
-            </TabControl>
-        </Grid>
-
-        <!-- Row 2: From Selection / Mix buttons (aligned with image columns) -->
-
-        <!-- Row 3: Image Area (Sub Table) -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" x:Name="ImageAreaGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="35"/>
@@ -398,218 +91,178 @@
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
-            <!-- Image 1 -->
-            <Border
-                Grid.Column="0"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                AllowDrop="True"
-                Background="Transparent">
+            <Border Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AllowDrop="True" Background="Transparent">
                 <Grid>
-                    <Viewbox Stretch="Uniform" Margin="10"
-                             RenderOptions.BitmapScalingMode="NearestNeighbor">
-                        <Grid Width="{Binding Image1.PixelWidth, FallbackValue=128}"
-                              Height="{Binding Image1.PixelHeight, FallbackValue=128}">
+                    <Viewbox Stretch="Uniform" Margin="10" RenderOptions.BitmapScalingMode="NearestNeighbor">
+                        <Grid Width="{Binding Image1.PixelWidth, FallbackValue=128}" Height="{Binding Image1.PixelHeight, FallbackValue=128}">
                             <Rectangle Fill="{StaticResource CheckerBrush}" />
-                            <Image
-                                x:Name="Image1"
-                                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Fill"
-                                MouseMove="Image1_MouseMove"
-                                MouseEnter="Image1_MouseEnter"
-                                MouseLeave="Image1_MouseLeave"
-                                MouseDown="Image1_MouseDown"
-                                />
+                            <Image x:Name="Image1" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}" Stretch="Fill" MouseMove="Image1_MouseMove" MouseEnter="Image1_MouseEnter" MouseLeave="Image1_MouseLeave" MouseDown="Image1_MouseDown"/>
                         </Grid>
                     </Viewbox>
-                    <TextBlock
-                        Text="Brick&#x0a;Texture"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                        FontSize="18"
-                        Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                        IsHitTestVisible="False"/>
+                    <TextBlock Text="Brick&#x0a;Texture" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="18" Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}" IsHitTestVisible="False"/>
                 </Grid>
             </Border>
 
-            <!-- Symbol: + -->
-            <StackPanel
-                VerticalAlignment="Center"
-                Grid.Column="1" Margin="0,38,0,0">
+            <StackPanel VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Margin="0,38,0,0">
                 <ui:SymbolIcon Symbol="Add24" d:Foreground="White"/>
-                <ui:Button
-                    Width="30"
-                    Height="30"
-                    Padding="5"
-                    HorizontalAlignment="Center"
-                    Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0"
-                    ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture"
-                    Command="{Binding SwapImagesCommand}"/>
+                <ui:Button Width="30" Height="30" Padding="5" HorizontalAlignment="Center" Icon="{ui:SymbolIcon ArrowSwap24}" Margin="0,9,0,0" ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture" Command="{Binding SwapImagesCommand}"/>
             </StackPanel>
 
-            <!-- Image 2 -->
-            <Border
-                Grid.Column="2"
-                Margin="10"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                AllowDrop="True"
-                Background="Transparent">
+            <Border Grid.Row="0" Grid.Column="2" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AllowDrop="True" Background="Transparent">
                 <Grid>
-                    <Viewbox Stretch="Uniform"
-                             RenderOptions.BitmapScalingMode="NearestNeighbor">
-                        <Grid Width="{Binding Image2.PixelWidth, FallbackValue=128}"
-                              Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                    <Viewbox Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor">
+                        <Grid Width="{Binding Image2.PixelWidth, FallbackValue=128}" Height="{Binding Image2.PixelHeight, FallbackValue=128}">
                             <Rectangle Fill="{StaticResource CheckerBrush}" />
-                            <Image
-                                x:Name="Image2"
-                                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Fill"
-                                MouseMove="Image2_MouseMove"
-                                MouseEnter="Image2_MouseEnter"
-                                MouseLeave="Image2_MouseLeave"
-                                MouseDown="Image2_MouseDown"
-                                />
+                            <Image x:Name="Image2" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}" Stretch="Fill" MouseMove="Image2_MouseMove" MouseEnter="Image2_MouseEnter" MouseLeave="Image2_MouseLeave" MouseDown="Image2_MouseDown"/>
                         </Grid>
                     </Viewbox>
-                    <TextBlock
-                        Text="Background&#x0a;Texture"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                        FontSize="18"
-                        Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                        IsHitTestVisible="False"/>
+                    <TextBlock Text="Background&#x0a;Texture" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontSize="18" Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}" IsHitTestVisible="False"/>
                 </Grid>
             </Border>
 
-            <!-- Symbol: → -->
-            <ui:SymbolIcon
-                Grid.Column="3"
-                Symbol="ArrowRight24"/>
+            <ui:Button x:Name="BtnResult" Appearance="Primary" Foreground="White" Grid.Row="0" Grid.Column="3" Width="30" Height="30" Padding="5" HorizontalAlignment="Center" VerticalAlignment="Center" ap:MouseOverInfoAP.InfoText="Generate the brick transition result image" Command="{Binding MixCommand}" Icon="{ui:SymbolIcon ArrowRight24}"/>
 
-            <ui:Button
-                x:Name="BtnResult"
-                Appearance="Primary"
-                Foreground="White"
-                Grid.Column="3"
-                Width="30"
-                Height="30"
-                Padding="5"
-                HorizontalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Generate the brick transition result image"
-                Command="{Binding MixCommand}"
-                Icon="{ui:SymbolIcon ArrowRight24}"/>
-
-            <!-- Result Image -->
-            <Border
-                Grid.Column="4"
-                Margin="10"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                AllowDrop="True"
-                Background="Transparent">
-                <Image
-                    Margin="0,4,0,0"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
-                    Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform"/>
+            <Border Grid.Row="0" Grid.Column="4" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AllowDrop="True" Background="Transparent">
+                <Image Margin="0,4,0,0" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}" Stretch="Uniform"/>
             </Border>
 
-            <!-- Toggle button for Label Map -->
-            <ToggleButton
-                x:Name="LabelMapToggle"
-                Grid.Column="5"
-                VerticalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
-                IsChecked="{Binding IsLabelMapExpanded}"
-                Width="20"
-                Height="60"
-                Padding="0">
+            <ToggleButton x:Name="LabelMapToggle" Grid.Row="0" Grid.Column="5" VerticalAlignment="Center" ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map" IsChecked="{Binding IsLabelMapExpanded}" Width="20" Height="60" Padding="0">
                 <ToggleButton.Content>
                     <ui:SymbolIcon Symbol="ChevronLeft24"/>
                 </ToggleButton.Content>
             </ToggleButton>
 
-            <!-- Label Map (Expandable 4th Image) -->
-            <Border
-                Grid.Column="6"
-                Margin="10"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Visibility="{Binding IsLabelMapExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
-                Background="Transparent">
-                <Image
-                    Margin="0,4,0,0"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
-                    Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform"/>
+            <Border Grid.Row="0" Grid.Column="6" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding IsLabelMapExpanded, Converter={StaticResource BoolToVisibilityConverter}}" Background="Transparent">
+                <Image Margin="0,4,0,0" RenderOptions.BitmapScalingMode="NearestNeighbor" Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}" Stretch="Uniform"/>
             </Border>
 
-            <ui:Card
-                Grid.Row="1"
-                Grid.ColumnSpan="8"
-                
-                Margin="-10,0,-10,-10"
-                VerticalAlignment="Stretch"
-                IsHitTestVisible="False"/>
-
-            <ui:Button
-                x:Name="BtnLoad1"
-                Width="30"
-                Height="30"
-                Grid.Row="4"
-                Grid.Column="0"
-                Margin="10,5"
-                Padding="5"
-                HorizontalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
-                Icon="{ui:SymbolIcon ImageCopy24}"
-                Command="{Binding LoadImage1Command}"
-                CommandParameter="1"/>
-            <ui:Button
-                x:Name="BtnLoad2"
-                Width="30"
-                Height="30"
-                Grid.Row="4"
-                Grid.Column="2"
-                Margin="10,5"
-                Padding="5"
-                HorizontalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
-                Icon="{ui:SymbolIcon ImageCopy24}"
-                Command="{Binding LoadImage2Command}"
-                CommandParameter="2"/>
-
-            <StackPanel
-                HorizontalAlignment="Right"
-                Grid.Row="1"
-                Grid.ColumnSpan="8"
-                Orientation="Horizontal">
-                <ui:Button
-                    Width="75"
-                    Height="30"
-                    Margin="0,0,15,0"
-                    HorizontalAlignment="Right"
-                    ap:MouseOverInfoAP.InfoText="Cancel and close the dialog"
-                    Command="{Binding CancelCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                    Content="Cancel"/>
-                <ui:Button
-                    Width="75"
-                    Height="30"
-                    Appearance="Primary"
-                    Foreground="White"
-                    Margin="0,0,15,0"
-                    HorizontalAlignment="Right"
-                    ap:MouseOverInfoAP.InfoText="Apply the brick transition and close"
-                    Command="{Binding OKCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                    Content="OK"/>
-            </StackPanel>
+            <ui:Button x:Name="BtnLoad1" Width="30" Height="30" Grid.Row="1" Grid.Column="0" Margin="10,5" Padding="5" HorizontalAlignment="Center" ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection" Icon="{ui:SymbolIcon ImageCopy24}" Command="{Binding LoadImage1Command}" CommandParameter="1"/>
+            <ui:Button x:Name="BtnLoad2" Width="30" Height="30" Grid.Row="1" Grid.Column="2" Margin="10,5" Padding="5" HorizontalAlignment="Center" ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection" Icon="{ui:SymbolIcon ImageCopy24}" Command="{Binding LoadImage2Command}" CommandParameter="2"/>
         </Grid>
+
+        <GridSplitter Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Width="4" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="Transparent" ResizeDirection="Columns"/>
+
+        <Grid Grid.Row="1" Grid.Column="2" Margin="10,10,10,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <local:TransitionModeUserControl Grid.Row="0" Margin="0,0,0,10"/>
+
+            <Grid Grid.Row="1" Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <DockPanel Grid.Column="0" ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
+                    <Grid VerticalAlignment="Center" DockPanel.Dock="Left">
+                        <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_low}"/>
+                        <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" StrokeDashArray="2.2" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_high}"/>
+                    </Grid>
+                    <Grid VerticalAlignment="Center" DockPanel.Dock="Right">
+                        <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_high}"/>
+                        <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" StrokeDashArray="2.2" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_low}"/>
+                    </Grid>
+                    <elements:MouseWheelSlider Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2" Maximum="1" Minimum="0" SmallChange="0.01" Value="{Binding PivotValue}"/>
+                </DockPanel>
+                <elements:ToggleButtonEx Grid.Column="1" VerticalAlignment="Center" ap:MouseOverInfoAP.InfoText="Reverse the pivot direction" Icon="{ui:SymbolIcon FlipHorizontal24}" MinHeight="36" MinWidth="36" IsChecked="{Binding ReversePivot}"/>
+            </Grid>
+
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="0,0,12,0">
+                    <Expander Header="Analysis" IsExpanded="True" HorizontalAlignment="Stretch">
+                        <StackPanel Margin="8,6,8,8">
+                            <elements:ToggleButtonEx Width="36" Height="36" Icon="{ui:SymbolIcon Table24}" IsChecked="{Binding InvertGrayscale}" ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)"/>
+
+                            <DockPanel Margin="0,8,0,0" ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
+                                <Path DockPanel.Dock="Left" VerticalAlignment="Center" Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="5" Height="5" Stretch="Uniform" Margin="5" Data="{StaticResource circle_small}"/>
+                                <Path DockPanel.Dock="Right" VerticalAlignment="Center" Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource circle}"/>
+                                <elements:MouseWheelSlider Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="20" Minimum="1" SmallChange="1" Value="{Binding MarkerRadius}"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,8,0,0" ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+                                <Path VerticalAlignment="Center" Margin="5,0,0,0" Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource filter}"/>
+                                <ComboBox VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Margin="8,0,0,0" SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
+                                    <ComboBoxItem Content="None"/>
+                                    <ComboBoxItem Content="Box Blur"/>
+                                    <ComboBoxItem Content="Median"/>
+                                    <ComboBoxItem Content="Bilateral"/>
+                                </ComboBox>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,8,0,0" ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
+                                <Path VerticalAlignment="Center" Margin="5,0,0,0" Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="18" Height="18" Stretch="Uniform" Data="{StaticResource shapes}"/>
+                                <ComboBox VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Margin="8,0,0,0" SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
+                                    <ComboBoxItem Content="Watershed"/>
+                                    <ComboBoxItem Content="XY Projection"/>
+                                </ComboBox>
+                            </DockPanel>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Header="Pivot" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,8,0,0">
+                        <StackPanel Margin="8,6,8,8">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <elements:ToggleButtonEx x:Name="ProtectEdgesToggleButton" VerticalAlignment="Center" MinHeight="36" MinWidth="36" Icon="{ui:SymbolIcon Shield24}" ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles." IsChecked="{Binding ProtectEdges}"/>
+                                <elements:ToggleButtonEx VerticalAlignment="Center" MinHeight="36" MinWidth="36" Margin="8,0,0,0" Icon="{ui:SymbolIcon Cut24}" ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles" IsEnabled="{Binding IsChecked, ElementName=ProtectEdgesToggleButton}" IsChecked="{Binding SliceCornerTiles}"/>
+                            </StackPanel>
+
+                            <DockPanel ap:MouseOverInfoAP.InfoText="Widening: 0 = Adds or enlarges the plateau at the transition front until it touches the edges at value 1">
+                                <Grid VerticalAlignment="Center" DockPanel.Dock="Left">
+                                    <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_low}"/>
+                                    <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" StrokeDashArray="2.2" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_high}"/>
+                                </Grid>
+                                <Grid VerticalAlignment="Center" DockPanel.Dock="Right">
+                                    <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" StrokeDashArray="2.2" Data="{StaticResource pivot_high}"/>
+                                    <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_widening}"/>
+                                </Grid>
+                                <elements:MouseWheelSlider Style="{StaticResource MouseWheelSliderStyle}" Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2" Maximum="1" Minimum="0" SmallChange="0.01" Value="{Binding WideningValue}" />
+                            </DockPanel>
+
+                            <DockPanel Margin="0,8,0,0" ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
+                                <Grid VerticalAlignment="Center" DockPanel.Dock="Left">
+                                    <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" StrokeDashArray="2.2" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_high}"/>
+                                    <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_shift_left}"/>
+                                </Grid>
+                                <Grid VerticalAlignment="Center" DockPanel.Dock="Right">
+                                    <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" StrokeDashArray="2.2" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_high}"/>
+                                    <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_shift_right}"/>
+                                </Grid>
+                                <elements:MouseWheelSlider Style="{StaticResource MouseWheelSliderStyle}" Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2" Maximum="1" Minimum="-1" SmallChange="0.01" Value="{Binding ShiftValue}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Header="Edge" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,8,0,0">
+                        <StackPanel Margin="8,6,8,8">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <elements:ToggleButtonEx Icon="{ui:SymbolIcon EyeDropper24}" Width="36" Height="36" Margin="0,0,5,0" IsChecked="{Binding IsEyedropperMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ap:MouseOverInfoAP.InfoText="Pick edge color from image"/>
+                                <cp:PortableColorPicker Width="34" Height="30" SelectedColor="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending" Margin="4,0,0,0"/>
+                            </StackPanel>
+
+                            <DockPanel Margin="0,8,0,0" ap:MouseOverInfoAP.InfoText="Blend Mode: defines how edge color combines with tile color">
+                                <ui:SymbolIcon VerticalAlignment="Center" Width="14" Height="14" Symbol="PaintBrush24"/>
+                                <ComboBox Width="130" Margin="8,0,0,0" VerticalAlignment="Center" BorderThickness="0" Background="Transparent" ItemsSource="{Binding EdgeBlendModes}" SelectedItem="{Binding BlendMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </DockPanel>
+
+                            <DockPanel Margin="0,8,0,0" ap:MouseOverInfoAP.InfoText="Edge Width: edge smoothing width for brick transitions (1 = narrow, 12 = wide)">
+                                <ui:SymbolIcon VerticalAlignment="Center" Width="14" Height="14" Symbol="Tab24"/>
+                                <ui:SymbolIcon DockPanel.Dock="Right" VerticalAlignment="Center" Width="14" Height="14" Symbol="TabInPrivate24"/>
+                                <elements:MouseWheelSlider Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="12" Minimum="0" SmallChange="1" Value="{Binding EdgeWidth}"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <ui:Card Grid.Row="2" Grid.ColumnSpan="3" Margin="-10,0,-10,-10" VerticalAlignment="Stretch" IsHitTestVisible="False"/>
+        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="8">
+            <ui:Button Width="75" Height="30" Margin="0,0,8,0" Content="Apply" Command="{Binding MixCommand}"/>
+            <ui:Button Width="75" Height="30" Margin="0,0,8,0" ap:MouseOverInfoAP.InfoText="Cancel and close the dialog" Command="{Binding CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Content="Cancel"/>
+            <ui:Button Width="75" Height="30" Appearance="Primary" Foreground="White" ap:MouseOverInfoAP.InfoText="Apply the brick transition and close" Command="{Binding OKCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Content="OK"/>
+        </StackPanel>
     </Grid>
 </elements:AsyncWindow>
