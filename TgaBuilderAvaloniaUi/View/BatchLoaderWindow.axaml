@@ -87,18 +87,6 @@ Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
                   </ItemsControl>
               </Grid>
           </Flyout>
-          <!---<MenuFlyout
-          ItemsSource="{Binding RecentBatchLoaderFolders}"
-          >
-
-            <MenuFlyout.ItemTemplate>
-              <DataTemplate>
-                <MenuItem Header="{Binding .}"
-                          Command="{Binding DataContext.OpenRecentFolderCommand, ElementName=BatchLoaderWin}"
-                          CommandParameter="{Binding .}" />
-              </DataTemplate>
-            </MenuFlyout.ItemTemplate>
-          </MenuFlyout>-->
         </DropDownButton.Flyout>
       </DropDownButton>
       <elements:IconButton

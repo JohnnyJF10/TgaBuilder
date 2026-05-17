@@ -808,26 +808,25 @@
                 </Button.Styles>
             </Button>
             <StackPanel
-                IsVisible="False"
                 HorizontalAlignment="Center"
                 DataContext="{Binding Selection}"
                 Orientation="Horizontal">
-                <Button
+                <elements:IconButton
                     Width="36"
                     Height="36"
                     Margin="5"
                     HorizontalAlignment="Right"
                     ap:MouseOverInfoAP.InfoText="Copy (Ctrl + C)"
                     Command="{Binding CopyCommand}"
-                    Content="Copy" />
-                <Button
+                    Icon="{StaticResource copy}" />
+                <elements:IconButton
                     Width="36"
                     Height="36"
                     Margin="5"
                     HorizontalAlignment="Right"
-                    ap:MouseOverInfoAP.InfoText="Past (Ctrl + V)"
+                    ap:MouseOverInfoAP.InfoText="Paste (Ctrl + V)"
                     Command="{Binding PasteCommand}"
-                    Content="Clipboard" />
+                    Icon="{StaticResource clipboard_paste}" />
             </StackPanel>
             <StackPanel
                 HorizontalAlignment="Center"

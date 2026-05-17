@@ -111,9 +111,9 @@ namespace TgaBuilderLib.ViewModel
             => _selectionMonoColorFillCommand ??= new(SelectionMonoColorFill);
 
 
-        public void Copy() => _clipboardService.SetImage(Presenter);
+        public async void Copy() => await _clipboardService.SetImageAsync(Presenter);
 
-        public void Paste()
+        public async void Paste()
         {
             try
             {
@@ -123,7 +123,7 @@ namespace TgaBuilderLib.ViewModel
                     return;
                 }
 
-                if (_clipboardService.GetImage() is not IReadableBitmap bitmap)
+                if (await _clipboardService.GetImageAsync() is not IReadableBitmap bitmap)
                     throw new InvalidOperationException("Failed to get image from clipboard.");
 
                 Presenter = _mediaFactory.CloneBitmap(bitmap);
