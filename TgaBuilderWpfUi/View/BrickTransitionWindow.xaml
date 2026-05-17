@@ -69,16 +69,18 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition
                 Width="3*"
-                MinWidth="400" />
+                MinWidth="420" />
             <ColumnDefinition
                 Width="Auto" />
             <ColumnDefinition
                 Width="*"
-                MinWidth="260" />
+                MinWidth="220" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition
                 Height="Auto" />
+            <RowDefinition 
+                Height="Auto"/>
             <RowDefinition
                 Height="*" />
             <RowDefinition
@@ -109,7 +111,7 @@
         <!-- Left pane: image workflow and optional label map -->
         <Grid
             x:Name="ImageAreaGrid"
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="0"
             Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
@@ -338,9 +340,76 @@
                 CommandParameter="2" />
         </Grid>
 
+        <DockPanel
+            Grid.Row="1">
+            <!-- Top row: transition mode -->
+            <local:TransitionModeUserControl
+                Grid.Row="0"
+                Margin="7,0,0,0" />
+
+            <!-- Top row: pivot -->
+            <DockPanel
+                Grid.Row="1"
+                Margin="10,0,10,0"
+                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
+                <Grid
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left">
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_low}" />
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        StrokeDashArray="2.2"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_high}" />
+                </Grid>
+                <Grid
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right">
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_high}" />
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        StrokeDashArray="2.2"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_low}" />
+                </Grid>
+                <elements:MouseWheelSlider
+                    Style="{StaticResource MouseWheelSliderStyle}"
+                    Margin="5,0"
+                    VerticalAlignment="Center"
+                    AutoToolTipPlacement="BottomRight"
+                    AutoToolTipPrecision="2"
+                    Maximum="1"
+                    Minimum="0"
+                    SmallChange="0.01"
+                    Value="{Binding PivotValue}" />
+            </DockPanel>
+        </DockPanel>
+
         <!-- Between panes: column splitter -->
         <GridSplitter
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.RowSpan="2"
             Grid.Column="1"
             Width="4"
@@ -353,99 +422,8 @@
         <Grid
             Grid.Row="1"
             Grid.Column="2"
-            Margin="10,10,10,10">
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="*" />
-            </Grid.RowDefinitions>
-
-            <!-- Right pane top: transition mode -->
-            <local:TransitionModeUserControl
-                Grid.Row="0"
-                Margin="0,0,0,10" />
-
-            <!-- Right pane next row: pivot + reverse pivot -->
-            <Grid
-                Grid.Row="1"
-                Margin="0,0,0,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="*" />
-                    <ColumnDefinition
-                        Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <DockPanel
-                    Grid.Column="0"
-                    ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
-                    <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Left">
-                        <Path
-                            VerticalAlignment="Bottom"
-                            Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                            Fill="Transparent"
-                            Width="14"
-                            Height="14"
-                            Stretch="Uniform"
-                            Data="{StaticResource pivot_low}" />
-                        <Path
-                            VerticalAlignment="Bottom"
-                            Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                            StrokeDashArray="2.2"
-                            Fill="Transparent"
-                            Width="14"
-                            Height="14"
-                            Stretch="Uniform"
-                            Data="{StaticResource pivot_high}" />
-                    </Grid>
-                    <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Right">
-                        <Path
-                            VerticalAlignment="Bottom"
-                            Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                            Fill="Transparent"
-                            Width="14"
-                            Height="14"
-                            Stretch="Uniform"
-                            Data="{StaticResource pivot_high}" />
-                        <Path
-                            VerticalAlignment="Bottom"
-                            Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                            StrokeDashArray="2.2"
-                            Fill="Transparent"
-                            Width="14"
-                            Height="14"
-                            Stretch="Uniform"
-                            Data="{StaticResource pivot_low}" />
-                    </Grid>
-                    <elements:MouseWheelSlider
-                        Style="{StaticResource MouseWheelSliderStyle}"
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        AutoToolTipPlacement="BottomRight"
-                        AutoToolTipPrecision="2"
-                        Maximum="1"
-                        Minimum="0"
-                        SmallChange="0.01"
-                        Value="{Binding PivotValue}" />
-                </DockPanel>
-
-                <elements:ToggleButtonEx
-                    Grid.Column="1"
-                    Margin="8,0,0,0"
-                    VerticalAlignment="Center"
-                    ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
-                    Icon="{ui:SymbolIcon FlipHorizontal24}"
-                    MinHeight="36"
-                    MinWidth="36"
-                    IsChecked="{Binding ReversePivot}" />
-            </Grid>
+            Grid.RowSpan="2"
+            Margin="10,0,10,10">
 
             <!-- Right pane middle: grouped controls in vertical expanders -->
             <ScrollViewer
@@ -565,6 +543,14 @@
                                 Orientation="Horizontal"
                                 Margin="0,0,0,8">
                                 <elements:ToggleButtonEx
+                                    VerticalAlignment="Center"
+                                    ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
+                                    Icon="{ui:SymbolIcon FlipHorizontal24}"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    IsChecked="{Binding ReversePivot}" />
+                                <elements:ToggleButtonEx
+                                    Margin="8,0,0,0"
                                     x:Name="ProtectEdgesToggleButton"
                                     VerticalAlignment="Center"
                                     MinHeight="36"
@@ -775,15 +761,15 @@
 
         <!-- Row 2: footer bar and action buttons -->
         <ui:Card
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.ColumnSpan="3"
             Margin="-10,0,-10,-10"
             VerticalAlignment="Stretch"
             IsHitTestVisible="False" />
 
         <StackPanel
-            Grid.Row="2"
-            Grid.Column="2"
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
             Orientation="Horizontal"
             HorizontalAlignment="Right"
             Margin="8">

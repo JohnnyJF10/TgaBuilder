@@ -65,16 +65,18 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition
                 Width="3*"
-                MinWidth="400" />
+                MinWidth="420" />
             <ColumnDefinition
                 Width="Auto" />
             <ColumnDefinition
                 Width="*"
-                MinWidth="260" />
+                MinWidth="180" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition
                 Height="Auto" />
+            <RowDefinition 
+                Height="Auto"/>
             <RowDefinition
                 Height="*" />
             <RowDefinition
@@ -104,7 +106,7 @@
 
         <!-- Left pane: source/result preview workflow -->
         <Grid
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="0"
             Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
@@ -273,40 +275,17 @@
                 CommandParameter="2" />
         </Grid>
 
-        <!-- Between panes: column splitter -->
-        <GridSplitter
-            Grid.Row="1"
-            Grid.RowSpan="2"
-            Grid.Column="1"
-            Width="4"
-            VerticalAlignment="Stretch"
-            HorizontalAlignment="Center"
-            Background="Transparent"
-            ResizeDirection="Columns" />
-
-        <!-- Right pane: transition controls -->
-        <Grid
-            Grid.Row="1"
-            Grid.Column="2"
-            Margin="10,10,10,10">
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="*" />
-            </Grid.RowDefinitions>
-
-            <!-- Right pane top: transition mode -->
+        <DockPanel
+            Grid.Row="1">
+            <!-- Top row: transition mode -->
             <local:TransitionModeUserControl
                 Grid.Row="0"
-                Margin="0,0,0,10" />
+                Margin="7,0,0,0" />
 
-            <!-- Right pane next row: pivot -->
+            <!-- Top row: pivot -->
             <DockPanel
                 Grid.Row="1"
-                Margin="0,0,0,10"
+                Margin="10,0,10,0"
                 ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
                 <Grid
                     VerticalAlignment="Center"
@@ -361,107 +340,121 @@
                     SmallChange="0.01"
                     Value="{Binding PivotValue}" />
             </DockPanel>
+        </DockPanel>
 
-            <!-- Right pane middle: smooth blend controls -->
-            <StackPanel
-                Grid.Row="2"
-                Margin="0,0,0,10">
-                <DockPanel
-                    ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
+        <!-- Between panes: column splitter -->
+        <GridSplitter
+            Grid.Row="2"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Width="4"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            Background="Transparent"
+            ResizeDirection="Columns" />
+
+        <!-- Right pane: transition controls -->
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="2"
+            Grid.RowSpan="2"
+            Margin="0,8,15,0">
+            <DockPanel
+                ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
+                <Path
+                    DockPanel.Dock="Left"
+                    VerticalAlignment="Center"
+                    Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                    Fill="Transparent"
+                    Width="14"
+                    Height="14"
+                    Stretch="Uniform"
+                    Data="{StaticResource hardness_soft}" />
+                <Path
+                    DockPanel.Dock="Right"
+                    VerticalAlignment="Center"
+                    Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                    Fill="Transparent"
+                    Width="14"
+                    Height="14"
+                    Stretch="Uniform"
+                    Data="{StaticResource hardness_sharp}" />
+                <elements:MouseWheelSlider
+                    Style="{StaticResource MouseWheelSliderStyle}"
+                    Margin="5,0"
+                    VerticalAlignment="Center"
+                    AutoToolTipPlacement="BottomRight"
+                    AutoToolTipPrecision="2"
+                    Maximum="1"
+                    Minimum="0"
+                    SmallChange="0.01"
+                    Value="{Binding BlendHardnessValue}" />
+            </DockPanel>
+
+            <DockPanel
+                Margin="0,18,0,0"
+                ap:MouseOverInfoAP.InfoText="Widening: 0 = Adds or enlarges the plateau at the transition front until it touches the edges at value 1">
+                <Grid
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left">
                     <Path
-                        DockPanel.Dock="Left"
-                        VerticalAlignment="Center"
+                        VerticalAlignment="Bottom"
                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
                         Fill="Transparent"
                         Width="14"
                         Height="14"
                         Stretch="Uniform"
-                        Data="{StaticResource hardness_soft}" />
+                        Data="{StaticResource pivot_low}" />
                     <Path
-                        DockPanel.Dock="Right"
-                        VerticalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        StrokeDashArray="2.2"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_high}" />
+                </Grid>
+                <Grid
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right">
+                    <Path
+                        VerticalAlignment="Bottom"
                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
                         Fill="Transparent"
                         Width="14"
                         Height="14"
                         Stretch="Uniform"
-                        Data="{StaticResource hardness_sharp}" />
-                    <elements:MouseWheelSlider
-                        Style="{StaticResource MouseWheelSliderStyle}"
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        AutoToolTipPlacement="BottomRight"
-                        AutoToolTipPrecision="2"
-                        Maximum="1"
-                        Minimum="0"
-                        SmallChange="0.01"
-                        Value="{Binding BlendHardnessValue}" />
-                </DockPanel>
+                        StrokeDashArray="2.2"
+                        Data="{StaticResource pivot_high}" />
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_widening}" />
+                </Grid>
+                <elements:MouseWheelSlider
+                    Style="{StaticResource MouseWheelSliderStyle}"
+                    Margin="5,0"
+                    VerticalAlignment="Center"
+                    AutoToolTipPlacement="BottomRight"
+                    AutoToolTipPrecision="2"
+                    Maximum="1"
+                    Minimum="0"
+                    SmallChange="0.01"
+                    Value="{Binding WideningValue}" />
+            </DockPanel>
 
-                <DockPanel
-                    Margin="0,8,0,0"
-                    ap:MouseOverInfoAP.InfoText="Widening: 0 = Adds or enlarges the plateau at the transition front until it touches the edges at value 1">
-                    <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Left">
-                        <Path
-                            VerticalAlignment="Bottom"
-                            Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                            Fill="Transparent"
-                            Width="14"
-                            Height="14"
-                            Stretch="Uniform"
-                            Data="{StaticResource pivot_low}" />
-                        <Path
-                            VerticalAlignment="Bottom"
-                            Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                            StrokeDashArray="2.2"
-                            Fill="Transparent"
-                            Width="14"
-                            Height="14"
-                            Stretch="Uniform"
-                            Data="{StaticResource pivot_high}" />
-                    </Grid>
-                    <Grid
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Right">
-                        <Path
-                            VerticalAlignment="Bottom"
-                            Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                            Fill="Transparent"
-                            Width="14"
-                            Height="14"
-                            Stretch="Uniform"
-                            StrokeDashArray="2.2"
-                            Data="{StaticResource pivot_high}" />
-                        <Path
-                            VerticalAlignment="Bottom"
-                            Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                            Fill="Transparent"
-                            Width="14"
-                            Height="14"
-                            Stretch="Uniform"
-                            Data="{StaticResource pivot_widening}" />
-                    </Grid>
-                    <elements:MouseWheelSlider
-                        Style="{StaticResource MouseWheelSliderStyle}"
-                        Margin="5,0"
-                        VerticalAlignment="Center"
-                        AutoToolTipPlacement="BottomRight"
-                        AutoToolTipPrecision="2"
-                        Maximum="1"
-                        Minimum="0"
-                        SmallChange="0.01"
-                        Value="{Binding WideningValue}" />
-                </DockPanel>
-
-                <DockPanel
-                    Margin="0,8,0,0"
+            <DockPanel
+                    Margin="0,18,0,0"
                     ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
-                    <Grid
+                <Grid
                         VerticalAlignment="Center"
                         DockPanel.Dock="Left">
-                        <Path
+                    <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
                             StrokeDashArray="2.2"
@@ -470,7 +463,7 @@
                             Height="14"
                             Stretch="Uniform"
                             Data="{StaticResource pivot_high}" />
-                        <Path
+                    <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
                             Fill="Transparent"
@@ -478,11 +471,11 @@
                             Height="14"
                             Stretch="Uniform"
                             Data="{StaticResource pivot_shift_left}" />
-                    </Grid>
-                    <Grid
+                </Grid>
+                <Grid
                         VerticalAlignment="Center"
                         DockPanel.Dock="Right">
-                        <Path
+                    <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
                             StrokeDashArray="2.2"
@@ -491,7 +484,7 @@
                             Height="14"
                             Stretch="Uniform"
                             Data="{StaticResource pivot_high}" />
-                        <Path
+                    <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
                             Fill="Transparent"
@@ -499,8 +492,8 @@
                             Height="14"
                             Stretch="Uniform"
                             Data="{StaticResource pivot_shift_right}" />
-                    </Grid>
-                    <elements:MouseWheelSlider
+                </Grid>
+                <elements:MouseWheelSlider
                         Style="{StaticResource MouseWheelSliderStyle}"
                         Margin="5,0"
                         VerticalAlignment="Center"
@@ -510,21 +503,20 @@
                         Minimum="-1"
                         SmallChange="0.01"
                         Value="{Binding ShiftValue}" />
-                </DockPanel>
-            </StackPanel>
-        </Grid>
+            </DockPanel>
+        </StackPanel>
 
         <!-- Row 2: footer bar and action buttons -->
         <ui:Card
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.ColumnSpan="3"
             Margin="-10,0,-10,-10"
             VerticalAlignment="Stretch"
             IsHitTestVisible="False" />
 
         <StackPanel
-            Grid.Row="2"
-            Grid.Column="2"
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
             Orientation="Horizontal"
             HorizontalAlignment="Right"
             Margin="8">
