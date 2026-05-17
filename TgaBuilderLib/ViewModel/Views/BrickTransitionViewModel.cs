@@ -36,7 +36,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private bool _protectEdges = true;
     private bool _isLabelMapExpanded;
     private FilterType _selectedFilter = FilterType.BoxBlur;
-    private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
+    private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Felzenszwalb;
     private int _felzenszwalbMinSize = 50;
     private float _felzenszwalbScale = 100f;
     private int _slicSegmentCount = 250;
@@ -140,6 +140,7 @@ public class BrickTransitionViewModel : TransitionViewModelBase
                 OnPropertyChanged(nameof(ShowFelzenszwalbParameters));
                 OnPropertyChanged(nameof(ShowSlicParameters));
                 OnPropertyChanged(nameof(ShowQuickshiftParameters));
+                OnPropertyChanged(nameof(ShowGrayBasedSegmentationInputs));
                 OnPropertyChanged(nameof(SelectedSegmentationMethodIndex));
                 _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
                 _ = TriggerRecalculation();
@@ -150,6 +151,11 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public bool ShowFelzenszwalbParameters => SelectedSegmentationMethod == SegmentationMethod.Felzenszwalb;
     public bool ShowSlicParameters => SelectedSegmentationMethod == SegmentationMethod.Slic;
     public bool ShowQuickshiftParameters => SelectedSegmentationMethod == SegmentationMethod.Quickshift;
+    public bool ShowGrayBasedSegmentationInputs =>
+        SelectedSegmentationMethod == SegmentationMethod.Watershed
+        || SelectedSegmentationMethod == SegmentationMethod.XYProjection
+        || SelectedSegmentationMethod == SegmentationMethod.YXProjection
+        || SelectedSegmentationMethod == SegmentationMethod.Rectilinear;
 
     public int FelzenszwalbMinSize
     {

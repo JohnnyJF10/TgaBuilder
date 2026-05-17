@@ -32,7 +32,7 @@ namespace TgaBuilderLib.Transitions
         public bool SliceCornerTiles { get; set; } = false;
         public bool ProtectEdges { get; set; } = true;
         public int MarkerRadius { get; set; } = 3;
-        public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Watershed;
+        public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Felzenszwalb;
         public int FelzenszwalbMinSize { get; set; } = 50;
         public float FelzenszwalbScale { get; set; } = 100f;
         public int SlicSegmentCount { get; set; } = 250;
@@ -63,7 +63,7 @@ namespace TgaBuilderLib.Transitions
             ReversePivot = false;
             SliceCornerTiles = false;
             ProtectEdges = true;
-            SegmentationMethod = SegmentationMethod.Watershed;
+            SegmentationMethod = SegmentationMethod.Felzenszwalb;
             FelzenszwalbMinSize = 50;
             FelzenszwalbScale = 100f;
             SlicSegmentCount = 250;

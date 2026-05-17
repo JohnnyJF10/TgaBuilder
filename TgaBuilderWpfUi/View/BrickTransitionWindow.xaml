@@ -438,15 +438,128 @@
                         HorizontalAlignment="Stretch">
                         <StackPanel
                             Margin="8,6,8,8">
-                            <elements:ToggleButtonEx
-                                Width="36"
-                                Height="36"
-                                Icon="{ui:SymbolIcon Table24}"
-                                IsChecked="{Binding InvertGrayscale}"
-                                ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
+                            <DockPanel
+                                Margin="0,8,0,0"
+                                ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="18"
+                                    Height="18"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource shapes}" />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Margin="8,0,0,0"
+                                    SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
+                                    <ComboBoxItem
+                                        HorizontalContentAlignment="Stretch">
+                                        <TextBlock
+                                            Text="Felzenszwalb"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem
+                                        HorizontalContentAlignment="Stretch">
+                                        <TextBlock
+                                            Text="SLIC"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem
+                                        HorizontalContentAlignment="Stretch">
+                                        <TextBlock
+                                            Text="Quickshift"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem
+                                        HorizontalContentAlignment="Stretch">
+                                        <TextBlock
+                                            Text="Watershed"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem
+                                        HorizontalContentAlignment="Stretch">
+                                        <TextBlock
+                                            Text="XY Projection"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem
+                                        HorizontalContentAlignment="Stretch">
+                                        <TextBlock
+                                            Text="YX Projection"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem
+                                        HorizontalContentAlignment="Stretch">
+                                        <TextBlock
+                                            Text="Rectilinear"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </ComboBoxItem>
+                                </ComboBox>
+                            </DockPanel>
 
                             <DockPanel
                                 Margin="0,8,0,0"
+                                Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <elements:ToggleButtonEx
+                                    Width="36"
+                                    Height="36"
+                                    Icon="{ui:SymbolIcon Table24}"
+                                    IsChecked="{Binding InvertGrayscale}"
+                                    ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
+                                <DockPanel
+                                    Margin="8,0,0,0"
+                                    LastChildFill="True"
+                                    ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+                                    <Path
+                                        VerticalAlignment="Center"
+                                        Margin="5,0,0,0"
+                                        Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Width="14"
+                                        Height="14"
+                                        Stretch="Uniform"
+                                        Data="{StaticResource filter}" />
+                                    <ComboBox
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Margin="8,0,0,0"
+                                        SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBoxItem
+                                            HorizontalContentAlignment="Stretch">
+                                            <TextBlock
+                                                Text="None"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem
+                                            HorizontalContentAlignment="Stretch">
+                                            <TextBlock
+                                                Text="Box Blur"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem
+                                            HorizontalContentAlignment="Stretch">
+                                            <TextBlock
+                                                Text="Median"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem
+                                            HorizontalContentAlignment="Stretch">
+                                            <TextBlock
+                                                Text="Bilateral"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </DockPanel>
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,0,0"
+                                Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
                                 <Path
                                     DockPanel.Dock="Left"
@@ -480,74 +593,24 @@
 
                             <DockPanel
                                 Margin="0,8,0,0"
-                                ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+                                Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging">
                                 <Path
                                     VerticalAlignment="Center"
-                                    Margin="5,0,0,0"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource filter}" />
-                                <ComboBox
-                                    VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Margin="8,0,0,0"
-                                    SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
-                                    <ComboBoxItem
-                                        Content="None" />
-                                    <ComboBoxItem
-                                        Content="Box Blur" />
-                                    <ComboBoxItem
-                                        Content="Median" />
-                                    <ComboBoxItem
-                                        Content="Bilateral" />
-                                </ComboBox>
-                            </DockPanel>
-
-                            <DockPanel
-                                Margin="0,8,0,0"
-                                ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource arrow_left}" />
                                 <Path
+                                    DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
-                                    Margin="5,0,0,0"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    Width="18"
-                                    Height="18"
+                                    Width="14"
+                                    Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource shapes}" />
-                                <ComboBox
-                                    VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Margin="8,0,0,0"
-                                    SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
-                                    <ComboBoxItem
-                                        Content="Watershed" />
-                                    <ComboBoxItem
-                                        Content="Rectilinear" />
-                                    <ComboBoxItem
-                                        Content="XY Projection" />
-                                    <ComboBoxItem
-                                        Content="YX Projection" />
-                                    <ComboBoxItem
-                                        Content="Felzenszwalb" />
-                                    <ComboBoxItem
-                                        Content="SLIC" />
-                                    <ComboBoxItem
-                                        Content="Quickshift" />
-                                </ComboBox>
-                            </DockPanel>
-
-                            <DockPanel
-                                Margin="0,8,0,0"
-                                Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging">
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    Margin="5,0,0,0"
-                                    Text="·" />
+                                    Data="{StaticResource arrow_right}" />
                                 <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
@@ -565,10 +628,22 @@
                                 Margin="0,8,0,0"
                                 Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor">
-                                <TextBlock
+                                <Path
                                     VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Text="·" />
+                                    Data="{StaticResource arrow_left}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource arrow_right}" />
                                 <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
@@ -584,10 +659,22 @@
                                 Margin="0,8,0,0"
                                 Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels">
-                                <TextBlock
+                                <Path
                                     VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Text="·" />
+                                    Data="{StaticResource arrow_left}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource arrow_right}" />
                                 <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
@@ -605,10 +692,22 @@
                                 Margin="0,8,0,0"
                                 Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity">
-                                <TextBlock
+                                <Path
                                     VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Text="·" />
+                                    Data="{StaticResource arrow_left}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource arrow_right}" />
                                 <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
@@ -624,10 +723,22 @@
                                 Margin="0,8,0,0"
                                 Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed">
-                                <TextBlock
+                                <Path
                                     VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Text="·" />
+                                    Data="{StaticResource arrow_left}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource arrow_right}" />
                                 <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
@@ -645,10 +756,22 @@
                                 Margin="0,8,0,0"
                                 Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling">
-                                <TextBlock
+                                <Path
                                     VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Text="·" />
+                                    Data="{StaticResource arrow_left}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource arrow_right}" />
                                 <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
@@ -848,13 +971,22 @@
                                     Height="14"
                                     Symbol="PaintBrush24" />
                                 <ComboBox
-                                    Width="130"
+                                    HorizontalAlignment="Stretch"
+                                    MinWidth="130"
                                     Margin="8,0,0,0"
                                     VerticalAlignment="Center"
                                     BorderThickness="0"
                                     Background="Transparent"
                                     ItemsSource="{Binding EdgeBlendModes}"
-                                    SelectedItem="{Binding BlendMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    SelectedItem="{Binding BlendMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Text="{Binding}"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                             </DockPanel>
 
                             <DockPanel
