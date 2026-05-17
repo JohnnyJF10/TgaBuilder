@@ -54,6 +54,11 @@ namespace TgaBuilderAvaloniaUi
 
             mainWindow.ThemeToggleButton.Click += (_, _) => ToggleTheme();
 
+            var clipboardService = provider.GetRequiredService<IClipboardService>();
+            if (clipboardService is ClipboardService clipboardServiceImpl && mainWindow.Clipboard is not null) 
+                clipboardServiceImpl.RegisterClipboard(mainWindow.Clipboard);
+            
+
             mainWindow.Show();
 
             mainWindow.Closed += (_, _) =>
