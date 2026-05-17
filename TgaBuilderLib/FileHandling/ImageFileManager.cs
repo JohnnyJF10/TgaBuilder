@@ -114,6 +114,9 @@ namespace TgaBuilderLib.FileHandling
             else if (IsUsual(extension))
                 _bitmapIO.ToUsual(bitmap, extension);
 
+            else if (IsPsd(extension))
+                _bitmapIO.ToPsd(bitmap);
+
             else
                 throw new NotSupportedException($"Unsupported file format: {extension}");
         }
@@ -133,6 +136,9 @@ namespace TgaBuilderLib.FileHandling
 
             else if (IsUsual(extension))
                 _bitmapIO.WriteUsual(fileName, cancellationToken);
+
+            else if (IsPsd(extension))
+                _bitmapIO.WritePsd(fileName, cancellationToken);
 
             else
                 throw new NotSupportedException($"Unsupported file format: {extension}");
@@ -198,6 +204,9 @@ namespace TgaBuilderLib.FileHandling
 
         private bool IsTga(string extension)
             => extension == "tga";
+
+        private bool IsPsd(string extension)
+            => extension == "psd";
 
         private bool IsUsual(string extension)
             => extension is "png" or "jpg" or "jpeg" or "bmp";

@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -144,11 +145,17 @@ namespace TgaBuilderAvaloniaUi.Services
                 ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
                 : null;
 
-            var fileTypeChoices = new List<FilePickerFileType>
+            var fileTypeChoices = new List<FilePickerFileType>();
+            foreach (FileTypes type in Enum.GetValues(typeof(FileTypes)))
+            {
+                if (type == FileTypes.None) continue;
+                if (!types.HasFlag(type)) continue;
+                string ext = type.ToString().ToLower();
+                fileTypeChoices.Add(new FilePickerFileType($"{type.ToString().ToUpper()} Files (*.{ext})")
                 {
-                    new("Png Files (*.png)") { Patterns = new[] { "*.png" }},
-                    new("Tga Files (*.tga)") { Patterns = new[] { "*.tga" }}
-                };
+                    Patterns = new[] { $"*.{ext}" }
+                });
+            }
 
             var fileResult = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {

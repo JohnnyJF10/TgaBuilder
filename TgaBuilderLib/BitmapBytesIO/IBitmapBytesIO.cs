@@ -53,6 +53,13 @@ namespace TgaBuilderLib.BitmapBytesIO
             string filePath,
             CancellationToken? cancellationToken = null);
 
+        void ToPsd(
+            IReadableBitmap bitmap);
+
+        void WritePsd(
+            string filePath,
+            CancellationToken? cancellationToken = null);
+
         void ClearLoadedData();
     }
 }

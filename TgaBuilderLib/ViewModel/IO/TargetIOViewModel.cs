@@ -36,7 +36,7 @@ namespace TgaBuilderLib.ViewModel
 
         private const FileTypes WRITEABLE_FILE_TYPES =
             FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
-            | FileTypes.JPEG;
+            | FileTypes.JPEG | FileTypes.PSD;
 
         private static bool IsHandleableSaveFileException(Exception e)
             => e is FileNotFoundException
