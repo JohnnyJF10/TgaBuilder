@@ -449,11 +449,11 @@
                                 <Path
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource IconFillBrush}"
-                                    Width="14"
-                                    Height="14"
+                                    Width="8"
+                                    Height="8"
                                     Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Data="{StaticResource arrow_left}" />
+                                    Data="{StaticResource circle_small}" />
                                 <Path
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
@@ -461,7 +461,7 @@
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource arrow_right}" />
+                                    Data="{StaticResource circle}" />
                                 <elements:MouseWheelSlider
                                     Margin="5,0"
                                     VerticalAlignment="Center"
@@ -484,7 +484,7 @@
                                     Height="14"
                                     Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Data="{StaticResource arrow_left}" />
+                                    Data="{StaticResource line_horizontal_1}" />
                                 <Path
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
@@ -492,7 +492,7 @@
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource arrow_right}" />
+                                    Data="{StaticResource line_horizontal_5}" />
                                 <elements:MouseWheelSlider
                                     Margin="5,0"
                                     VerticalAlignment="Center"
@@ -513,7 +513,7 @@
                                     Height="14"
                                     Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Data="{StaticResource arrow_left}" />
+                                    Data="{StaticResource square_simple}" />
                                 <Path
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
@@ -521,7 +521,7 @@
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource arrow_right}" />
+                                    Data="{StaticResource grid}" />
                                 <elements:MouseWheelSlider
                                     Margin="5,0"
                                     VerticalAlignment="Center"
@@ -544,7 +544,7 @@
                                     Height="14"
                                     Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Data="{StaticResource arrow_left}" />
+                                    Data="{StaticResource scale_fit}" />
                                 <Path
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
@@ -552,7 +552,7 @@
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource arrow_right}" />
+                                    Data="{StaticResource scale_fill}" />
                                 <elements:MouseWheelSlider
                                     Margin="5,0"
                                     VerticalAlignment="Center"
@@ -573,7 +573,7 @@
                                     Height="14"
                                     Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Data="{StaticResource arrow_left}" />
+                                    Data="{StaticResource arrow_minimize}" />
                                 <Path
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
@@ -581,7 +581,7 @@
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource arrow_right}" />
+                                    Data="{StaticResource arrow_maximize}" />
                                 <elements:MouseWheelSlider
                                     Margin="5,0"
                                     VerticalAlignment="Center"
@@ -604,7 +604,7 @@
                                     Height="14"
                                     Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Data="{StaticResource arrow_left}" />
+                                    Data="{StaticResource color_line}" />
                                 <Path
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
@@ -612,7 +612,7 @@
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource arrow_right}" />
+                                    Data="{StaticResource color_line_accent}" />
                                 <elements:MouseWheelSlider
                                     Margin="5,0"
                                     VerticalAlignment="Center"
