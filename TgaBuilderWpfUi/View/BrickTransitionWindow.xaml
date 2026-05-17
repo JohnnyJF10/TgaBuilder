@@ -19,10 +19,10 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     Title="MainWindow"
-    Width="980"
-    Height="360"
-    MinWidth="940"
-    MinHeight="320"
+    Width="680"
+    Height="300"
+    MinWidth="640"
+    MinHeight="300"
     d:Background="Black"
     d:DataContext="{d:DesignInstance Type=viewmodel:BrickTransitionViewModel, IsDesignTimeCreatable=False}">
     <Window.Resources>
@@ -46,9 +46,9 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" MinWidth="600"/>
+            <ColumnDefinition Width="3*" MinWidth="400"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*" MinWidth="300"/>
+            <ColumnDefinition Width="*" MinWidth="260"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -165,9 +165,9 @@
                         <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_high}"/>
                         <Path VerticalAlignment="Bottom" Stroke="{DynamicResource TextFillColorPrimaryBrush}" StrokeDashArray="2.2" Fill="Transparent" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource pivot_low}"/>
                     </Grid>
-                    <elements:MouseWheelSlider Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2" Maximum="1" Minimum="0" SmallChange="0.01" Value="{Binding PivotValue}"/>
+                    <elements:MouseWheelSlider Style="{StaticResource MouseWheelSliderStyle}" Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2" Maximum="1" Minimum="0" SmallChange="0.01" Value="{Binding PivotValue}"/>
                 </DockPanel>
-                <elements:ToggleButtonEx Grid.Column="1" VerticalAlignment="Center" ap:MouseOverInfoAP.InfoText="Reverse the pivot direction" Icon="{ui:SymbolIcon FlipHorizontal24}" MinHeight="36" MinWidth="36" IsChecked="{Binding ReversePivot}"/>
+                <elements:ToggleButtonEx Margin="8,0,0,0" Grid.Column="1" VerticalAlignment="Center" ap:MouseOverInfoAP.InfoText="Reverse the pivot direction" Icon="{ui:SymbolIcon FlipHorizontal24}" MinHeight="36" MinWidth="36" IsChecked="{Binding ReversePivot}"/>
             </Grid>
 
             <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -179,7 +179,7 @@
                             <DockPanel Margin="0,8,0,0" ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
                                 <Path DockPanel.Dock="Left" VerticalAlignment="Center" Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="5" Height="5" Stretch="Uniform" Margin="5" Data="{StaticResource circle_small}"/>
                                 <Path DockPanel.Dock="Right" VerticalAlignment="Center" Fill="{DynamicResource TextFillColorPrimaryBrush}" Width="14" Height="14" Stretch="Uniform" Data="{StaticResource circle}"/>
-                                <elements:MouseWheelSlider Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="20" Minimum="1" SmallChange="1" Value="{Binding MarkerRadius}"/>
+                                <elements:MouseWheelSlider Style="{StaticResource MouseWheelSliderStyle}" Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="20" Minimum="1" SmallChange="1" Value="{Binding MarkerRadius}"/>
                             </DockPanel>
 
                             <DockPanel Margin="0,8,0,0" ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
@@ -250,7 +250,7 @@
                             <DockPanel Margin="0,8,0,0" ap:MouseOverInfoAP.InfoText="Edge Width: edge smoothing width for brick transitions (1 = narrow, 12 = wide)">
                                 <ui:SymbolIcon VerticalAlignment="Center" Width="14" Height="14" Symbol="Tab24"/>
                                 <ui:SymbolIcon DockPanel.Dock="Right" VerticalAlignment="Center" Width="14" Height="14" Symbol="TabInPrivate24"/>
-                                <elements:MouseWheelSlider Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="12" Minimum="0" SmallChange="1" Value="{Binding EdgeWidth}"/>
+                                <elements:MouseWheelSlider Style="{StaticResource MouseWheelSliderStyle}" Margin="5,0" VerticalAlignment="Center" AutoToolTipPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="12" Minimum="0" SmallChange="1" Value="{Binding EdgeWidth}"/>
                             </DockPanel>
                         </StackPanel>
                     </Expander>

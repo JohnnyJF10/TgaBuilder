@@ -12,10 +12,10 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
     Title="MainWindow"
-    Width="900"
-    Height="360"
-    MinWidth="900"
-    MinHeight="320"
+    Width="680"
+    Height="300"
+    MinWidth="640"
+    MinHeight="300"
     d:Background="Black"
     d:DataContext="{d:DesignInstance Type=viewmodel:SmoothTransitionViewModel, IsDesignTimeCreatable=False}"
     ExtendsContentIntoTitleBar="True"
@@ -43,9 +43,9 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" MinWidth="600"/>
+            <ColumnDefinition Width="3*" MinWidth="400"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*" MinWidth="220"/>
+            <ColumnDefinition Width="*" MinWidth="260"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

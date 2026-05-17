@@ -15,9 +15,9 @@
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Smooth Transition Helper"
-    Width="900"
+    Width="680"
     Height="300"
-    MinWidth="900"
+    MinWidth="640"
     MinHeight="300"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
@@ -51,7 +51,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition
                 Width="3*"
-                MinWidth="600" />
+                MinWidth="420" />
             <ColumnDefinition
                 Width="*"
                 MinWidth="220" />

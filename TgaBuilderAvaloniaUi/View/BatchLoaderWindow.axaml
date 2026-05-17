@@ -25,7 +25,7 @@ MinWidth="700"
 Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
 >
 
-<!-- ========================================================================= -->
+    <!-- ========================================================================= -->
     <!-- WINDOW RESOURCES, CONVERTERS & CONSTANTS                                  -->
     <!-- ========================================================================= -->
     <Window.Resources>
@@ -104,10 +104,10 @@ Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
                     <!-- Viewport Canvas Rendering Layer -->
                     <Canvas
                         x:Name="BatchLoaderCanvas"
-                        Width="{Binding ElementName=BatchLoadedImage, Path=Bounds.Width}"
-                        Height="{Binding ElementName=BatchLoadedImage, Path=Bounds.Height}">
+                        Width="{Binding #BatchLoadedImage.Bounds.Width}"
+                        Height="{Binding #BatchLoadedImage.Bounds.Height}">
                         <Canvas.Transitions>
-                            <Transitions>
+                            <Transitions        >
                                 <TransformOperationsTransition
                                     Property="RenderTransform"
                                     Duration="0:0:0.1" />

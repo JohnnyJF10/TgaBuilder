@@ -15,9 +15,9 @@
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Brick Transition Helper"
-    Width="980"
+    Width="680"
     Height="300"
-    MinWidth="940"
+    MinWidth="640"
     MinHeight="300"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
@@ -54,10 +54,10 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition
                 Width="3*"
-                MinWidth="600" />
+                MinWidth="420" />
             <ColumnDefinition
                 Width="*"
-                MinWidth="300" />
+                MinWidth="220" />
         </Grid.ColumnDefinitions>
 
         <!-- ========================================================================= -->
@@ -267,14 +267,12 @@
             
             <!-- Global Mode Selector -->
             <local:TransitionModeUserControl
-                Grid.Row="0"
-                Margin="0,0,0,10" />
+                Grid.Row="0"/>
 
             <!-- Main Pivot Direction & Slider Controls -->
             <Grid
                 Grid.Row="1"
-                ColumnDefinitions="*,Auto"
-                Margin="0,0,0,10">
+                ColumnDefinitions="*,Auto">
                 <DockPanel
                     Grid.Column="0"
                     ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">

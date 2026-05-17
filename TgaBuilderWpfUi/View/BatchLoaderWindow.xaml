@@ -42,9 +42,9 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*" MinWidth="405"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*" MinWidth="265"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -61,7 +61,6 @@
             </ui:TitleBar>
         </DockPanel>
 
-        <ui:Card Grid.Row="1" Grid.Column="0" Margin="5" IsHitTestVisible="False"/>
         <Rectangle Grid.Row="1" Grid.Column="0" Margin="5.1" Fill="{StaticResource CheckerBrush}" Width="{Binding ContentActualWidth}" Height="{Binding ContentActualHeight}" IsHitTestVisible="False"/>
         <elements:FileDropBorder Grid.Row="1" Grid.Column="0" Margin="5" DropCommand="{Binding FileDropCommand}">
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
@@ -78,7 +77,7 @@
             </ScrollViewer>
         </elements:FileDropBorder>
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Drop Image Files here" Foreground="{DynamicResource TextFillColorTertiaryBrush}" IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Visibility="{Binding IsDropHintVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Drop&#x0a;Image&#x0a;Files&#x0a;here" Foreground="{DynamicResource TextFillColorTertiaryBrush}" IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Visibility="{Binding IsDropHintVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         <GridSplitter Grid.Row="1" Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" ResizeDirection="Columns"/>
 
@@ -90,14 +89,14 @@
 
             <StackPanel>
                 <ui:Button Content="Select Folder..." Margin="0,0,0,8" HorizontalAlignment="Stretch" Command="{Binding SelectTRRFolderCommand}" CommandParameter="{StaticResource False}"/>
-                <elements:ContextMenuButton Margin="0,0,0,8" ItemsSource="{Binding RecentBatchLoaderFolders}" ItemCommand="{Binding OpenRecentFolderCommand}">
-                    <TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <elements:ContextMenuButton ItemsSource="{Binding RecentBatchLoaderFolders}" ItemCommand="{Binding OpenRecentFolderCommand}">
+                        <TextBlock>
                         <Run Text=" Recent Folders" />
                         <Run FontFamily="Segoe UI Symbol" Text="&#xE0E5;" />
-                    </TextBlock>
-                </elements:ContextMenuButton>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <ui:Button Width="30" Height="30" Padding="5" Margin="0,0,6,0" Command="{Binding Zoom100Command}" ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)" Icon="{ui:SymbolIcon ZoomFit24}"/>
+                        </TextBlock>
+                    </elements:ContextMenuButton>
+                    <ui:Button Width="30" Height="30" Padding="5" Margin="6,0,6,0" Command="{Binding Zoom100Command}" ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)" Icon="{ui:SymbolIcon ZoomFit24}"/>
                     <ui:Button Width="30" Height="30" Padding="5" Margin="0,0,6,0" Command="{Binding FillCommand}" ap:MouseOverInfoAP.InfoText="Fit to Panel Height" Icon="{ui:SymbolIcon ArrowAutofitHeight24}"/>
                     <ui:Button Width="30" Height="30" Padding="5" Command="{Binding FitCommand}" ap:MouseOverInfoAP.InfoText="Fit to Panel Width" Icon="{ui:SymbolIcon ArrowAutofitWidth24}"/>
                 </StackPanel>
