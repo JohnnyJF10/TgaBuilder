@@ -33,6 +33,12 @@ namespace TgaBuilderLib.Transitions
         public bool ProtectEdges { get; set; } = true;
         public int MarkerRadius { get; set; } = 3;
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Watershed;
+        public int FelzenszwalbMinSize { get; set; } = 50;
+        public float FelzenszwalbScale { get; set; } = 100f;
+        public int SlicSegmentCount { get; set; } = 250;
+        public float SlicCompactness { get; set; } = 10f;
+        public int QuickshiftMaxDist { get; set; } = 10;
+        public float QuickshiftRatio { get; set; } = 1f;
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
         public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
         public EdgeBlendMode BlendMode { get; set; } = EdgeBlendMode.Multiply;
@@ -58,6 +64,12 @@ namespace TgaBuilderLib.Transitions
             SliceCornerTiles = false;
             ProtectEdges = true;
             SegmentationMethod = SegmentationMethod.Watershed;
+            FelzenszwalbMinSize = 50;
+            FelzenszwalbScale = 100f;
+            SlicSegmentCount = 250;
+            SlicCompactness = 10f;
+            QuickshiftMaxDist = 10;
+            QuickshiftRatio = 1f;
             SelectedFilter = FilterType.BoxBlur;
             EdgeColor = new Color(0, 0, 0, 128);
             BlendMode = EdgeBlendMode.Multiply;

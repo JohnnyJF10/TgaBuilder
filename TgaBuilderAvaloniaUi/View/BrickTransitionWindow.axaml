@@ -439,7 +439,121 @@
                                         Content="XY Projection" />
                                     <ComboBoxItem
                                         Content="YX Projection" />
+                                    <ComboBoxItem
+                                        Content="Felzenszwalb" />
+                                    <ComboBoxItem
+                                        Content="SLIC" />
+                                    <ComboBoxItem
+                                        Content="Quickshift" />
                                 </ComboBox>
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowFelzenszwalbParameters}"
+                                ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding FelzenszwalbMinSize}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="500"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding FelzenszwalbMinSize}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowFelzenszwalbParameters}"
+                                ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding FelzenszwalbScale}"
+                                    Maximum="500"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding FelzenszwalbScale}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowSlicParameters}"
+                                ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding SlicSegmentCount}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="2000"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding SlicSegmentCount}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowSlicParameters}"
+                                ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding SlicCompactness}"
+                                    Maximum="50"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding SlicCompactness}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowQuickshiftParameters}"
+                                ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding QuickshiftMaxDist}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="50"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding QuickshiftMaxDist}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowQuickshiftParameters}"
+                                ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding QuickshiftRatio}"
+                                    Maximum="5"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding QuickshiftRatio}" />
                             </DockPanel>
                         </StackPanel>
                     </Expander>

@@ -21,6 +21,9 @@ namespace TgaBuilderLib.Transitions
         Rectilinear,
         XYProjection,
         YXProjection,
+        Felzenszwalb,
+        Slic,
+        Quickshift,
     }
 
     public partial class TransitionHelper
@@ -63,6 +66,9 @@ namespace TgaBuilderLib.Transitions
                 SegmentationMethod.Rectilinear => OrthogonalLineSegmentation(filtered, labels),
                 SegmentationMethod.XYProjection => XYProjectionSegmentation(filtered, labels),
                 SegmentationMethod.YXProjection => YXProjectionSegmentation(filtered, labels),
+                SegmentationMethod.Felzenszwalb => Felzenszwalb(pixels, labels, FelzenszwalbMinSize, FelzenszwalbScale),
+                SegmentationMethod.Slic => Slic(pixels, labels, SlicSegmentCount, SlicCompactness),
+                SegmentationMethod.Quickshift => Quickshift(pixels, labels, QuickshiftMaxDist, QuickshiftRatio),
                 _ => 0
             };
 

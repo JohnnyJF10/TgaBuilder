@@ -526,8 +526,138 @@
                                     <ComboBoxItem
                                         Content="Watershed" />
                                     <ComboBoxItem
+                                        Content="Rectilinear" />
+                                    <ComboBoxItem
                                         Content="XY Projection" />
+                                    <ComboBoxItem
+                                        Content="YX Projection" />
+                                    <ComboBoxItem
+                                        Content="Felzenszwalb" />
+                                    <ComboBoxItem
+                                        Content="SLIC" />
+                                    <ComboBoxItem
+                                        Content="Quickshift" />
                                 </ComboBox>
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,0,0"
+                                Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="500"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding FelzenszwalbMinSize}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,0,0"
+                                Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    Maximum="500"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding FelzenszwalbScale}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,0,0"
+                                Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="2000"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding SlicSegmentCount}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,0,0"
+                                Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    Maximum="50"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding SlicCompactness}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,0,0"
+                                Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="50"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding QuickshiftMaxDist}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,0,0"
+                                Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Text="·" />
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    Maximum="5"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding QuickshiftRatio}" />
                             </DockPanel>
                         </StackPanel>
                     </Expander>
