@@ -434,7 +434,11 @@
                                     <ComboBoxItem
                                         Content="Watershed" />
                                     <ComboBoxItem
+                                        Content="Rectilinear" />
+                                    <ComboBoxItem
                                         Content="XY Projection" />
+                                    <ComboBoxItem
+                                        Content="YX Projection" />
                                 </ComboBox>
                             </DockPanel>
                         </StackPanel>
