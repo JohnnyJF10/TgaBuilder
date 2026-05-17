@@ -145,17 +145,12 @@ namespace TgaBuilderAvaloniaUi.Services
                 ? await topLevel.StorageProvider.TryGetFolderFromPathAsync(initDir)
                 : null;
 
-            var fileTypeChoices = new List<FilePickerFileType>();
-            foreach (FileTypes type in Enum.GetValues(typeof(FileTypes)))
-            {
-                if (type == FileTypes.None) continue;
-                if (!types.HasFlag(type)) continue;
-                string ext = type.ToString().ToLower();
-                fileTypeChoices.Add(new FilePickerFileType($"{type.ToString().ToUpper()} Files (*.{ext})")
+            var fileTypeChoices = new List<FilePickerFileType>
                 {
-                    Patterns = new[] { $"*.{ext}" }
-                });
-            }
+                    new("Png Files (*.png)") { Patterns = new[] { "*.png" }},
+                    new("Tga Files (*.tga)") { Patterns = new[] { "*.tga" }},
+                    new("Psd Files (*.psd)") { Patterns = new[] { "*.psd" }},
+                };
 
             var fileResult = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
