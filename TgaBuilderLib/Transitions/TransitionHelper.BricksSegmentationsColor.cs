@@ -9,17 +9,17 @@ namespace TgaBuilderLib.Transitions;
 
 public partial class TransitionHelper
 {
-    private int Felzenszwalb(float[] filtered, int[] labels, int min_size = 50, float scale= 100)
+    private int Felzenszwalb(byte[] pixels, int[] labels, int min_size = 50, float scale= 100f)
     {
         return 0;
     }
 
-    private int Slic(float[] filtered, int[] labels, int n_segments= 250, float compactness= 10f)
+    private int Slic(byte[] pixels, int[] labels, int n_segments= 250, float compactness= 10f)
     {
         return 0;
     }
 
-    private int Quickshift(float[] filtered, int[] labels, int max_dist= 10, float ratio= 1)
+    private int Quickshift(byte[] pixels, int[] labels, int max_dist= 10, float ratio= 1)
     {
         return 0;
     }
