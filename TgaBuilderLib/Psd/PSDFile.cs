@@ -230,8 +230,16 @@ namespace TgaBuilderLib.Psd
             // ── Colour Mode Data (empty for RGB) ────────────────────────────────
             writer.Write((uint)0);
 
-            // ── Image Resources (none) ──────────────────────────────────────────
-            writer.Write((uint)0);
+            // ── Image Resources (ResolutionInfo: 72 DPI) ────────────────────────
+            using (var imgResStream = new MemoryStream())
+            {
+                var imgResWriter = new BinaryReverseWriter(imgResStream);
+                new ResolutionInfo(72, 72).Save(imgResWriter);
+                imgResWriter.Flush();
+                byte[] imgResBytes = imgResStream.ToArray();
+                writer.Write((uint)imgResBytes.Length);
+                writer.Write(imgResBytes);
+            }
 
             // ── Layer and Mask Info ──────────────────────────────────────────────
             using (new LengthWriter(writer))
@@ -374,35 +382,35 @@ namespace TgaBuilderLib.Psd
             _imageResources.Clear();
 
             uint imgResLength = reader.ReadUInt32();
-            if (imgResLength <= 0) return null;
-
-            long startPosition = reader.BaseStream.Position;
-
-            while (reader.BaseStream.Position - startPosition < imgResLength)
+            if (imgResLength > 0)
             {
-                ImageResource imgRes = new ImageResource(reader);
+                long startPosition = reader.BaseStream.Position;
 
-                ResourceIDs resID = (ResourceIDs)imgRes.ID;
-                switch (resID)
+                while (reader.BaseStream.Position - startPosition < imgResLength)
                 {
-                    case ResourceIDs.ResolutionInfo:
-                        imgRes = new ResolutionInfo(imgRes);
-                        break;
-                    case ResourceIDs.Thumbnail1:
-                    case ResourceIDs.Thumbnail2:
-                        imgRes = new Thumbnail(imgRes, mediaFactory);
-                        break;
-                    case ResourceIDs.AlphaChannelNames:
-                        imgRes = new AlphaChannels(imgRes);
-                        break;
+                    ImageResource imgRes = new ImageResource(reader);
+
+                    ResourceIDs resID = (ResourceIDs)imgRes.ID;
+                    switch (resID)
+                    {
+                        case ResourceIDs.ResolutionInfo:
+                            imgRes = new ResolutionInfo(imgRes);
+                            break;
+                        case ResourceIDs.Thumbnail1:
+                        case ResourceIDs.Thumbnail2:
+                            imgRes = new Thumbnail(imgRes, mediaFactory);
+                            break;
+                        case ResourceIDs.AlphaChannelNames:
+                            imgRes = new AlphaChannels(imgRes);
+                            break;
+                    }
+
+                    _imageResources.Add(imgRes);
                 }
-
-                _imageResources.Add(imgRes);
-
+                // make sure we are not on a wrong offset, so set the stream position 
+                // manually
+                reader.BaseStream.Position = startPosition + imgResLength;
             }
-            // make sure we are not on a wrong offset, so set the stream position 
-            // manually
-            reader.BaseStream.Position = startPosition + imgResLength;
 
             #endregion //End LoadingImageResources
 
@@ -410,19 +418,20 @@ namespace TgaBuilderLib.Psd
             //We are gonna load up all the layers and masking of the PSD now.
             uint layersAndMaskLength = reader.ReadUInt32();
 
-            if (layersAndMaskLength <= 0) return null;
+            if (layersAndMaskLength > 0)
+            {
+                //new start position
+                long startPosition = reader.BaseStream.Position;
 
-            //new start position
-            startPosition = reader.BaseStream.Position;
+                //Lets start by loading up all the layers
+                LoadLayers(reader);
+                //we are done the layers, load up the masks
+                LoadGlobalLayerMask(reader);
 
-            //Lets start by loading up all the layers
-            LoadLayers(reader);
-            //we are done the layers, load up the masks
-            LoadGlobalLayerMask(reader);
-
-            // make sure we are not on a wrong offset, so set the stream position 
-            // manually
-            reader.BaseStream.Position = startPosition + layersAndMaskLength;
+                // make sure we are not on a wrong offset, so set the stream position 
+                // manually
+                reader.BaseStream.Position = startPosition + layersAndMaskLength;
+            }
             #endregion //End Layer and Mask info
 
             #region "Loading Final Image"
