@@ -54,7 +54,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (_labelMapColumn is null)
             {
-                var grid = this.FindControl<Grid>("ImageAreaGrid");
+                var grid = this.FindControl<Grid>("MainGrid");
                 if (grid is not null && grid.ColumnDefinitions.Count > 6)
                     _labelMapColumn = grid.ColumnDefinitions[6];
             }

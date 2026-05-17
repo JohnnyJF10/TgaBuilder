@@ -34,24 +34,12 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid ColumnDefinitions="*,340">
+    <Grid x:Name="MainGrid"
+        ColumnDefinitions="*, 35, *, 35, *, Auto, 0, Auto"
+        RowDefinitions="*,60"
+        >
 
-        <Grid Grid.Column="0" x:Name="ImageAreaGrid" Margin="5,5,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="60"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="35"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="35"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="0"/>
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                    <Border Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
                 <Grid>
                     <Viewbox Stretch="Uniform" Margin="10" RenderOptions.BitmapInterpolationMode="None">
                         <Grid Width="{Binding Image1.PixelWidth, FallbackValue=128}" Height="{Binding Image1.PixelHeight, FallbackValue=128}">
@@ -94,12 +82,13 @@
                 <Image Margin="0,4,0,0" RenderOptions.BitmapInterpolationMode="None" Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}" Stretch="Uniform"/>
             </Border>
 
-            <Border Grid.Row="1" Grid.ColumnSpan="7" Margin="-10,0,-10,-10" VerticalAlignment="Stretch" IsHitTestVisible="False" Background="{DynamicResource StatusBarBackground}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0"/>
+            <Border Grid.Row="1" Grid.ColumnSpan="8" Margin="-10,0,-10,-10" VerticalAlignment="Stretch" IsHitTestVisible="False" Background="{DynamicResource StatusBarBackground}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0"/>
             <elements:IconButton x:Name="BtnLoad1" Grid.Row="1" Grid.Column="0" Classes="outlined" Margin="10,5" HorizontalAlignment="Center" VerticalAlignment="Center" ap:MouseOverInfoAP.InfoText="Load Bricks Texture from the current selection" Icon="{StaticResource image_copy}" Command="{Binding LoadImage1Command}" />
             <elements:IconButton x:Name="BtnLoad2" Grid.Row="1" Grid.Column="2" Classes="outlined" Margin="10,5" HorizontalAlignment="Center" VerticalAlignment="Center" ap:MouseOverInfoAP.InfoText="Load Background Texture from the current selection" Icon="{StaticResource image_copy}" Command="{Binding LoadImage2Command}" />
-        </Grid>
 
-        <Grid Grid.Column="1" Margin="10,10,10,10" RowDefinitions="Auto,Auto,*,Auto">
+
+
+        <Grid Grid.Column="7" Margin="10,10,10,10" RowDefinitions="Auto,Auto,*,Auto">
             <local:TransitionModeUserControl Grid.Row="0" Margin="0,0,0,10" />
 
             <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
@@ -120,7 +109,7 @@
 
             <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Spacing="8">
-                    <Expander Header="Analysis" IsExpanded="True">
+                    <Expander Header="Analysis" IsExpanded="True" HorizontalAlignment="Stretch">
                         <StackPanel Spacing="8" Margin="0,6,0,0">
                             <elements:IconToggleButton Classes="outlined" Width="36" Height="36" Icon="{StaticResource table}" IsChecked="{Binding InvertGrayscale}" ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
 
@@ -150,7 +139,7 @@
                         </StackPanel>
                     </Expander>
 
-                    <Expander Header="Pivot" IsExpanded="True">
+                    <Expander Header="Pivot" IsExpanded="True" HorizontalAlignment="Stretch">
                         <StackPanel Spacing="8" Margin="0,6,0,0">
                             <elements:IconToggleButton x:Name="ProtectEdgesToggleButton" Classes="outlined" VerticalAlignment="Center" MinHeight="36" MinWidth="36" Icon="{StaticResource shield}" ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles." IsChecked="{Binding ProtectEdges}"/>
 
@@ -182,7 +171,7 @@
                         </StackPanel>
                     </Expander>
 
-                    <Expander Header="Edge" IsExpanded="True">
+                    <Expander Header="Edge" IsExpanded="True" HorizontalAlignment="Stretch">
                         <StackPanel Spacing="8" Margin="0,6,0,0">
                             <elements:IconToggleButton Classes="outlined" Width="36" Height="36" Padding="-6,0,15,0" IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" ap:MouseOverInfoAP.InfoText="Pick edge color from image">
                                 <ToggleButton.Content>
@@ -207,11 +196,13 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
-                <Button Content="Apply" Command="{Binding MixCommand}" />
-                <Button Content="Cancel" Command="{Binding CancelCommand}" CommandParameter="{Binding $parent[Window]}"/>
-                <Button Classes="accent" Content="OK" Command="{Binding OKCommand}" CommandParameter="{Binding $parent[Window]}"/>
-            </StackPanel>
+
         </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="7" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="8">
+            <Button Content="Apply" Command="{Binding MixCommand}" />
+            <Button Content="Cancel" Command="{Binding CancelCommand}" CommandParameter="{Binding $parent[Window]}"/>
+            <Button Classes="accent" Content="OK" Command="{Binding OKCommand}" CommandParameter="{Binding $parent[Window]}"/>
+        </StackPanel>
     </Grid>
 </elements:AsyncWindow>
