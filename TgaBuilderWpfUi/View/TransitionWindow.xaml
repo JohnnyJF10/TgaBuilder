@@ -18,9 +18,9 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     Title="MainWindow"
-    Width="680"
+    Width="730"
     Height="300"
-    MinWidth="640"
+    MinWidth="730"
     MinHeight="300"
     d:Background="Black"
     d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}">
@@ -288,24 +288,6 @@
                     Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform" />
             </Border>
-
-            <!-- Label Map Toggle (brick mode only) -->
-            <ToggleButton
-                x:Name="LabelMapToggle"
-                Grid.Row="0"
-                Grid.Column="5"
-                VerticalAlignment="Center"
-                Visibility="{Binding IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}"
-                ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
-                IsChecked="{Binding IsLabelMapExpanded}"
-                Width="20"
-                Height="60"
-                Padding="0">
-                <ToggleButton.Content>
-                    <ui:SymbolIcon
-                        Symbol="ChevronLeft24" />
-                </ToggleButton.Content>
-            </ToggleButton>
 
             <!-- Label Map Panel -->
             <Border
@@ -629,13 +611,30 @@
 
                     <!-- Parameter Section: Image Analysis -->
                     <Expander
-                        Header="Analysis"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">
+                        <Expander.Header>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Text="Analysis"
+                                    d:Foreground="White"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                <!-- Label Map Toggle (brick mode only) -->
+                                <elements:ToggleButtonEx
+                                    x:Name="LabelMapToggle"
+                                    ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
+                                    IsChecked="{Binding IsLabelMapExpanded}"
+                                    Icon="{ui:SymbolIcon Map20}"
+                                    Width="30"
+                                    Height="30"
+                                    Margin="10,-10,0,-10"
+                                    Padding="0"/>
+                            </StackPanel>
+                        </Expander.Header>
                         <StackPanel
-                            Margin="8,6,0,8">
+                            Margin="8,0,0,8">
                             <DockPanel
-                                Margin="0,8,0,0"
                                 ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
                                 <Path
                                     VerticalAlignment="Center"
@@ -1179,7 +1178,7 @@
                 Height="30"
                 Margin="0,0,8,0"
                 Content="Apply"
-                Command="{Binding MixCommand}" />
+                Command="{Binding ApplyCommand}" />
             <ui:Button
                 Width="75"
                 Height="30"

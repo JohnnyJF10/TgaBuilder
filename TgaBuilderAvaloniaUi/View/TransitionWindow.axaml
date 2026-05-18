@@ -15,9 +15,9 @@
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Transition Helper"
-    Width="680"
+    Width="730"
     Height="300"
-    MinWidth="640"
+    MinWidth="690"
     MinHeight="300"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
@@ -86,7 +86,7 @@
                 <elements:IconRadioButton
                     IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Bricks}}"
                     Classes="outlined"
-                    Margin="2,0,0,0"
+                    Margin="5,0,5,0"
                     Icon="{StaticResource table_freeze_regular}"
                     ap:MouseOverInfoAP.InfoText="Brick transition mode"/>
 
@@ -97,7 +97,7 @@
 
             <!-- Pivot slider -->
             <DockPanel
-                Margin="0,2,0,0"
+                Margin="5,2,0,0"
                 ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
                 <Grid
                     VerticalAlignment="Top"
@@ -285,23 +285,6 @@
                     Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform" />
             </Border>
-
-            <!-- Label Map Toggle (brick mode only) -->
-            <ToggleButton
-                x:Name="LabelMapToggle"
-                Grid.Column="5"
-                VerticalAlignment="Center"
-                IsVisible="{Binding IsBrickMode}"
-                ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
-                IsChecked="{Binding IsLabelMapExpanded}"
-                Width="20"
-                Height="60"
-                Padding="0">
-                <PathIcon
-                    Data="{StaticResource chevron_left}"
-                    Width="12"
-                    Height="12" />
-            </ToggleButton>
 
             <!-- Label Map Panel -->
             <Border
@@ -526,9 +509,30 @@
 
                     <!-- Parameter Section: Image Analysis -->
                     <Expander
-                        Header="Analysis"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">
+                        <Expander.Header>
+                            <StackPanel
+                                Orientation="Horizontal">
+
+                                <TextBlock
+                                    Text="Analysis"
+                                    VerticalAlignment="Center"/>
+                                
+                                <!-- Label Map Toggle (brick mode only) -->
+                                <elements:IconToggleButton
+                                    x:Name="LabelMapToggle"
+                                    Classes="outlined"
+                                    Icon="{StaticResource map}"
+                                    VerticalAlignment="Center"
+                                    IsVisible="{Binding IsBrickMode}"
+                                    ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
+                                    IsChecked="{Binding IsLabelMapExpanded}"
+                                    Margin="15,0,0,0"
+                                    Width="26"
+                                    Height="26" />
+                            </StackPanel>
+                        </Expander.Header>
                         <StackPanel>
                             <DockPanel
                                 ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
@@ -1070,7 +1074,7 @@
             Margin="8">
             <Button
                 Content="Apply"
-                Command="{Binding MixCommand}" />
+                Command="{Binding ApplyCommand}" />
             <Button
                 Content="Cancel"
                 Command="{Binding CancelCommand}"

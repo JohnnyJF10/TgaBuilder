@@ -112,6 +112,7 @@ public class TransitionViewModel : ViewModelBase
     private RelayCommand? _swapImagesCommand;
     private RelayCommand? _mixCommand;
     private RelayCommand? _markFinishedCommand;
+    private RelayCommand? _applyCommand; 
     private RelayCommand<IView>? _cancelCommand;
     private RelayCommand<IView>? _oKCommand;
 
@@ -120,6 +121,7 @@ public class TransitionViewModel : ViewModelBase
     public ICommand LoadImage2Command => _loadImage2Command ??= new RelayCommand(LoadImage2);
     public ICommand SwapImagesCommand => _swapImagesCommand ??= new RelayCommand(SwapImages);
     public ICommand MarkFinishedCommand => _markFinishedCommand ??= new RelayCommand(MarkFinished);
+    public ICommand ApplyCommand => _applyCommand ??= new RelayCommand(Apply);
     public ICommand CancelCommand => _cancelCommand ??= new RelayCommand<IView>(Cancel);
     public ICommand OKCommand => _oKCommand ??= new RelayCommand<IView>(OK);
 
@@ -194,6 +196,9 @@ public class TransitionViewModel : ViewModelBase
 
                 if (_selectedTransitionType == TransitionType.Bricks)
                     _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+
+                if (_selectedTransitionType == TransitionType.Smooth)
+                    IsLabelMapExpanded = false;
 
                 _ = TriggerRecalculation();
             }
@@ -550,9 +555,16 @@ public class TransitionViewModel : ViewModelBase
         _mainViewModel.IsTransitionViewOpen = false;
     }
 
+    private void Apply()
+    {
+        _mainViewModel.Selection.Presenter = _mediaFactory.CloneBitmap(ResultImage);
+        _mainViewModel.SwitchToDestinationPlacingModeCommand.Execute(null);
+    }
+
     private void OK(IView view)
     {
         _mainViewModel.Selection.Presenter = _mediaFactory.CloneBitmap(ResultImage);
+        _mainViewModel.SwitchToDestinationPlacingModeCommand.Execute(null);
         MarkFinished();
         view.CloseAsync();
     }
