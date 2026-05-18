@@ -225,18 +225,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Exposure: adjusts overall brightness in photographic stops (-5 to +5)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Exp"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource flashlight_off}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource flashlight}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -252,18 +256,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Brightness: shifts overall luminosity linearly (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Bri"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="8"
+                                Height="8"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource circle_small}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource data_sunburst}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -279,18 +287,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Contrast: increases or reduces tonal range (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Con"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource circle_half_fill}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource dark_theme}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -306,18 +318,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Highlights: recovers or boosts bright tonal regions (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Hi"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource arrow_minimize}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource highlight}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -333,18 +349,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Shadows: lifts or crushes dark tonal regions (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Sha"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource lightbulb_filament}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource lightbulb}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -360,18 +380,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Whites: clips or expands the brightest point of the image (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Whi"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource flashlight_off}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource lightbulb_circle}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -387,18 +411,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Blacks: clips or expands the darkest point of the image (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Blk"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="8"
+                                Height="8"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource circle_small}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource circle_half_fill}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -428,18 +456,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Saturation: uniform increase or decrease of color intensity (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Sat"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource color_line}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource color_line_accent}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -455,18 +487,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Vibrance: smart saturation that boosts muted colors while protecting already-saturated ones (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Vib"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource color_background}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource color_background_accent}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -482,18 +518,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Hue: rotates all colors around the color wheel (-180 to +180 degrees)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Hue"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource arrow_rotate_counterclockwise}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource arrow_rotate_clockwise}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -509,18 +549,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Temperature / Warmth: negative = cooler (blue tones), positive = warmer (orange tones) (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Tmp"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource temperature}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource data_sunburst}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -536,18 +580,22 @@
                         <DockPanel
                             Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Tint: negative = green, positive = magenta (-1 to +1)">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                Text="Tnt"
-                                Width="28"
+                            <Path
                                 VerticalAlignment="Center"
-                                FontSize="11" />
-                            <TextBlock
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource leaf}" />
+                            <Path
                                 DockPanel.Dock="Right"
-                                Text="+"
-                                Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11" />
+                                Fill="{DynamicResource IconFillBrush}"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource paint_bucket}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
