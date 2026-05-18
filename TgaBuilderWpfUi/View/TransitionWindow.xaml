@@ -53,6 +53,8 @@
                 x:Key="WriteableBitmapConverter" />
             <converters:ColorStructToMediaColorConverter
                 x:Key="ColorStructToMediaColorConverter" />
+            <converters:EnumToBooleanConverter
+                x:Key="EnumToBooleanConverter" />
             <sys:Boolean
                 x:Key="True">True</sys:Boolean>
             <sys:Boolean
@@ -361,8 +363,8 @@
                 Margin="7,0,6,0"
                 VerticalAlignment="Center">
                 <elements:IconRadioButton
-                    GroupName="TransitionModeSelector"
-                    IsChecked="{Binding IsSmoothMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    GroupName="TransitionTypeSelector"
+                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Smooth}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     ap:MouseOverInfoAP.InfoText="Smooth transition mode"
                     Width="36"
                     Height="36"
@@ -370,8 +372,8 @@
                     />
                 <elements:IconRadioButton
                     Margin="5,0"
-                    GroupName="TransitionModeSelector"
-                    IsChecked="{Binding IsBrickMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    GroupName="TransitionTypeSelector"
+                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Bricks}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     ap:MouseOverInfoAP.InfoText="Brick transition mode"
                     Width="36"
                     Height="36"

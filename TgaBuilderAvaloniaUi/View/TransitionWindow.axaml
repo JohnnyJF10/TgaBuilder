@@ -43,6 +43,8 @@
                 x:Key="WriteableBitmapConverter" />
             <converters:ColorStructToMediaColor
                 x:Key="ColorStructToMediaColor" />
+            <converters:EnumToBooleanConverter
+                x:Key="EnumToBooleanConverter" />
         </ResourceDictionary>
     </Window.Resources>
 
@@ -78,11 +80,11 @@
                 <elements:IconRadioButton
                     Icon="{StaticResource tab_in_private}"
                     Classes="outlined"
-                    IsChecked="{Binding IsSmoothMode, Mode=TwoWay}"
+                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Smooth}}"
                     ap:MouseOverInfoAP.InfoText="Smooth transition mode"/>
 
                 <elements:IconRadioButton
-                    IsChecked="{Binding IsBrickMode, Mode=TwoWay}"
+                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Bricks}}"
                     Classes="outlined"
                     Margin="2,0,0,0"
                     Icon="{StaticResource table_freeze_regular}"
