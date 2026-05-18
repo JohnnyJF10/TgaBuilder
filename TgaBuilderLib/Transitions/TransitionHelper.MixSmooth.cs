@@ -51,7 +51,7 @@ public partial class TransitionHelper
 
                         for (int b = 0; b < TRANSITIONS_BPP; b++)
                         {
-                            pxR[b] = (byte)(px1[b] * (1.0f - weight) + px2[b] * weight);
+                            pxR[b] = (byte)(px2[b] * (1.0f - weight) + px1[b] * weight);
                         }
                     }
                 }

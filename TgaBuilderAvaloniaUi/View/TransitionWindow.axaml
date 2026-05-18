@@ -35,6 +35,8 @@
                     Source="/Styles/IconToggleButtonStyle.axaml" />
                 <ResourceInclude
                     Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude
+                    Source="/Styles/IconRadioButtonStyle.axaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <converters:WriteableBitmapConverter
@@ -73,27 +75,19 @@
                 Orientation="Horizontal"
                 Margin="0,0,6,0"
                 VerticalAlignment="Center">
-                <RadioButton
-                    GroupName="TransitionMode"
+                <elements:IconRadioButton
+                    Icon="{StaticResource tab_in_private}"
+                    Classes="outlined"
                     IsChecked="{Binding IsSmoothMode, Mode=TwoWay}"
-                    Padding="4"
-                    ap:MouseOverInfoAP.InfoText="Smooth transition mode">
-                    <PathIcon
-                        Data="{StaticResource tab_in_private}"
-                        Width="16"
-                        Height="16" />
-                </RadioButton>
-                <RadioButton
-                    GroupName="TransitionMode"
+                    ap:MouseOverInfoAP.InfoText="Smooth transition mode"/>
+
+                <elements:IconRadioButton
                     IsChecked="{Binding IsBrickMode, Mode=TwoWay}"
-                    Padding="4"
+                    Classes="outlined"
                     Margin="2,0,0,0"
-                    ap:MouseOverInfoAP.InfoText="Brick transition mode">
-                    <PathIcon
-                        Data="{StaticResource table_freeze_regular}"
-                        Width="16"
-                        Height="16" />
-                </RadioButton>
+                    Icon="{StaticResource table_freeze_regular}"
+                    ap:MouseOverInfoAP.InfoText="Brick transition mode"/>
+
             </StackPanel>
 
             <!-- Transition mode buttons panel -->
