@@ -23,7 +23,7 @@ namespace TgaBuilderAvaloniaUi.Elements
 
         protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
         {
-            if (!IsPointerOver || !IsEnabled || e.Delta.Y == 0)
+            if (!IsFocused || !IsPointerOver || !IsEnabled || e.Delta.Y == 0)
             {
                 base.OnPointerWheelChanged(e);
                 return;

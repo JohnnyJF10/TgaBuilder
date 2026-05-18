@@ -11,7 +11,7 @@ namespace TgaBuilderWpfUi.Elements
 
         private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (!IsMouseOver)
+            if (!IsMouseOver || !IsFocused)
                 return;
 
             if (e.Delta > 0)

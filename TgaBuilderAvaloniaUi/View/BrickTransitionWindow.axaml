@@ -348,15 +348,72 @@
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">
                         <StackPanel>
-                            <elements:IconToggleButton
-                                Classes="outlined"
-                                Width="36"
-                                Height="36"
-                                Icon="{StaticResource table}"
-                                IsChecked="{Binding InvertGrayscale}"
-                                ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
+                            <DockPanel
+                                ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="18"
+                                    Height="18"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource shapes}" />
+                                <ComboBox
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Stretch"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    TextBlock.TextTrimming="CharacterEllipsis"
+                                    SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
+                                    <ComboBoxItem Content="Felzenszwalb" />
+                                    <ComboBoxItem Content="SLIC" />
+                                    <ComboBoxItem Content="Quickshift" />
+                                    <ComboBoxItem Content="Watershed" />
+                                    <ComboBoxItem Content="XY Projection" />
+                                    <ComboBoxItem Content="YX Projection" />
+                                </ComboBox>
+                            </DockPanel>
 
                             <DockPanel
+                                Margin="0,14,0,0"
+                                IsVisible="{Binding ShowGrayBasedSegmentationInputs}">
+                                <elements:IconToggleButton
+                                    Classes="outlined"
+                                    Width="36"
+                                    Height="36"
+                                    Icon="{StaticResource table}"
+                                    IsChecked="{Binding InvertGrayscale}"
+                                    ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
+                                <DockPanel
+                                    Margin="8,5,0,0"
+                                    LastChildFill="True"
+                                    VerticalAlignment="Center"
+                                    ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+                                    <Path
+                                        VerticalAlignment="Center"
+                                        Margin="5,0,0,0"
+                                        Fill="{DynamicResource IconFillBrush}"
+                                        Width="18"
+                                        Height="18"
+                                        Stretch="Uniform"
+                                        Data="{StaticResource filter}" />
+                                    <ComboBox
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Stretch"
+                                        BorderThickness="0"
+                                        Background="Transparent"
+                                        TextBlock.TextTrimming="CharacterEllipsis"
+                                        SelectedIndex="{Binding SelectedFilterIndex}">
+                                        <ComboBoxItem Content="None"/>
+                                        <ComboBoxItem Content="Box Blur"/>
+                                        <ComboBoxItem Content="Median"/>
+                                        <ComboBoxItem Content="Bilateral"/>
+                                    </ComboBox>
+                                </DockPanel>
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowGrayBasedSegmentationInputs}"
                                 ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
                                 <Path
                                     VerticalAlignment="Center"
@@ -387,59 +444,183 @@
                             </DockPanel>
 
                             <DockPanel
-                                ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+                                IsVisible="{Binding ShowFelzenszwalbParameters}"
+                                ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging">
                                 <Path
                                     VerticalAlignment="Center"
-                                    Margin="5,0,0,0"
                                     Fill="{DynamicResource IconFillBrush}"
-                                    Width="18"
-                                    Height="18"
+                                    Width="8"
+                                    Height="8"
                                     Stretch="Uniform"
-                                    Data="{StaticResource filter}" />
-                                <ComboBox
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource circle_small}" />
+                                <Path
+                                    DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
-                                    MinWidth="120"
-                                    Margin="8,0,0,0"
-                                    BorderThickness="0"
-                                    Background="Transparent"
-                                    SelectedIndex="{Binding SelectedFilterIndex}">
-                                    <ComboBoxItem
-                                        Content="None" />
-                                    <ComboBoxItem
-                                        Content="Box Blur" />
-                                    <ComboBoxItem
-                                        Content="Median" />
-                                    <ComboBoxItem
-                                        Content="Bilateral" />
-                                </ComboBox>
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource circle}" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding FelzenszwalbMinSize}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="500"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding FelzenszwalbMinSize}" />
                             </DockPanel>
 
                             <DockPanel
-                                ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
+                                IsVisible="{Binding ShowFelzenszwalbParameters}"
+                                ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor">
                                 <Path
                                     VerticalAlignment="Center"
-                                    Margin="5,0,0,0"
                                     Fill="{DynamicResource IconFillBrush}"
-                                    Width="18"
-                                    Height="18"
+                                    Width="14"
+                                    Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource shapes}" />
-                                <ComboBox
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource line_horizontal_1}" />
+                                <Path
+                                    DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
-                                    MinWidth="140"
-                                    Margin="8,0,0,0"
-                                    BorderThickness="0"
-                                    Background="Transparent"
-                                    SelectedIndex="{Binding SelectedSegmentationMethodIndex}">
-                                    <ComboBoxItem
-                                        Content="Watershed" />
-                                    <ComboBoxItem
-                                        Content="Rectilinear" />
-                                    <ComboBoxItem
-                                        Content="XY Projection" />
-                                    <ComboBoxItem
-                                        Content="YX Projection" />
-                                </ComboBox>
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource line_horizontal_5}" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding FelzenszwalbScale}"
+                                    Maximum="500"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding FelzenszwalbScale}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowSlicParameters}"
+                                ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource square_simple}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource grid}" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding SlicSegmentCount}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="2000"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding SlicSegmentCount}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowSlicParameters}"
+                                ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource scale_fit}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource scale_fill}" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding SlicCompactness}"
+                                    Maximum="50"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding SlicCompactness}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowQuickshiftParameters}"
+                                ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource arrow_minimize}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource arrow_maximize}" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding QuickshiftMaxDist}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="50"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding QuickshiftMaxDist}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowQuickshiftParameters}"
+                                ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource color_line}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource color_line_accent}" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding QuickshiftRatio}"
+                                    Maximum="5"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding QuickshiftRatio}" />
                             </DockPanel>
                         </StackPanel>
                     </Expander>
@@ -638,10 +819,12 @@
                                     Height="18"
                                     Stretch="Uniform" />
                                 <ComboBox
-                                    Width="160"
+                                    HorizontalAlignment="Stretch"
+                                    MinWidth="160"
                                     BorderThickness="0"
                                     Background="Transparent"
                                     VerticalAlignment="Center"
+                                    TextBlock.TextTrimming="CharacterEllipsis"
                                     ItemsSource="{Binding EdgeBlendModes}"
                                     SelectedItem="{Binding BlendMode, Mode=TwoWay}" />
                             </DockPanel>

@@ -17,8 +17,10 @@ namespace TgaBuilderLib.Transitions
 
     public enum SegmentationMethod
     {
+        Felzenszwalb,
+        Slic,
+        Quickshift,
         Watershed,
-        Rectilinear,
         XYProjection,
         YXProjection,
     }
@@ -59,8 +61,10 @@ namespace TgaBuilderLib.Transitions
             // 3. Segmentation
             int labelCount = SegmentationMethod switch
             {
+                SegmentationMethod.Felzenszwalb => Felzenszwalb(pixels, labels, FelzenszwalbMinSize, FelzenszwalbScale),
+                SegmentationMethod.Slic => Slic(pixels, labels, SlicSegmentCount, SlicCompactness),
+                SegmentationMethod.Quickshift => Quickshift(pixels, labels, QuickshiftMaxDist, QuickshiftRatio),
                 SegmentationMethod.Watershed => WatershedSegmentation(filtered, labels),
-                SegmentationMethod.Rectilinear => OrthogonalLineSegmentation(filtered, labels),
                 SegmentationMethod.XYProjection => XYProjectionSegmentation(filtered, labels),
                 SegmentationMethod.YXProjection => YXProjectionSegmentation(filtered, labels),
                 _ => 0
