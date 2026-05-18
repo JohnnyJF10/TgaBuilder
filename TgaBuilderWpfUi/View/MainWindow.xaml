@@ -798,6 +798,13 @@
                 HorizontalAlignment="Center"
                 >
                 <ui:Button
+                    Icon="{ui:SymbolIcon ImageEdit24}"
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Command="{Binding SingleTextureModificationCommand}"
+                    ap:MouseOverInfoAP.InfoText="Open Single Texture Modifications"/>
+                <ui:Button
                     Icon="{ui:SymbolIcon TableFreezeColumnAndRow24}"
                     Margin="5"
                     Width="36"

@@ -102,6 +102,7 @@ namespace TgaBuilderLib.ViewModel
         private PanelMouseCommand? _mousePanelCommand;
         private AsyncCommand? _batchLoaderCommand;
         private AsyncCommand? _transitionCommand;
+        private AsyncCommand? _singleTextureModificationCommand;
         private RelayCommand? _aboutCommand;
         private RelayCommand? _entireToSourceCommand;
         private AsyncCommand? _entireToTargetCommand;
@@ -153,6 +154,8 @@ namespace TgaBuilderLib.ViewModel
 
 
         public bool IsTransitionViewOpen {  get; set; }
+
+        public bool IsSingleTextureModificationViewOpen { get; set; }
 
 
         public bool PanelInfoVisible
@@ -210,6 +213,9 @@ namespace TgaBuilderLib.ViewModel
 
         public ICommand TransitionCommand => _transitionCommand
             ??= new(OpenTransitionHelper);
+
+        public ICommand SingleTextureModificationCommand => _singleTextureModificationCommand
+            ??= new(OpenSingleTextureModification);
 
         public ICommand AboutCommand => _aboutCommand
             ??= new(About);
@@ -431,6 +437,21 @@ namespace TgaBuilderLib.ViewModel
             IsTransitionViewOpen = true;
 
             await transitionView.ShowAsync();
+        }
+
+        private async Task OpenSingleTextureModification()
+        {
+            if (IsSingleTextureModificationViewOpen)
+                return;
+
+            var view = _getViewCallback(ViewIndex.SingleTextureModification);
+            if (view.DataContext is not SingleTextureModificationViewModel)
+                return;
+
+            view.Topmost = true;
+            IsSingleTextureModificationViewOpen = true;
+
+            await view.ShowAsync();
         }
 
 

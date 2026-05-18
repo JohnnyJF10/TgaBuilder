@@ -8,6 +8,7 @@ using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Level;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.Transitions;
+using TgaBuilderLib.Modifications;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
 using TgaBuilderLib.ViewModel;
@@ -95,6 +96,7 @@ namespace TgaBuilderWpfUi
         {
             services.AddSingleton<IMediaFactory, MediaFactory>();
             services.AddSingleton<ITransitionHelper, TransitionHelper>();
+            services.AddSingleton<IModificationsHelper, ModificationsHelper>();
             services.AddSingleton<IClipboardService, ClipboardService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<ICursorSetter, CursorSetter>(sp => new CursorSetter(
@@ -277,6 +279,12 @@ namespace TgaBuilderWpfUi
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
+            services.AddTransient(sp => new SingleTextureModificationViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
+                bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
+                mainViewModel: sp.GetRequiredService<MainViewModel>()));
+
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),
 
@@ -329,6 +337,10 @@ namespace TgaBuilderWpfUi
             services.AddTransient<IView, TransitionWindow>(
                 sp => new TransitionWindow(
                     viewModel: sp.GetRequiredService<TransitionViewModel>()));
+
+            services.AddTransient<IView, SingleTextureModificationWindow>(
+                sp => new SingleTextureModificationWindow(
+                    viewModel: sp.GetRequiredService<SingleTextureModificationViewModel>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)

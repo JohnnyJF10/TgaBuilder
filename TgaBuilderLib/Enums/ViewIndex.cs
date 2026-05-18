@@ -7,5 +7,6 @@
         About = 2,
         Transition = 3,
         Progress = 4,
+        SingleTextureModification = 5,
     }
 }
