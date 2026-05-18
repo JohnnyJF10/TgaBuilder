@@ -738,7 +738,7 @@
                     Padding="0"
                     Background="Transparent"
                     ap:MouseOverInfoAP.InfoText="Open Single Texture Modifications"
-                    Command="{Binding SingleTextureModificationCommand}">
+                    Command="{Binding ModificationsCommand}">
                     <PathIcon Data="{StaticResource image_edit}"
                               Width="18" Height="18" />
                 </Button>

@@ -6,21 +6,21 @@ using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
 {
-    public partial class SingleTextureModificationWindow : AsyncWindow
+    public partial class ModificationsWindow : AsyncWindow
     {
-        public SingleTextureModificationWindow(INotifyPropertyChanged viewModel)
+        public ModificationsWindow(INotifyPropertyChanged viewModel)
         {
             InitializeComponent();
             base.DataContext = viewModel;
         }
 
         [Obsolete("For designer use only")]
-        public SingleTextureModificationWindow()
+        public ModificationsWindow()
         {
             var serviceProvider = GlobalServiceProvider.Instance;
 
-            var vm = serviceProvider.GetRequiredService<SingleTextureModificationViewModel>()
-                ?? throw new InvalidOperationException("SingleTextureModificationViewModel not found in DI container");
+            var vm = serviceProvider.GetRequiredService<ModificationsViewModel>()
+                ?? throw new InvalidOperationException("ModificationsViewModel not found in DI container");
             InitializeComponent();
             base.DataContext = vm;
         }
@@ -29,7 +29,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             base.OnClosing(e);
 
-            if (DataContext is SingleTextureModificationViewModel vm)
+            if (DataContext is ModificationsViewModel vm)
                 vm.MarkFinished();
         }
     }

@@ -802,7 +802,7 @@
                     Margin="5"
                     Width="36"
                     Height="36"
-                    Command="{Binding SingleTextureModificationCommand}"
+                    Command="{Binding ModificationsCommand}"
                     ap:MouseOverInfoAP.InfoText="Open Single Texture Modifications"/>
                 <ui:Button
                     Icon="{ui:SymbolIcon TableFreezeColumnAndRow24}"

@@ -11,12 +11,12 @@ using TgaBuilderLib.Modifications;
 namespace TgaBuilderLib.ViewModel;
 
 // =========================================================================
-// SingleTextureModificationViewModel — flat standalone class
+// ModificationsViewModel — flat standalone class
 // =========================================================================
 
-public class SingleTextureModificationViewModel : ViewModelBase
+public class ModificationsViewModel : ViewModelBase
 {
-    public SingleTextureModificationViewModel(
+    public ModificationsViewModel(
         IMediaFactory mediaFactory,
         IModificationsHelper modificationsHelper,
         IBitmapOperations bitmapOperations,
@@ -27,9 +27,11 @@ public class SingleTextureModificationViewModel : ViewModelBase
         _bitmapOperations = bitmapOperations;
         _mainViewModel = mainViewModel;
 
-        _inputImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
-        _resultImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
-        _inputPixels = new byte[64 * 64 * BPP];
+        _inputImage = _mediaFactory.CreateEmptyBitmap(42, 42, true);
+        _resultImage = _mediaFactory.CreateEmptyBitmap(42, 42, true);
+        _inputPixels = new byte[42];
+
+        LoadInputImage();
     }
 
     // =====================================================================
@@ -247,7 +249,7 @@ public class SingleTextureModificationViewModel : ViewModelBase
 
     public void MarkFinished()
     {
-        _mainViewModel.IsSingleTextureModificationViewOpen = false;
+        _mainViewModel.IsModificationsViewOpen = false;
     }
 
     // =====================================================================

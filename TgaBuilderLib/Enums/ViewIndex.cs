@@ -6,7 +6,7 @@
         BatchLoader = 1,
         About = 2,
         Transition = 3,
-        Progress = 4,
-        SingleTextureModification = 5,
+        Modifications = 4,
+        Progress = 5,
     }
 }

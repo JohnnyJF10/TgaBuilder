@@ -279,7 +279,7 @@ namespace TgaBuilderWpfUi
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
-            services.AddTransient(sp => new SingleTextureModificationViewModel(
+            services.AddTransient(sp => new ModificationsViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
@@ -338,9 +338,9 @@ namespace TgaBuilderWpfUi
                 sp => new TransitionWindow(
                     viewModel: sp.GetRequiredService<TransitionViewModel>()));
 
-            services.AddTransient<IView, SingleTextureModificationWindow>(
-                sp => new SingleTextureModificationWindow(
-                    viewModel: sp.GetRequiredService<SingleTextureModificationViewModel>()));
+            services.AddTransient<IView, ModificationsWindow>(
+                sp => new ModificationsWindow(
+                    viewModel: sp.GetRequiredService<ModificationsViewModel>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)

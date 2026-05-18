@@ -1,72 +1,125 @@
-<elements:AsyncWindow
-    xmlns="https://github.com/avaloniaui"
+﻿<elements:AsyncWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-    xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
+    xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+    xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters"
+    xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-    x:Class="TgaBuilderAvaloniaUi.View.SingleTextureModificationWindow"
-    x:DataType="viewmodel:SingleTextureModificationViewModel"
+    x:Class="TgaBuilderWpfUi.View.ModificationsWindow"
     mc:Ignorable="d"
+    ExtendsContentIntoTitleBar="True"
+    WindowBackdropType="Mica"
+    WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
-    UseLayoutRounding="True"
-    Background="{DynamicResource WindowBackgroundGradient}"
-    Foreground="{DynamicResource SystemBaseHighColor}"
     Title="Single Texture Modifications"
-    Width="680"
-    Height="380"
-    MinWidth="580"
-    MinHeight="340"
-    Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
+    Width="470"
+    Height="300"
+    MinWidth="450"
+    MinHeight="300"
+    d:Background="Black"
+    d:DataContext="{d:DesignInstance Type=viewmodel:ModificationsViewModel, IsDesignTimeCreatable=False}">
 
     <!-- ========================================================================= -->
-    <!-- WINDOW RESOURCES & CONVERTERS                                             -->
+    <!-- WINDOW RESOURCES                                                          -->
     <!-- ========================================================================= -->
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude
-                    Source="/Styles/CheckerBrush.axaml" />
-                <ResourceInclude
-                    Source="/Styles/IconToggleButtonStyle.axaml" />
-                <ResourceInclude
-                    Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceDictionary
+                    Source="/Styles/TitleBarNavigationAreaStyle.xaml" />
+                <ResourceDictionary
+                    Source="/Styles/CheckerBrush.xaml" />
+                <ResourceDictionary
+                    Source="/Styles/MouseWheelSliderStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <BooleanToVisibilityConverter
+                x:Key="BoolToVisibilityConverter" />
             <converters:WriteableBitmapConverter
                 x:Key="WriteableBitmapConverter" />
-            <converters:ColorStructToMediaColor
-                x:Key="ColorStructToMediaColor" />
+            <converters:ColorStructToMediaColorConverter
+                x:Key="ColorStructToMediaColorConverter" />
+            <Style
+                TargetType="{x:Type elements:ContextMenuButton}"
+                BasedOn="{StaticResource {x:Type ui:Button}}" />
         </ResourceDictionary>
     </Window.Resources>
 
     <!-- ========================================================================= -->
-    <!-- MAIN CONTENT LAYOUT                                                       -->
+    <!-- MAIN WINDOW LAYOUT                                                        -->
     <!-- ========================================================================= -->
-    <Grid
-        RowDefinitions="*,Auto">
-
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition
-                Width="3*"
-                MinWidth="320" />
+                Width="2*"
+                MinWidth="220" />
+            <ColumnDefinition
+                Width="Auto" />
             <ColumnDefinition
                 Width="*"
                 MinWidth="220" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="*" />
+            <RowDefinition
+                Height="60" />
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: WPF title/menu bar -->
+        <DockPanel
+            Grid.Row="0"
+            Grid.ColumnSpan="3">
+            <ui:TitleBar
+                DockPanel.Dock="Right"
+                Width="133"
+                Style="{StaticResource TitleBarNavigationAreaStyle}" />
+            <ui:TitleBar
+                Title="Single Texture Modifications"
+                ShowMinimize="False"
+                ShowMaximize="False"
+                ShowClose="False"
+                Margin="3,3,0,0">
+                <ui:TitleBar.Icon>
+                    <ui:ImageIcon
+                        Source="pack://application:,,,/Resources/TgaBuilder_picture.png" />
+                </ui:TitleBar.Icon>
+            </ui:TitleBar>
+        </DockPanel>
 
         <!-- ========================================================================= -->
-        <!-- LEFT PANEL: IMAGE PREVIEWS                                                -->
+        <!-- LEFT PANE: IMAGE PREVIEWS                                                 -->
         <!-- ========================================================================= -->
         <Grid
-            Grid.Row="0"
-            Grid.RowSpan="1"
-            ColumnDefinitions="*, 35, *"
-            RowDefinitions="*,60">
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.RowSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="*" />
+                <ColumnDefinition
+                    Width="35" />
+                <ColumnDefinition
+                    Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="*" />
+                <RowDefinition
+                    Height="60" />
+            </Grid.RowDefinitions>
 
             <!-- Input Image -->
             <Border
+                Grid.Row="0"
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -75,14 +128,14 @@
                     <Viewbox
                         Stretch="Uniform"
                         Margin="10"
-                        RenderOptions.BitmapInterpolationMode="None">
+                        RenderOptions.BitmapScalingMode="NearestNeighbor">
                         <Grid
                             Width="{Binding InputImage.PixelWidth, FallbackValue=128}"
                             Height="{Binding InputImage.PixelHeight, FallbackValue=128}">
-                            <elements:CheckerRectangle
-                                TileDensity="1" />
+                            <Rectangle
+                                Fill="{StaticResource CheckerBrush}" />
                             <Image
-                                RenderOptions.BitmapInterpolationMode="None"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 Source="{Binding InputImage, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Fill" />
                         </Grid>
@@ -92,85 +145,85 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                        FontSize="20"
-                        IsVisible="{Binding InitTextVisible}"
+                        FontSize="18"
+                        Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
 
             <!-- Arrow indicator -->
-            <PathIcon
+            <ui:SymbolIcon
+                Grid.Row="0"
                 Grid.Column="1"
-                Data="{StaticResource arrow_forward}"
-                Width="18"
-                Height="18"
+                Symbol="ArrowRight24"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center" />
 
             <!-- Result Image -->
             <Border
+                Grid.Row="0"
                 Grid.Column="2"
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Background="Transparent">
                 <Image
-                    RenderOptions.BitmapInterpolationMode="None"
+                    RenderOptions.BitmapScalingMode="NearestNeighbor"
                     Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform" />
             </Border>
 
             <!-- Copy from Selection button (bottom of input image) -->
-            <elements:IconButton
+            <ui:Button
                 Grid.Row="1"
                 Grid.Column="0"
-                Classes="outlined"
-                Margin="10,5"
+                Icon="{ui:SymbolIcon ImageCopy24}"
+                Width="36"
+                Height="36"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
+                Margin="10,5"
                 ap:MouseOverInfoAP.InfoText="Copy input image from the current selection"
-                Icon="{StaticResource image_copy}"
                 Command="{Binding LoadInputImageCommand}" />
 
         </Grid>
 
-        <!-- UI Layout Adjuster: Splitter -->
+        <!-- GridSplitter between left image area and right controls -->
         <GridSplitter
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.RowSpan="1"
+            Grid.Row="2"
+            Grid.Column="1"
+            Grid.RowSpan="2"
             Width="4"
-            HorizontalAlignment="Right"
+            HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Background="Transparent"
+            ResizeBehavior="PreviousAndNext"
             ResizeDirection="Columns" />
 
         <!-- ========================================================================= -->
-        <!-- RIGHT PANEL: CONTROLS (scrollable expanders)                              -->
+        <!-- RIGHT PANE: CONTROLS (scrollable expanders)                               -->
         <!-- ========================================================================= -->
         <ScrollViewer
-            Grid.Row="0"
-            Grid.Column="1"
+            Grid.Row="2"
+            Grid.Column="2"
             VerticalScrollBarVisibility="Auto"
             HorizontalScrollBarVisibility="Disabled"
             Margin="10,4,4,4">
-            <StackPanel
-                Spacing="8"
-                Margin="0,0,16,0">
+            <StackPanel>
 
-                <!-- ================================================================= -->
-                <!-- Expander: Basic                                                    -->
-                <!-- ================================================================= -->
+                <!-- ============================================================= -->
+                <!-- Expander: Basic                                                -->
+                <!-- ============================================================= -->
                 <Expander
                     Header="Basic"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch">
                     <StackPanel
-                        Spacing="4"
-                        Margin="4,4,4,6">
+                        Margin="8,4,8,8">
 
                         <!-- Exposure -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Exposure: adjusts overall brightness in photographic stops (-5 to +5)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -183,12 +236,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Exposure}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="5"
                                 Minimum="-5"
                                 SmallChange="0.1"
@@ -197,6 +250,7 @@
 
                         <!-- Brightness -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Brightness: shifts overall luminosity linearly (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -209,12 +263,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Brightness}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -223,6 +277,7 @@
 
                         <!-- Contrast -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Contrast: increases or reduces tonal range (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -235,12 +290,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Contrast}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -249,6 +304,7 @@
 
                         <!-- Highlights -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Highlights: recovers or boosts bright tonal regions (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -261,12 +317,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Highlights}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -275,6 +331,7 @@
 
                         <!-- Shadows -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Shadows: lifts or crushes dark tonal regions (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -287,12 +344,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Shadows}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -301,6 +358,7 @@
 
                         <!-- Whites -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Whites: clips or expands the brightest point of the image (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -313,12 +371,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Whites}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -327,6 +385,7 @@
 
                         <!-- Blacks -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Blacks: clips or expands the darkest point of the image (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -339,12 +398,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Blacks}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -354,19 +413,20 @@
                     </StackPanel>
                 </Expander>
 
-                <!-- ================================================================= -->
-                <!-- Expander: Color                                                    -->
-                <!-- ================================================================= -->
+                <!-- ============================================================= -->
+                <!-- Expander: Color                                                -->
+                <!-- ============================================================= -->
                 <Expander
                     Header="Color"
                     IsExpanded="True"
-                    HorizontalAlignment="Stretch">
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0">
                     <StackPanel
-                        Spacing="4"
-                        Margin="4,4,4,6">
+                        Margin="8,4,8,8">
 
                         <!-- Saturation -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Saturation: uniform increase or decrease of color intensity (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -379,12 +439,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Saturation}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -393,6 +453,7 @@
 
                         <!-- Vibrance -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Vibrance: smart saturation that boosts muted colors while protecting already-saturated ones (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -405,12 +466,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Vibrance}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -419,6 +480,7 @@
 
                         <!-- Hue -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Hue: rotates all colors around the color wheel (-180 to +180 degrees)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -431,12 +493,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Hue}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="180"
                                 Minimum="-180"
                                 SmallChange="1"
@@ -445,6 +507,7 @@
 
                         <!-- Temperature / Warmth -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Temperature / Warmth: negative = cooler (blue tones), positive = warmer (orange tones) (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -457,12 +520,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Temperature}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -471,6 +534,7 @@
 
                         <!-- Tint -->
                         <DockPanel
+                            Margin="0,4,0,0"
                             ap:MouseOverInfoAP.InfoText="Tint: negative = green, positive = magenta (-1 to +1)">
                             <TextBlock
                                 DockPanel.Dock="Left"
@@ -483,12 +547,12 @@
                                 Text="+"
                                 Width="12"
                                 VerticalAlignment="Center"
-                                FontSize="11"
-                                HorizontalAlignment="Right" />
+                                FontSize="11" />
                             <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
                                 VerticalAlignment="Center"
-                                ToolTip.Tip="{Binding Tint}"
+                                AutoToolTipPlacement="BottomRight"
                                 Maximum="1"
                                 Minimum="-1"
                                 SmallChange="0.01"
@@ -498,14 +562,18 @@
                         <!-- Color pickers: Overlay + Target -->
                         <StackPanel
                             Orientation="Horizontal"
-                            Spacing="8"
-                            Margin="0,4,0,0">
-                            <ColorPicker
-                                ap:MouseOverInfoAP.InfoText="Color Overlay: source color for color grading operations"
-                                Color="{Binding ColorOverlay, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
-                            <ColorPicker
-                                ap:MouseOverInfoAP.InfoText="Color Target: target color for color grading operations"
-                                Color="{Binding ColorTarget, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
+                            Margin="0,8,0,0">
+                            <cp:PortableColorPicker
+                                Width="34"
+                                Height="30"
+                                Margin="0,0,8,0"
+                                SelectedColor="{Binding ColorOverlay, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ap:MouseOverInfoAP.InfoText="Color Overlay: source color for color grading operations" />
+                            <cp:PortableColorPicker
+                                Width="34"
+                                Height="30"
+                                SelectedColor="{Binding ColorTarget, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ap:MouseOverInfoAP.InfoText="Color Target: target color for color grading operations" />
                         </StackPanel>
 
                     </StackPanel>
@@ -514,41 +582,43 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- ========================================================================= -->
-        <!-- BOTTOM BAR: DECORATIVE BACKGROUND                                         -->
-        <!-- ========================================================================= -->
-        <Border
-            Grid.Row="1"
-            Grid.ColumnSpan="2"
+        <!-- Row 3: footer bar and action buttons -->
+        <ui:Card
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
             Margin="-10,0,-10,-10"
             VerticalAlignment="Stretch"
-            IsHitTestVisible="False"
-            Background="{DynamicResource StatusBarBackground}"
-            BorderBrush="{DynamicResource SeparatorBrush}"
-            BorderThickness="0,1,0,0"
-            CornerRadius="0" />
+            IsHitTestVisible="False" />
 
-        <!-- Form Submission Control Actions -->
         <StackPanel
-            Grid.Row="1"
-            Grid.Column="1"
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
             Orientation="Horizontal"
             HorizontalAlignment="Right"
-            Spacing="8"
             Margin="8">
-            <Button
+            <ui:Button
+                Width="75"
+                Height="30"
+                Margin="0,0,8,0"
                 Content="Apply"
                 Command="{Binding ApplyCommand}" />
-            <Button
-                Content="Cancel"
+            <ui:Button
+                Width="75"
+                Height="30"
+                Margin="0,0,8,0"
+                ap:MouseOverInfoAP.InfoText="Cancel and close the dialog"
                 Command="{Binding CancelCommand}"
-                CommandParameter="{Binding $parent[Window]}" />
-            <Button
-                Classes="accent"
-                Content="OK"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Content="Cancel" />
+            <ui:Button
+                Width="75"
+                Height="30"
+                Appearance="Primary"
+                Foreground="White"
+                ap:MouseOverInfoAP.InfoText="Apply the modifications and close"
                 Command="{Binding OKCommand}"
-                CommandParameter="{Binding $parent[Window]}" />
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Content="OK" />
         </StackPanel>
-
     </Grid>
 </elements:AsyncWindow>

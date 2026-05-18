@@ -102,7 +102,7 @@ namespace TgaBuilderLib.ViewModel
         private PanelMouseCommand? _mousePanelCommand;
         private AsyncCommand? _batchLoaderCommand;
         private AsyncCommand? _transitionCommand;
-        private AsyncCommand? _singleTextureModificationCommand;
+        private AsyncCommand? _modificationsCommand;
         private RelayCommand? _aboutCommand;
         private RelayCommand? _entireToSourceCommand;
         private AsyncCommand? _entireToTargetCommand;
@@ -155,7 +155,7 @@ namespace TgaBuilderLib.ViewModel
 
         public bool IsTransitionViewOpen {  get; set; }
 
-        public bool IsSingleTextureModificationViewOpen { get; set; }
+        public bool IsModificationsViewOpen { get; set; }
 
 
         public bool PanelInfoVisible
@@ -214,8 +214,8 @@ namespace TgaBuilderLib.ViewModel
         public ICommand TransitionCommand => _transitionCommand
             ??= new(OpenTransitionHelper);
 
-        public ICommand SingleTextureModificationCommand => _singleTextureModificationCommand
-            ??= new(OpenSingleTextureModification);
+        public ICommand ModificationsCommand => _modificationsCommand
+            ??= new(OpenModifications);
 
         public ICommand AboutCommand => _aboutCommand
             ??= new(About);
@@ -439,17 +439,17 @@ namespace TgaBuilderLib.ViewModel
             await transitionView.ShowAsync();
         }
 
-        private async Task OpenSingleTextureModification()
+        private async Task OpenModifications()
         {
-            if (IsSingleTextureModificationViewOpen)
+            if (IsModificationsViewOpen)
                 return;
 
-            var view = _getViewCallback(ViewIndex.SingleTextureModification);
-            if (view.DataContext is not SingleTextureModificationViewModel)
+            var view = _getViewCallback(ViewIndex.Modifications);
+            if (view.DataContext is not ModificationsViewModel)
                 return;
 
             view.Topmost = true;
-            IsSingleTextureModificationViewOpen = true;
+            IsModificationsViewOpen = true;
 
             await view.ShowAsync();
         }

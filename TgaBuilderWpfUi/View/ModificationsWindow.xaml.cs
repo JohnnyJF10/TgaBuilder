@@ -5,11 +5,11 @@ using TgaBuilderLib.ViewModel;
 namespace TgaBuilderWpfUi.View
 {
     /// <summary>
-    /// Interaction logic for SingleTextureModificationWindow.xaml
+    /// Interaction logic for ModificationsWindow.xaml
     /// </summary>
-    public partial class SingleTextureModificationWindow : Elements.AsyncWindow
+    public partial class ModificationsWindow : Elements.AsyncWindow
     {
-        public SingleTextureModificationWindow(INotifyPropertyChanged viewModel)
+        public ModificationsWindow(INotifyPropertyChanged viewModel)
         {
             InitializeComponent();
             base.DataContext = viewModel;
@@ -19,7 +19,7 @@ namespace TgaBuilderWpfUi.View
         {
             base.OnClosing(e);
 
-            if (DataContext is SingleTextureModificationViewModel vm)
+            if (DataContext is ModificationsViewModel vm)
                 vm.MarkFinished();
         }
     }
