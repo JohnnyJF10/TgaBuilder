@@ -36,7 +36,13 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     private bool _protectEdges = true;
     private bool _isLabelMapExpanded;
     private FilterType _selectedFilter = FilterType.BoxBlur;
-    private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Watershed;
+    private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Felzenszwalb;
+    private int _felzenszwalbMinSize = 50;
+    private float _felzenszwalbScale = 100f;
+    private int _slicSegmentCount = 250;
+    private float _slicCompactness = 10f;
+    private int _quickshiftMaxDist = 10;
+    private float _quickshiftRatio = 1f;
     private Color _edgeColor = new Color(255, 255, 255, 128);
     private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
     private int _edgeWidth = 1;
@@ -127,7 +133,63 @@ public class BrickTransitionViewModel : TransitionViewModelBase
     public SegmentationMethod SelectedSegmentationMethod
     {
         get => _selectedSegmentationMethod;
-        set => SetPropertyTriggerRecalculation(ref _selectedSegmentationMethod, value, BricksPipelineRequirements.RequiresAnalysis, null);
+        set
+        {
+            if (SetCallerPropertyReturn(ref _selectedSegmentationMethod, value, nameof(SelectedSegmentationMethod)))
+            {
+                OnPropertyChanged(nameof(ShowFelzenszwalbParameters));
+                OnPropertyChanged(nameof(ShowSlicParameters));
+                OnPropertyChanged(nameof(ShowQuickshiftParameters));
+                OnPropertyChanged(nameof(ShowGrayBasedSegmentationInputs));
+                OnPropertyChanged(nameof(SelectedSegmentationMethodIndex));
+                _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+                _ = TriggerRecalculation();
+            }
+        }
+    }
+
+    public bool ShowFelzenszwalbParameters => SelectedSegmentationMethod == SegmentationMethod.Felzenszwalb;
+    public bool ShowSlicParameters => SelectedSegmentationMethod == SegmentationMethod.Slic;
+    public bool ShowQuickshiftParameters => SelectedSegmentationMethod == SegmentationMethod.Quickshift;
+    public bool ShowGrayBasedSegmentationInputs =>
+        SelectedSegmentationMethod == SegmentationMethod.Watershed
+        || SelectedSegmentationMethod == SegmentationMethod.XYProjection
+        || SelectedSegmentationMethod == SegmentationMethod.YXProjection;
+
+    public int FelzenszwalbMinSize
+    {
+        get => _felzenszwalbMinSize;
+        set => SetPropertyTriggerRecalculation(ref _felzenszwalbMinSize, value, BricksPipelineRequirements.RequiresAnalysis);
+    }
+
+    public float FelzenszwalbScale
+    {
+        get => _felzenszwalbScale;
+        set => SetPropertyTriggerRecalculation(ref _felzenszwalbScale, value, BricksPipelineRequirements.RequiresAnalysis);
+    }
+
+    public int SlicSegmentCount
+    {
+        get => _slicSegmentCount;
+        set => SetPropertyTriggerRecalculation(ref _slicSegmentCount, value, BricksPipelineRequirements.RequiresAnalysis);
+    }
+
+    public float SlicCompactness
+    {
+        get => _slicCompactness;
+        set => SetPropertyTriggerRecalculation(ref _slicCompactness, value, BricksPipelineRequirements.RequiresAnalysis);
+    }
+
+    public int QuickshiftMaxDist
+    {
+        get => _quickshiftMaxDist;
+        set => SetPropertyTriggerRecalculation(ref _quickshiftMaxDist, value, BricksPipelineRequirements.RequiresAnalysis);
+    }
+
+    public float QuickshiftRatio
+    {
+        get => _quickshiftRatio;
+        set => SetPropertyTriggerRecalculation(ref _quickshiftRatio, value, BricksPipelineRequirements.RequiresAnalysis);
     }
 
     public Color EdgeColor 
@@ -193,6 +255,12 @@ public class BrickTransitionViewModel : TransitionViewModelBase
         _transitionHelper.MarkerRadius = MarkerRadius;
         _transitionHelper.SelectedFilter = SelectedFilter;
         _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
+        _transitionHelper.FelzenszwalbMinSize = FelzenszwalbMinSize;
+        _transitionHelper.FelzenszwalbScale = FelzenszwalbScale;
+        _transitionHelper.SlicSegmentCount = SlicSegmentCount;
+        _transitionHelper.SlicCompactness = SlicCompactness;
+        _transitionHelper.QuickshiftMaxDist = QuickshiftMaxDist;
+        _transitionHelper.QuickshiftRatio = QuickshiftRatio;
         _transitionHelper.EdgeColor = EdgeColor;
         _transitionHelper.BlendMode = BlendMode;
         _transitionHelper.EdgeWidth = EdgeWidth;

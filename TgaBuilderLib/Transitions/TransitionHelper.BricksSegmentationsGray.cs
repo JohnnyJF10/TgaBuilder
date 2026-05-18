@@ -234,6 +234,75 @@ public partial class TransitionHelper
         return labelCounter - 1;
     }
 
+    private int YXProjectionSegmentation(float[] filtered, int[] labels)
+    {
+        int labelCounter = 1;
+
+        // --- Step 1: Global Vertical Projection ---
+        // Summing columns to find vertical boundaries between columns of bricks
+        float[] colSum = new float[Width];
+        for (int y = 0; y < Height; y++)
+        {
+            int rowIdx = y * Width;
+            for (int x = 0; x < Width; x++)
+            {
+                colSum[x] += filtered[rowIdx + x];
+            }
+        }
+
+        List<int> verticalSplits = FindValleys(colSum, MarkerRadius);
+
+        if (!verticalSplits.Contains(0)) verticalSplits.Insert(0, 0);
+        if (!verticalSplits.Contains(Width)) verticalSplits.Add(Width);
+        verticalSplits.Sort();
+
+        // --- Step 2: Local Horizontal Projection per Column ---
+        // Look within each vertical column band to find horizontal brick cuts
+        for (int i = 0; i < verticalSplits.Count - 1; i++)
+        {
+            int xStart = verticalSplits[i];
+            int xEnd = verticalSplits[i + 1];
+            int colWidth = xEnd - xStart;
+
+            if (colWidth <= 0) continue;
+
+            float[] localRowSum = new float[Height];
+            for (int y = 0; y < Height; y++)
+            {
+                int rowIdx = y * Width;
+                for (int x = xStart; x < xEnd; x++)
+                {
+                    localRowSum[y] += filtered[rowIdx + x];
+                }
+            }
+
+            List<int> horizontalSplits = FindValleys(localRowSum, MarkerRadius);
+
+            if (!horizontalSplits.Contains(0)) horizontalSplits.Insert(0, 0);
+            if (!horizontalSplits.Contains(Height)) horizontalSplits.Add(Height);
+            horizontalSplits.Sort();
+
+            // --- Step 3: Fast Array Labeling ---
+            // Label the bounding boxes directly into the caller's label array
+            for (int j = 0; j < horizontalSplits.Count - 1; j++)
+            {
+                int yStart = horizontalSplits[j];
+                int yEnd = horizontalSplits[j + 1];
+
+                for (int y = yStart; y < yEnd; y++)
+                {
+                    int rowOffset = y * Width;
+                    for (int x = xStart; x < xEnd; x++)
+                    {
+                        labels[rowOffset + x] = labelCounter;
+                    }
+                }
+                labelCounter++;
+            }
+        }
+        return labelCounter - 1;
+    }
+
     private List<int> FindValleys(float[] profile, int radius)
     {
         List<int> valleys = new List<int>();

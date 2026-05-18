@@ -25,6 +25,12 @@ namespace TgaBuilderLib.Transitions
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
         SegmentationMethod SegmentationMethod { get; set; }
+        int FelzenszwalbMinSize { get; set; }
+        float FelzenszwalbScale { get; set; }
+        int SlicSegmentCount { get; set; }
+        float SlicCompactness { get; set; }
+        int QuickshiftMaxDist { get; set; }
+        float QuickshiftRatio { get; set; }
         Color EdgeColor { get; set; }
         int EdgeWidth { get; set; }
         EdgeBlendMode BlendMode { get; set; }

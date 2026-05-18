@@ -17,44 +17,28 @@ namespace TgaBuilderLib.Transitions
 
     public enum SegmentationMethod
     {
+        Felzenszwalb,
+        Slic,
+        Quickshift,
         Watershed,
-        XYProjection
+        XYProjection,
+        YXProjection,
     }
 
     public partial class TransitionHelper
     {
 
         // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
-        private unsafe (int[] labels, List<TileSegment> tileSegmentList) BricksAnalyze(byte[] pixels)
+        private (int[] labels, List<TileSegment> tileSegmentList) BricksAnalyze(byte[] pixels)
         {
             int totalPixels = Width * Height;
 
             float[] filtered = new float[totalPixels];
             int[] labels = new int[totalPixels];
-            
 
             // 1. Compute grayscale values
             float[] gray = new float[totalPixels];
-
-            fixed (byte* p = pixels)
-            {
-                if (!InvertGrayscale)
-                {
-                    for (int i = 0; i < totalPixels; i++)
-                    {
-                        byte* px = p + (i * TRANSITIONS_BPP);
-                        gray[i] = px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f;
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < totalPixels; i++)
-                    {
-                        byte* px = p + (i * TRANSITIONS_BPP);
-                        gray[i] = 255f - (px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f);
-                    }
-                }
-            }
+            ComputeGrayValues(pixels, gray);
 
             // 2. Initial Filter
             switch (SelectedFilter)
@@ -77,8 +61,12 @@ namespace TgaBuilderLib.Transitions
             // 3. Segmentation
             int labelCount = SegmentationMethod switch
             {
+                SegmentationMethod.Felzenszwalb => Felzenszwalb(pixels, labels, FelzenszwalbMinSize, FelzenszwalbScale),
+                SegmentationMethod.Slic => Slic(pixels, labels, SlicSegmentCount, SlicCompactness),
+                SegmentationMethod.Quickshift => Quickshift(pixels, labels, QuickshiftMaxDist, QuickshiftRatio),
                 SegmentationMethod.Watershed => WatershedSegmentation(filtered, labels),
                 SegmentationMethod.XYProjection => XYProjectionSegmentation(filtered, labels),
+                SegmentationMethod.YXProjection => YXProjectionSegmentation(filtered, labels),
                 _ => 0
             };
 
@@ -88,6 +76,36 @@ namespace TgaBuilderLib.Transitions
             return (labels, tileSegmentList);
         }
 
+        private void ComputeGrayValues(byte[] pixels, float[] gray)
+        {
+            int totalPixels = Width * Height;
+
+            if (gray.Length != totalPixels)
+                throw new ArgumentException("Gray array length does not match pixel data.");
+
+            unsafe
+            {
+                fixed (byte* p = pixels)
+                {
+                    if (!InvertGrayscale)
+                    {
+                        for (int i = 0; i < totalPixels; i++)
+                        {
+                            byte* px = p + (i * TRANSITIONS_BPP);
+                            gray[i] = px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f;
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < totalPixels; i++)
+                        {
+                            byte* px = p + (i * TRANSITIONS_BPP);
+                            gray[i] = 255f - (px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f);
+                        }
+                    }
+                } 
+            }
+        }
 
         private List<TileSegment> BuildTileSegmentList(int[] labels, int width, int height, int labelCount)
         {
