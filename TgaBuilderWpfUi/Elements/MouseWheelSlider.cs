@@ -28,7 +28,7 @@ namespace TgaBuilderWpfUi.Elements
 
         protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
         {
-            if (!IsMouseOver || !IsEnabled || e.Delta == 0)
+            if (!IsFocused || !IsMouseOver || !IsEnabled || e.Delta == 0)
             {
                 base.OnPreviewMouseWheel(e);
                 return;
