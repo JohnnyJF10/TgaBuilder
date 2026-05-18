@@ -28,8 +28,8 @@ namespace TgaBuilderLib.FileHandling
 
         public ResultStatus ResultInfo { get; private set; } = ResultStatus.Success;
 
-        public bool TrImportRepackingSelected { get; set; }
-        public int TrImportHorPageNum { get; set; } = 1;
+        public bool TrImportRepackingSelected { get; set; } = true;
+        public int TrImportHorPageNum { get; set; } = 2;
 
 
         public void LoadImageFile(
