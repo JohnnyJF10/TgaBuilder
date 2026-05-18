@@ -7,21 +7,21 @@
     xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
     xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-    x:Class="TgaBuilderAvaloniaUi.View.BrickTransitionWindow"
-    x:DataType="viewmodel:BrickTransitionViewModel"
+    x:Class="TgaBuilderAvaloniaUi.View.TransitionWindow"
+    x:DataType="viewmodel:TransitionViewModel"
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen"
     UseLayoutRounding="True"
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"
-    Title="Brick Transition Helper"
-    Width="680"
+    Title="Transition Helper"
+    Width="730"
     Height="300"
-    MinWidth="640"
+    MinWidth="690"
     MinHeight="300"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
-   <!-- ========================================================================= -->
+    <!-- ========================================================================= -->
     <!-- WINDOW RESOURCES & CONVERTERS                                             -->
     <!-- ========================================================================= -->
     <Window.Resources>
@@ -35,12 +35,16 @@
                     Source="/Styles/IconToggleButtonStyle.axaml" />
                 <ResourceInclude
                     Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude
+                    Source="/Styles/IconRadioButtonStyle.axaml" />
             </ResourceDictionary.MergedDictionaries>
-            
+
             <converters:WriteableBitmapConverter
                 x:Key="WriteableBitmapConverter" />
             <converters:ColorStructToMediaColor
                 x:Key="ColorStructToMediaColor" />
+            <converters:EnumToBooleanConverter
+                x:Key="EnumToBooleanConverter" />
         </ResourceDictionary>
     </Window.Resources>
 
@@ -48,7 +52,6 @@
     <!-- MAIN CONTENT LAYOUT                                                       -->
     <!-- ========================================================================= -->
     <Grid
-        x:Name="MainGrid"
         RowDefinitions="Auto,*,60">
 
         <Grid.ColumnDefinitions>
@@ -60,15 +63,42 @@
                 MinWidth="220" />
         </Grid.ColumnDefinitions>
 
-        <!-- Top row: transition mode + pivot above images -->
+        <!-- ========================================================================= -->
+        <!-- TOP ROW: MODE SELECTOR + TRANSITION MODES + PIVOT                        -->
+        <!-- ========================================================================= -->
         <DockPanel
             Grid.Row="0"
             Grid.Column="0"
             Margin="7,0,10,0">
+
+            <!-- Mode Selector: Smooth / Brick radio icon buttons -->
+            <StackPanel
+                DockPanel.Dock="Left"
+                Orientation="Horizontal"
+                Margin="0,0,6,0"
+                VerticalAlignment="Center">
+                <elements:IconRadioButton
+                    Icon="{StaticResource tab_in_private}"
+                    Classes="outlined"
+                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Smooth}}"
+                    ap:MouseOverInfoAP.InfoText="Smooth transition mode"/>
+
+                <elements:IconRadioButton
+                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Bricks}}"
+                    Classes="outlined"
+                    Margin="5,0,5,0"
+                    Icon="{StaticResource table_freeze_regular}"
+                    ap:MouseOverInfoAP.InfoText="Brick transition mode"/>
+
+            </StackPanel>
+
+            <!-- Transition mode buttons panel -->
             <local:TransitionModeUserControl />
+
+            <!-- Pivot slider -->
             <DockPanel
-                Margin="0,2,0,0"
-                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the brick transition border (0 = left, 1 = right)">
+                Margin="5,2,0,0"
+                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
                 <Grid
                     VerticalAlignment="Top"
                     Margin="0,11,8,0"
@@ -133,8 +163,8 @@
             Grid.Row="1"
             Grid.RowSpan="2"
             RowDefinitions="*,60">
-            
-            <!-- Source Image 1: Bricks Texture -->
+
+            <!-- Source Image 1 -->
             <Border
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
@@ -162,17 +192,17 @@
                         </Grid>
                     </Viewbox>
                     <TextBlock
-                        Text="Bricks&#x0a;Texture"
+                        Text="Texture 1"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        FontSize="24"
                         IsVisible="{Binding InitTextVisible}"
-                        FontSize="20"
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
 
-            <!-- Image Management: Swap Controls -->
+            <!-- Swap Controls -->
             <StackPanel
                 VerticalAlignment="Center"
                 Grid.Column="1"
@@ -186,12 +216,12 @@
                     Margin="0,9,0,0"
                     Padding="4,0,0,0"
                     Command="{Binding SwapImagesCommand}"
-                    ap:MouseOverInfoAP.InfoText="Swap Bricks Texture and Background Texture"
+                    ap:MouseOverInfoAP.InfoText="Swap Texture 1 and Texture 2"
                     ToolTip.Tip="Swap images"
                     Icon="{StaticResource arrow_swap}" />
             </StackPanel>
 
-            <!-- Source Image 2: Background Texture -->
+            <!-- Source Image 2 -->
             <Border
                 Grid.Column="2"
                 Margin="10"
@@ -219,17 +249,17 @@
                         </Grid>
                     </Viewbox>
                     <TextBlock
-                        Text="Background&#x0a;Texture"
+                        Text="Texture 2"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        FontSize="24"
                         IsVisible="{Binding InitTextVisible}"
-                        FontSize="16"
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
 
-            <!-- Execution Trigger: Mix Command -->
+            <!-- Mix Command Arrow -->
             <elements:IconButton
                 Classes="accent"
                 Foreground="White"
@@ -237,11 +267,11 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Padding="0,0,0,-5"
-                ap:MouseOverInfoAP.InfoText="Generate the brick transition result image"
+                ap:MouseOverInfoAP.InfoText="Generate the transition result image"
                 Icon="{StaticResource arrow_forward}"
                 Command="{Binding MixCommand}" />
 
-            <!-- Output Preview: Result Image -->
+            <!-- Result Image -->
             <Border
                 Grid.Column="4"
                 Margin="10"
@@ -256,23 +286,7 @@
                     Stretch="Uniform" />
             </Border>
 
-            <!-- Segmentation Overlay: Toggle Map Visibility -->
-            <ToggleButton
-                x:Name="LabelMapToggle"
-                Grid.Column="5"
-                VerticalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
-                IsChecked="{Binding IsLabelMapExpanded}"
-                Width="20"
-                Height="60"
-                Padding="0">
-                <PathIcon
-                    Data="{StaticResource chevron_left}"
-                    Width="12"
-                    Height="12" />
-            </ToggleButton>
-
-            <!-- Segmentation Overlay: Map Panel -->
+            <!-- Label Map Panel -->
             <Border
                 Grid.Column="6"
                 Margin="10"
@@ -287,7 +301,7 @@
                     Stretch="Uniform" />
             </Border>
 
-            <!-- Image Loading Actions -->
+            <!-- Load Image Buttons -->
             <elements:IconButton
                 x:Name="BtnLoad1"
                 Grid.Row="1"
@@ -296,10 +310,10 @@
                 Margin="10,5"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Load Bricks Texture from the current selection"
+                ap:MouseOverInfoAP.InfoText="Load Texture 1 from the current selection"
                 Icon="{StaticResource image_copy}"
                 Command="{Binding LoadImage1Command}" />
-                
+
             <elements:IconButton
                 x:Name="BtnLoad2"
                 Grid.Row="1"
@@ -308,7 +322,7 @@
                 Margin="10,5"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                ap:MouseOverInfoAP.InfoText="Load Background Texture from the current selection"
+                ap:MouseOverInfoAP.InfoText="Load Texture 2 from the current selection"
                 Icon="{StaticResource image_copy}"
                 Command="{Binding LoadImage2Command}" />
         </Grid>
@@ -330,23 +344,195 @@
         <Grid
             Grid.RowSpan="2"
             Grid.Column="1"
-            Margin="10,0,10,10"
+            Margin="10,2,10,10"
             RowDefinitions="*">
 
-            <!-- Scrollable Advanced Options Sections -->
+            <!-- Smooth mode: Hardness / Widening / Shift sliders -->
+            <StackPanel
+                Grid.Row="0"
+                IsVisible="{Binding IsSmoothMode}">
+
+                <!-- Hardness Slider -->
+                <DockPanel
+                    ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
+                    <Path
+                        VerticalAlignment="Center"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        Width="14"
+                        Height="24"
+                        Margin="-5,0,5,0"
+                        Data="{StaticResource hardness_soft}" />
+                    <Path
+                        DockPanel.Dock="Right"
+                        VerticalAlignment="Center"
+                        Margin="-5,0,5,0"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        Width="14"
+                        Height="20"
+                        Data="{StaticResource hardness_sharp}" />
+                    <elements:MouseWheelSlider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{Binding BlendHardnessValue}"
+                        Maximum="1"
+                        Minimum="0"
+                        SmallChange="0.01"
+                        Value="{Binding BlendHardnessValue}" />
+                </DockPanel>
+
+                <!-- Widening Slider -->
+                <DockPanel
+                    ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Left">
+                        <Path
+                            VerticalAlignment="Bottom"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeThickness="1"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_low}" />
+                        <Path
+                            VerticalAlignment="Bottom"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeDashArray="2,2"
+                            StrokeThickness="1"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_high}" />
+                    </Grid>
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Right">
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeDashArray="2,2"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_high}" />
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_widening}" />
+                    </Grid>
+                    <elements:MouseWheelSlider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{Binding WideningValue}"
+                        Maximum="1"
+                        Minimum="0"
+                        SmallChange="0.01"
+                        Value="{Binding WideningValue}" />
+                </DockPanel>
+
+                <!-- Shift Slider -->
+                <DockPanel
+                    ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Left">
+                        <Path
+                            VerticalAlignment="Bottom"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeDashArray="2,2"
+                            StrokeThickness="1"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_high}" />
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_shift_left}" />
+                    </Grid>
+                    <Grid
+                        VerticalAlignment="Top"
+                        Margin="-5,11,8,0"
+                        DockPanel.Dock="Right">
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            StrokeDashArray="2,2"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_high}" />
+                        <Path
+                            VerticalAlignment="Bottom"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource IconFillBrush}"
+                            Fill="Transparent"
+                            Width="10"
+                            Height="10"
+                            Data="{StaticResource pivot_shift_right}" />
+                    </Grid>
+                    <elements:MouseWheelSlider
+                        Margin="5,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{Binding ShiftValue}"
+                        Maximum="1"
+                        Minimum="-1"
+                        SmallChange="0.01"
+                        Value="{Binding ShiftValue}" />
+                </DockPanel>
+            </StackPanel>
+
+            <!-- Brick mode: scrollable expanders -->
             <ScrollViewer
                 Grid.Row="0"
+                IsVisible="{Binding IsBrickMode}"
                 VerticalScrollBarVisibility="Auto"
                 HorizontalScrollBarVisibility="Disabled">
                 <StackPanel
                     Spacing="8"
-                    Margin="0,0,20,0 ">
-                    
+                    Margin="0,0,20,0">
+
                     <!-- Parameter Section: Image Analysis -->
                     <Expander
-                        Header="Analysis"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">
+                        <Expander.Header>
+                            <StackPanel
+                                Orientation="Horizontal">
+
+                                <TextBlock
+                                    Text="Analysis"
+                                    VerticalAlignment="Center"/>
+                                
+                                <!-- Label Map Toggle (brick mode only) -->
+                                <elements:IconToggleButton
+                                    x:Name="LabelMapToggle"
+                                    Classes="outlined"
+                                    Icon="{StaticResource map}"
+                                    VerticalAlignment="Center"
+                                    IsVisible="{Binding IsBrickMode}"
+                                    ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
+                                    IsChecked="{Binding IsLabelMapExpanded}"
+                                    Margin="15,0,0,0"
+                                    Width="26"
+                                    Height="26" />
+                            </StackPanel>
+                        </Expander.Header>
                         <StackPanel>
                             <DockPanel
                                 ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
@@ -404,10 +590,10 @@
                                         Background="Transparent"
                                         TextBlock.TextTrimming="CharacterEllipsis"
                                         SelectedIndex="{Binding SelectedFilterIndex}">
-                                        <ComboBoxItem Content="None"/>
-                                        <ComboBoxItem Content="Box Blur"/>
-                                        <ComboBoxItem Content="Median"/>
-                                        <ComboBoxItem Content="Bilateral"/>
+                                        <ComboBoxItem Content="None" />
+                                        <ComboBoxItem Content="Box Blur" />
+                                        <ComboBoxItem Content="Median" />
+                                        <ComboBoxItem Content="Bilateral" />
                                     </ComboBox>
                                 </DockPanel>
                             </DockPanel>
@@ -875,7 +1061,8 @@
             IsHitTestVisible="False"
             Background="{DynamicResource StatusBarBackground}"
             BorderBrush="{DynamicResource SeparatorBrush}"
-            BorderThickness="0,1,0,0" />
+            BorderThickness="0,1,0,0"
+            CornerRadius="0" />
 
         <!-- Form Submission Control Actions -->
         <StackPanel
@@ -887,7 +1074,7 @@
             Margin="8">
             <Button
                 Content="Apply"
-                Command="{Binding MixCommand}" />
+                Command="{Binding ApplyCommand}" />
             <Button
                 Content="Cancel"
                 Command="{Binding CancelCommand}"
@@ -898,5 +1085,6 @@
                 Command="{Binding OKCommand}"
                 CommandParameter="{Binding $parent[Window]}" />
         </StackPanel>
+
     </Grid>
 </elements:AsyncWindow>

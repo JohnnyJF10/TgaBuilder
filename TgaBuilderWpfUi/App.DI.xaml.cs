@@ -271,12 +271,7 @@ namespace TgaBuilderWpfUi
 
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
-            services.AddTransient(sp => new SmoothTransitionViewModel(
-                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
-                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
-                bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
-                mainViewModel: sp.GetRequiredService<MainViewModel>()));
-            services.AddTransient(sp => new BrickTransitionViewModel(
+            services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
@@ -331,13 +326,9 @@ namespace TgaBuilderWpfUi
                 sp => new AboutWindow(
                     viewModel: sp.GetRequiredService<AboutViewModel>()));
 
-            services.AddTransient<IView, SmoothTransitionWindow>(
-                sp => new SmoothTransitionWindow(
-                    viewModel: sp.GetRequiredService<SmoothTransitionViewModel>()));
-
-            services.AddTransient<IView, BrickTransitionWindow>(
-                sp => new BrickTransitionWindow(
-                    viewModel: sp.GetRequiredService<BrickTransitionViewModel>()));
+            services.AddTransient<IView, TransitionWindow>(
+                sp => new TransitionWindow(
+                    viewModel: sp.GetRequiredService<TransitionViewModel>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)

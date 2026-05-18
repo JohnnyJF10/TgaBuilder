@@ -101,8 +101,7 @@ namespace TgaBuilderLib.ViewModel
 
         private PanelMouseCommand? _mousePanelCommand;
         private AsyncCommand? _batchLoaderCommand;
-        private AsyncCommand? _smoothTransitionCommand;
-        private AsyncCommand? _brickTransitionCommand;
+        private AsyncCommand? _transitionCommand;
         private RelayCommand? _aboutCommand;
         private RelayCommand? _entireToSourceCommand;
         private AsyncCommand? _entireToTargetCommand;
@@ -209,11 +208,8 @@ namespace TgaBuilderLib.ViewModel
         public ICommand BatchLoaderCommand => _batchLoaderCommand
             ??= new(SourceIO.BatchLoader);
 
-        public ICommand SmoothTransitionCommand => _smoothTransitionCommand
-            ??= new(OpenSmoothTransitionHelper);
-
-        public ICommand BrickTransitionCommand => _brickTransitionCommand
-            ??= new(OpenBrickTransitionHelper);
+        public ICommand TransitionCommand => _transitionCommand
+            ??= new(OpenTransitionHelper);
 
         public ICommand AboutCommand => _aboutCommand
             ??= new(About);
@@ -422,38 +418,19 @@ namespace TgaBuilderLib.ViewModel
             aboutView.ShowDialogAsync();
         }
 
-        private async Task OpenSmoothTransitionHelper()
+        private async Task OpenTransitionHelper()
         {
             if (IsTransitionViewOpen)
                 return;
 
-            var smoothTransitionView = _getViewCallback(ViewIndex.SmoothTransition);
-            if (smoothTransitionView.DataContext is not SmoothTransitionViewModel smoothTransitionVM)
+            var transitionView = _getViewCallback(ViewIndex.Transition);
+            if (transitionView.DataContext is not TransitionViewModel)
                 return;
 
-            smoothTransitionView.Topmost = true;
+            transitionView.Topmost = true;
             IsTransitionViewOpen = true;
 
-            await smoothTransitionView.ShowAsync();
-
-            //Put result to selection
-        }
-
-        private async Task OpenBrickTransitionHelper()
-        {
-            if (IsTransitionViewOpen)
-                return;
-
-            var brickTransitionView = _getViewCallback(ViewIndex.BrickTransition);
-            if (brickTransitionView.DataContext is not BrickTransitionViewModel brickTransitionVM)
-                return;
-
-            brickTransitionView.Topmost = true;
-            IsTransitionViewOpen = true;
-
-            await brickTransitionView.ShowAsync();
-
-            //Put result to selection
+            await transitionView.ShowAsync();
         }
 
 
