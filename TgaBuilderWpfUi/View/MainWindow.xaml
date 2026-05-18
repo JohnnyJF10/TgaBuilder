@@ -798,19 +798,12 @@
                 HorizontalAlignment="Center"
                 >
                 <ui:Button
-                    Icon="{ui:SymbolIcon TabInPrivate24}"
-                    Margin="5"
-                    Width="36"
-                    Height="36"
-                    Command="{Binding SmoothTransitionCommand}"
-                    ap:MouseOverInfoAP.InfoText="Copy entire Target Texture Panel to Source."/>
-                <ui:Button
                     Icon="{ui:SymbolIcon TableFreezeColumnAndRow24}"
                     Margin="5"
                     Width="36"
                     Height="36"
-                    Command="{Binding BrickTransitionCommand}"
-                    ap:MouseOverInfoAP.InfoText="Copy entire Source Texture Panel to Target. CAUTION: This clears the undo and redo stacks."/>
+                    Command="{Binding TransitionCommand}"
+                    ap:MouseOverInfoAP.InfoText="Open Transition Helper"/>
             </StackPanel>
             <StackPanel
                 DataContext="{Binding Selection}"

@@ -737,19 +737,8 @@
                     Height="36"
                     Padding="0"
                     Background="Transparent"
-                    ap:MouseOverInfoAP.InfoText="Open Smooth Transition Helper"
-                    Command="{Binding SmoothTransitionCommand}">
-                    <PathIcon Data="{StaticResource tab_in_private}"
-                              Width="18" Height="18" />
-                </Button>
-                <Button
-                    Margin="5"
-                    Width="36"
-                    Height="36"
-                    Padding="0"
-                    Background="Transparent"
-                    ap:MouseOverInfoAP.InfoText="Open Brick Transition Helper"
-                    Command="{Binding BrickTransitionCommand}">
+                    ap:MouseOverInfoAP.InfoText="Open Transition Helper"
+                    Command="{Binding TransitionCommand}">
                     <PathIcon Data="{StaticResource table_freeze_regular}"
                               Width="18" Height="18" />
                 </Button>
