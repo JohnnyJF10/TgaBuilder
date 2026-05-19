@@ -1,11 +1,10 @@
-<UserControl x:Class="TgaBuilderAvaloniaUi.View.MainWindowDestinationFormatUserControl"
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.MainWindowFormatUserControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             x:DataType="viewmodel:MainViewModel"
+                          x:DataType="viewmodel:FormatTabViewModel"
              x:CompileBindings="False"
              xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters">
     <UserControl.Resources>
@@ -20,8 +19,7 @@
 
                     <StackPanel
                         Margin="5,0"
-                        DataContext="{Binding DestinationFormatTab}"
-                        Orientation="Horizontal">
+                                                Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,0,1.6"
                             VerticalAlignment="Center"
@@ -48,13 +46,13 @@
                                 Text="24" />
 
                             <ToggleSwitch
-                                x:Name="DestinationFormatSwitch"
+                                x:Name="FormatSwitch"
                                 Grid.Column="1"
                                 OffContent=""
                                 OnContent=""
-                                ap:MouseOverInfoAP.InfoText="Sets the Destination image format. CAUTION: This clears the undo and redo stacks."
+                                ap:MouseOverInfoAP.InfoText="Sets image format"
                                 IsChecked="{Binding IsBgra32}" 
-                                Click="DestinationFormatSwitch_Click"
+                                Click="FormatSwitch_Click"
                                 />
 
                             <TextBlock
@@ -106,7 +104,7 @@
                         <elements:IconButton
                             Classes="outlined"
                             Icon="{StaticResource color_fill}"
-                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color. CAUTION: This clears the undo and redo stacks."
+                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color"
                             Command="{Binding ReplaceSourceColorCommand}"
                             DockPanel.Dock="Left" />
                     </StackPanel>

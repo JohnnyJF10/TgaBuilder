@@ -2,9 +2,9 @@ using System.Windows.Controls;
 
 namespace TgaBuilderWpfUi.View
 {
-    public partial class MainWindowSourceViewUserControl : UserControl
+    public partial class MainWindowSelectionControlsUserControl : UserControl
     {
-        public MainWindowSourceViewUserControl()
+        public MainWindowSelectionControlsUserControl()
         {
             InitializeComponent();
         }

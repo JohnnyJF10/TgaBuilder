@@ -2,9 +2,9 @@ using System.Windows.Controls;
 
 namespace TgaBuilderWpfUi.View
 {
-    public partial class MainWindowDestinationViewUserControl : UserControl
+    public partial class TransitionWindowControlsUserControl : UserControl
     {
-        public MainWindowDestinationViewUserControl()
+        public TransitionWindowControlsUserControl()
         {
             InitializeComponent();
         }

@@ -40,7 +40,9 @@ namespace TgaBuilderAvaloniaUi
 
             // This is required in Avalonia UI as partial changes on Images are not automatically redrawn.
             mainViewModel.VisualInvalidator = new VisualInvalidator(mainWindow.TargetImage);
-            mainViewModel.Selection.VisualInvalidator = new VisualInvalidator(mainWindow.SelectionImage);
+            var selectionImage = mainWindow.FindControl<Image>("SelectionImage")
+                ?? throw new InvalidOperationException("SelectionImage not found in MainWindow visual tree");
+            mainViewModel.Selection.VisualInvalidator = new VisualInvalidator(selectionImage);
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {

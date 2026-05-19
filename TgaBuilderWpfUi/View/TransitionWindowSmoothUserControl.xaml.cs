@@ -2,9 +2,9 @@ using System.Windows.Controls;
 
 namespace TgaBuilderWpfUi.View
 {
-    public partial class MainWindowSourceFormatUserControl : UserControl
+    public partial class TransitionWindowSmoothUserControl : UserControl
     {
-        public MainWindowSourceFormatUserControl()
+        public TransitionWindowSmoothUserControl()
         {
             InitializeComponent();
         }

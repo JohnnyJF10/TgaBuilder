@@ -1,4 +1,4 @@
-<UserControl x:Class="TgaBuilderWpfUi.View.MainWindowDestinationFormatUserControl"
+<UserControl x:Class="TgaBuilderWpfUi.View.MainWindowFormatUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,9 +7,8 @@
              xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
-             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel, IsDesignTimeCreatable=False}"
+                          xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:FormatTabViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d"
              xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters">
     <UserControl.Resources>
@@ -24,8 +23,7 @@
     </UserControl.Resources>
 
                     <StackPanel
-                        DataContext="{Binding DestinationFormatTab}"
-                        Margin="5,0"
+                                                Margin="5,0"
                         Orientation="Horizontal">
                         <TextBlock
                             Text="BPP:"
@@ -62,7 +60,7 @@
                             Grid.Column="1"
                             Style="{StaticResource ModifiedUiToggleSwitchStyle}"
                             IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ap:MouseOverInfoAP.InfoText="Sets the Destination image format. CAUTION: This clears the undo and redo stacks."
+                            ap:MouseOverInfoAP.InfoText="Sets image format"
                             />
 
                             <TextBlock
@@ -95,7 +93,7 @@
                             Width="34"
                             Height="30"
                             SelectedColor="{Binding ColorToReplace, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                            ap:MouseOverInfoAP.InfoText="Open color picker to target color for transparency"
+                            ap:MouseOverInfoAP.InfoText="Open color picker for transparency"
                             Margin="4"/>
 
                         <elements:ToggleButtonEx
@@ -113,8 +111,8 @@
                             Height="36"
                             DockPanel.Dock="Left"
                             Command="{Binding ReplaceSourceColorCommand}"
-                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color. CAUTION: This clears the undo and redo stacks."
+                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color"
                             />
-                    </StackPanel>                
+                    </StackPanel>
                 
 </UserControl>

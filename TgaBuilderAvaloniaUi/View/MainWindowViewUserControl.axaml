@@ -1,11 +1,10 @@
-<UserControl x:Class="TgaBuilderAvaloniaUi.View.MainWindowSourceViewUserControl"
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.MainWindowViewUserControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             x:DataType="viewmodel:MainViewModel"
+                          x:DataType="viewmodel:ReadOnlyViewTabViewModel"
              x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -15,10 +14,9 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-                    <DockPanel Margin="5,0,5,0" DataContext="{Binding SourceViewTab}">
+                    <DockPanel Margin="5,0,5,0" >
                         <elements:IconButton
-                            x:Name="SourceFitButton"
-                            Classes="outlined"
+                                                        Classes="outlined"
                             Icon="{StaticResource arrow_autofit_width}"
                             ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
                             Command="{Binding FitCommand}"
