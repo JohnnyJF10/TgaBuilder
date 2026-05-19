@@ -21,7 +21,7 @@ namespace TgaBuilderLib.Transitions
         // Bricks / Segmented Transition Parameters
         BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
         bool InvertGrayscale { get; set; }
-        int MarkerRadius { get; set; }
+        int MarkerCount { get; set; }
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
         SegmentationMethod SegmentationMethod { get; set; }
@@ -32,6 +32,8 @@ namespace TgaBuilderLib.Transitions
         int QuickshiftMaxDist { get; set; }
         float QuickshiftRatio { get; set; }
         Color EdgeColor { get; set; }
+        float BilateralSigma { get; set; }
+        float GaussianSigma { get; set; }
         int EdgeWidth { get; set; }
         EdgeBlendMode BlendMode { get; set; }
         bool SliceCornerTiles { get; set; }

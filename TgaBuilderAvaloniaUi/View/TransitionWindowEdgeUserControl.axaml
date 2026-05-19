@@ -47,6 +47,7 @@
                             </StackPanel>
 
                             <DockPanel
+                                      Margin="0,10,0,0"
                                 ap:MouseOverInfoAP.InfoText="Blend Mode: defines how edge color combines with tile color">
                                 <Path
                                     Fill="{DynamicResource IconFillBrush}"
@@ -57,7 +58,6 @@
                                     Stretch="Uniform" />
                                 <ComboBox
                                     HorizontalAlignment="Stretch"
-                                    MinWidth="160"
                                     BorderThickness="0"
                                     Background="Transparent"
                                     VerticalAlignment="Center"

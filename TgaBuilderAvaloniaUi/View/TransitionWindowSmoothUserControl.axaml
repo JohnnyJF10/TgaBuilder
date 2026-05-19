@@ -5,7 +5,8 @@
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
              x:DataType="viewmodel:TransitionViewModel"
-             x:CompileBindings="False">
+             x:CompileBindings="False"
+             >
             <StackPanel
                 Grid.Row="0"
                 IsVisible="{Binding IsSmoothMode}">
@@ -24,7 +25,7 @@
                     <Path
                         DockPanel.Dock="Right"
                         VerticalAlignment="Center"
-                        Margin="-5,0,5,0"
+                        Margin="-5,0,10,0"
                         StrokeThickness="1"
                         Stroke="{DynamicResource IconFillBrush}"
                         Width="14"
@@ -45,7 +46,7 @@
                     ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
                     <Grid
                         VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
+                        Margin="0,11,8,0"
                         DockPanel.Dock="Left">
                         <Path
                             VerticalAlignment="Bottom"
@@ -67,7 +68,7 @@
                     </Grid>
                     <Grid
                         VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
+                        Margin="0,11,12,0"
                         DockPanel.Dock="Right">
                         <Path
                             VerticalAlignment="Bottom"
@@ -102,7 +103,7 @@
                     ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
                     <Grid
                         VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
+                        Margin="0,11,8,0"
                         DockPanel.Dock="Left">
                         <Path
                             VerticalAlignment="Bottom"
@@ -124,7 +125,7 @@
                     </Grid>
                     <Grid
                         VerticalAlignment="Top"
-                        Margin="-5,11,8,0"
+                        Margin="0,11,12,0"
                         DockPanel.Dock="Right">
                         <Path
                             VerticalAlignment="Bottom"
