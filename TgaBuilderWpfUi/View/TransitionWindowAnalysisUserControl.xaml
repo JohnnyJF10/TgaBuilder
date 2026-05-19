@@ -49,24 +49,20 @@
                                 </ComboBox>
                             </DockPanel>
 
+
                             <DockPanel
-                                Margin="0,0,0,1"
-                                Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}">
+                                LastChildFill="True"
+                                ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
                                 <elements:ToggleButtonEx
                                     Width="36"
                                     Height="36"
+                                    Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Icon="{ui:SymbolIcon Table24}"
                                     IsChecked="{Binding InvertGrayscale}"
                                     ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
-                            </DockPanel>
-
-                            <DockPanel
-                                Margin="0,0,0,1"
-                                LastChildFill="True"
-                                ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
-                                <Path
+                                 <Path
                                     VerticalAlignment="Center"
-                                    Margin="5,0,0,0"
+                                    Margin="8,0,0,4"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
                                     d:Fill="White"
                                     Width="14"
@@ -88,28 +84,25 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,8,0"
+                                Margin="0,8,8,8"
                                 Visibility="{Binding ShowBilateralSigma, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength">
-                                <Path
+                                <TextBlock
                                     VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource line_horizontal_1}" />
-                                <Path
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Foreground="White"
+                                    TextElement.FontSize="20"
+                                    Margin="5,0,3,5"
+                                    Text="σ" />
+                                <TextBlock
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource line_horizontal_5}" />
-                                <elements:MouseWheelSlider
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Foreground="White"
+                                    TextElement.FontSize="20"
+                                    Margin="0,0,5,3"
+                                    Text="Σ" />
+            <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
                                     VerticalAlignment="Center"
@@ -121,28 +114,25 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,8,0"
+                                Margin="0,8,8,8"
                                 Visibility="{Binding ShowGaussianSigma, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Gaussian sigma: blur radius weighting strength">
-                                <Path
+                                ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength">
+            <TextBlock
                                     VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource line_horizontal_1}" />
-                                <Path
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Foreground="White"
+                                    TextElement.FontSize="20"
+                                    Margin="5,0,3,5"
+                                    Text="σ" />
+            <TextBlock
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource line_horizontal_5}" />
-                                <elements:MouseWheelSlider
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Foreground="White"
+                                    TextElement.FontSize="20"
+                                    Margin="0,0,5,3"
+                                    Text="Σ" />
+            <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
                                     VerticalAlignment="Center"
@@ -157,25 +147,22 @@
                                 Margin="0,8,8,0"
                                 Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
-                                <Path
-                                    DockPanel.Dock="Left"
+            <TextBlock
                                     VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="5"
-                                    Height="5"
-                                    Stretch="Uniform"
-                                    Margin="5"
-                                    Data="{StaticResource circle_small}" />
-                                <Path
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Foreground="White"
+                                    Margin="5,0,4,0"
+                                    TextElement.FontSize="14"
+                                    TextElement.FontWeight="Bold"
+                                    Text="#" />
+            <TextBlock
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource circle}" />
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Foreground="White"
+                                    TextElement.FontSize="22"
+                                    Margin="0,0,5,0"
+                                    Text="#" />
                                 <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
@@ -186,7 +173,7 @@
                                     Maximum="20"
                                     Minimum="1"
                                     SmallChange="1"
-                                    Value="{Binding MarkerRadius}" />
+                                    Value="{Binding MarkerCount}" />
                             </DockPanel>
 
                             <DockPanel
@@ -197,10 +184,10 @@
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
                                     d:Fill="White"
-                                    Width="8"
-                                    Height="8"
+                                    Width="6"
+                                    Height="6"
                                     Stretch="Uniform"
-                                    Margin="5,0,0,0"
+                                    Margin="5,0,5,0"
                                     Data="{StaticResource circle_small}" />
                                 <Path
                                     DockPanel.Dock="Right"
@@ -236,7 +223,7 @@
                                     Height="14"
                                     Stretch="Uniform"
                                     Margin="5,0,0,0"
-                                    Data="{StaticResource line_horizontal_1}" />
+                                    Data="{StaticResource scale_fit}" />
                                 <Path
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
@@ -245,7 +232,7 @@
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
-                                    Data="{StaticResource line_horizontal_5}" />
+                                    Data="{StaticResource scale_fill}" />
                                 <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
@@ -326,7 +313,7 @@
                             </DockPanel>
 
                             <DockPanel
-                                Margin="0,8,8,8"
+                                Margin="0,8,8,0"
                                 Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed">
                                 <Path
@@ -364,25 +351,22 @@
                                 Margin="0,8,8,0"
                                 Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling">
-                                <Path
+            <TextBlock
                                     VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Foreground="White"
+                                    FontSize="22"
                                     Margin="5,0,0,0"
-                                    Data="{StaticResource color_line}" />
-                                <Path
+                                    Text="≠" />
+            <TextBlock
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource color_line_accent}" />
-                                <elements:MouseWheelSlider
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Foreground="White"
+                                    FontSize="22"
+                                    Margin="0,0,0,0"
+                                    Text="=" />
+            <elements:MouseWheelSlider
                                     Style="{StaticResource MouseWheelSliderStyle}"
                                     Margin="5,0"
                                     VerticalAlignment="Center"
