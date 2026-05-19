@@ -14,6 +14,7 @@ using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
 using TgaBuilderLib.Transitions;
+using TgaBuilderLib.Modifications;
 using TgaBuilderLib.ViewModel;
 using TgaBuilderLib.ViewModel.Elements;
 using TgaBuilderLib.ViewModel.Views;
@@ -98,6 +99,7 @@ namespace TgaBuilderAvaloniaUi
             ));
 
             services.AddSingleton<ITransitionHelper, TransitionHelper>();
+            services.AddSingleton<IModificationsHelper, ModificationsHelper>();
         }
 
         private void AddUIServicesToProvider(IServiceCollection services)
@@ -283,6 +285,12 @@ namespace TgaBuilderAvaloniaUi
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
+            services.AddTransient(sp => new ModificationsViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
+                bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
+                mainViewModel: sp.GetRequiredService<MainViewModel>()));
+
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),
 
@@ -336,6 +344,10 @@ namespace TgaBuilderAvaloniaUi
             services.AddTransient<IView, TransitionWindow>(
                 sp => new TransitionWindow(
                     viewModel: sp.GetRequiredService<TransitionViewModel>()));
+
+            services.AddTransient<IView, ModificationsWindow>(
+                sp => new ModificationsWindow(
+                    viewModel: sp.GetRequiredService<ModificationsViewModel>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)

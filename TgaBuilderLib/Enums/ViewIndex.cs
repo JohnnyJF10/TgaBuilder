@@ -6,6 +6,7 @@
         BatchLoader = 1,
         About = 2,
         Transition = 3,
-        Progress = 4,
+        Modifications = 4,
+        Progress = 5,
     }
 }
