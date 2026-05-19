@@ -44,13 +44,13 @@ namespace TgaBuilderLib.Transitions
             switch (SelectedFilter)
             {
                 case FilterType.BoxBlur:
-                    BoxBlur(filtered, gray);
+                    BoxBlurGray(filtered, gray);
                     break;
                 case FilterType.Median:
-                    MedianFilter3x3(filtered, gray);
+                    MedianFilter3x3Gray(filtered, gray);
                     break;
                 case FilterType.Bilateral:
-                    BilateralFilter3x3(filtered, gray, 30f);
+                    BilateralFilter3x3Gray(filtered, gray, 30f);
                     break;
                 case FilterType.None:
                 default:
