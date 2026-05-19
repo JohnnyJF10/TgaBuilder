@@ -1,11 +1,11 @@
 <UserControl x:Class="TgaBuilderAvaloniaUi.View.MainWindowImportUserControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             mc:Ignorable="d"
+             x:DataType="viewmodel:MainViewModel"
              x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>
