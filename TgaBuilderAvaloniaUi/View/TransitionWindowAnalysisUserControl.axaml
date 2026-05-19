@@ -52,32 +52,92 @@
                                     Icon="{StaticResource table}"
                                     IsChecked="{Binding InvertGrayscale}"
                                     ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
-                                <DockPanel
-                                    Margin="8,5,0,0"
-                                    LastChildFill="True"
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,0,0"
+                                LastChildFill="True"
+                                VerticalAlignment="Center"
+                                ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+                                <Path
                                     VerticalAlignment="Center"
-                                    ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
-                                    <Path
-                                        VerticalAlignment="Center"
-                                        Margin="5,0,0,0"
-                                        Fill="{DynamicResource IconFillBrush}"
-                                        Width="18"
-                                        Height="18"
-                                        Stretch="Uniform"
-                                        Data="{StaticResource filter}" />
-                                    <ComboBox
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Stretch"
-                                        BorderThickness="0"
-                                        Background="Transparent"
-                                        TextBlock.TextTrimming="CharacterEllipsis"
-                                        SelectedIndex="{Binding SelectedFilterIndex}">
-                                        <ComboBoxItem Content="None" />
-                                        <ComboBoxItem Content="Box Blur" />
-                                        <ComboBoxItem Content="Median" />
-                                        <ComboBoxItem Content="Bilateral" />
-                                    </ComboBox>
-                                </DockPanel>
+                                    Margin="5,0,0,0"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="18"
+                                    Height="18"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource filter}" />
+                                <ComboBox
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Stretch"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    TextBlock.TextTrimming="CharacterEllipsis"
+                                    SelectedIndex="{Binding SelectedFilterIndex}">
+                                    <ComboBoxItem Content="None" />
+                                    <ComboBoxItem Content="Box Blur" />
+                                    <ComboBoxItem Content="Median" />
+                                    <ComboBoxItem Content="Bilateral" />
+                                    <ComboBoxItem Content="Gaussian" />
+                                </ComboBox>
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowBilateralSigma}"
+                                ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource line_horizontal_1}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource line_horizontal_5}" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding BilateralSigma}"
+                                    Maximum="100"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding BilateralSigma}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                IsVisible="{Binding ShowGaussianSigma}"
+                                ap:MouseOverInfoAP.InfoText="Gaussian sigma: blur radius weighting strength">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource line_horizontal_1}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource line_horizontal_5}" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding GaussianSigma}"
+                                    Maximum="20"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding GaussianSigma}" />
                             </DockPanel>
 
                             <DockPanel

@@ -32,6 +32,8 @@ namespace TgaBuilderLib.Transitions
         int QuickshiftMaxDist { get; set; }
         float QuickshiftRatio { get; set; }
         Color EdgeColor { get; set; }
+        float BilateralSigma { get; set; }
+        float GaussianSigma { get; set; }
         int EdgeWidth { get; set; }
         EdgeBlendMode BlendMode { get; set; }
         bool SliceCornerTiles { get; set; }

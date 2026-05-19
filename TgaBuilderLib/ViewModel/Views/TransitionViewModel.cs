@@ -240,6 +240,8 @@ public class TransitionViewModel : ViewModelBase
     private float _slicCompactness = 10f;
     private int _quickshiftMaxDist = 10;
     private float _quickshiftRatio = 1f;
+    private float _bilateralSigma = 30f;
+    private float _gaussianSigma = 1f;
     private Color _edgeColor = new Color(255, 255, 255, 128);
     private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
     private int _edgeWidth = 1;
@@ -298,8 +300,17 @@ public class TransitionViewModel : ViewModelBase
     public FilterType SelectedFilter
     {
         get => _selectedFilter;
-        set => SetPropertyTriggerRecalculation(ref _selectedFilter, value,
-            BricksPipelineRequirements.RequiresAnalysis, null);
+        set
+        {
+            if (SetCallerPropertyReturn(ref _selectedFilter, value, nameof(SelectedFilter)))
+            {
+                OnPropertyChanged(nameof(ShowBilateralSigma));
+                OnPropertyChanged(nameof(ShowGaussianSigma));
+                OnPropertyChanged(nameof(SelectedFilterIndex));
+                _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+                _ = TriggerRecalculation();
+            }
+        }
     }
 
     public int SelectedFilterIndex
@@ -329,6 +340,8 @@ public class TransitionViewModel : ViewModelBase
     public bool ShowFelzenszwalbParameters => SelectedSegmentationMethod == SegmentationMethod.Felzenszwalb;
     public bool ShowSlicParameters => SelectedSegmentationMethod == SegmentationMethod.Slic;
     public bool ShowQuickshiftParameters => SelectedSegmentationMethod == SegmentationMethod.Quickshift;
+    public bool ShowBilateralSigma => SelectedFilter == FilterType.Bilateral;
+    public bool ShowGaussianSigma => SelectedFilter == FilterType.Gaussian;
     public bool ShowGrayBasedSegmentationInputs =>
         SelectedSegmentationMethod == SegmentationMethod.Watershed
         || SelectedSegmentationMethod == SegmentationMethod.XYProjection
@@ -373,6 +386,20 @@ public class TransitionViewModel : ViewModelBase
     {
         get => _quickshiftRatio;
         set => SetPropertyTriggerRecalculation(ref _quickshiftRatio, value,
+            BricksPipelineRequirements.RequiresAnalysis);
+    }
+
+    public float BilateralSigma
+    {
+        get => _bilateralSigma;
+        set => SetPropertyTriggerRecalculation(ref _bilateralSigma, value,
+            BricksPipelineRequirements.RequiresAnalysis);
+    }
+
+    public float GaussianSigma
+    {
+        get => _gaussianSigma;
+        set => SetPropertyTriggerRecalculation(ref _gaussianSigma, value,
             BricksPipelineRequirements.RequiresAnalysis);
     }
 
@@ -456,6 +483,8 @@ public class TransitionViewModel : ViewModelBase
             _transitionHelper.SlicCompactness = SlicCompactness;
             _transitionHelper.QuickshiftMaxDist = QuickshiftMaxDist;
             _transitionHelper.QuickshiftRatio = QuickshiftRatio;
+            _transitionHelper.BilateralSigma = BilateralSigma;
+            _transitionHelper.GaussianSigma = GaussianSigma;
             _transitionHelper.EdgeColor = EdgeColor;
             _transitionHelper.BlendMode = BlendMode;
             _transitionHelper.EdgeWidth = EdgeWidth;

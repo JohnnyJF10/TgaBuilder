@@ -12,7 +12,8 @@ namespace TgaBuilderLib.Transitions
         None,
         BoxBlur,
         Median,
-        Bilateral
+        Bilateral,
+        Gaussian
     }
 
     public enum SegmentationMethod
@@ -35,6 +36,7 @@ namespace TgaBuilderLib.Transitions
 
             float[] filtered = new float[totalPixels];
             int[] labels = new int[totalPixels];
+            byte[] filteredColorPixels = pixels;
 
             // 1. Compute grayscale values
             float[] gray = new float[totalPixels];
@@ -45,25 +47,37 @@ namespace TgaBuilderLib.Transitions
             {
                 case FilterType.BoxBlur:
                     BoxBlurGray(filtered, gray);
+                    filteredColorPixels = (byte[])pixels.Clone();
+                    BoxBlurColor(filteredColorPixels, pixels);
                     break;
                 case FilterType.Median:
                     MedianFilter3x3Gray(filtered, gray);
+                    filteredColorPixels = (byte[])pixels.Clone();
+                    MedianFilter3x3Color(filteredColorPixels, pixels);
                     break;
                 case FilterType.Bilateral:
-                    BilateralFilter3x3Gray(filtered, gray, 30f);
+                    BilateralFilter3x3Gray(filtered, gray, BilateralSigma);
+                    filteredColorPixels = (byte[])pixels.Clone();
+                    BilateralFilter3x3Color(filteredColorPixels, pixels, BilateralSigma);
+                    break;
+                case FilterType.Gaussian:
+                    GaussianBlur3x3Gray(filtered, gray, GaussianSigma);
+                    filteredColorPixels = (byte[])pixels.Clone();
+                    GaussianBlur3x3Color(filteredColorPixels, pixels, GaussianSigma);
                     break;
                 case FilterType.None:
                 default:
                     filtered = gray;
+                    filteredColorPixels = pixels;
                     break;
             }
 
             // 3. Segmentation
             int labelCount = SegmentationMethod switch
             {
-                SegmentationMethod.Felzenszwalb => Felzenszwalb(pixels, labels, FelzenszwalbMinSize, FelzenszwalbScale),
-                SegmentationMethod.Slic => Slic(pixels, labels, SlicSegmentCount, SlicCompactness),
-                SegmentationMethod.Quickshift => Quickshift(pixels, labels, QuickshiftMaxDist, QuickshiftRatio),
+                SegmentationMethod.Felzenszwalb => Felzenszwalb(filteredColorPixels, labels, FelzenszwalbMinSize, FelzenszwalbScale),
+                SegmentationMethod.Slic => Slic(filteredColorPixels, labels, SlicSegmentCount, SlicCompactness),
+                SegmentationMethod.Quickshift => Quickshift(filteredColorPixels, labels, QuickshiftMaxDist, QuickshiftRatio),
                 SegmentationMethod.Watershed => WatershedSegmentation(filtered, labels),
                 SegmentationMethod.XYProjection => XYProjectionSegmentation(filtered, labels),
                 SegmentationMethod.YXProjection => YXProjectionSegmentation(filtered, labels),

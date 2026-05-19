@@ -160,9 +160,9 @@ public partial class TransitionHelper
                         byte nG = pNeighbor[1];
                         byte nR = pNeighbor[2];
 
-                        float diffB = (centerB - nB) / 255f;
-                        float diffG = (centerG - nG) / 255f;
-                        float diffR = (centerR - nR) / 255f;
+                        float diffB = centerB - nB;
+                        float diffG = centerG - nG;
+                        float diffR = centerR - nR;
 
                         // Euclidean distance squared in normalized BGR color space
                         float diffSq = (diffB * diffB) + (diffG * diffG) + (diffR * diffR);
@@ -251,4 +251,3 @@ public partial class TransitionHelper
         }
     }
 }
-

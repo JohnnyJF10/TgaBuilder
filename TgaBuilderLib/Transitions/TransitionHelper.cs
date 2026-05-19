@@ -40,6 +40,8 @@ namespace TgaBuilderLib.Transitions
         public int QuickshiftMaxDist { get; set; } = 10;
         public float QuickshiftRatio { get; set; } = 1f;
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
+        public float BilateralSigma { get; set; } = 30f;
+        public float GaussianSigma { get; set; } = 1f;
         public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
         public EdgeBlendMode BlendMode { get; set; } = EdgeBlendMode.Multiply;
         public int EdgeWidth { get; set; } = 1;
@@ -71,6 +73,8 @@ namespace TgaBuilderLib.Transitions
             QuickshiftMaxDist = 10;
             QuickshiftRatio = 1f;
             SelectedFilter = FilterType.BoxBlur;
+            BilateralSigma = 30f;
+            GaussianSigma = 1f;
             EdgeColor = new Color(0, 0, 0, 128);
             BlendMode = EdgeBlendMode.Multiply;
             EdgeWidth = 1;

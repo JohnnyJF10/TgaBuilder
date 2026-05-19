@@ -58,30 +58,99 @@
                                     Icon="{ui:SymbolIcon Table24}"
                                     IsChecked="{Binding InvertGrayscale}"
                                     ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
-                                <DockPanel
-                                    LastChildFill="True"
-                                    ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
-                                    <Path
-                                        VerticalAlignment="Center"
-                                        Margin="5,0,0,0"
-                                        Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                        d:Fill="White"
-                                        Width="14"
-                                        Height="14"
-                                        Stretch="Uniform"
-                                        Data="{StaticResource filter}" />
-                                    <ComboBox
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Center"
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
-                                        <ComboBoxItem Content="None" />
-                                        <ComboBoxItem Content="Box Blur" />
-                                        <ComboBoxItem Content="Median" />
-                                        <ComboBoxItem Content="Bilateral" />
-                                    </ComboBox>
-                                </DockPanel>
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,0,0,1"
+                                LastChildFill="True"
+                                ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,0,0"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource filter}" />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
+                                    <ComboBoxItem Content="None" />
+                                    <ComboBoxItem Content="Box Blur" />
+                                    <ComboBoxItem Content="Median" />
+                                    <ComboBoxItem Content="Bilateral" />
+                                    <ComboBoxItem Content="Gaussian" />
+                                </ComboBox>
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,8,0"
+                                Visibility="{Binding ShowBilateralSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource line_horizontal_1}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource line_horizontal_5}" />
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    Maximum="100"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding BilateralSigma}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,8,8,0"
+                                Visibility="{Binding ShowGaussianSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="Gaussian sigma: blur radius weighting strength">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource line_horizontal_1}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource line_horizontal_5}" />
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    Maximum="20"
+                                    Minimum="0.1"
+                                    SmallChange="0.1"
+                                    Value="{Binding GaussianSigma}" />
                             </DockPanel>
 
                             <DockPanel
