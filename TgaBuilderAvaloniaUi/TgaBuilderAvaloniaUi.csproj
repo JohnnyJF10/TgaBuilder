@@ -40,4 +40,13 @@
   <ItemGroup>
     <ProjectReference Include="..\TgaBuilderLib\TgaBuilderLib.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="View\MainWindowAnimationUserControl.axaml.cs">
+      <DependentUpon>MainWindowAnimationUserControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="View\MainWindowSelectionUserControl.axaml.cs">
+      <DependentUpon>MainWindowSelectionUserControl.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

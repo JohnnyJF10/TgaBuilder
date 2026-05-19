@@ -165,12 +165,6 @@ namespace TgaBuilderAvaloniaUi.View
             }
         }
 
-        private void DestinationFormatSwitch_Click(object? sender, RoutedEventArgs e)
-        {
-            if (DestinationFormatSwitch.IsChecked == false)
-                DestinationFormatSwitch.IsChecked = true;
-        }
-
         private void Window_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
         {
             if (CurrentImage == null) return;

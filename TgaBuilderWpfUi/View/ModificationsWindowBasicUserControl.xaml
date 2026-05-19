@@ -1,0 +1,258 @@
+<UserControl x:Class="TgaBuilderWpfUi.View.ModificationsWindowBasicUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+             xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
+             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:ModificationsViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+                    <StackPanel
+                        Margin="8,4,8,8">
+
+                        <!-- Exposure -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Exposure: adjusts overall brightness in photographic stops (-5 to +5)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource flashlight_off}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource flashlight}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="5"
+                                Minimum="-5"
+                                SmallChange="0.1"
+                                Value="{Binding Exposure}" />
+                        </DockPanel>
+
+                        <!-- Brightness -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Brightness: shifts overall luminosity linearly (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="8"
+                                Height="8"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource circle_small}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource data_sunburst}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Brightness}" />
+                        </DockPanel>
+
+                        <!-- Contrast -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Contrast: increases or reduces tonal range (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource circle_half_fill}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource dark_theme}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Contrast}" />
+                        </DockPanel>
+
+                        <!-- Highlights -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Highlights: recovers or boosts bright tonal regions (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource arrow_minimize}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource highlight}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Highlights}" />
+                        </DockPanel>
+
+                        <!-- Shadows -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Shadows: lifts or crushes dark tonal regions (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource lightbulb_filament}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource lightbulb}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Shadows}" />
+                        </DockPanel>
+
+                        <!-- Whites -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Whites: clips or expands the brightest point of the image (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource flashlight_off}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource lightbulb_circle}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Whites}" />
+                        </DockPanel>
+
+                        <!-- Blacks -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Blacks: clips or expands the darkest point of the image (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="8"
+                                Height="8"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource circle_small}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource circle_half_fill}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Blacks}" />
+                        </DockPanel>
+
+                    </StackPanel>
+                
+</UserControl>

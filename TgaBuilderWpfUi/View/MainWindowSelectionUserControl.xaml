@@ -1,0 +1,160 @@
+<UserControl x:Class="TgaBuilderWpfUi.View.MainWindowSelectionUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+             xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
+             d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml" />
+                <ResourceDictionary Source="/Styles/CheckerBrush.xaml" />
+                <ResourceDictionary Source="/Styles/SingleColorButtonStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
+            <converter:ColorStructToMediaColorConverter x:Key="ColorStructToMediaColorConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <StackPanel>
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                >
+                <ui:Button
+                    DockPanel.Dock="Right"
+                    Icon="{ui:SymbolIcon ChevronDoubleLeft20}"
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Command="{Binding EntireToSourceCommand}"
+                    IsEnabled="{Binding TargetIO.ControlsEnabled}"
+                    ap:MouseOverInfoAP.InfoText="Copy entire Target Texture Panel to Source."/>
+                <ui:Button
+                    DockPanel.Dock="Right"
+                    Icon="{ui:SymbolIcon ChevronDoubleRight20}"
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Command="{Binding EntireToTargetCommand}"
+                    IsEnabled="{Binding TargetIO.ControlsEnabled}"
+                    ap:MouseOverInfoAP.InfoText="Copy entire Source Texture Panel to Target. CAUTION: This clears the undo and redo stacks."/>
+            </StackPanel>
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                >
+                <ui:Button
+                    Icon="{ui:SymbolIcon ImageEdit24}"
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Command="{Binding ModificationsCommand}"
+                    ap:MouseOverInfoAP.InfoText="Open Single Texture Modifications"/>
+                <ui:Button
+                    Icon="{ui:SymbolIcon TableFreezeColumnAndRow24}"
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Command="{Binding TransitionCommand}"
+                    ap:MouseOverInfoAP.InfoText="Open Transition Helper"/>
+            </StackPanel>
+            <StackPanel
+                DataContext="{Binding Selection}"
+                HorizontalAlignment="Center"
+                Margin="5"
+                Orientation="Horizontal">
+                <cp:PortableColorPicker
+                    x:Name="SelectionFillColorPicker"
+                    Width="36"
+                    Height="36"
+                    ap:MouseOverInfoAP.InfoText="Select Fill Color for Selection"
+                    SelectedColor="{Binding SelectedFillColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    />
+                <ui:Button
+                    Margin="9.4,0,0,0"
+                    Width="36"
+                    Height="36"
+                    Icon="{ui:SymbolIcon ArrowTurnRightDown48}"
+                    Command="{Binding SelectionMonoColorFillCommand}"
+                    ap:MouseOverInfoAP.InfoText="Fill Selection"/>
+            </StackPanel>
+            <Button
+                BorderBrush="Gray"
+                BorderThickness="1"
+                Width="100"
+                Height="100"
+                Padding="0"
+                Command="{Binding SwitchToDestinationPlacingModeCommand}"
+                Style="{StaticResource FlatButtonStyle}"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Current Tile Preview (Click to place)"
+                >
+                <Grid
+                    Width="100"
+                    Height="100"
+                    
+                    >
+                    <Rectangle
+                        Width="{Binding ElementName=SelectionImage, Path=ActualWidth}"
+                        Height="{Binding ElementName=SelectionImage, Path=ActualHeight}"
+                        Fill="{StaticResource CheckerBrush}"
+                        />
+                    <Image
+                        x:Name="SelectionImage"
+                        Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                </Grid>
+            </Button>
+            <StackPanel
+                DataContext="{Binding Selection}"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center">
+                <ui:Button
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Icon="{ui:SymbolIcon Copy24}"
+                    HorizontalAlignment="Right"
+                    Command="{Binding CopyCommand}"
+                    ap:MouseOverInfoAP.InfoText="Copy (Ctrl + C)"/>
+                <ui:Button
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Icon="{ui:SymbolIcon Clipboard24}"
+                    HorizontalAlignment="Right"
+                    Command="{Binding PasteCommand}"
+                    ap:MouseOverInfoAP.InfoText="Past (Ctrl + V)"/>
+            </StackPanel>
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                DataContext="{Binding Selection}">
+                <elements:ToggleButtonEx
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Icon="{ui:SymbolIcon CopyArrowRight24}"
+                    HorizontalAlignment="Right"
+                    IsChecked="{Binding AutoCopy, Mode=TwoWay}"
+                    ap:MouseOverInfoAP.InfoText="Copy Automatically"/>
+
+            <elements:ToggleButtonEx
+                x:Name="AutoPasteToggleButton"
+                Margin="5"
+                Width="36"
+                    Height="36"
+                    Icon="{ui:SymbolIcon ClipboardArrowRight24}"
+                HorizontalAlignment="Right"
+                IsChecked="{Binding AutoPaste, Mode=TwoWay}"
+                ap:MouseOverInfoAP.InfoText="Paste Automatically"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

@@ -139,6 +139,7 @@
             Grid.Column="0"
             Text="Drop&#x0a;Image&#x0a;Files&#x0a;here"
             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+            d:Foreground="White"
             IsHitTestVisible="False"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
