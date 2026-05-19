@@ -1,0 +1,101 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.MainWindowSourceFormatUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
+             mc:Ignorable="d"
+             x:CompileBindings="False">
+                    <StackPanel
+                        Margin="5,0"
+                        DataContext="{Binding SourceFormatTab}"
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,0,1.6"
+                            VerticalAlignment="Center"
+                            Text="BPP:" />
+
+                        <Grid Margin="0,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                Grid.Column="0"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding IsRgb24}"
+                                Text="24" />
+                            <TextBlock
+                                Grid.Column="0"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                IsVisible="{Binding IsBgra32}"
+                                Text="24" />
+
+                            <ToggleSwitch
+                                Grid.Column="1"
+                                OffContent=""
+                                OnContent=""
+                                ap:MouseOverInfoAP.InfoText="Sets the Source image format"
+                                IsChecked="{Binding IsBgra32, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock
+                                Grid.Column="2"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding IsBgra32}"
+                                Text="32" />
+                            <TextBlock
+                                Grid.Column="2"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                IsVisible="{Binding IsRgb24}"
+                                Text="32" />
+                        </Grid>
+
+                        <elements:IconToggleButton
+                            Classes="outlined"
+                            Width="36"
+                            Height="36"
+                            Padding="-6,0,15,0"
+                            Margin="5,0,5,0"
+                            IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            DockPanel.Dock="Left">
+                            <ToggleButton.Content>
+								<Path VerticalAlignment="Center"
+                                  Fill="Transparent" Width="15" Height="15" Stretch="Uniform"
+                                  StrokeThickness="1.5"
+                                  Stroke="{DynamicResource IconFillBrush}"
+                                  Data="{StaticResource eye_dropper}" />
+                            </ToggleButton.Content>       
+                        
+                        </elements:IconToggleButton>
+
+                        <ColorPicker 
+                            x:Name="SourceColorPicker"
+                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            Color="{Binding ColorToReplace, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"                            
+                        />
+
+                        <elements:IconToggleButton
+                            Classes="outlined"
+                            Icon="{StaticResource calligraphy_pen}"
+                            Margin="5,0,5,0"
+                            ap:MouseOverInfoAP.InfoText="When selecting textures which shall be replaced with magenta as transparent color"
+                            DockPanel.Dock="Right"
+                            IsChecked="{Binding IsReplaceSelectionColor, Mode=OneWayToSource}" />
+                        <elements:IconButton
+                            Classes="outlined"
+                            Icon="{StaticResource color_fill}"
+                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color"
+                            Command="{Binding ReplaceSourceColorCommand}"
+                            DockPanel.Dock="Left" />
+                    </StackPanel>
+                
+</UserControl>

@@ -1,0 +1,89 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowEdgeUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
+             mc:Ignorable="d"
+             x:CompileBindings="False">
+                        <StackPanel>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <elements:IconToggleButton
+                                    Classes="outlined"
+                                    Width="36"
+                                    Height="36"
+                                    Padding="-6,0,15,0"
+                                    IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                    ap:MouseOverInfoAP.InfoText="Pick edge color from image">
+                                    <ToggleButton.Content>
+                                        <Path
+                                            VerticalAlignment="Center"
+                                            Fill="Transparent"
+                                            Width="15"
+                                            Height="15"
+                                            Stretch="Uniform"
+                                            StrokeThickness="1.5"
+                                            Stroke="{DynamicResource IconFillBrush}"
+                                            Data="{StaticResource eye_dropper}" />
+                                    </ToggleButton.Content>
+                                </elements:IconToggleButton>
+                                <ColorPicker
+                                    x:Name="SourceColorPicker"
+                                    ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
+                                    Color="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
+                            </StackPanel>
+
+                            <DockPanel
+                                ap:MouseOverInfoAP.InfoText="Blend Mode: defines how edge color combines with tile color">
+                                <Path
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Data="{StaticResource paint_brush}"
+                                    Margin="0,0,6,0"
+                                    Width="18"
+                                    Height="18"
+                                    Stretch="Uniform" />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    MinWidth="160"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    VerticalAlignment="Center"
+                                    TextBlock.TextTrimming="CharacterEllipsis"
+                                    ItemsSource="{Binding EdgeBlendModes}"
+                                    SelectedItem="{Binding BlendMode, Mode=TwoWay}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                ap:MouseOverInfoAP.InfoText="Edge Width: edge smoothing width for brick transitions (1 = narrow, 12 = wide)">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource tab}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource tab_in_private}" />
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding EdgeWidth}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="12"
+                                    Minimum="0"
+                                    SmallChange="1"
+                                    Value="{Binding EdgeWidth}" />
+                            </DockPanel>
+                        </StackPanel>
+                    
+</UserControl>

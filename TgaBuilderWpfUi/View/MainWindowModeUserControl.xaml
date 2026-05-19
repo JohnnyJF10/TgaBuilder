@@ -1,0 +1,67 @@
+<UserControl x:Class="TgaBuilderWpfUi.View.MainWindowModeUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+             xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
+             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
+             mc:Ignorable="d">
+                    <StackPanel
+                        Margin="5,0,5,0"
+                        DataContext="{Binding EditsTab}"
+                        Orientation="Horizontal">
+                        <elements:IconRadioButton
+                            Width="36"
+                            Height="36"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.Default}}"
+                            Icon="{ui:SymbolIcon ArrowSquareDown24}"
+                            ap:MouseOverInfoAP.InfoText="Regular Mode"/>
+                        <Rectangle
+                            Width="10"
+                            Height="10"/>
+                        <elements:IconRadioButton
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,5,0"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.ClockwiseRotating}}"
+                            Icon="{ui:SymbolIcon ArrowRotateCounterclockwise24}"
+                            ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"/>
+
+                        <elements:IconRadioButton
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,5,0"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorHorizontal}}"
+                            ap:MouseOverInfoAP.InfoText="Mirror Horizontal Mode"
+                            Content="↔️"/>
+                        <elements:IconRadioButton
+                            Width="36"
+                            Height="36"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorVertical}}"
+                            ap:MouseOverInfoAP.InfoText="Mirror Vertical Mode"
+                            Content="↕️"/>
+                        <Rectangle
+                            Width="10"
+                            Height="10"/>
+                        <elements:IconRadioButton
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,5,0"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.TileSwapping}}"
+                            Icon="{ui:SymbolIcon ChannelShare24}"
+                            ap:MouseOverInfoAP.InfoText="Tile Rally Mode"/>
+
+                        <elements:IconRadioButton
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,5,0"
+                            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.TileMoving}}"
+                            Icon="{ui:SymbolIcon LinkSquare24}"
+                            ap:MouseOverInfoAP.InfoText="Tile Swap Mode"/>
+
+                    </StackPanel>
+                
+</UserControl>

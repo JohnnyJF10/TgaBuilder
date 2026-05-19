@@ -1,0 +1,70 @@
+<UserControl x:Class="TgaBuilderWpfUi.View.MainWindowPlacingUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+             xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
+             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
+             mc:Ignorable="d">
+                    <DockPanel
+                        DataContext="{Binding PlacingTab}"
+                        Margin="5,0,5,0">
+                        <elements:ToggleButtonEx
+                            DockPanel.Dock="Left"
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,5,0"
+                            IsChecked="{Binding ResizeToPickerModeSelected, Mode=OneWayToSource}"
+                            Icon="{ui:SymbolIcon ScaleFill24}"
+                            ap:MouseOverInfoAP.InfoText="Resize Selection to Picker Size"/>
+                        <elements:ToggleButtonEx
+                            DockPanel.Dock="Left"
+                            Width="36"
+                            Height="36"
+                            Margin="5,0"
+                            IsChecked="{Binding PlaceContinuouslyModeSelected}"
+                            Icon="{ui:SymbolIcon ArrowHookUpRight24}"
+                            ap:MouseOverInfoAP.InfoText="Place continuously (Left + Shift on the panel)"/>
+                        <elements:ToggleButtonEx
+                            DockPanel.Dock="Left"
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,10,0"
+                            IsChecked="{Binding SwapAndPlaceModeSelected}"
+                            Icon="{ui:SymbolIcon ArrowSwap24}"
+                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Alt on the panel)"/>
+                        <elements:ToggleButtonEx
+                            DockPanel.Dock="Left"
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,0,0"
+                            IsChecked="{Binding OverlayTransparentModeSelected, Mode=OneWayToSource}"
+                            Icon="{ui:SymbolIcon ShapeIntersect24}"
+                            ap:MouseOverInfoAP.InfoText="Transparent areas are not copied to the target panel (Magenta in 24 bbp bitmaps or alpha = 0 in 32 bbp bitmaps)"/>
+                        <ui:SymbolIcon
+                            Symbol="ShapeUnion24"
+                            Margin="5,0,0,0"/>
+                        <ui:SymbolIcon
+                            Symbol="ShapeSubtract24"
+                            DockPanel.Dock="Right"/>
+                        <elements:MouseWheelSlider
+                            Style="{StaticResource MouseWheelSliderStyle}"                            
+                            VerticalAlignment="Center"
+                            Margin="5"
+                            Minimum="0"
+                            Maximum="1"
+                            IsMoveToPointEnabled="False"
+                            SmallChange="0.1"
+                            LargeChange="0.1"
+                            AutoToolTipPlacement="TopLeft"
+                            AutoToolTipPrecision="2"
+                            Value="{Binding Opacity}"
+                            ap:MouseOverInfoAP.InfoText="Set Opacity of placed image data"
+                            />
+
+                    </DockPanel>
+                
+</UserControl>

@@ -1,0 +1,154 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowPivotUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
+             mc:Ignorable="d"
+             x:CompileBindings="False">
+                        <StackPanel>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <elements:IconToggleButton
+                                    Classes="outlined"
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Icon="{StaticResource flip_horizontal}"
+                                    ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
+                                    IsChecked="{Binding ReversePivot}" />
+                                <elements:IconToggleButton
+                                    x:Name="ProtectEdgesToggleButton"
+                                    Classes="outlined"
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Icon="{StaticResource shield}"
+                                    ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
+                                    IsChecked="{Binding ProtectEdges}" />
+                                <elements:IconToggleButton
+                                    x:Name="SliceCornersToggleButton"
+                                    Classes="outlined"
+                                    VerticalAlignment="Center"
+                                    ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
+                                    Icon="{StaticResource cut}"
+                                    IsEnabled="{Binding #ProtectEdgesToggleButton.IsChecked}"
+                                    IsChecked="{Binding SliceCornerTiles}" />
+                            </StackPanel>
+
+                            <DockPanel
+                                ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
+                                <Grid
+                                    VerticalAlignment="Top"
+                                    Margin="-5,11,8,0"
+                                    DockPanel.Dock="Left">
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource IconFillBrush}"
+                                        StrokeThickness="1"
+                                        Fill="Transparent"
+                                        Width="10"
+                                        Height="10"
+                                        Data="{StaticResource pivot_low}" />
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource IconFillBrush}"
+                                        StrokeDashArray="2,2"
+                                        StrokeThickness="1"
+                                        Fill="Transparent"
+                                        Width="10"
+                                        Height="10"
+                                        Data="{StaticResource pivot_high}" />
+                                </Grid>
+                                <Grid
+                                    VerticalAlignment="Top"
+                                    Margin="-5,11,8,0"
+                                    DockPanel.Dock="Right">
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        StrokeThickness="1"
+                                        Stroke="{DynamicResource IconFillBrush}"
+                                        StrokeDashArray="2,2"
+                                        Fill="Transparent"
+                                        Width="10"
+                                        Height="10"
+                                        Data="{StaticResource pivot_high}" />
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        StrokeThickness="1"
+                                        Stroke="{DynamicResource IconFillBrush}"
+                                        Fill="Transparent"
+                                        Width="10"
+                                        Height="10"
+                                        Data="{StaticResource pivot_widening}" />
+                                </Grid>
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding WideningValue}"
+                                    Maximum="1"
+                                    Minimum="0"
+                                    SmallChange="0.01"
+                                    Value="{Binding WideningValue}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
+                                <Grid
+                                    VerticalAlignment="Top"
+                                    Margin="-5,11,8,0"
+                                    DockPanel.Dock="Left">
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource IconFillBrush}"
+                                        StrokeDashArray="2,2"
+                                        StrokeThickness="1"
+                                        Fill="Transparent"
+                                        Width="10"
+                                        Height="10"
+                                        Data="{StaticResource pivot_high}" />
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        StrokeThickness="1"
+                                        Stroke="{DynamicResource IconFillBrush}"
+                                        Fill="Transparent"
+                                        Width="10"
+                                        Height="10"
+                                        Data="{StaticResource pivot_shift_left}" />
+                                </Grid>
+                                <Grid
+                                    VerticalAlignment="Top"
+                                    Margin="-5,11,8,0"
+                                    DockPanel.Dock="Right">
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        StrokeThickness="1"
+                                        Stroke="{DynamicResource IconFillBrush}"
+                                        StrokeDashArray="2,2"
+                                        Fill="Transparent"
+                                        Width="10"
+                                        Height="10"
+                                        Data="{StaticResource pivot_high}" />
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        StrokeThickness="1"
+                                        Stroke="{DynamicResource IconFillBrush}"
+                                        Fill="Transparent"
+                                        Width="10"
+                                        Height="10"
+                                        Data="{StaticResource pivot_shift_right}" />
+                                </Grid>
+                                <elements:MouseWheelSlider
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{Binding ShiftValue}"
+                                    Maximum="1"
+                                    Minimum="-1"
+                                    SmallChange="0.01"
+                                    Value="{Binding ShiftValue}" />
+                            </DockPanel>
+                        </StackPanel>
+                    
+</UserControl>
