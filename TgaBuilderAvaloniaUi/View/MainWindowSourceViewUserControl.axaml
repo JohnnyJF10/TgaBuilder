@@ -7,6 +7,14 @@
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
              mc:Ignorable="d"
              x:CompileBindings="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
                     <DockPanel Margin="5,0,5,0" DataContext="{Binding SourceViewTab}">
                         <elements:IconButton
                             x:Name="SourceFitButton"

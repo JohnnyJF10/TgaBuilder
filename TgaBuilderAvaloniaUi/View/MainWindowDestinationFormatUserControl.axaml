@@ -6,7 +6,18 @@
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
              mc:Ignorable="d"
-             x:CompileBindings="False">
+             x:CompileBindings="False"
+             xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:ColorStructToMediaColor x:Key="ColorStructToMediaColor" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
                     <StackPanel
                         Margin="5,0"
                         DataContext="{Binding DestinationFormatTab}"

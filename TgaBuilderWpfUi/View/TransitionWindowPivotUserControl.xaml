@@ -9,6 +9,15 @@
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
              mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
                         <StackPanel
                             Margin="8,6,8,8">
                             <StackPanel

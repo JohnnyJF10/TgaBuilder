@@ -9,6 +9,15 @@
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
              mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml" />
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
                     <DockPanel
                         Margin="5,0,5,0"
                         HorizontalAlignment="Stretch"

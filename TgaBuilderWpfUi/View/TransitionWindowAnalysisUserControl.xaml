@@ -9,6 +9,16 @@
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
              mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
                         <StackPanel
                             Margin="8,0,0,8">
                             <DockPanel

@@ -6,7 +6,14 @@
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
              mc:Ignorable="d"
-             x:CompileBindings="False">
+             x:CompileBindings="False"
+             xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converter:ColorStructToMediaColor x:Key="ColorStructToMediaColor" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
                     <StackPanel
                         Spacing="4"
                         Margin="4,4,4,6">

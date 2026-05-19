@@ -7,6 +7,15 @@
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
              mc:Ignorable="d"
              x:CompileBindings="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
                     <Grid Margin="5,0,5,0" DataContext="{Binding Source.VisualGrid}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />

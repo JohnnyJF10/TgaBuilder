@@ -8,7 +8,19 @@
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/ToggleSwitchExStyle.xaml" />
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converter:ColorStructToMediaColorConverter x:Key="ColorStructToMediaColorConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
                     <StackPanel
                         DataContext="{Binding DestinationFormatTab}"
                         Margin="5,0"
