@@ -8,29 +8,34 @@ namespace TgaBuilderLib.Transitions;
 
 public partial class TransitionHelper
 {
+    /// <summary>
+    /// Performs watershed segmentation on the filtered image and assigns labels to the regions.
+    /// Returns the number of labels (seed candidates) found. 
+    /// </summary>
+    /// <param name="filtered">The filtered image data.</param>
+    /// <param name="labels">The array to store the labels for each pixel.</param>
+    /// <returns>The number of seed candidates found.</returns>
     private int WatershedSegmentation(float[] filtered, int[] labels)
     {
-        // 1. Find ALL local maxima using a tight 3x3 neighborhood (radius = 1)
-        var seedCandidates = new List<(int idx, float val)>(256);
+        // Seed candidates (keep all valid local maxima)
+        var seedCandidates = new List<(int idx, float val)>(128);
 
-        // Stay 1 pixel away from edges to safely read the 3x3 neighborhood
-        for (int y = 1; y < Height - 1; y++)
+
+        for (int y = MarkerRadius; y < Height - MarkerRadius; y++)
         {
             int row = y * Width;
-            for (int x = 1; x < Width - 1; x++)
+            for (int x = MarkerRadius; x < Width - MarkerRadius; x++)
             {
                 int idx = row + x;
                 float val = filtered[idx];
                 bool isMax = true;
 
-                // Check the 8 surrounding neighbors
-                for (int iy = -1; iy <= 1; iy++)
+                for (int iy = -MarkerRadius; iy <= MarkerRadius; iy++)
                 {
                     int nRow = (y + iy) * Width;
-                    for (int ix = -1; ix <= 1; ix++)
+                    for (int ix = -MarkerRadius; ix <= MarkerRadius; ix++)
                     {
                         if (ix == 0 && iy == 0) continue;
-
                         if (filtered[nRow + x + ix] >= val)
                         {
                             isMax = false;
@@ -41,43 +46,27 @@ public partial class TransitionHelper
                 }
 
                 if (isMax)
-                {
                     seedCandidates.Add((idx, val));
-                }
             }
         }
 
-        // Fallback: If no seeds were found at all, handle it early
-        if (seedCandidates.Count == 0)
-        {
-            for (int i = 0; i < labels.Length; i++)
-                labels[i] = 1;
-            return 1;
-        }
-
-        // 2. Sort candidates by intensity (highest peaks first) and truncate to MarkerCount
-        // This gives you the 1 - 500 adjustment range you are looking for.
-        var topSeeds = seedCandidates
-            .OrderByDescending(s => s.val)
-            .Take(MarkerCount)
-            .ToList();
-
-        // 3. Initialize Intensity Buckets
+        // Buckets
         Queue<int>[] buckets = new Queue<int>[256];
         for (int i = 0; i < 256; i++)
             buckets[i] = new Queue<int>(32);
 
-        // 4. Label the top seeds and queue their neighbors
-        for (int i = 0; i < topSeeds.Count; i++)
+        for (int i = 0; i < seedCandidates.Count; i++)
         {
             int label = i + 1;
-            int idx = topSeeds[i].idx;
+            int idx = seedCandidates[i].idx;
 
             labels[idx] = label;
+
+            // Removed TileSegment logic. Just enqueue neighbors.
             EnqueueNeighbors(idx, label, labels, filtered, buckets, 255);
         }
 
-        // 5. Watershed flood expansion
+        // Watershed flood
         for (int b = 255; b >= 0; b--)
         {
             var q = buckets[b];
@@ -91,15 +80,29 @@ public partial class TransitionHelper
                 if (label == 0) continue;
 
                 labels[idx] = label;
+
+                // Removed AddPixelToTile logic.
                 EnqueueNeighbors(idx, label, labels, filtered, buckets, b);
             }
         }
 
-        // 6. Clean up unlabelled gaps
+        // Fallback: if no seeds were found (e.g. image too small for MarkerRadius, or
+        // all values are identical), return a single tile that covers every pixel so that
+        // the selection pipeline has at least one segment to work with.
+        // This check is placed before FinalFill to avoid a no-op pass over unlabeled pixels.
+        if (seedCandidates.Count == 0)
+        {
+            for (int i = 0; i < labels.Length; i++)
+                labels[i] = 1;
+            return 1;
+        }
+
+        // Final fill
         FinalFill(labels);
 
-        return topSeeds.Count;
+        return seedCandidates.Count;
     }
+
 
     // Returns the first existing 4-neighbor label around the given pixel index.
     private int GetExistingNeighborLabel(int idx, int[] labels)
@@ -114,6 +117,7 @@ public partial class TransitionHelper
     // Fills remaining unlabeled pixels by attaching them to adjacent labeled regions.
     private void FinalFill(int[] labels)
     {
+        // A single Z-order style scan is enough to bind final gaps to neighbors
         for (int i = 0; i < labels.Length; i++)
         {
             if (labels[i] == 0)
@@ -130,19 +134,20 @@ public partial class TransitionHelper
     // Enqueues valid 4-neighbor pixels into intensity buckets for flood expansion.
     private void EnqueueNeighbors(int idx, int label, int[] labels, float[] blur, Queue<int>[] buckets, int maxB)
     {
+        // Up, down, left, right
         int[] neighbors = { idx - Width, idx + Width, idx - 1, idx + 1 };
         for (int i = 0; i < 4; i++)
         {
             int nIdx = neighbors[i];
             if (nIdx >= 0 && nIdx < labels.Length)
             {
+                // Check horizontal boundary
                 if (i >= 2 && (nIdx / Width != idx / Width)) continue;
 
                 if (labels[nIdx] == 0)
                 {
                     int b = (int)blur[nIdx];
                     if (b > maxB) b = maxB;
-                    if (b < 0) b = 0; // Guard against negative blur values
                     buckets[b].Enqueue(nIdx);
                 }
             }
@@ -150,8 +155,24 @@ public partial class TransitionHelper
     }
 
 
+    /// <summary>
+    /// Segments the input image into labeled regions using XY projection and assigns unique labels to each segment.    
+    /// Returns the number of labels (segments) found.
+    /// </summary>
+    /// <remarks>This method uses horizontal and vertical projection profiles to detect valleys and segment
+    /// the image into rectangular regions. Each region is assigned a unique integer label. The method assumes that the
+    /// image dimensions (Width and Height) and the marker radius (MarkerRadius) are set appropriately before
+    /// calling.</remarks>
+    /// <param name="filtered">A one-dimensional array of filtered pixel values representing the image to be segmented. The array must have a
+    /// length equal to Width × Height.</param>
+    /// <param name="labels">A one-dimensional array that receives the label for each pixel. Must be the same length as the filtered array.
+    /// Each element will be set to the label of the corresponding segment.</param>
+    /// <returns>The total number of unique segments identified and labeled in the image.</returns>
+
     private int XYProjectionSegmentation(float[] filtered, int[] labels)
     {
+        int labelCounter = 1;
+
         // --- Step 1: Global Horizontal Projection ---
         float[] rowSum = new float[Height];
         for (int y = 0; y < Height; y++)
@@ -163,31 +184,14 @@ public partial class TransitionHelper
             }
         }
 
-        // Find all raw local minima/valleys on the horizontal axis
-        var globalHorizontalValleys = FindValleysWithProminence(rowSum);
-
-        // Calculate how many total horizontal cuts we should ideally make.
-        // For XY, the global horizontal cut is the primary division. We estimate the split distribution.
-        // We want H_segments * V_segments ≈ MarkerCount. Let's find an optimal balance.
-        int idealHsegments = (int)Math.Max(1, Math.Round(Math.Sqrt(MarkerCount * (double)Height / Width)));
-        int targetHValleys = Math.Max(0, idealHsegments - 1);
-
-        // Take the most prominent horizontal valleys
-        List<int> horizontalSplits = globalHorizontalValleys
-            .OrderByDescending(v => v.prominence)
-            .Take(targetHValleys)
-            .Select(v => v.index)
-            .ToList();
+        List<int> horizontalSplits = FindValleys(rowSum, MarkerRadius);
 
         if (!horizontalSplits.Contains(0)) horizontalSplits.Insert(0, 0);
         if (!horizontalSplits.Contains(Height)) horizontalSplits.Add(Height);
         horizontalSplits.Sort();
 
-        int actualRows = horizontalSplits.Count - 1;
-        int labelCounter = 1;
-
         // --- Step 2: Local Vertical Projection per Row ---
-        for (int i = 0; i < actualRows; i++)
+        for (int i = 0; i < horizontalSplits.Count - 1; i++)
         {
             int yStart = horizontalSplits[i];
             int yEnd = horizontalSplits[i + 1];
@@ -204,18 +208,7 @@ public partial class TransitionHelper
                 }
             }
 
-            var localVerticalValleys = FindValleysWithProminence(localColSum);
-
-            // Dynamically figure out how many columns this specific row needs 
-            // to help hit the global MarkerCount goal as closely as possible.
-            int targetVsegments = (int)Math.Max(1, Math.Round((double)MarkerCount / actualRows));
-            int targetVValleys = Math.Max(0, targetVsegments - 1);
-
-            List<int> verticalSplits = localVerticalValleys
-                .OrderByDescending(v => v.prominence)
-                .Take(targetVValleys)
-                .Select(v => v.index)
-                .ToList();
+            List<int> verticalSplits = FindValleys(localColSum, MarkerRadius);
 
             if (!verticalSplits.Contains(0)) verticalSplits.Insert(0, 0);
             if (!verticalSplits.Contains(Width)) verticalSplits.Add(Width);
@@ -243,7 +236,10 @@ public partial class TransitionHelper
 
     private int YXProjectionSegmentation(float[] filtered, int[] labels)
     {
+        int labelCounter = 1;
+
         // --- Step 1: Global Vertical Projection ---
+        // Summing columns to find vertical boundaries between columns of bricks
         float[] colSum = new float[Width];
         for (int y = 0; y < Height; y++)
         {
@@ -254,27 +250,15 @@ public partial class TransitionHelper
             }
         }
 
-        var globalVerticalValleys = FindValleysWithProminence(colSum);
-
-        // Estimate baseline column counts based on aspect ratio to distribute markers evenly
-        int idealVsegments = (int)Math.Max(1, Math.Round(Math.Sqrt(MarkerCount * (double)Width / Height)));
-        int targetVValleys = Math.Max(0, idealVsegments - 1);
-
-        List<int> verticalSplits = globalVerticalValleys
-            .OrderByDescending(v => v.prominence)
-            .Take(targetVValleys)
-            .Select(v => v.index)
-            .ToList();
+        List<int> verticalSplits = FindValleys(colSum, MarkerRadius);
 
         if (!verticalSplits.Contains(0)) verticalSplits.Insert(0, 0);
         if (!verticalSplits.Contains(Width)) verticalSplits.Add(Width);
         verticalSplits.Sort();
 
-        int actualCols = verticalSplits.Count - 1;
-        int labelCounter = 1;
-
         // --- Step 2: Local Horizontal Projection per Column ---
-        for (int i = 0; i < actualCols; i++)
+        // Look within each vertical column band to find horizontal brick cuts
+        for (int i = 0; i < verticalSplits.Count - 1; i++)
         {
             int xStart = verticalSplits[i];
             int xEnd = verticalSplits[i + 1];
@@ -292,22 +276,14 @@ public partial class TransitionHelper
                 }
             }
 
-            var localHorizontalValleys = FindValleysWithProminence(localRowSum);
-
-            int targetHsegments = (int)Math.Max(1, Math.Round((double)MarkerCount / actualCols));
-            int targetHValleys = Math.Max(0, targetHsegments - 1);
-
-            List<int> horizontalSplits = localHorizontalValleys
-                .OrderByDescending(v => v.prominence)
-                .Take(targetHValleys)
-                .Select(v => v.index)
-                .ToList();
+            List<int> horizontalSplits = FindValleys(localRowSum, MarkerRadius);
 
             if (!horizontalSplits.Contains(0)) horizontalSplits.Insert(0, 0);
             if (!horizontalSplits.Contains(Height)) horizontalSplits.Add(Height);
             horizontalSplits.Sort();
 
             // --- Step 3: Fast Array Labeling ---
+            // Label the bounding boxes directly into the caller's label array
             for (int j = 0; j < horizontalSplits.Count - 1; j++)
             {
                 int yStart = horizontalSplits[j];
@@ -327,41 +303,22 @@ public partial class TransitionHelper
         return labelCounter - 1;
     }
 
-    // Finds local minima using a tight radius=1, and measures valley depth 
-    // (prominence) relative to its immediate neighboring peaks.
-    private List<(int index, float prominence)> FindValleysWithProminence(float[] profile)
+    private List<int> FindValleys(float[] profile, int radius)
     {
-        var valleys = new List<(int index, float prominence)>();
-        if (profile.Length < 3) return valleys;
-
-        for (int i = 1; i < profile.Length - 1; i++)
+        List<int> valleys = new List<int>();
+        for (int i = radius; i < profile.Length - radius; i++)
         {
-            // Check if it's a raw local minimum (radius = 1)
-            if (profile[i] <= profile[i - 1] && profile[i] <= profile[i + 1])
+            bool isMin = true;
+            for (int j = -radius; j <= radius; j++)
             {
-                if (profile[i] == profile[i - 1] && profile[i] == profile[i + 1])
-                    continue; // Skip flat plateaus to avoid spamming splits
-
-                // Find nearest peak or boundary to the left
-                float leftPeak = profile[i];
-                for (int l = i - 1; l >= 0; l--)
+                if (j == 0) continue;
+                if (profile[i + j] < profile[i]) // If a neighbor is darker, it is not a minimum
                 {
-                    if (profile[l] > leftPeak) leftPeak = profile[l];
-                    else if (l < i - 1 && profile[l] < profile[l + 1]) break; // Hit another valley
+                    isMin = false;
+                    break;
                 }
-
-                // Find nearest peak or boundary to the right
-                float rightPeak = profile[i];
-                for (int r = i + 1; r < profile.Length; r++)
-                {
-                    if (profile[r] > rightPeak) rightPeak = profile[r];
-                    else if (r > i + 1 && profile[r] < profile[r - 1]) break; // Hit another valley
-                }
-
-                // Prominence represents how "deep" this drop-off is compared to its surroundings
-                float prominence = Math.Min(leftPeak, rightPeak) - profile[i];
-                valleys.Add((i, prominence));
             }
+            if (isMin) valleys.Add(i);
         }
         return valleys;
     }

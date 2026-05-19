@@ -31,7 +31,7 @@ namespace TgaBuilderLib.Transitions
         public bool InvertGrayscale { get; set; } = false;
         public bool SliceCornerTiles { get; set; } = false;
         public bool ProtectEdges { get; set; } = true;
-        public int MarkerCount { get; set; } = 3;
+        public int MarkerRadius { get; set; } = 3;
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Felzenszwalb;
         public int FelzenszwalbMinSize { get; set; } = 50;
         public float FelzenszwalbScale { get; set; } = 100f;
@@ -61,7 +61,7 @@ namespace TgaBuilderLib.Transitions
             Hardness = 0.5f;
             Widening = 0f;
 
-            MarkerCount = 3; 
+            MarkerRadius = 3; 
             ReversePivot = false;
             SliceCornerTiles = false;
             ProtectEdges = true;

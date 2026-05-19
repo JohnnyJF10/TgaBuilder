@@ -227,7 +227,7 @@ public class TransitionViewModel : ViewModelBase
 
     private IWriteableBitmap? _labelMapImage;
     private bool _invertGrayscale;
-    private int _markerCount = 3;
+    private int _markerRadius = 3;
     private bool _reversePivot;
     private bool _sliceCornerTiles;
     private bool _protectEdges = true;
@@ -263,10 +263,10 @@ public class TransitionViewModel : ViewModelBase
             BricksPipelineRequirements.RequiresAnalysis, null);
     }
 
-    public int MarkerCount
+    public int MarkerRadius
     {
-        get => _markerCount;
-        set => SetPropertyTriggerRecalculation(ref _markerCount, value,
+        get => _markerRadius;
+        set => SetPropertyTriggerRecalculation(ref _markerRadius, value,
             BricksPipelineRequirements.RequiresAnalysis);
     }
 
@@ -474,7 +474,7 @@ public class TransitionViewModel : ViewModelBase
             _transitionHelper.ReversePivot = ReversePivot;
             _transitionHelper.SliceCornerTiles = SliceCornerTiles;
             _transitionHelper.ProtectEdges = ProtectEdges;
-            _transitionHelper.MarkerCount = MarkerCount;
+            _transitionHelper.MarkerRadius = MarkerRadius;
             _transitionHelper.SelectedFilter = SelectedFilter;
             _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
             _transitionHelper.FelzenszwalbMinSize = FelzenszwalbMinSize;
