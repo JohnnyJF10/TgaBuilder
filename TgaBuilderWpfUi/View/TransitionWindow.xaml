@@ -191,6 +191,7 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        d:Foreground="White"
                         FontSize="18"
                         Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                         IsHitTestVisible="False" />
@@ -251,6 +252,7 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        d:Foreground="White"
                         FontSize="18"
                         Visibility="{Binding InitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                         IsHitTestVisible="False" />
@@ -377,6 +379,7 @@
                     <Path
                         VerticalAlignment="Bottom"
                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
                         Fill="Transparent"
                         Width="14"
                         Height="14"
@@ -385,6 +388,7 @@
                     <Path
                         VerticalAlignment="Bottom"
                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
                         StrokeDashArray="2.2"
                         Fill="Transparent"
                         Width="14"
@@ -398,6 +402,7 @@
                     <Path
                         VerticalAlignment="Bottom"
                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
                         Fill="Transparent"
                         Width="14"
                         Height="14"
@@ -406,6 +411,7 @@
                     <Path
                         VerticalAlignment="Bottom"
                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
                         StrokeDashArray="2.2"
                         Fill="Transparent"
                         Width="14"
@@ -458,6 +464,7 @@
                         DockPanel.Dock="Left"
                         VerticalAlignment="Center"
                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
                         Fill="Transparent"
                         Width="14"
                         Height="14"
@@ -467,6 +474,7 @@
                         DockPanel.Dock="Right"
                         VerticalAlignment="Center"
                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
                         Fill="Transparent"
                         Width="14"
                         Height="14"
@@ -494,6 +502,7 @@
                         <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                            d:Stroke="White"
                             Fill="Transparent"
                             Width="14"
                             Height="14"
@@ -502,6 +511,7 @@
                         <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                            d:Stroke="White"
                             StrokeDashArray="2.2"
                             Fill="Transparent"
                             Width="14"
@@ -515,6 +525,7 @@
                         <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                            d:Stroke="White"
                             Fill="Transparent"
                             Width="14"
                             Height="14"
@@ -524,6 +535,7 @@
                         <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                            d:Stroke="White"
                             Fill="Transparent"
                             Width="14"
                             Height="14"
@@ -552,6 +564,7 @@
                         <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                            d:Stroke="White"
                             StrokeDashArray="2.2"
                             Fill="Transparent"
                             Width="14"
@@ -561,6 +574,7 @@
                         <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                            d:Stroke="White"
                             Fill="Transparent"
                             Width="14"
                             Height="14"
@@ -573,6 +587,7 @@
                         <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                            d:Stroke="White"
                             StrokeDashArray="2.2"
                             Fill="Transparent"
                             Width="14"
@@ -582,6 +597,7 @@
                         <Path
                             VerticalAlignment="Bottom"
                             Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                            d:Stroke="White"
                             Fill="Transparent"
                             Width="14"
                             Height="14"
@@ -640,6 +656,7 @@
                                     VerticalAlignment="Center"
                                     Margin="5,0,0,0"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="18"
                                     Height="18"
                                     Stretch="Uniform"
@@ -675,6 +692,7 @@
                                         VerticalAlignment="Center"
                                         Margin="5,0,0,0"
                                         Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Fill="White"
                                         Width="14"
                                         Height="14"
                                         Stretch="Uniform"
@@ -701,6 +719,7 @@
                                     DockPanel.Dock="Left"
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="5"
                                     Height="5"
                                     Stretch="Uniform"
@@ -710,6 +729,7 @@
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -734,6 +754,7 @@
                                 <Path
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="8"
                                     Height="8"
                                     Stretch="Uniform"
@@ -743,6 +764,7 @@
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -767,6 +789,7 @@
                                 <Path
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -776,6 +799,7 @@
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -798,6 +822,7 @@
                                 <Path
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -807,6 +832,7 @@
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -831,6 +857,7 @@
                                 <Path
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -840,6 +867,7 @@
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -862,6 +890,7 @@
                                 <Path
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -871,6 +900,7 @@
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -895,6 +925,7 @@
                                 <Path
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -904,6 +935,7 @@
                                     DockPanel.Dock="Right"
                                     VerticalAlignment="Center"
                                     Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
                                     Width="14"
                                     Height="14"
                                     Stretch="Uniform"
@@ -967,6 +999,7 @@
                                     <Path
                                         VerticalAlignment="Bottom"
                                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
                                         Fill="Transparent"
                                         Width="14"
                                         Height="14"
@@ -975,6 +1008,7 @@
                                     <Path
                                         VerticalAlignment="Bottom"
                                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
                                         StrokeDashArray="2.2"
                                         Fill="Transparent"
                                         Width="14"
@@ -988,6 +1022,7 @@
                                     <Path
                                         VerticalAlignment="Bottom"
                                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
                                         Fill="Transparent"
                                         Width="14"
                                         Height="14"
@@ -997,6 +1032,7 @@
                                     <Path
                                         VerticalAlignment="Bottom"
                                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
                                         Fill="Transparent"
                                         Width="14"
                                         Height="14"
@@ -1024,6 +1060,7 @@
                                     <Path
                                         VerticalAlignment="Bottom"
                                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
                                         StrokeDashArray="2.2"
                                         Fill="Transparent"
                                         Width="14"
@@ -1033,6 +1070,7 @@
                                     <Path
                                         VerticalAlignment="Bottom"
                                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
                                         Fill="Transparent"
                                         Width="14"
                                         Height="14"
@@ -1045,6 +1083,7 @@
                                     <Path
                                         VerticalAlignment="Bottom"
                                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
                                         StrokeDashArray="2.2"
                                         Fill="Transparent"
                                         Width="14"
@@ -1054,6 +1093,7 @@
                                     <Path
                                         VerticalAlignment="Bottom"
                                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
                                         Fill="Transparent"
                                         Width="14"
                                         Height="14"
