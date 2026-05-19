@@ -1,4 +1,4 @@
-<UserControl x:Class="TgaBuilderWpfUi.View.MainWindowSelectionControlsUserControl"
+<UserControl x:Class="TgaBuilderWpfUi.View.MainWindowSelectionUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -16,6 +16,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml" />
                 <ResourceDictionary Source="/Styles/CheckerBrush.xaml" />
+                <ResourceDictionary Source="/Styles/SingleColorButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converter:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
             <converter:ColorStructToMediaColorConverter x:Key="ColorStructToMediaColorConverter" />

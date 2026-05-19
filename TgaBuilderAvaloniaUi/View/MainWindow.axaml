@@ -514,8 +514,10 @@
             Grid.Row="1"
             Grid.Column="1"
             VerticalAlignment="Top">
-            <local:MainWindowSelectionControlsUserControl />
-            <local:MainWindowAnimationControlsUserControl />
+            <local:MainWindowSelectionUserControl 
+                x:Name="SelectionUserControl"
+                />
+            <local:MainWindowAnimationUserControl />
 
 
         </StackPanel>
