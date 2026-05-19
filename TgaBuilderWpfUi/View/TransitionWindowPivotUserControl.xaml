@@ -20,181 +20,158 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="18" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="18" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+                        <StackPanel
+                            Margin="8,6,8,8">
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="0,0,0,8">
+                                <elements:ToggleButtonEx
+                                    VerticalAlignment="Center"
+                                    ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
+                                    Icon="{ui:SymbolIcon FlipHorizontal24}"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    IsChecked="{Binding ReversePivot}" />
+                                <elements:ToggleButtonEx
+                                    Margin="8,0,0,0"
+                                    x:Name="ProtectEdgesToggleButton"
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Icon="{ui:SymbolIcon Shield24}"
+                                    ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
+                                    IsChecked="{Binding ProtectEdges}" />
+                                <elements:ToggleButtonEx
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Margin="8,0,0,0"
+                                    Icon="{ui:SymbolIcon Cut24}"
+                                    ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
+                                    IsEnabled="{Binding IsChecked, ElementName=ProtectEdgesToggleButton}"
+                                    IsChecked="{Binding SliceCornerTiles}" />
+                            </StackPanel>
 
-        <StackPanel
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Orientation="Horizontal">
-            <elements:ToggleButtonEx
-                VerticalAlignment="Center"
-                MinHeight="36"
-                MinWidth="36"
-                Icon="{ui:SymbolIcon FlipHorizontal24}"
-                ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
-                IsChecked="{Binding ReversePivot}" />
-            <elements:ToggleButtonEx
-                x:Name="ProtectEdgesToggleButton"
-                Margin="8,0,0,0"
-                VerticalAlignment="Center"
-                MinHeight="36"
-                MinWidth="36"
-                Icon="{ui:SymbolIcon Shield24}"
-                ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
-                IsChecked="{Binding ProtectEdges}" />
-            <elements:ToggleButtonEx
-                Margin="8,0,0,0"
-                VerticalAlignment="Center"
-                MinHeight="36"
-                MinWidth="36"
-                Icon="{ui:SymbolIcon Cut24}"
-                ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
-                IsEnabled="{Binding IsChecked, ElementName=ProtectEdgesToggleButton}"
-                IsChecked="{Binding SliceCornerTiles}" />
-        </StackPanel>
+                            <DockPanel
+                                ap:MouseOverInfoAP.InfoText="Widening: 0 = Adds or enlarges the plateau at the transition front until it touches the edges at value 1">
+                                <Grid
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left">
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
+                                        Fill="Transparent"
+                                        Width="14"
+                                        Height="14"
+                                        Stretch="Uniform"
+                                        Data="{StaticResource pivot_low}" />
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
+                                        StrokeDashArray="2.2"
+                                        Fill="Transparent"
+                                        Width="14"
+                                        Height="14"
+                                        Stretch="Uniform"
+                                        Data="{StaticResource pivot_high}" />
+                                </Grid>
+                                <Grid
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Right">
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
+                                        Fill="Transparent"
+                                        Width="14"
+                                        Height="14"
+                                        Stretch="Uniform"
+                                        StrokeDashArray="2.2"
+                                        Data="{StaticResource pivot_high}" />
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
+                                        Fill="Transparent"
+                                        Width="14"
+                                        Height="14"
+                                        Stretch="Uniform"
+                                        Data="{StaticResource pivot_widening}" />
+                                </Grid>
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    AutoToolTipPrecision="2"
+                                    Maximum="1"
+                                    Minimum="0"
+                                    SmallChange="0.01"
+                                    Value="{Binding WideningValue}" />
+                            </DockPanel>
 
-        <Grid
-            Grid.Row="1"
-            Grid.Column="0"
-            VerticalAlignment="Top"
-            Margin="-5,11,8,0"
-            ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
-            <Path
-                VerticalAlignment="Bottom"
-                Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                d:Stroke="White"
-                StrokeThickness="1"
-                Fill="Transparent"
-                Width="10"
-                Height="10"
-                Data="{StaticResource pivot_low}" />
-            <Path
-                VerticalAlignment="Bottom"
-                Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                d:Stroke="White"
-                StrokeDashArray="2,2"
-                StrokeThickness="1"
-                Fill="Transparent"
-                Width="10"
-                Height="10"
-                Data="{StaticResource pivot_high}" />
-        </Grid>
-        <elements:MouseWheelSlider
-            Grid.Row="1"
-            Grid.Column="1"
-            Style="{StaticResource MouseWheelSliderStyle}"
-            Margin="5,0"
-            VerticalAlignment="Center"
-            AutoToolTipPlacement="BottomRight"
-            AutoToolTipPrecision="2"
-            Maximum="1"
-            Minimum="0"
-            SmallChange="0.01"
-            Value="{Binding WideningValue}"
-            ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1." />
-        <Grid
-            Grid.Row="1"
-            Grid.Column="2"
-            VerticalAlignment="Top"
-            Margin="-5,11,8,0"
-            ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
-            <Path
-                VerticalAlignment="Bottom"
-                Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                d:Stroke="White"
-                StrokeThickness="1"
-                StrokeDashArray="2,2"
-                Fill="Transparent"
-                Width="10"
-                Height="10"
-                Data="{StaticResource pivot_high}" />
-            <Path
-                VerticalAlignment="Bottom"
-                Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                d:Stroke="White"
-                StrokeThickness="1"
-                Fill="Transparent"
-                Width="10"
-                Height="10"
-                Data="{StaticResource pivot_widening}" />
-        </Grid>
-
-        <Grid
-            Grid.Row="2"
-            Grid.Column="0"
-            VerticalAlignment="Top"
-            Margin="-5,11,8,0"
-            ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
-            <Path
-                VerticalAlignment="Bottom"
-                Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                d:Stroke="White"
-                StrokeDashArray="2,2"
-                StrokeThickness="1"
-                Fill="Transparent"
-                Width="10"
-                Height="10"
-                Data="{StaticResource pivot_high}" />
-            <Path
-                VerticalAlignment="Bottom"
-                Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                d:Stroke="White"
-                StrokeThickness="1"
-                Fill="Transparent"
-                Width="10"
-                Height="10"
-                Data="{StaticResource pivot_shift_left}" />
-        </Grid>
-        <elements:MouseWheelSlider
-            Grid.Row="2"
-            Grid.Column="1"
-            Style="{StaticResource MouseWheelSliderStyle}"
-            Margin="5,0"
-            VerticalAlignment="Center"
-            AutoToolTipPlacement="BottomRight"
-            AutoToolTipPrecision="2"
-            Maximum="1"
-            Minimum="-1"
-            SmallChange="0.01"
-            Value="{Binding ShiftValue}"
-            ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)" />
-        <Grid
-            Grid.Row="2"
-            Grid.Column="2"
-            VerticalAlignment="Top"
-            Margin="-5,11,8,0"
-            ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
-            <Path
-                VerticalAlignment="Bottom"
-                Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                d:Stroke="White"
-                StrokeThickness="1"
-                StrokeDashArray="2,2"
-                Fill="Transparent"
-                Width="10"
-                Height="10"
-                Data="{StaticResource pivot_high}" />
-            <Path
-                VerticalAlignment="Bottom"
-                Stroke="{DynamicResource TextFillColorPrimaryBrush}"
-                d:Stroke="White"
-                StrokeThickness="1"
-                Fill="Transparent"
-                Width="10"
-                Height="10"
-                Data="{StaticResource pivot_shift_right}" />
-        </Grid>
-    </Grid>
+                            <DockPanel
+                                Margin="0,16,0,0"
+                                ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
+                                <Grid
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left">
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
+                                        StrokeDashArray="2.2"
+                                        Fill="Transparent"
+                                        Width="14"
+                                        Height="14"
+                                        Stretch="Uniform"
+                                        Data="{StaticResource pivot_high}" />
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
+                                        Fill="Transparent"
+                                        Width="14"
+                                        Height="14"
+                                        Stretch="Uniform"
+                                        Data="{StaticResource pivot_shift_left}" />
+                                </Grid>
+                                <Grid
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Right">
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
+                                        StrokeDashArray="2.2"
+                                        Fill="Transparent"
+                                        Width="14"
+                                        Height="14"
+                                        Stretch="Uniform"
+                                        Data="{StaticResource pivot_high}" />
+                                    <Path
+                                        VerticalAlignment="Bottom"
+                                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        d:Stroke="White"
+                                        Fill="Transparent"
+                                        Width="14"
+                                        Height="14"
+                                        Stretch="Uniform"
+                                        Data="{StaticResource pivot_shift_right}" />
+                                </Grid>
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    AutoToolTipPrecision="2"
+                                    Maximum="1"
+                                    Minimum="-1"
+                                    SmallChange="0.01"
+                                    Value="{Binding ShiftValue}" />
+                            </DockPanel>
+                        </StackPanel>
                     
 </UserControl>
