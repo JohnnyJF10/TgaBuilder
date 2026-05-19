@@ -21,377 +21,453 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-                        <StackPanel
-                            Margin="8,0,0,8">
-                            <DockPanel
-                                ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Margin="5,0,0,0"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="18"
-                                    Height="18"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource shapes}" />
-                                <ComboBox
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
-                                    <ComboBoxItem Content="Felzenszwalb" />
-                                    <ComboBoxItem Content="SLIC" />
-                                    <ComboBoxItem Content="Quickshift" />
-                                    <ComboBoxItem Content="Watershed" />
-                                    <ComboBoxItem Content="XY Projection" />
-                                    <ComboBoxItem Content="YX Projection" />
-                                </ComboBox>
-                            </DockPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="18" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="18" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-                            <DockPanel
-                                Margin="0,0,0,1"
-                                Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <elements:ToggleButtonEx
-                                    Width="36"
-                                    Height="36"
-                                    Icon="{ui:SymbolIcon Table24}"
-                                    IsChecked="{Binding InvertGrayscale}"
-                                    ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
-                            </DockPanel>
+        <Path
+            Grid.Row="0"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Margin="5,0,0,0"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="18"
+            Height="18"
+            Stretch="Uniform"
+            Data="{StaticResource shapes}"
+            ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions" />
+        <ComboBox
+            Grid.Row="0"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Center"
+            Margin="15,0,0,0"
+            Background="Transparent"
+            BorderThickness="0"
+            SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}"
+            ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions">
+            <ComboBoxItem Content="Felzenszwalb" />
+            <ComboBoxItem Content="SLIC" />
+            <ComboBoxItem Content="Quickshift" />
+            <ComboBoxItem Content="Watershed" />
+            <ComboBoxItem Content="XY Projection" />
+            <ComboBoxItem Content="YX Projection" />
+        </ComboBox>
 
-                            <DockPanel
-                                Margin="0,0,0,1"
-                                LastChildFill="True"
-                                ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Margin="5,0,0,0"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource filter}" />
-                                <ComboBox
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
-                                    <ComboBoxItem Content="None" />
-                                    <ComboBoxItem Content="Box Blur" />
-                                    <ComboBoxItem Content="Median" />
-                                    <ComboBoxItem Content="Bilateral" />
-                                    <ComboBoxItem Content="Gaussian" />
-                                </ComboBox>
-                            </DockPanel>
+        <DockPanel
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="3">
+            <elements:ToggleButtonEx
+                Margin="0,0,5,0"
+                HorizontalAlignment="Left"
+                Width="36"
+                Height="36"
+                Icon="{ui:SymbolIcon Table24}"
+                IsChecked="{Binding InvertGrayscale}"
+                Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+                ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
 
-                            <DockPanel
-                                Margin="0,8,8,0"
-                                Visibility="{Binding ShowBilateralSigma, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource line_horizontal_1}" />
-                                <Path
-                                    DockPanel.Dock="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource line_horizontal_5}" />
-                                <elements:MouseWheelSlider
-                                    Style="{StaticResource MouseWheelSliderStyle}"
-                                    Margin="5,0"
-                                    VerticalAlignment="Center"
-                                    AutoToolTipPlacement="BottomRight"
-                                    Maximum="100"
-                                    Minimum="0.1"
-                                    SmallChange="0.1"
-                                    Value="{Binding BilateralSigma}" />
-                            </DockPanel>
+            <Path
+                Margin="5,8,0,0"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="18"
+                Height="18"
+                Stretch="Uniform"
+                Data="{StaticResource filter}"
+                ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image" />
+            <ComboBox
+                Margin="15,8,0,0"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Stretch"
+                BorderThickness="0"
+                Background="Transparent"
+                SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}"
+                ap:MouseOverInfoAP.InfoText="Filter: pre-processing filter applied to the result image">
+                <ComboBoxItem Content="None" />
+                <ComboBoxItem Content="Box Blur" />
+                <ComboBoxItem Content="Median" />
+                <ComboBoxItem Content="Bilateral" />
+                <ComboBoxItem Content="Gaussian" />
+            </ComboBox>
+        </DockPanel>
 
-                            <DockPanel
-                                Margin="0,8,8,0"
-                                Visibility="{Binding ShowGaussianSigma, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Gaussian sigma: blur radius weighting strength">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource line_horizontal_1}" />
-                                <Path
-                                    DockPanel.Dock="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource line_horizontal_5}" />
-                                <elements:MouseWheelSlider
-                                    Style="{StaticResource MouseWheelSliderStyle}"
-                                    Margin="5,0"
-                                    VerticalAlignment="Center"
-                                    AutoToolTipPlacement="BottomRight"
-                                    Maximum="20"
-                                    Minimum="0.1"
-                                    SmallChange="0.1"
-                                    Value="{Binding GaussianSigma}" />
-                            </DockPanel>
+        <TextBlock
+            Grid.Row="3"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Foreground="White"
+            Width="14"
+            Height="14"
+            FontSize="16"
+            Margin="5,0,0,0"
+            Text="σ"
+            Visibility="{Binding ShowBilateralSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength" />
+        <elements:MouseWheelSlider
+            Grid.Row="3"
+            Grid.Column="1"
+            Style="{StaticResource MouseWheelSliderStyle}"
+            Margin="5,0"
+            VerticalAlignment="Center"
+            AutoToolTipPlacement="BottomRight"
+            Maximum="100"
+            Minimum="0.1"
+            SmallChange="0.1"
+            Value="{Binding BilateralSigma}"
+            Visibility="{Binding ShowBilateralSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength" />
+        <TextBlock
+            Grid.Row="3"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Foreground="White"
+            Width="14"
+            Height="14"
+            FontSize="16"
+            Text="Σ"
+            Visibility="{Binding ShowBilateralSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength" />
 
-                            <DockPanel
-                                Margin="0,8,8,0"
-                                Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
-                                <Path
-                                    DockPanel.Dock="Left"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="5"
-                                    Height="5"
-                                    Stretch="Uniform"
-                                    Margin="5"
-                                    Data="{StaticResource circle_small}" />
-                                <Path
-                                    DockPanel.Dock="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource circle}" />
-                                <elements:MouseWheelSlider
-                                    Style="{StaticResource MouseWheelSliderStyle}"
-                                    Margin="5,0"
-                                    VerticalAlignment="Center"
-                                    AutoToolTipPlacement="BottomRight"
-                                    IsSnapToTickEnabled="True"
-                                    TickFrequency="1"
-                                    Maximum="20"
-                                    Minimum="1"
-                                    SmallChange="1"
-                                    Value="{Binding MarkerRadius}" />
-                            </DockPanel>
+        <TextBlock
+            Grid.Row="4"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Foreground="White"
+            Width="14"
+            Height="14"
+            FontSize="16"
+            Margin="5,0,0,0"
+            Text="σ"
+            Visibility="{Binding ShowGaussianSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Gaussian sigma: blur radius weighting strength" />
+        <elements:MouseWheelSlider
+            Grid.Row="4"
+            Grid.Column="1"
+            Style="{StaticResource MouseWheelSliderStyle}"
+            Margin="5,0"
+            VerticalAlignment="Center"
+            AutoToolTipPlacement="BottomRight"
+            Maximum="20"
+            Minimum="0.1"
+            SmallChange="0.1"
+            Value="{Binding GaussianSigma}"
+            Visibility="{Binding ShowGaussianSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Gaussian sigma: blur radius weighting strength" />
+        <TextBlock
+            Grid.Row="4"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Foreground="White"
+            Width="14"
+            Height="14"
+            FontSize="16"
+            Text="Σ"
+            Visibility="{Binding ShowGaussianSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Gaussian sigma: blur radius weighting strength" />
 
-                            <DockPanel
-                                Margin="0,8,8,8"
-                                Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="8"
-                                    Height="8"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource circle_small}" />
-                                <Path
-                                    DockPanel.Dock="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource circle}" />
-                                <elements:MouseWheelSlider
-                                    Style="{StaticResource MouseWheelSliderStyle}"
-                                    Margin="5,0"
-                                    VerticalAlignment="Center"
-                                    AutoToolTipPlacement="BottomRight"
-                                    IsSnapToTickEnabled="True"
-                                    TickFrequency="1"
-                                    Maximum="500"
-                                    Minimum="1"
-                                    SmallChange="1"
-                                    Value="{Binding FelzenszwalbMinSize}" />
-                            </DockPanel>
+        <TextBlock
+            Grid.Row="5"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Foreground="White"
+            FontWeight="SemiBold"
+            FontSize="12"
+            Margin="10,5,0,5"
+            Text="#"
+            Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Marker Count: Count of the seed markers for segmentation (1 to 256)" />
+        <elements:MouseWheelSlider
+            Grid.Row="5"
+            Grid.Column="1"
+            Style="{StaticResource MouseWheelSliderStyle}"
+            Margin="5,0"
+            VerticalAlignment="Center"
+            AutoToolTipPlacement="BottomRight"
+            IsSnapToTickEnabled="True"
+            TickFrequency="1"
+            Maximum="256"
+            Minimum="1"
+            SmallChange="1"
+            Value="{Binding MarkerCount}"
+            Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Marker Count: Count of the seed markers for segmentation (1 to 256)" />
+        <TextBlock
+            Grid.Row="5"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Foreground="White"
+            FontSize="18"
+            Text="#"
+            Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Marker Count: Count of the seed markers for segmentation (1 to 256)" />
 
-                            <DockPanel
-                                Margin="0,8,8,0"
-                                Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource line_horizontal_1}" />
-                                <Path
-                                    DockPanel.Dock="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource line_horizontal_5}" />
-                                <elements:MouseWheelSlider
-                                    Style="{StaticResource MouseWheelSliderStyle}"
-                                    Margin="5,0"
-                                    VerticalAlignment="Center"
-                                    AutoToolTipPlacement="BottomRight"
-                                    Maximum="500"
-                                    Minimum="1"
-                                    SmallChange="1"
-                                    Value="{Binding FelzenszwalbScale}" />
-                            </DockPanel>
+        <Path
+            Grid.Row="6"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="8"
+            Height="8"
+            Stretch="Uniform"
+            Margin="5,0,0,0"
+            Data="{StaticResource circle_small}"
+            Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging" />
+        <elements:MouseWheelSlider
+            Grid.Row="6"
+            Grid.Column="1"
+            Style="{StaticResource MouseWheelSliderStyle}"
+            Margin="5,0"
+            VerticalAlignment="Center"
+            AutoToolTipPlacement="BottomRight"
+            IsSnapToTickEnabled="True"
+            TickFrequency="1"
+            Maximum="500"
+            Minimum="1"
+            SmallChange="1"
+            Value="{Binding FelzenszwalbMinSize}"
+            Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging" />
+        <Path
+            Grid.Row="6"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Data="{StaticResource circle}"
+            Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging" />
 
-                            <DockPanel
-                                Margin="0,8,8,8"
-                                Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource square_simple}" />
-                                <Path
-                                    DockPanel.Dock="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource grid}" />
-                                <elements:MouseWheelSlider
-                                    Style="{StaticResource MouseWheelSliderStyle}"
-                                    Margin="5,0"
-                                    VerticalAlignment="Center"
-                                    AutoToolTipPlacement="BottomRight"
-                                    IsSnapToTickEnabled="True"
-                                    TickFrequency="1"
-                                    Maximum="2000"
-                                    Minimum="1"
-                                    SmallChange="1"
-                                    Value="{Binding SlicSegmentCount}" />
-                            </DockPanel>
+        <Path
+            Grid.Row="7"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Margin="5,0,0,0"
+            Data="{StaticResource line_horizontal_1}"
+            Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor" />
+        <elements:MouseWheelSlider
+            Grid.Row="7"
+            Grid.Column="1"
+            Style="{StaticResource MouseWheelSliderStyle}"
+            Margin="5,0"
+            VerticalAlignment="Center"
+            AutoToolTipPlacement="BottomRight"
+            Maximum="500"
+            Minimum="1"
+            SmallChange="1"
+            Value="{Binding FelzenszwalbScale}"
+            Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor" />
+        <Path
+            Grid.Row="7"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Data="{StaticResource line_horizontal_5}"
+            Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor" />
 
-                            <DockPanel
-                                Margin="0,8,8,0"
-                                Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource scale_fit}" />
-                                <Path
-                                    DockPanel.Dock="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource scale_fill}" />
-                                <elements:MouseWheelSlider
-                                    Style="{StaticResource MouseWheelSliderStyle}"
-                                    Margin="5,0"
-                                    VerticalAlignment="Center"
-                                    AutoToolTipPlacement="BottomRight"
-                                    Maximum="50"
-                                    Minimum="0.1"
-                                    SmallChange="0.1"
-                                    Value="{Binding SlicCompactness}" />
-                            </DockPanel>
+        <Path
+            Grid.Row="8"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Margin="5,0,0,0"
+            Data="{StaticResource square_simple}"
+            Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels" />
+        <elements:MouseWheelSlider
+            Grid.Row="8"
+            Grid.Column="1"
+            Style="{StaticResource MouseWheelSliderStyle}"
+            Margin="5,0"
+            VerticalAlignment="Center"
+            AutoToolTipPlacement="BottomRight"
+            IsSnapToTickEnabled="True"
+            TickFrequency="1"
+            Maximum="2000"
+            Minimum="1"
+            SmallChange="1"
+            Value="{Binding SlicSegmentCount}"
+            Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels" />
+        <Path
+            Grid.Row="8"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Data="{StaticResource grid}"
+            Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels" />
 
-                            <DockPanel
-                                Margin="0,8,8,8"
-                                Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource arrow_minimize}" />
-                                <Path
-                                    DockPanel.Dock="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource arrow_maximize}" />
-                                <elements:MouseWheelSlider
-                                    Style="{StaticResource MouseWheelSliderStyle}"
-                                    Margin="5,0"
-                                    VerticalAlignment="Center"
-                                    AutoToolTipPlacement="BottomRight"
-                                    IsSnapToTickEnabled="True"
-                                    TickFrequency="1"
-                                    Maximum="50"
-                                    Minimum="1"
-                                    SmallChange="1"
-                                    Value="{Binding QuickshiftMaxDist}" />
-                            </DockPanel>
+        <Path
+            Grid.Row="9"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Margin="5,0,0,0"
+            Data="{StaticResource scale_fit}"
+            Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity" />
+        <elements:MouseWheelSlider
+            Grid.Row="9"
+            Grid.Column="1"
+            Style="{StaticResource MouseWheelSliderStyle}"
+            Margin="5,0"
+            VerticalAlignment="Center"
+            AutoToolTipPlacement="BottomRight"
+            Maximum="50"
+            Minimum="0.1"
+            SmallChange="0.1"
+            Value="{Binding SlicCompactness}"
+            Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity" />
+        <Path
+            Grid.Row="9"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Data="{StaticResource scale_fill}"
+            Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity" />
 
-                            <DockPanel
-                                Margin="0,8,8,0"
-                                Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling">
-                                <Path
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Margin="5,0,0,0"
-                                    Data="{StaticResource color_line}" />
-                                <Path
-                                    DockPanel.Dock="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                    d:Fill="White"
-                                    Width="14"
-                                    Height="14"
-                                    Stretch="Uniform"
-                                    Data="{StaticResource color_line_accent}" />
-                                <elements:MouseWheelSlider
-                                    Style="{StaticResource MouseWheelSliderStyle}"
-                                    Margin="5,0"
-                                    VerticalAlignment="Center"
-                                    AutoToolTipPlacement="BottomRight"
-                                    Maximum="5"
-                                    Minimum="0.1"
-                                    SmallChange="0.1"
-                                    Value="{Binding QuickshiftRatio}" />
-                            </DockPanel>
-                        </StackPanel>
+        <Path
+            Grid.Row="10"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Margin="5,0,0,0"
+            Data="{StaticResource arrow_minimize}"
+            Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed" />
+        <elements:MouseWheelSlider
+            Grid.Row="10"
+            Grid.Column="1"
+            Style="{StaticResource MouseWheelSliderStyle}"
+            Margin="5,0"
+            VerticalAlignment="Center"
+            AutoToolTipPlacement="BottomRight"
+            IsSnapToTickEnabled="True"
+            TickFrequency="1"
+            Maximum="50"
+            Minimum="1"
+            SmallChange="1"
+            Value="{Binding QuickshiftMaxDist}"
+            Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed" />
+        <Path
+            Grid.Row="10"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Data="{StaticResource arrow_maximize}"
+            Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed" />
+
+        <Path
+            Grid.Row="11"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Margin="5,0,0,0"
+            Data="{StaticResource color_line}"
+            Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling" />
+        <elements:MouseWheelSlider
+            Grid.Row="11"
+            Grid.Column="1"
+            Style="{StaticResource MouseWheelSliderStyle}"
+            Margin="5,0"
+            VerticalAlignment="Center"
+            AutoToolTipPlacement="BottomRight"
+            Maximum="5"
+            Minimum="0.1"
+            SmallChange="0.1"
+            Value="{Binding QuickshiftRatio}"
+            Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling" />
+        <Path
+            Grid.Row="11"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Fill="{DynamicResource TextFillColorPrimaryBrush}"
+            d:Fill="White"
+            Width="14"
+            Height="14"
+            Stretch="Uniform"
+            Data="{StaticResource color_line_accent}"
+            Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+            ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling" />
+    </Grid>
                     
 </UserControl>
