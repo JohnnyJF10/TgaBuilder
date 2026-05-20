@@ -24,7 +24,7 @@
                 VerticalAlignment="Center"
                 MinHeight="36"
                 MinWidth="36"
-                Icon="{StaticResource paint_brush}"
+                Icon="{StaticResource pen_white}"
                 ap:MouseOverInfoAP.InfoText="Enable manual drawing of visible tiles"
                 IsChecked="{Binding IsExplicitTileVisibilityDrawMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <elements:IconToggleButton
@@ -33,7 +33,7 @@
                 VerticalAlignment="Center"
                 MinHeight="36"
                 MinWidth="36"
-                Icon="{StaticResource tab_prohibited}"
+                Icon="{StaticResource eraser}"
                 ap:MouseOverInfoAP.InfoText="Enable manual erasing of visible tiles"
                 IsChecked="{Binding IsExplicitTileVisibilityEraseMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <elements:IconButton

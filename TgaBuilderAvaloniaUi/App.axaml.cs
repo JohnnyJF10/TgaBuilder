@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -51,17 +52,11 @@ namespace TgaBuilderAvaloniaUi
                 desktop.MainWindow = mainWindow;
             }
 
-            mainWindow.Loaded += (_, _) =>
-            {
-                //_ = PeriodicDebugLogging();
-            };
-
             mainWindow.ThemeToggleButton.Click += (_, _) => ToggleTheme();
 
             var clipboardService = provider.GetRequiredService<IClipboardService>();
             if (clipboardService is ClipboardService clipboardServiceImpl && mainWindow.Clipboard is not null) 
                 clipboardServiceImpl.RegisterClipboard(mainWindow.Clipboard);
-            
 
             mainWindow.Show();
 
