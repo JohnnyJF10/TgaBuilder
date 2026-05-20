@@ -18,6 +18,7 @@ using TgaBuilderWpfUi.Services;
 using TgaBuilderWpfUi.View;
 using TgaBuilderWpfUi.Wrappers;
 using Application = System.Windows.Application;
+using Wpf.Ui.Appearance;
 
 namespace TgaBuilderWpfUi
 {
@@ -95,7 +96,8 @@ namespace TgaBuilderWpfUi
         private void AddUIServicesToProvider(IServiceCollection services)
         {
             services.AddSingleton<IMediaFactory, MediaFactory>();
-            services.AddSingleton<ITransitionHelper, TransitionHelper>();
+            services.AddSingleton<ITransitionHelper, TransitionHelper>( sp => new TransitionHelper(
+                AccentColor: GetColorStructFromWpfColor(ApplicationAccentColorManager.GetColorizationColor())));
             services.AddSingleton<IModificationsHelper, ModificationsHelper>();
             services.AddSingleton<IClipboardService, ClipboardService>();
             services.AddSingleton<IFileService, FileService>();
@@ -107,6 +109,9 @@ namespace TgaBuilderWpfUi
             services.AddSingleton<IMessageBoxService, MessageBoxService>();
             services.AddSingleton<IDispatcherService, DispatcherService>();
         }
+
+        private TgaBuilderLib.Abstraction.Color GetColorStructFromWpfColor(System.Windows.Media.Color wpfColor)
+            => new TgaBuilderLib.Abstraction.Color(wpfColor.R, wpfColor.G, wpfColor.B, wpfColor.A);
 
         private void AddBitmapFactoryProvider(IServiceCollection services)
         {

@@ -40,10 +40,19 @@ namespace TgaBuilderLib.Transitions
         bool ProtectEdges { get; set; }
         float Shift { get; set; }
 
+        float UnderfillingPivot { get; set; }
+        bool ReverseUnderfilling { get; set; }
+        int UnderfillingThreshold { get; set; }
+
         // Methods
         byte[] MixSmooth(byte[] pixels1, byte[] pixels2);
         byte[] MixBricks(byte[] tilePixels, byte[] bgPixels);
         byte[] GetLabelMap();
+        int GetLabelAtPixel(int x, int y);
+        byte[] GetTileIndicator(int tileIndex);
+        bool SetExplicitTileVisibility(int tileIndex, bool shouldDraw);
+
+        void ResetAllExplicitTileVisibility();
         void CleanUp();
     }
 }

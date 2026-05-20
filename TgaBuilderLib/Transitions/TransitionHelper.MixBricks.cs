@@ -32,7 +32,7 @@ partial class TransitionHelper
         // Pipeline step 2: Determine which pixels are drawn (Input → Label Map → _selection)
         var currentSelection = new bool[Width * Height];
         currentSelection = CurrentBricksPipelineRequirements <= BricksPipelineRequirements.RequiresSelectionBuilding
-            ? BuildSelection(currentTileSegments, currentLabels, Mode, ReversePivot)
+            ? BuildSelection(currentTileSegments, currentLabels, tilePixels)
             : _selection;
 
 
@@ -51,9 +51,9 @@ partial class TransitionHelper
 
             case BricksPipelineRequirements.RequiresSelectionBuilding:
                 _selection = currentSelection;
-                goto case BricksPipelineRequirements.RequiresEdgeColoring;
+                goto case BricksPipelineRequirements.RequiresDrawing;
 
-            case BricksPipelineRequirements.RequiresEdgeColoring:
+            case BricksPipelineRequirements.RequiresDrawing:
                 break;
             default:
                 break;

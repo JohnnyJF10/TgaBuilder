@@ -284,11 +284,32 @@
                 VerticalAlignment="Stretch"
                 AllowDrop="True"
                 Background="Transparent">
-                <Image
-                    Margin="0,4,0,0"
-                    RenderOptions.BitmapScalingMode="NearestNeighbor"
-                    Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform" />
+                <Grid>
+                    <Viewbox
+                        Stretch="Uniform"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor">
+                        <Grid
+                            Width="{Binding Image2.PixelWidth, FallbackValue=128}"
+                            Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            <Image
+                                x:Name="ResultImage"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Uniform" 
+                                MouseMove="ResultImage_MouseMove"
+                                MouseEnter="ResultImage_MouseEnter"
+                                MouseLeave="ResultImage_MouseLeave"
+                                MouseDown="ResultImage_MouseDown"/>
+                            <Image
+                                x:Name="IndicatorImage"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                IsHitTestVisible="False"
+                                Visibility="{Binding IsIndicatorMapVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Source="{Binding IndicatorMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Uniform" />
+                        </Grid>
+                    </Viewbox>
+                </Grid>
             </Border>
 
             <!-- Label Map Panel -->
@@ -413,6 +434,24 @@
                         HorizontalAlignment="Stretch"
                         Margin="0,8,0,0">
                         <local:TransitionWindowEdgeUserControl />
+                    </Expander>
+
+                    <!-- Parameter Section: Underfilling -->
+                    <Expander
+                        Header="Underfilling"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,8,0,0">
+                        <local:TransitionWindowUnderfillingUserControl />
+                    </Expander>
+
+                    <!-- Parameter Section: Manual -->
+                    <Expander
+                        Header="Manual"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,8,0,0">
+                        <local:TransitionWindowManualUserControl />
                     </Expander>
                 </StackPanel>
             </ScrollViewer>

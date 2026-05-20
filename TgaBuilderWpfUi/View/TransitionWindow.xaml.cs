@@ -87,5 +87,54 @@ namespace TgaBuilderWpfUi.View
                 Mouse.OverrideCursor = null;
             }
         }
+
+        private void ResultImage_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+                return;
+
+            if (vm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
+                requestLabelIndicatorCommand.Execute((X: (int)e.GetPosition(ResultImage).X, Y: (int)e.GetPosition(ResultImage).Y));
+
+            if (e.LeftButton == MouseButtonState.Pressed && vm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
+                setExplicitTileVisibilityCommand.Execute((X: (int)e.GetPosition(ResultImage).X, Y: (int)e.GetPosition(ResultImage).Y));
+        }
+
+        private void ResultImage_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+                return;
+
+            vm.IsIndicatorMapVisible = true;
+        }
+
+        private void ResultImage_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+                return;
+
+            vm.IsIndicatorMapVisible = false;
+        }
+
+        private void ResultImage_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+                return;
+
+            if (e.LeftButton == MouseButtonState.Pressed && vm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
+                setExplicitTileVisibilityCommand.Execute((X: (int)e.GetPosition(ResultImage).X, Y: (int)e.GetPosition(ResultImage).Y));
+        }
     }
 }

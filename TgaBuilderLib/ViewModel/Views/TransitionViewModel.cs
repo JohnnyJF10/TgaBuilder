@@ -111,6 +111,9 @@ public class TransitionViewModel : ViewModelBase
     private RelayCommand? _loadImage2Command;
     private RelayCommand? _swapImagesCommand;
     private RelayCommand? _mixCommand;
+    private RelayCommand<(int, int)>? _setExplicitTileVisibilityCommand;
+    private RelayCommand? _resetExplicitVisibilityCommand;
+    private RelayCommand<(int, int)>? _requestLabelIndicatorCommand;
     private RelayCommand? _markFinishedCommand;
     private RelayCommand? _applyCommand; 
     private RelayCommand<IView>? _cancelCommand;
@@ -120,6 +123,13 @@ public class TransitionViewModel : ViewModelBase
     public ICommand LoadImage1Command => _loadImage1Command ??= new RelayCommand(LoadImage1);
     public ICommand LoadImage2Command => _loadImage2Command ??= new RelayCommand(LoadImage2);
     public ICommand SwapImagesCommand => _swapImagesCommand ??= new RelayCommand(SwapImages);
+    public ICommand SetExplicitTileVisibilityCommand => _setExplicitTileVisibilityCommand
+        ??= new RelayCommand<(int, int)>(args => 
+        SetExplicitTileVisibility(args.Item1, args.Item2));
+    public ICommand ResetExplicitVisibilityCommand => _resetExplicitVisibilityCommand
+        ??= new RelayCommand(ResetAllExplicitTileVisibility);
+    public ICommand RequestLabelIndicatorCommand => _requestLabelIndicatorCommand
+        ??= new RelayCommand<(int, int)>(args => RequestNewIndicatorMapImage(args.Item1, args.Item2));
     public ICommand MarkFinishedCommand => _markFinishedCommand ??= new RelayCommand(MarkFinished);
     public ICommand ApplyCommand => _applyCommand ??= new RelayCommand(Apply);
     public ICommand CancelCommand => _cancelCommand ??= new RelayCommand<IView>(Cancel);
@@ -198,7 +208,12 @@ public class TransitionViewModel : ViewModelBase
                     _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
                 if (_selectedTransitionType == TransitionType.Smooth)
+                {
                     IsLabelMapExpanded = false;
+                    IsExplicitTileVisibilityEraseMode = false;
+                    IsExplicitTileVisibilityDrawMode = false;
+                    IsEyedropperMode = false;
+                }
 
                 _ = TriggerRecalculation();
             }
@@ -226,6 +241,8 @@ public class TransitionViewModel : ViewModelBase
     // =====================================================================
 
     private IWriteableBitmap? _labelMapImage;
+    private IWriteableBitmap? _indicatorMapImage;
+    private bool _isIndicatorMapVisible;
     private bool _invertGrayscale;
     private int _markerCount = 3;
     private bool _reversePivot;
@@ -242,10 +259,15 @@ public class TransitionViewModel : ViewModelBase
     private float _quickshiftRatio = 1f;
     private float _bilateralSigma = 30f;
     private float _gaussianSigma = 1f;
+    private float _underfillingPivot = 0.5f;
+    private bool _reverseUnderfilling = false;
+    private int _underFillingThreshold = 0;
     private Color _edgeColor = new Color(255, 255, 255, 128);
     private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
     private int _edgeWidth = 1;
     private bool _isEyedropperMode;
+    private bool _isExplicitTileVisibilityDrawMode;
+    private bool _isExplicitTileVisibilityEraseMode;
     private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
     private RelayCommand<(int X, int Y, int imageNum)>? _mouseOverCommand;
@@ -254,6 +276,18 @@ public class TransitionViewModel : ViewModelBase
     {
         get => _labelMapImage;
         set => SetCallerProperty(ref _labelMapImage, value);
+    }
+
+    public IWriteableBitmap? IndicatorMapImage
+    {
+        get => _indicatorMapImage;
+        set => SetCallerProperty(ref _indicatorMapImage, value);
+    }
+
+    public bool IsIndicatorMapVisible
+    {
+        get => _isIndicatorMapVisible;
+        set => SetCallerProperty(ref _isIndicatorMapVisible, value);
     }
 
     public bool InvertGrayscale
@@ -403,18 +437,39 @@ public class TransitionViewModel : ViewModelBase
             BricksPipelineRequirements.RequiresAnalysis);
     }
 
+    public float UnderfillingPivot
+    {
+        get => _underfillingPivot;
+        set => SetPropertyTriggerRecalculation(ref _underfillingPivot, value,
+            BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
+    public bool ReverseUnderfilling
+    {
+        get => _reverseUnderfilling;
+        set => SetPropertyTriggerRecalculation(ref _reverseUnderfilling, value,
+            BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
+    public int UnderfillingThreshold
+    {
+        get => _underFillingThreshold;
+        set => SetPropertyTriggerRecalculation(ref _underFillingThreshold, value,
+            BricksPipelineRequirements.RequiresSelectionBuilding);
+    }
+
     public Color EdgeColor
     {
         get => _edgeColor;
         set => SetPropertyTriggerRecalculation(ref _edgeColor, value,
-            BricksPipelineRequirements.RequiresEdgeColoring);
+            BricksPipelineRequirements.RequiresDrawing);
     }
 
     public EdgeBlendMode BlendMode
     {
         get => _blendMode;
         set => SetPropertyTriggerRecalculation(ref _blendMode, value,
-            BricksPipelineRequirements.RequiresEdgeColoring);
+            BricksPipelineRequirements.RequiresDrawing);
     }
 
     public Array EdgeBlendModes => Enum.GetValues(typeof(EdgeBlendMode));
@@ -423,13 +478,42 @@ public class TransitionViewModel : ViewModelBase
     {
         get => _edgeWidth;
         set => SetPropertyTriggerRecalculation(ref _edgeWidth, value,
-            BricksPipelineRequirements.RequiresEdgeColoring);
+            BricksPipelineRequirements.RequiresDrawing);
     }
 
     public bool IsEyedropperMode
     {
         get => _isEyedropperMode;
         set => SetProperty(ref _isEyedropperMode, value, nameof(IsEyedropperMode));
+    }
+
+    public bool IsExplicitTileVisibilityDrawMode
+    {
+        get => _isExplicitTileVisibilityDrawMode;
+        set
+        {
+            SetProperty(ref _isExplicitTileVisibilityDrawMode, value, nameof(IsExplicitTileVisibilityDrawMode));
+
+            if (!value) 
+                return;
+
+            _isExplicitTileVisibilityEraseMode = false;
+            OnPropertyChanged(nameof(IsExplicitTileVisibilityEraseMode));
+        }
+    }
+
+    public bool IsExplicitTileVisibilityEraseMode
+    {
+        get => _isExplicitTileVisibilityEraseMode;
+        set
+        {
+            SetProperty(ref _isExplicitTileVisibilityEraseMode, value, nameof(IsExplicitTileVisibilityEraseMode));
+            if (!value) 
+                return;
+
+            _isExplicitTileVisibilityDrawMode = false;
+            OnPropertyChanged(nameof(IsExplicitTileVisibilityDrawMode));
+        }
     }
 
     public int SelectedSegmentationMethodIndex
@@ -485,6 +569,9 @@ public class TransitionViewModel : ViewModelBase
             _transitionHelper.QuickshiftRatio = QuickshiftRatio;
             _transitionHelper.BilateralSigma = BilateralSigma;
             _transitionHelper.GaussianSigma = GaussianSigma;
+            _transitionHelper.UnderfillingPivot = UnderfillingPivot;
+            _transitionHelper.ReverseUnderfilling = ReverseUnderfilling;
+            _transitionHelper.UnderfillingThreshold = UnderfillingThreshold;
             _transitionHelper.EdgeColor = EdgeColor;
             _transitionHelper.BlendMode = BlendMode;
             _transitionHelper.EdgeWidth = EdgeWidth;
@@ -621,6 +708,57 @@ public class TransitionViewModel : ViewModelBase
             mapW * 4);
 
         LabelMapImage = labelBmp;
+    }
+
+    private void RequestNewIndicatorMapImage(int x, int y)
+    {
+        int label = _transitionHelper.GetLabelAtPixel(x, y);
+
+        if (label == 0)
+            return;
+
+        byte[] mapData = _transitionHelper.GetTileIndicator(label);
+
+        int mapW = ResultImage?.PixelWidth ?? 0;
+        int mapH = ResultImage?.PixelHeight ?? 0;
+
+        if (mapData.Length == 0 || mapW == 0 || mapH == 0)
+            return;
+
+        var indicatorBmp = _mediaFactory.CreateEmptyBitmap(mapW, mapH, true);
+        indicatorBmp.WritePixels(
+            new PixelRect(0, 0, mapW, mapH),
+            mapData,
+            mapW * 4);
+
+        IndicatorMapImage = indicatorBmp;
+    }
+
+    private void SetExplicitTileVisibility(int x, int y)
+    {
+        if(!IsExplicitTileVisibilityEraseMode && !IsExplicitTileVisibilityDrawMode)
+            return;
+
+        int label = _transitionHelper.GetLabelAtPixel(x, y);
+
+        if (label == 0)
+            return;
+
+        bool visibikityChnaged = _transitionHelper.SetExplicitTileVisibility(label, IsExplicitTileVisibilityDrawMode);
+
+        _currentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
+
+        if (visibikityChnaged)
+            _ = TriggerRecalculation();
+    }
+
+    private void ResetAllExplicitTileVisibility()
+    {
+        _transitionHelper.ResetAllExplicitTileVisibility();
+
+        _currentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
+
+        _ = TriggerRecalculation();
     }
 
     // =====================================================================

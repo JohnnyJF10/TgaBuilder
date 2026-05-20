@@ -8,6 +8,13 @@ namespace TgaBuilderLib.Transitions
 {
     public partial class TransitionHelper : ITransitionHelper
     {
+        public TransitionHelper(Color? AccentColor = null) 
+        { 
+            _systemAccentColor = AccentColor ?? new Color(128, 128, 128, 128);
+        }
+
+        private readonly Color _systemAccentColor;
+
         private const int TRANSITIONS_BPP = 4; // Always BGRA32
 
         private int[] _labels = Array.Empty<int>();
@@ -42,6 +49,11 @@ namespace TgaBuilderLib.Transitions
         public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
         public float BilateralSigma { get; set; } = 30f;
         public float GaussianSigma { get; set; } = 1f;
+
+        public float UnderfillingPivot { get; set; } = 0.5f;
+        public bool ReverseUnderfilling { get; set; } = false;
+        public int UnderfillingThreshold { get; set; } = 0;
+
         public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
         public EdgeBlendMode BlendMode { get; set; } = EdgeBlendMode.Multiply;
         public int EdgeWidth { get; set; } = 1;

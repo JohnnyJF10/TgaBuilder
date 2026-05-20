@@ -17,11 +17,13 @@ public partial class TransitionHelper
     private bool[] BuildSelection(
         List<TileSegment> tileSegments,
         int[] labels,
-        TransitionMode mode,
-        bool reversePivot)
+        byte[] tilePixels)
     {
         bool[] selection = new bool[Width * Height];
         int labelCount = tileSegments.Count;
+
+        TransitionMode mode = Mode;
+        bool reversePivot = ReversePivot;
 
         // --- Preprocessing ---
         // Determine relevant edges based on mode and reverse pivot
@@ -51,8 +53,8 @@ public partial class TransitionHelper
             var pixelOffsets = segment.PixelOffsets;
             if (pixelOffsets.Count == 0) continue;
 
-            float v = ComputeFocus(Mode, segment.CentroidX, segment.CentroidY);
-            bool shouldDraw = ReversePivot ? (v <= Pivot) : (v >= Pivot);
+            float v = ComputeFocus(Mode, segment.CentroidX, segment.CentroidY, Widening, Shift);
+            bool shouldDraw = segment.ShouldDrawExplicitly ?? (ReversePivot ? (v <= Pivot) : (v >= Pivot));
 
             ReadOnlySpan<int> tileOffsets = CollectionsMarshal.AsSpan(pixelOffsets);
 
@@ -82,7 +84,7 @@ public partial class TransitionHelper
                     float nx = px * wInv;
                     float ny = py * hInv;
 
-                    float pv = ComputeFocus(Mode, nx, ny);
+                    float pv = ComputeFocus(Mode, nx, ny, Widening, Shift);
                     bool include = ReversePivot ? (pv <= Pivot) : (pv >= Pivot);
                     if (include) selection[pixelIdx] = true;
                 }
@@ -96,7 +98,49 @@ public partial class TransitionHelper
             }
         }
 
+        if (UnderfillingThreshold > 0)
+            SubstractUnderfilled(selection, tilePixels);
+
         return selection;
+    }
+
+    private void SubstractUnderfilled(bool[] selection, byte[] tilePixels)
+    {
+        int stride = Width * TRANSITIONS_BPP;
+
+        unsafe
+        {
+            fixed (byte* pTile = tilePixels)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    byte* rowValley = pTile + y * stride;
+
+                    float ny = (float)y / (Height - 1);
+
+                    for (int x = 0; x < Width; x++)
+                    {
+                        float nx = (float)x / (Width - 1);
+
+                        float v = ComputeFocus(Mode, nx, ny, Widening, Shift);
+
+                        byte* pxValley = rowValley + x * TRANSITIONS_BPP;
+
+                        int grey = ReverseUnderfilling  
+                            ? (int)(255f - (pxValley[2] * 0.299f + pxValley[1] * 0.587f + pxValley[0] * 0.114f))
+                            : (int)(pxValley[2] * 0.299f + pxValley[1] * 0.587f + pxValley[0] * 0.114f);
+
+                        if (grey < UnderfillingThreshold && v < UnderfillingPivot)
+                        {
+                            for (int b = 0; b < TRANSITIONS_BPP; b++)
+                            {
+                                selection[y * Width + x] = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // Returns the set of label IDs for tiles that require a per-pixel topology cut.
