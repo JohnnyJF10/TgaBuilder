@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
+using System.Windows.Input;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.Abstraction;
@@ -128,6 +129,66 @@ namespace TgaBuilderAvaloniaUi.View
             {
                 var position = e.GetPosition(image);
                 vm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
+            }
+        }
+
+        private void ResultImage_PointerMoved(object? sender, PointerEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+                return;
+
+            if (vm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
+            {
+                var currentPosition = e.GetPosition(ResultImage);
+                requestLabelIndicatorCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
+            }
+
+            if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed
+                && vm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
+            {
+                var currentPosition = e.GetPosition(ResultImage);
+                setExplicitTileVisibilityCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
+            }
+        }
+
+        private void ResultImage_PointerEntered(object? sender, PointerEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+                return;
+
+            vm.IsIndicatorMapVisible = true;
+        }
+
+        private void ResultImage_PointerExited(object? sender, PointerEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+                return;
+
+            vm.IsIndicatorMapVisible = false;
+        }
+
+        private void ResultImage_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+                return;
+
+            if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed
+                && vm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
+            {
+                var currentPosition = e.GetPosition(ResultImage);
+                setExplicitTileVisibilityCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
             }
         }
     }

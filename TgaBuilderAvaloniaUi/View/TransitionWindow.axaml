@@ -188,20 +188,42 @@
                 Icon="{StaticResource arrow_forward}"
                 Command="{Binding MixCommand}" />
 
-            <!-- Result Image -->
-            <Border
-                Grid.Column="4"
-                Margin="10"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Background="Transparent">
-                <Image
-                    x:Name="ResultImage"
-                    Margin="0,4,0,0"
-                    RenderOptions.BitmapInterpolationMode="None"
-                    Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
-                    Stretch="Uniform" />
-            </Border>
+             <!-- Result Image -->
+             <Border
+                 Grid.Column="4"
+                 Margin="10"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Stretch"
+                 Background="Transparent">
+                <Grid>
+                    <Viewbox
+                        Stretch="Uniform"
+                        RenderOptions.BitmapInterpolationMode="None">
+                        <Grid
+                            Width="{Binding Image2.PixelWidth, FallbackValue=128}"
+                            Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            <Image
+                                x:Name="ResultImage"
+                                Margin="0,4,0,0"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Uniform"
+                                PointerMoved="ResultImage_PointerMoved"
+                                PointerEntered="ResultImage_PointerEntered"
+                                PointerExited="ResultImage_PointerExited"
+                                PointerPressed="ResultImage_PointerPressed" />
+                            <Image
+                                x:Name="IndicatorImage"
+                                Margin="0,4,0,0"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding IsIndicatorMapVisible}"
+                                Source="{Binding IndicatorMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Uniform" />
+                        </Grid>
+                    </Viewbox>
+                </Grid>
+             </Border>
 
             <!-- Label Map Panel -->
             <Border
@@ -317,15 +339,31 @@
                     </Expander>
 
                     <!-- Parameter Section: Edge Blending -->
-                    <Expander
-                        Header="Edge"
-                        IsExpanded="True"
-                        HorizontalAlignment="Stretch">
-                        <local:TransitionWindowEdgeUserControl />
-                    </Expander>
-                </StackPanel>
-            </ScrollViewer>
-        </Grid>
+                     <Expander
+                         Header="Edge"
+                         IsExpanded="True"
+                         HorizontalAlignment="Stretch">
+                         <local:TransitionWindowEdgeUserControl />
+                     </Expander>
+
+                     <!-- Parameter Section: Underfilling -->
+                     <Expander
+                         Header="Underfilling"
+                         IsExpanded="True"
+                         HorizontalAlignment="Stretch">
+                         <local:TransitionWindowUnderfillingUserControl />
+                     </Expander>
+
+                     <!-- Parameter Section: Manual -->
+                     <Expander
+                         Header="Manual"
+                         IsExpanded="True"
+                         HorizontalAlignment="Stretch">
+                         <local:TransitionWindowManualUserControl />
+                     </Expander>
+                 </StackPanel>
+             </ScrollViewer>
+         </Grid>
 
         <!-- ========================================================================= -->
         <!-- BOTTOM PANEL: WINDOW CONTROLS & STATUS FOOTER                             -->
