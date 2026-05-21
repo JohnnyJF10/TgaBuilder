@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,14 +24,6 @@ public partial class TransitionHelper
 
     private byte[] BricksDraw(byte[] tilePixels, byte[] bgPixels, bool[] selection)
     {
-        static int SoftLightChannel(int tileChannel, int edgeChannel)
-        {
-            double tileNorm = tileChannel / 255.0;
-            double edgeNorm = edgeChannel / 255.0;
-            double blended = ((1.0 - (2.0 * edgeNorm)) * tileNorm * tileNorm) + (2.0 * edgeNorm * tileNorm);
-            return (int)Math.Clamp(blended * 255.0, 0, 255);
-        }
-
         if (bgPixels.Length != tilePixels.Length)
             throw new ArgumentException("Input image raw arrays must have same length.");
 
@@ -46,22 +39,34 @@ public partial class TransitionHelper
         var shadowedBg = new byte[bgPixels.Length];
         var result = new byte[bgPixels.Length];
 
+        DrawShadows(bgPixels, selection, shadowedBg);
+
+        DrawResult(tilePixels, selection, shadowedBg, result);
+
+        return result;
+
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DrawShadows(byte[] bgPixels, bool[] selection, byte[] shadowedBg)
+    {
         unsafe
         {
+            if (bgPixels.Length != shadowedBg.Length)
+                throw new ArgumentException("Background and shadow buffer must have the same length.");
+
+            if (bgPixels.Length != selection.Length * TRANSITIONS_BPP)
+                throw new ArgumentException("Input arrays length must match dimensions.");
+
+            int stride = Width * TRANSITIONS_BPP;
+
             fixed (byte* pBg = bgPixels)
-            fixed (byte* pTile = tilePixels)
             fixed (byte* pShadowBg = shadowedBg)
-            fixed (byte* pRes = result)
             {
                 // Copy the background first for dedicated shadow rendering.
                 Buffer.MemoryCopy(pBg, pShadowBg, Height * stride, Height * stride);
 
-                // Pre-calculate alpha and color values for basic edge blending
-                int eA = EdgeColor.A ?? 255;      // Edge alpha (0-255)
-                int invA = 255 - eA;              // Inverse alpha for background contribution
-                int eR = EdgeColor.R;
-                int eG = EdgeColor.G;
-                int eB = EdgeColor.B;
+
                 int sA = ShadowColor.A ?? 255;
                 int sR = ShadowColor.R;
                 int sG = ShadowColor.G;
@@ -139,8 +144,42 @@ public partial class TransitionHelper
                     }
                 }
 
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DrawResult(byte[] tilePixels, bool[] selection, byte[] shadowedBg, byte[] result)
+    {
+        if (tilePixels.Length != shadowedBg.Length)
+            throw new ArgumentException("Tile and shadow buffer must have the same length.");
+
+        if (tilePixels.Length != selection.Length * TRANSITIONS_BPP)
+            throw new ArgumentException("Input arrays length must match dimensions.");
+
+        if (tilePixels.Length != result.Length)
+            throw new ArgumentException("Tile and result buffers must have the same length.");
+
+        int stride = Width * TRANSITIONS_BPP;
+
+        unsafe
+        {
+            fixed (byte* pTile = tilePixels)
+            fixed (byte* pShadowBg = shadowedBg)
+            fixed (byte* pRes = result)
+            {
+
+
+
                 // Pass 2 base: start from shadowed background.
                 Buffer.MemoryCopy(pShadowBg, pRes, Height * stride, Height * stride);
+
+                // Pre-calculate alpha and color values for basic edge blending
+                int eA = EdgeColor.A ?? 255;      // Edge alpha (0-255)
+                int invA = 255 - eA;              // Inverse alpha for background contribution
+                int eR = EdgeColor.R;
+                int eG = EdgeColor.G;
+                int eB = EdgeColor.B;
 
                 // Pass 3: existing tile/edge rendering over the (already) shadowed background.
                 for (int y = 0; y < Height; y++)
@@ -302,7 +341,14 @@ public partial class TransitionHelper
                 }
             }
         }
+    }
 
-        return result;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private int SoftLightChannel(int tileChannel, int edgeChannel)
+    {
+        double tileNorm = tileChannel / 255.0;
+        double edgeNorm = edgeChannel / 255.0;
+        double blended = ((1.0 - (2.0 * edgeNorm)) * tileNorm * tileNorm) + (2.0 * edgeNorm * tileNorm);
+        return (int)Math.Clamp(blended * 255.0, 0, 255);
     }
 }

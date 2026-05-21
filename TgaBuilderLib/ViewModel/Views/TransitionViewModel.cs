@@ -264,7 +264,7 @@ public class TransitionViewModel : ViewModelBase
     private bool _reverseUnderfilling = false;
     private int _underFillingThreshold = 0;
     private Color _edgeColor = new Color(255, 255, 255, 128);
-    private Color _shadowColor = new Color(128, 128, 128, 128);
+    private Color _shadowColor = new Color(42, 42, 42, 42);
     private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
     private int _edgeWidth = 1;
     private int _shadowSize = 3;

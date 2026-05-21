@@ -57,7 +57,7 @@ namespace TgaBuilderLib.Transitions
         public Color EdgeColor { get; set; } = new Color(255, 255, 255, 128);
         public EdgeBlendMode BlendMode { get; set; } = EdgeBlendMode.Multiply;
         public int EdgeWidth { get; set; } = 1;
-        public Color ShadowColor { get; set; } = new Color(128, 128, 128, 128);
+        public Color ShadowColor { get; set; } = new Color(42, 42, 42, 42);
         public int ShadowSize { get; set; } = 3;
         public int ShadowHardness { get; set; } = 50;
 

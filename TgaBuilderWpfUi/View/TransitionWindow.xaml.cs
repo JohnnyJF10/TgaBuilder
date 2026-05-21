@@ -39,7 +39,7 @@ namespace TgaBuilderWpfUi.View
 
         private void DoEyedropperMouseMove(Image image, MouseEventArgs e, int imageNum)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
             {
                 var position = e.GetPosition(image);
                 vm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
@@ -48,42 +48,44 @@ namespace TgaBuilderWpfUi.View
 
         private void Image1_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
                 Mouse.OverrideCursor = EyedropperCursor;
         }
 
         private void Image1_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
                 Mouse.OverrideCursor = null;
         }
 
         private void Image1_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
             {
                 vm.IsEyedropperMode = false;
+                vm.IsShadowEyedropperMode = false;
                 Mouse.OverrideCursor = null;
             }
         }
 
         private void Image2_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
                 Mouse.OverrideCursor = EyedropperCursor;
         }
 
         private void Image2_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
                 Mouse.OverrideCursor = null;
         }
 
         private void Image2_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
             {
                 vm.IsEyedropperMode = false;
+                vm.IsShadowEyedropperMode = false;
                 Mouse.OverrideCursor = null;
             }
         }
