@@ -1,0 +1,108 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowShadowUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+             x:DataType="viewmodel:TransitionViewModel"
+             x:CompileBindings="False"
+             xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:ColorStructToMediaColor x:Key="ColorStructToMediaColor" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <StackPanel
+            Orientation="Horizontal"
+            Spacing="8">
+            <elements:IconToggleButton
+                Classes="outlined"
+                Width="36"
+                Height="36"
+                Padding="-6,0,15,0"
+                IsChecked="{Binding IsShadowEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                ap:MouseOverInfoAP.InfoText="Pick shadow color from image">
+                <ToggleButton.Content>
+                    <Path
+                        VerticalAlignment="Center"
+                        Fill="Transparent"
+                        Width="15"
+                        Height="15"
+                        Stretch="Uniform"
+                        StrokeThickness="1.5"
+                        Stroke="{DynamicResource IconFillBrush}"
+                        Data="{StaticResource eye_dropper}" />
+                </ToggleButton.Content>
+            </elements:IconToggleButton>
+            <ColorPicker
+                x:Name="ShadowColorPicker"
+                ap:MouseOverInfoAP.InfoText="Choose shadow color drawn over background behind tile borders"
+                Color="{Binding ShadowColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
+        </StackPanel>
+
+        <DockPanel
+            Margin="0,10,0,0"
+            ap:MouseOverInfoAP.InfoText="Shadow Size: maximum shadow extent in pixels from the tile border">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource tab}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource tab_in_private}" />
+            <elements:MouseWheelSlider
+                Margin="5,0"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding ShadowSize}"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="32"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding ShadowSize}" />
+        </DockPanel>
+
+        <DockPanel
+            Margin="0,8,0,0"
+            ap:MouseOverInfoAP.InfoText="Shadow Hardness (%): controls how quickly the shadow fades away from tile borders">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="18"
+                Height="18"
+                Stretch="Uniform"
+                Data="{StaticResource paint_brush}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="18"
+                Height="18"
+                Stretch="Uniform"
+                Data="{StaticResource paint_brush}" />
+            <elements:MouseWheelSlider
+                Margin="5,0"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding ShadowHardness}"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding ShadowHardness}" />
+        </DockPanel>
+    </StackPanel>
+</UserControl>

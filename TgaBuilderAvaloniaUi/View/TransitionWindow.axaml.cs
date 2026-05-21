@@ -78,21 +78,22 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Image1_PointerEntered(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
                 this.Cursor = CursorProvider.EyedropperCursor;
         }
 
         private void Image1_PointerExited(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
                 this.Cursor = CursorProvider.DefaultCursor;
         }
 
         private void Image1_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
             {
                 vm.IsEyedropperMode = false;
+                vm.IsShadowEyedropperMode = false;
                 this.Cursor = CursorProvider.DefaultCursor;
             }
         }
@@ -104,28 +105,29 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Image2_PointerEntered(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
                 this.Cursor = CursorProvider.EyedropperCursor;
         }
 
         private void Image2_PointerExited(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
                 this.Cursor = CursorProvider.DefaultCursor;
         }
 
         private void Image2_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
             {
                 vm.IsEyedropperMode = false;
+                vm.IsShadowEyedropperMode = false;
                 this.Cursor = CursorProvider.DefaultCursor;
             }
         }
 
         private void DoEyedropperMouseMove(Image image, PointerEventArgs e, int imageNum)
         {
-            if (DataContext is TransitionViewModel vm && vm.IsEyedropperMode)
+            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
             {
                 var position = e.GetPosition(image);
                 vm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));

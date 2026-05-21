@@ -213,6 +213,7 @@ public class TransitionViewModel : ViewModelBase
                     IsExplicitTileVisibilityEraseMode = false;
                     IsExplicitTileVisibilityDrawMode = false;
                     IsEyedropperMode = false;
+                    IsShadowEyedropperMode = false;
                 }
 
                 _ = TriggerRecalculation();
@@ -263,9 +264,13 @@ public class TransitionViewModel : ViewModelBase
     private bool _reverseUnderfilling = false;
     private int _underFillingThreshold = 0;
     private Color _edgeColor = new Color(255, 255, 255, 128);
+    private Color _shadowColor = new Color(42, 42, 42, 42);
     private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
     private int _edgeWidth = 1;
+    private int _shadowSize = 3;
+    private int _shadowHardness = 50;
     private bool _isEyedropperMode;
+    private bool _isShadowEyedropperMode;
     private bool _isExplicitTileVisibilityDrawMode;
     private bool _isExplicitTileVisibilityEraseMode;
     private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
@@ -474,6 +479,13 @@ public class TransitionViewModel : ViewModelBase
 
     public Array EdgeBlendModes => Enum.GetValues(typeof(EdgeBlendMode));
 
+    public Color ShadowColor
+    {
+        get => _shadowColor;
+        set => SetPropertyTriggerRecalculation(ref _shadowColor, value,
+            BricksPipelineRequirements.RequiresDrawing);
+    }
+
     public int EdgeWidth
     {
         get => _edgeWidth;
@@ -481,10 +493,56 @@ public class TransitionViewModel : ViewModelBase
             BricksPipelineRequirements.RequiresDrawing);
     }
 
+    public int ShadowSize
+    {
+        get => _shadowSize;
+        set => SetPropertyTriggerRecalculation(ref _shadowSize, value,
+            BricksPipelineRequirements.RequiresDrawing);
+    }
+
+    public int ShadowHardness
+    {
+        get => _shadowHardness;
+        set => SetPropertyTriggerRecalculation(ref _shadowHardness, value,
+            BricksPipelineRequirements.RequiresDrawing);
+    }
+
     public bool IsEyedropperMode
     {
         get => _isEyedropperMode;
-        set => SetProperty(ref _isEyedropperMode, value, nameof(IsEyedropperMode));
+        set
+        {
+            if (_isEyedropperMode == value)
+                return;
+
+            _isEyedropperMode = value;
+            OnPropertyChanged(nameof(IsEyedropperMode));
+
+            if (!value)
+                return;
+
+            _isShadowEyedropperMode = false;
+            OnPropertyChanged(nameof(IsShadowEyedropperMode));
+        }
+    }
+
+    public bool IsShadowEyedropperMode
+    {
+        get => _isShadowEyedropperMode;
+        set
+        {
+            if (_isShadowEyedropperMode == value)
+                return;
+
+            _isShadowEyedropperMode = value;
+            OnPropertyChanged(nameof(IsShadowEyedropperMode));
+
+            if (!value)
+                return;
+
+            _isEyedropperMode = false;
+            OnPropertyChanged(nameof(IsEyedropperMode));
+        }
     }
 
     public bool IsExplicitTileVisibilityDrawMode
@@ -527,13 +585,17 @@ public class TransitionViewModel : ViewModelBase
 
     private void MouseOverImages((int X, int Y, int imageNum) args)
     {
-        if (IsEyedropperMode)
-            DoColorPicking(args.X, args.Y, args.imageNum);
+        if (IsEyedropperMode || IsShadowEyedropperMode)
+            DoColorPicking(args.X, args.Y, args.imageNum, IsShadowEyedropperMode);
     }
 
-    private void DoColorPicking(int x, int y, int imageNum)
+    private void DoColorPicking(int x, int y, int imageNum, bool pickShadowColor)
     {
-        EdgeColor = _bitmapOperations.GetPixelBrush(imageNum == 1 ? Image1 : Image2, x, y);
+        var sampledColor = _bitmapOperations.GetPixelBrush(imageNum == 1 ? Image1 : Image2, x, y);
+        if (pickShadowColor)
+            ShadowColor = sampledColor;
+        else
+            EdgeColor = sampledColor;
     }
 
     // =====================================================================
@@ -575,6 +637,9 @@ public class TransitionViewModel : ViewModelBase
             _transitionHelper.EdgeColor = EdgeColor;
             _transitionHelper.BlendMode = BlendMode;
             _transitionHelper.EdgeWidth = EdgeWidth;
+            _transitionHelper.ShadowColor = ShadowColor;
+            _transitionHelper.ShadowSize = ShadowSize;
+            _transitionHelper.ShadowHardness = ShadowHardness;
         }
     }
 
