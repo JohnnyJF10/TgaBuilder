@@ -234,6 +234,17 @@
                     <local:ModificationsWindowColorUserControl />
                 </Expander>
 
+                <!-- ============================================================= -->
+                <!-- Expander: Color Overlay                                        -->
+                <!-- ============================================================= -->
+                <Expander
+                    Header="Color Overlay"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0">
+                    <local:ModificationsWindowColorOverlayUserControl />
+                </Expander>
+
             </StackPanel>
         </ScrollViewer>
 

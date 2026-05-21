@@ -6,6 +6,7 @@ using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
+using TgaBuilderLib.Enums;
 using TgaBuilderLib.Modifications;
 
 namespace TgaBuilderLib.ViewModel;
@@ -167,6 +168,11 @@ public class ModificationsViewModel : ViewModelBase
     private float _tint = 0f;
     private Color _colorOverlay = new(0, 0, 0, 0);
     private Color _colorTarget = new(0, 0, 0, 0);
+    private float _colorOverlayAmount = 0f;
+    private int _selectedColorOverlayMixModeIndex = (int)ColorOverlayMixMode.OklabChroma;
+    private float _colorOverlaySoftLightStrength = 1f;
+    private float _colorOverlayLumaPreservation = 1f;
+    private float _colorOverlayChromaBoost = 1f;
 
     public float Saturation
     {
@@ -209,6 +215,68 @@ public class ModificationsViewModel : ViewModelBase
         get => _colorTarget;
         set => SetPropertyTriggerRecalculation(ref _colorTarget, value);
     }
+
+    public float ColorOverlayAmount
+    {
+        get => _colorOverlayAmount;
+        set
+        {
+            float clamped = Math.Clamp(value, 0f, 1f);
+            if (Math.Abs(_colorOverlayAmount - clamped) > float.Epsilon)
+            {
+                _colorOverlayAmount = clamped;
+                OnPropertyChanged(nameof(ColorOverlayAmount));
+                OnPropertyChanged(nameof(ColorOverlayBlendPercent));
+                _ = TriggerRecalculation();
+            }
+        }
+    }
+
+    public float ColorOverlayBlendPercent
+    {
+        get => _colorOverlayAmount * 100f;
+        set => ColorOverlayAmount = Math.Clamp(value, 0f, 100f) / 100f;
+    }
+
+    public int SelectedColorOverlayMixModeIndex
+    {
+        get => _selectedColorOverlayMixModeIndex;
+        set
+        {
+            if (_selectedColorOverlayMixModeIndex != value)
+            {
+                _selectedColorOverlayMixModeIndex = value;
+                OnPropertyChanged(nameof(SelectedColorOverlayMixModeIndex));
+                OnPropertyChanged(nameof(IsColorOverlaySoftLightMode));
+                OnPropertyChanged(nameof(IsColorOverlayOklabMode));
+                _ = TriggerRecalculation();
+            }
+        }
+    }
+
+    public float ColorOverlaySoftLightStrength
+    {
+        get => _colorOverlaySoftLightStrength;
+        set => SetPropertyTriggerRecalculation(ref _colorOverlaySoftLightStrength, value);
+    }
+
+    public float ColorOverlayLumaPreservation
+    {
+        get => _colorOverlayLumaPreservation;
+        set => SetPropertyTriggerRecalculation(ref _colorOverlayLumaPreservation, value);
+    }
+
+    public float ColorOverlayChromaBoost
+    {
+        get => _colorOverlayChromaBoost;
+        set => SetPropertyTriggerRecalculation(ref _colorOverlayChromaBoost, value);
+    }
+
+    public bool IsColorOverlaySoftLightMode
+        => SelectedColorOverlayMixModeIndex == (int)ColorOverlayMixMode.SoftLight;
+
+    public bool IsColorOverlayOklabMode
+        => SelectedColorOverlayMixModeIndex == (int)ColorOverlayMixMode.OklabChroma;
 
     // =====================================================================
     // Actions
@@ -277,6 +345,14 @@ public class ModificationsViewModel : ViewModelBase
 
         _modificationsHelper.ColorOverlay = _colorOverlay;
         _modificationsHelper.ColorTarget = _colorTarget;
+        _modificationsHelper.ColorOverlayAmount = _colorOverlayAmount;
+        _modificationsHelper.ColorOverlayMixMode = (ColorOverlayMixMode)Math.Clamp(
+            _selectedColorOverlayMixModeIndex,
+            (int)ColorOverlayMixMode.Linear,
+            (int)ColorOverlayMixMode.OklabChroma);
+        _modificationsHelper.ColorOverlaySoftLightStrength = _colorOverlaySoftLightStrength;
+        _modificationsHelper.ColorOverlayLumaPreservation = _colorOverlayLumaPreservation;
+        _modificationsHelper.ColorOverlayChromaBoost = _colorOverlayChromaBoost;
     }
 
     private async Task TriggerRecalculation()

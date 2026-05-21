@@ -1,4 +1,5 @@
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Enums;
 
 namespace TgaBuilderLib.Modifications
 {
@@ -35,6 +36,11 @@ namespace TgaBuilderLib.Modifications
 
         Color ColorOverlay { get; set; }
         Color ColorTarget { get; set; }
+        float ColorOverlayAmount { get; set; }
+        ColorOverlayMixMode ColorOverlayMixMode { get; set; }
+        float ColorOverlaySoftLightStrength { get; set; }
+        float ColorOverlayLumaPreservation { get; set; }
+        float ColorOverlayChromaBoost { get; set; }
 
         // =====================================================================
         // Pipeline

@@ -1,0 +1,146 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.ModificationsWindowColorOverlayUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+             xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+             x:DataType="viewmodel:ModificationsViewModel"
+             x:CompileBindings="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converter:ColorStructToMediaColor x:Key="ColorStructToMediaColor" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel
+        Spacing="4"
+        Margin="4,4,4,6">
+
+        <DockPanel>
+            <ColorPicker
+                Margin="0,0,8,0"
+                ap:MouseOverInfoAP.InfoText="Overlay color: single color blended with the texture."
+                Color="{Binding ColorOverlay, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding ColorOverlayBlendPercent}"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding ColorOverlayBlendPercent}" />
+        </DockPanel>
+
+        <DockPanel
+            Margin="0,4,0,0"
+            ap:MouseOverInfoAP.InfoText="Mixing mode for combining the texture with the selected overlay color.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,8,0"
+                Data="{StaticResource color_background}" />
+            <ComboBox
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                SelectedIndex="{Binding SelectedColorOverlayMixModeIndex}">
+                <ComboBoxItem Content="Linear" />
+                <ComboBoxItem Content="Soft Light" />
+                <ComboBoxItem Content="OKLab Chroma" />
+            </ComboBox>
+        </DockPanel>
+
+        <DockPanel
+            Margin="0,4,0,0"
+            IsVisible="{Binding IsColorOverlaySoftLightMode}"
+            ap:MouseOverInfoAP.InfoText="Soft Light strength: controls the intensity of the filmic soft-light response.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource data_sunburst}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource dark_theme}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding ColorOverlaySoftLightStrength}"
+                Maximum="1"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding ColorOverlaySoftLightStrength}" />
+        </DockPanel>
+
+        <DockPanel
+            Margin="0,4,0,0"
+            IsVisible="{Binding IsColorOverlayOklabMode}"
+            ap:MouseOverInfoAP.InfoText="Luma Preservation: keeps original luminance while transferring overlay chroma.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource lightbulb_filament}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource lightbulb}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding ColorOverlayLumaPreservation}"
+                Maximum="1"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding ColorOverlayLumaPreservation}" />
+        </DockPanel>
+
+        <DockPanel
+            Margin="0,4,0,0"
+            IsVisible="{Binding IsColorOverlayOklabMode}"
+            ap:MouseOverInfoAP.InfoText="Chroma Boost: increases or reduces overlay chroma intensity in perceptual color space.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource color_line}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource color_line_accent}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding ColorOverlayChromaBoost}"
+                Maximum="2"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding ColorOverlayChromaBoost}" />
+        </DockPanel>
+    </StackPanel>
+</UserControl>
