@@ -39,6 +39,8 @@ public partial class TransitionHelper
 
         // Clamp the maximum edge width to the range 0 to 12
         EdgeWidth = Math.Clamp(EdgeWidth, 0, 12);
+        ShadowSize = Math.Clamp(ShadowSize, 0, 32);
+        ShadowHardness = Math.Clamp(ShadowHardness, 0, 100);
 
         int stride = Width * TRANSITIONS_BPP;
         var result = new byte[bgPixels.Length];
@@ -58,6 +60,11 @@ public partial class TransitionHelper
                 int eR = EdgeColor.R;
                 int eG = EdgeColor.G;
                 int eB = EdgeColor.B;
+                int sA = ShadowColor.A ?? 255;
+                int sR = ShadowColor.R;
+                int sG = ShadowColor.G;
+                int sB = ShadowColor.B;
+                double shadowHardnessPower = 1.0 + (ShadowHardness / 100.0) * 4.0;
 
                 for (int y = 0; y < Height; y++)
                 {
@@ -65,71 +72,69 @@ public partial class TransitionHelper
                     for (int x = 0; x < Width; x++)
                     {
                         int pixelIndex = y * Width + x;
-
-                        // Skip if pixel is not part of the current selection
-                        if (!selection[pixelIndex]) continue;
-
                         int offset = rowOffset + (x * 4);
 
-                        // 1. Calculate dynamic edge width based on proximity to the image borders
+                        // 1. Calculate dynamic widths based on proximity to image borders.
                         int distToBorderX = Math.Min(x, Width - 1 - x);
                         int distToBorderY = Math.Min(y, Height - 1 - y);
                         int distToBorder = Math.Min(distToBorderX, distToBorderY);
 
-                        // Dynamic edge width drops to 0 at the image bounds and scales up to 'edgeWidth'
+                        // Dynamic widths drop linearly towards image bounds.
                         int dynamicEdgeWidth = Math.Min(EdgeWidth, distToBorder);
+                        int dynamicShadowSize = Math.Min(ShadowSize, distToBorder);
 
-                        int minDist = dynamicEdgeWidth + 1;
-
-                        // 2. Find the shortest distance to the next unselected pixel
-                        // Only search if we have a valid dynamic width > 0
-                        if (dynamicEdgeWidth > 0)
+                        if (selection[pixelIndex])
                         {
-                            // Ring-like search outwards up to the 'dynamicEdgeWidth'
-                            for (int d = 1; d <= dynamicEdgeWidth; d++)
+                            int minDist = dynamicEdgeWidth + 1;
+
+                            // 2. Find the shortest distance to the next unselected pixel
+                            if (dynamicEdgeWidth > 0)
                             {
-                                bool foundEdge = false;
-
-                                // Check the perimeter of the square at distance 'd'
-                                for (int i = -d; i <= d; i++)
+                                // Ring-like search outwards up to the 'dynamicEdgeWidth'
+                                for (int d = 1; d <= dynamicEdgeWidth; d++)
                                 {
-                                    // Top and Bottom edges of the search square
-                                    int topY = y - d, botY = y + d;
-                                    int xPlusI = x + i;
+                                    bool foundEdge = false;
 
-                                    // Check top boundary (out of bounds logic kept for safety, 
-                                    // though dynamicEdgeWidth theoretically prevents it)
-                                    if (topY < 0 || topY >= Height || xPlusI < 0 || xPlusI >= Width || !selection[topY * Width + xPlusI])
-                                        foundEdge = true;
-                                    // Check bottom boundary
-                                    else if (botY < 0 || botY >= Height || xPlusI < 0 || xPlusI >= Width || !selection[botY * Width + xPlusI])
-                                        foundEdge = true;
-
-                                    // Left and Right edges (skip corners to avoid duplicate checks)
-                                    int leftX = x - d, rightX = x + d;
-                                    int yPlusI = y + i;
-                                    if (i > -d && i < d)
+                                    // Check the perimeter of the square at distance 'd'
+                                    for (int i = -d; i <= d; i++)
                                     {
-                                        if (leftX < 0 || leftX >= Width || yPlusI < 0 || yPlusI >= Height || !selection[yPlusI * Width + leftX])
+                                        // Top and Bottom edges of the search square
+                                        int topY = y - d;
+                                        int botY = y + d;
+                                        int xPlusI = x + i;
+
+                                        // Check top boundary (out of bounds logic kept for safety,
+                                        // though dynamicEdgeWidth theoretically prevents it)
+                                        if (topY < 0 || topY >= Height || xPlusI < 0 || xPlusI >= Width || !selection[topY * Width + xPlusI])
                                             foundEdge = true;
-                                        else if (rightX < 0 || rightX >= Width || yPlusI < 0 || yPlusI >= Height || !selection[yPlusI * Width + rightX])
+                                        // Check bottom boundary
+                                        else if (botY < 0 || botY >= Height || xPlusI < 0 || xPlusI >= Width || !selection[botY * Width + xPlusI])
                                             foundEdge = true;
+
+                                        // Left and Right edges (skip corners to avoid duplicate checks)
+                                        int leftX = x - d;
+                                        int rightX = x + d;
+                                        int yPlusI = y + i;
+                                        if (i > -d && i < d)
+                                        {
+                                            if (leftX < 0 || leftX >= Width || yPlusI < 0 || yPlusI >= Height || !selection[yPlusI * Width + leftX])
+                                                foundEdge = true;
+                                            else if (rightX < 0 || rightX >= Width || yPlusI < 0 || yPlusI >= Height || !selection[yPlusI * Width + rightX])
+                                                foundEdge = true;
+                                        }
+
+                                        if (foundEdge) break;
                                     }
 
-                                    if (foundEdge) break;
-                                }
-
-                                if (foundEdge)
-                                {
-                                    minDist = d;
-                                    break; // Found the closest edge, stop searching
+                                    if (foundEdge)
+                                    {
+                                        minDist = d;
+                                        break; // Found the closest edge, stop searching
+                                    }
                                 }
                             }
-                        }
 
-                        // 3. Color the pixel based on the distance (Gradient Blending)
-                        if (dynamicEdgeWidth > 0 && minDist <= dynamicEdgeWidth)
-                        {
+                            // 3. Color the selected tile pixel based on the distance (Edge tint)
                             if (dynamicEdgeWidth > 0 && minDist <= dynamicEdgeWidth)
                             {
                                 int weight255 = ((dynamicEdgeWidth - minDist + 1) * 255) / dynamicEdgeWidth;
@@ -209,15 +214,67 @@ public partial class TransitionHelper
                                 pRes[offset + 2] = (byte)((maxEdgeR * weight255 + tR * invWeight255) / 255);
                                 pRes[offset + 3] = (byte)((maxEdgeAlpha * weight255 + tA * invWeight255) / 255);
                             }
+                            else
+                            {
+                                // Inner pixels or absolute image border pixels: copy original tile.
+                                pRes[offset + 0] = pTile[offset + 0];
+                                pRes[offset + 1] = pTile[offset + 1];
+                                pRes[offset + 2] = pTile[offset + 2];
+                                pRes[offset + 3] = pTile[offset + 3];
+                            }
                         }
-                        else
+                        else if (dynamicShadowSize > 0)
                         {
-                            // Inner pixels or absolute image border pixels (where dynamicEdgeWidth == 0): 
-                            // 0% Blending, just copy from original tile
-                            pRes[offset + 0] = pTile[offset + 0];
-                            pRes[offset + 1] = pTile[offset + 1];
-                            pRes[offset + 2] = pTile[offset + 2];
-                            pRes[offset + 3] = pTile[offset + 3];
+                            // Draw shadow only on background pixels close to the selection edge.
+                            int minShadowDist = dynamicShadowSize + 1;
+
+                            for (int d = 1; d <= dynamicShadowSize; d++)
+                            {
+                                bool foundSelectedNeighbor = false;
+
+                                for (int i = -d; i <= d; i++)
+                                {
+                                    int topY = y - d;
+                                    int botY = y + d;
+                                    int xPlusI = x + i;
+
+                                    if (topY >= 0 && topY < Height && xPlusI >= 0 && xPlusI < Width && selection[topY * Width + xPlusI])
+                                        foundSelectedNeighbor = true;
+                                    if (!foundSelectedNeighbor && botY >= 0 && botY < Height && xPlusI >= 0 && xPlusI < Width && selection[botY * Width + xPlusI])
+                                        foundSelectedNeighbor = true;
+
+                                    int leftX = x - d;
+                                    int rightX = x + d;
+                                    int yPlusI = y + i;
+                                    if (!foundSelectedNeighbor && i > -d && i < d)
+                                    {
+                                        if (leftX >= 0 && leftX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + leftX])
+                                            foundSelectedNeighbor = true;
+                                        else if (rightX >= 0 && rightX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + rightX])
+                                            foundSelectedNeighbor = true;
+                                    }
+
+                                    if (foundSelectedNeighbor) break;
+                                }
+
+                                if (foundSelectedNeighbor)
+                                {
+                                    minShadowDist = d;
+                                    break;
+                                }
+                            }
+
+                            if (minShadowDist <= dynamicShadowSize)
+                            {
+                                double proximity = (double)(dynamicShadowSize - minShadowDist + 1) / dynamicShadowSize;
+                                int shadowWeight255 = (int)Math.Clamp(Math.Round(Math.Pow(proximity, shadowHardnessPower) * sA), 0, 255);
+                                int invShadowWeight255 = 255 - shadowWeight255;
+
+                                pRes[offset + 0] = (byte)((sB * shadowWeight255 + pBg[offset + 0] * invShadowWeight255) / 255);
+                                pRes[offset + 1] = (byte)((sG * shadowWeight255 + pBg[offset + 1] * invShadowWeight255) / 255);
+                                pRes[offset + 2] = (byte)((sR * shadowWeight255 + pBg[offset + 2] * invShadowWeight255) / 255);
+                                pRes[offset + 3] = (byte)((255 * shadowWeight255 + pBg[offset + 3] * invShadowWeight255) / 255);
+                            }
                         }
                     }
                 }

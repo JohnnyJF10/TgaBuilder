@@ -35,10 +35,13 @@ namespace TgaBuilderLib.Transitions
         float BilateralSigma { get; set; }
         float GaussianSigma { get; set; }
         int EdgeWidth { get; set; }
+        int ShadowSize { get; set; }
+        int ShadowHardness { get; set; }
         EdgeBlendMode BlendMode { get; set; }
         bool SliceCornerTiles { get; set; }
         bool ProtectEdges { get; set; }
         float Shift { get; set; }
+        Color ShadowColor { get; set; }
 
         float UnderfillingPivot { get; set; }
         bool ReverseUnderfilling { get; set; }

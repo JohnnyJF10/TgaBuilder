@@ -436,6 +436,15 @@
                         <local:TransitionWindowEdgeUserControl />
                     </Expander>
 
+                    <!-- Parameter Section: Shadow -->
+                    <Expander
+                        Header="Shadow"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,8,0,0">
+                        <local:TransitionWindowShadowUserControl />
+                    </Expander>
+
                     <!-- Parameter Section: Underfilling -->
                     <Expander
                         Header="Underfilling"
