@@ -58,7 +58,6 @@ namespace TgaBuilderLib.Modifications
         public float Tint { get; set; } = 0f;
 
         public Color ColorOverlay { get; set; } = new Color(0, 0, 0, 0);
-        public Color ColorTarget { get; set; } = new Color(0, 0, 0, 0);
         public float ColorOverlayAmount { get; set; } = 0f;
         public ColorOverlayMixMode ColorOverlayMixMode { get; set; } = ColorOverlayMixMode.Linear;
         public float ColorOverlaySoftLightStrength { get; set; } = 1f;

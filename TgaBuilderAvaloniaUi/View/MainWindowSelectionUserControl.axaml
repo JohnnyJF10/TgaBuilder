@@ -59,28 +59,6 @@
                               Width="18" Height="18" />
                 </Button>
             </StackPanel>
-            <StackPanel
-                Margin="5"
-                HorizontalAlignment="Center"
-                DataContext="{Binding Selection}"
-                Orientation="Horizontal">
-                <ColorPicker
-                    x:Name="SelectionFillColorPicker"
-                    ap:MouseOverInfoAP.InfoText="Pick the color for filling the selection"
-                    Color="{Binding SelectedFillColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"
-                    />
-                <Button
-                    Margin="5"
-                    Width="20"
-                    Height="30"
-                    Padding="0"
-                    Background="Transparent"
-                    ap:MouseOverInfoAP.InfoText="Fill selection with color"
-                    Command="{Binding SelectionMonoColorFillCommand}">
-                    <PathIcon Data="{StaticResource arrow_curve_down_right}"
-                              Width="18" Height="18" />
-                </Button>
-            </StackPanel>
             <Button
                 Width="100"
                 Height="100"

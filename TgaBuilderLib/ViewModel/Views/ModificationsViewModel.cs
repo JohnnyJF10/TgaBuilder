@@ -167,7 +167,6 @@ public class ModificationsViewModel : ViewModelBase
     private float _temperature = 0f;
     private float _tint = 0f;
     private Color _colorOverlay = new(0, 0, 0, 0);
-    private Color _colorTarget = new(0, 0, 0, 0);
     private float _colorOverlayAmount = 0f;
     private int _selectedColorOverlayMixModeIndex = (int)ColorOverlayMixMode.OklabChroma;
     private float _colorOverlaySoftLightStrength = 1f;
@@ -208,12 +207,6 @@ public class ModificationsViewModel : ViewModelBase
     {
         get => _colorOverlay;
         set => SetPropertyTriggerRecalculation(ref _colorOverlay, value);
-    }
-
-    public Color ColorTarget
-    {
-        get => _colorTarget;
-        set => SetPropertyTriggerRecalculation(ref _colorTarget, value);
     }
 
     public float ColorOverlayAmount
@@ -344,7 +337,6 @@ public class ModificationsViewModel : ViewModelBase
         _modificationsHelper.Tint = _tint;
 
         _modificationsHelper.ColorOverlay = _colorOverlay;
-        _modificationsHelper.ColorTarget = _colorTarget;
         _modificationsHelper.ColorOverlayAmount = _colorOverlayAmount;
         _modificationsHelper.ColorOverlayMixMode = (ColorOverlayMixMode)Math.Clamp(
             _selectedColorOverlayMixModeIndex,

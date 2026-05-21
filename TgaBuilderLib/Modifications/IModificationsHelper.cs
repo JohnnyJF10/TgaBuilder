@@ -35,7 +35,6 @@ namespace TgaBuilderLib.Modifications
         float Tint { get; set; }
 
         Color ColorOverlay { get; set; }
-        Color ColorTarget { get; set; }
         float ColorOverlayAmount { get; set; }
         ColorOverlayMixMode ColorOverlayMixMode { get; set; }
         float ColorOverlaySoftLightStrength { get; set; }

@@ -40,12 +40,9 @@ namespace TgaBuilderLib.ViewModel
         private bool _autoCopy;
         private bool _autoPaste;
 
-        private Color _selectedFillColor = new Color(255,0,255,255);
-
         private RelayCommand? _copyCommand;
         private RelayCommand? _pasteCommand;
         private RelayCommand? _autoPasteCommand;
-        private RelayCommand? _selectionMonoColorFillCommand;
 
 
 
@@ -63,12 +60,6 @@ namespace TgaBuilderLib.ViewModel
         {
             get => _isPlacing;
             set => SetProperty(ref _isPlacing, value, nameof(IsPlacing));
-        }
-
-        public Color SelectedFillColor
-        {
-            get => _selectedFillColor;
-            set => SetProperty(ref _selectedFillColor, value, nameof(SelectedFillColor));
         }
 
         public bool AutoCopy
@@ -107,9 +98,6 @@ namespace TgaBuilderLib.ViewModel
 
         public RelayCommand AutoPasteCommand => _autoPasteCommand ??= new(Paste);
 
-        public ICommand SelectionMonoColorFillCommand
-            => _selectionMonoColorFillCommand ??= new(SelectionMonoColorFill);
-
 
         public async void Copy() => await _clipboardService.SetImageAsync(Presenter);
 
@@ -137,20 +125,6 @@ namespace TgaBuilderLib.ViewModel
                     "Failed to paste image from clipboard. Please find more details in the log.",
                     ex);
             }
-        }
-
-        public void SelectionMonoColorFill()
-        {
-            PixelRect rect = new(0, 0,
-                Presenter.PixelWidth,
-                Presenter.PixelHeight);
-
-            _bitmapOperations.FillRectColor(
-                Presenter, rect, SelectedFillColor);
-
-            IsPlacing = true;
-
-            VisualInvalidator?.InvalidateVisual();
         }
 
         internal void FillSelection(IWriteableBitmap presenter, Color color)
