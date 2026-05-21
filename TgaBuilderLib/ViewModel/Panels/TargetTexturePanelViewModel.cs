@@ -209,7 +209,7 @@ namespace TgaBuilderLib.ViewModel
 
         public override void DragEndShift() => DecideAndDoAction(PlaceContiniously: true);
 
-        public override void DragEndAlt() => DecideAndDoAction(PlaceAndSwap: true);
+        public override void DragEndAlt() => DecideAndDoAction();//PlaceAndSwap: true);
 
         private void DecideAndDoAction(bool? PlaceContiniously = null, bool? PlaceAndSwap = null)
         {
@@ -227,7 +227,8 @@ namespace TgaBuilderLib.ViewModel
                 case TargetMode.Default:
                     if (Selection.IsPlacing)
                         PlaceTileAndUpdateView(PlaceContiniously, PlaceAndSwap);
-                    else SetSelection();
+                    else if (SelectionShape.Width > 0 && SelectionShape.Height > 0) 
+                        SetSelection();
                     return;
 
                 case TargetMode.ClockwiseRotating:
@@ -284,9 +285,43 @@ namespace TgaBuilderLib.ViewModel
 
         public override void DoubleDragEnd() => DragEnd();
 
-        public override void AltMove() => MouseMove();
+        public override void AltMove() //=> MouseMove();
+        {
+            if (mode != TargetMode.Default)
+            {
+                MouseMove();
+                return;
+            }
 
-        public override void AltDrag() => Drag();
+            IsGridlessMode = true;
+            Picker.IsVisible = false;
+            Picker.X = XPointer;
+            Picker.Y = YPointer;
+        }
+
+        public override void AltDrag() //=> Drag();
+        {
+            if (mode != TargetMode.Default) return;
+
+            if (!Selection.IsPlacing)
+                SelectionShape.IsVisible = true;
+
+            IsDragging = true;
+            Picker.IsVisible = false;
+
+            //_xGrid = XPointer & ~(Picker.Size - 1);
+            //_yGrid = YPointer & ~(Picker.Size - 1);
+            //
+            //SetSelectionHorizontal();
+            //SetSelectionVertical();
+
+
+
+            //IsDragging = true;
+
+            SelectionShape.IsVisible = true;
+            SetSelectionSizeGridless();
+        }
 
         internal void Undo()
         {

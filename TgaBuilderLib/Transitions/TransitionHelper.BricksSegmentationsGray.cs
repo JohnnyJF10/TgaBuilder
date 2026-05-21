@@ -152,6 +152,8 @@ public partial class TransitionHelper
 
     private int XYProjectionSegmentation(float[] filtered, int[] labels)
     {
+        int labelCounter = 1;
+
         // --- Step 1: Global Horizontal Projection ---
         float[] rowSum = new float[Height];
         for (int y = 0; y < Height; y++)
@@ -163,31 +165,16 @@ public partial class TransitionHelper
             }
         }
 
-        // Find all raw local minima/valleys on the horizontal axis
-        var globalHorizontalValleys = FindValleysWithProminence(rowSum);
+        float floatRadius = ComputeRadiusFromMarkerCount(MarkerCount);
 
-        // Calculate how many total horizontal cuts we should ideally make.
-        // For XY, the global horizontal cut is the primary division. We estimate the split distribution.
-        // We want H_segments * V_segments ≈ MarkerCount. Let's find an optimal balance.
-        int idealHsegments = (int)Math.Max(1, Math.Round(Math.Sqrt(MarkerCount * (double)Height / Width)));
-        int targetHValleys = Math.Max(0, idealHsegments - 1);
-
-        // Take the most prominent horizontal valleys
-        List<int> horizontalSplits = globalHorizontalValleys
-            .OrderByDescending(v => v.prominence)
-            .Take(targetHValleys)
-            .Select(v => v.index)
-            .ToList();
+        List<int> horizontalSplits = FindValleys(rowSum, floatRadius);
 
         if (!horizontalSplits.Contains(0)) horizontalSplits.Insert(0, 0);
         if (!horizontalSplits.Contains(Height)) horizontalSplits.Add(Height);
         horizontalSplits.Sort();
 
-        int actualRows = horizontalSplits.Count - 1;
-        int labelCounter = 1;
-
         // --- Step 2: Local Vertical Projection per Row ---
-        for (int i = 0; i < actualRows; i++)
+        for (int i = 0; i < horizontalSplits.Count - 1; i++)
         {
             int yStart = horizontalSplits[i];
             int yEnd = horizontalSplits[i + 1];
@@ -204,18 +191,7 @@ public partial class TransitionHelper
                 }
             }
 
-            var localVerticalValleys = FindValleysWithProminence(localColSum);
-
-            // Dynamically figure out how many columns this specific row needs 
-            // to help hit the global MarkerCount goal as closely as possible.
-            int targetVsegments = (int)Math.Max(1, Math.Round((double)MarkerCount / actualRows));
-            int targetVValleys = Math.Max(0, targetVsegments - 1);
-
-            List<int> verticalSplits = localVerticalValleys
-                .OrderByDescending(v => v.prominence)
-                .Take(targetVValleys)
-                .Select(v => v.index)
-                .ToList();
+            List<int> verticalSplits = FindValleys(localColSum, floatRadius);
 
             if (!verticalSplits.Contains(0)) verticalSplits.Insert(0, 0);
             if (!verticalSplits.Contains(Width)) verticalSplits.Add(Width);
@@ -239,6 +215,108 @@ public partial class TransitionHelper
             }
         }
         return labelCounter - 1;
+    }
+
+    private static float SampleLinear(float[] profile, float x)
+    {
+        // Clamp to valid range
+        if (x <= 0)
+            return profile[0];
+
+        if (x >= profile.Length - 1)
+            return profile[profile.Length - 1];
+
+        int x0 = (int)MathF.Floor(x);
+        int x1 = x0 + 1;
+
+        // Exact integer position -> identical old behavior
+        if (x == x0)
+            return profile[x0];
+
+        float t = x - x0;
+
+        // Linear interpolation
+        return profile[x0] * (1.0f - t) + profile[x1] * t;
+    }
+
+    private List<int> FindValleys(float[] profile, float radius)
+    {
+        List<int> valleys = new List<int>();
+
+        int rCeil = (int)MathF.Ceiling(radius);
+
+        for (int i = rCeil; i < profile.Length - rCeil; i++)
+        {
+            float center = profile[i];
+            bool isMin = true;
+
+            // Integer neighborhood checks (preserves original behavior)
+            for (int j = -rCeil; j <= rCeil; j++)
+            {
+                if (j == 0)
+                    continue;
+
+                float distance = MathF.Abs(j);
+
+                // Only evaluate inside the requested float radius
+                if (distance > radius)
+                    continue;
+
+                float neighbor = SampleLinear(profile, i + j);
+
+                if (neighbor < center)
+                {
+                    isMin = false;
+                    break;
+                }
+            }
+
+            // Additional fractional boundary checks
+            // Example: radius = 2.5 -> also test ±2.5
+            if (isMin && radius % 1.0f != 0.0f)
+            {
+                float left = SampleLinear(profile, i - radius);
+                float right = SampleLinear(profile, i + radius);
+
+                if (left < center || right < center)
+                    isMin = false;
+            }
+
+            if (isMin)
+                valleys.Add(i);
+        }
+
+        return valleys;
+    }
+
+    private float ComputeRadiusFromMarkerCount(int markerCount)
+    {
+        // 1..128 -> 12..1
+
+        float normalized = (markerCount - 1) / 256f;
+
+        return 22f - 22f * MathF.Sqrt(normalized);
+    }
+
+
+    private List<int> FindValleys(float[] profile, int radius)
+    {
+        List<int> valleys = new List<int>();
+        for (int i = radius; i < profile.Length - radius; i++)
+        {
+            bool isMin = true;
+            for (int j = -radius; j <= radius; j++)
+            {
+                if (j == 0) continue;
+                if (profile[i + j] < profile[i]) 
+                {
+                    isMin = false;
+                    break;
+                }
+            }
+            if (isMin) valleys.Add(i);
+        }
+        return valleys;
     }
 
     private int YXProjectionSegmentation(float[] filtered, int[] labels)
