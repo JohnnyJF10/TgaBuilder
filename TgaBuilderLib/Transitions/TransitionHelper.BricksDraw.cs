@@ -43,16 +43,18 @@ public partial class TransitionHelper
         ShadowHardness = Math.Clamp(ShadowHardness, 0, 100);
 
         int stride = Width * TRANSITIONS_BPP;
+        var shadowedBg = new byte[bgPixels.Length];
         var result = new byte[bgPixels.Length];
 
         unsafe
         {
             fixed (byte* pBg = bgPixels)
             fixed (byte* pTile = tilePixels)
+            fixed (byte* pShadowBg = shadowedBg)
             fixed (byte* pRes = result)
             {
-                // Copy the background first
-                Buffer.MemoryCopy(pBg, pRes, Height * stride, Height * stride);
+                // Copy the background first for dedicated shadow rendering.
+                Buffer.MemoryCopy(pBg, pShadowBg, Height * stride, Height * stride);
 
                 // Pre-calculate alpha and color values for basic edge blending
                 int eA = EdgeColor.A ?? 255;      // Edge alpha (0-255)
@@ -66,6 +68,81 @@ public partial class TransitionHelper
                 int sB = ShadowColor.B;
                 double shadowHardnessPower = 1.0 + (ShadowHardness / 100.0) * 4.0;
 
+                // Pass 1: render shadows on top of the background-only buffer.
+                for (int y = 0; y < Height; y++)
+                {
+                    int rowOffset = y * stride;
+                    for (int x = 0; x < Width; x++)
+                    {
+                        int pixelIndex = y * Width + x;
+                        int offset = rowOffset + (x * 4);
+
+                        int distToBorderX = Math.Min(x, Width - 1 - x);
+                        int distToBorderY = Math.Min(y, Height - 1 - y);
+                        int distToBorder = Math.Min(distToBorderX, distToBorderY);
+                        int dynamicShadowSize = Math.Min(ShadowSize, distToBorder);
+
+                        if (dynamicShadowSize <= 0)
+                            continue;
+
+                        bool currentSelectionState = selection[pixelIndex];
+                        int minOppositeDist = dynamicShadowSize + 1;
+
+                        for (int d = 1; d <= dynamicShadowSize; d++)
+                        {
+                            bool foundOppositeSelection = false;
+
+                            for (int i = -d; i <= d; i++)
+                            {
+                                int topY = y - d;
+                                int botY = y + d;
+                                int xPlusI = x + i;
+
+                                if (topY >= 0 && topY < Height && xPlusI >= 0 && xPlusI < Width && selection[topY * Width + xPlusI] != currentSelectionState)
+                                    foundOppositeSelection = true;
+                                if (!foundOppositeSelection && botY >= 0 && botY < Height && xPlusI >= 0 && xPlusI < Width && selection[botY * Width + xPlusI] != currentSelectionState)
+                                    foundOppositeSelection = true;
+
+                                int leftX = x - d;
+                                int rightX = x + d;
+                                int yPlusI = y + i;
+                                if (!foundOppositeSelection && i > -d && i < d)
+                                {
+                                    if (leftX >= 0 && leftX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + leftX] != currentSelectionState)
+                                        foundOppositeSelection = true;
+                                    else if (rightX >= 0 && rightX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + rightX] != currentSelectionState)
+                                        foundOppositeSelection = true;
+                                }
+
+                                if (foundOppositeSelection) break;
+                            }
+
+                            if (foundOppositeSelection)
+                            {
+                                minOppositeDist = d;
+                                break;
+                            }
+                        }
+
+                        if (minOppositeDist <= dynamicShadowSize)
+                        {
+                            int borderDist = minOppositeDist - 1;
+                            double proximity = (double)(dynamicShadowSize - borderDist) / dynamicShadowSize;
+                            int shadowWeight255 = (int)Math.Clamp(Math.Round(Math.Pow(proximity, shadowHardnessPower) * sA), 0, 255);
+                            int invShadowWeight255 = 255 - shadowWeight255;
+
+                            pShadowBg[offset + 0] = (byte)((sB * shadowWeight255 + pBg[offset + 0] * invShadowWeight255) / 255);
+                            pShadowBg[offset + 1] = (byte)((sG * shadowWeight255 + pBg[offset + 1] * invShadowWeight255) / 255);
+                            pShadowBg[offset + 2] = (byte)((sR * shadowWeight255 + pBg[offset + 2] * invShadowWeight255) / 255);
+                            pShadowBg[offset + 3] = (byte)((255 * shadowWeight255 + pBg[offset + 3] * invShadowWeight255) / 255);
+                        }
+                    }
+                }
+
+                // Pass 2 base: start from shadowed background.
+                Buffer.MemoryCopy(pShadowBg, pRes, Height * stride, Height * stride);
+
+                // Pass 3: existing tile/edge rendering over the (already) shadowed background.
                 for (int y = 0; y < Height; y++)
                 {
                     int rowOffset = y * stride;
@@ -81,8 +158,6 @@ public partial class TransitionHelper
 
                         // Dynamic widths drop linearly towards image bounds.
                         int dynamicEdgeWidth = Math.Min(EdgeWidth, distToBorder);
-                        int dynamicShadowSize = Math.Min(ShadowSize, distToBorder);
-
                         if (selection[pixelIndex])
                         {
                             int minDist = dynamicEdgeWidth + 1;
@@ -203,10 +278,10 @@ public partial class TransitionHelper
 
                                 // 2. Background influence
                                 // How strongly does the edge color influence the original background?
-                                int maxEdgeB = (tintedB * eA + pBg[offset + 0] * invA) / 255;
-                                int maxEdgeG = (tintedG * eA + pBg[offset + 1] * invA) / 255;
-                                int maxEdgeR = (tintedR * eA + pBg[offset + 2] * invA) / 255;
-                                int maxEdgeAlpha = (tA * eA + pBg[offset + 3] * invA) / 255;
+                                int maxEdgeB = (tintedB * eA + pShadowBg[offset + 0] * invA) / 255;
+                                int maxEdgeG = (tintedG * eA + pShadowBg[offset + 1] * invA) / 255;
+                                int maxEdgeR = (tintedR * eA + pShadowBg[offset + 2] * invA) / 255;
+                                int maxEdgeAlpha = (tA * eA + pShadowBg[offset + 3] * invA) / 255;
 
                                 // 3. Final gradient blending based on distance to edge
                                 pRes[offset + 0] = (byte)((maxEdgeB * weight255 + tB * invWeight255) / 255);
@@ -221,66 +296,6 @@ public partial class TransitionHelper
                                 pRes[offset + 1] = pTile[offset + 1];
                                 pRes[offset + 2] = pTile[offset + 2];
                                 pRes[offset + 3] = pTile[offset + 3];
-                            }
-                        }
-                        if (dynamicShadowSize > 0)
-                        {
-                            // Draw shadow around the selection border in all directions.
-                            bool currentSelectionState = selection[pixelIndex];
-                            int minOppositeDist = dynamicShadowSize + 1;
-
-                            for (int d = 1; d <= dynamicShadowSize; d++)
-                            {
-                                bool foundOppositeSelection = false;
-
-                                for (int i = -d; i <= d; i++)
-                                {
-                                    int topY = y - d;
-                                    int botY = y + d;
-                                    int xPlusI = x + i;
-
-                                    if (topY >= 0 && topY < Height && xPlusI >= 0 && xPlusI < Width && selection[topY * Width + xPlusI] != currentSelectionState)
-                                        foundOppositeSelection = true;
-                                    if (!foundOppositeSelection && botY >= 0 && botY < Height && xPlusI >= 0 && xPlusI < Width && selection[botY * Width + xPlusI] != currentSelectionState)
-                                        foundOppositeSelection = true;
-
-                                    int leftX = x - d;
-                                    int rightX = x + d;
-                                    int yPlusI = y + i;
-                                    if (!foundOppositeSelection && i > -d && i < d)
-                                    {
-                                        if (leftX >= 0 && leftX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + leftX] != currentSelectionState)
-                                            foundOppositeSelection = true;
-                                        else if (rightX >= 0 && rightX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + rightX] != currentSelectionState)
-                                            foundOppositeSelection = true;
-                                    }
-
-                                    if (foundOppositeSelection) break;
-                                }
-
-                                if (foundOppositeSelection)
-                                {
-                                    minOppositeDist = d;
-                                    break;
-                                }
-                            }
-
-                            if (minOppositeDist <= dynamicShadowSize)
-                            {
-                                int borderDist = minOppositeDist - 1;
-                                double proximity = (double)(dynamicShadowSize - borderDist) / dynamicShadowSize;
-                                int shadowWeight255 = (int)Math.Clamp(Math.Round(Math.Pow(proximity, shadowHardnessPower) * sA), 0, 255);
-                                int invShadowWeight255 = 255 - shadowWeight255;
-
-                                int baseB = pRes[offset + 0];
-                                int baseG = pRes[offset + 1];
-                                int baseR = pRes[offset + 2];
-                                int baseA = pRes[offset + 3];
-
-                                pRes[offset + 0] = (byte)((sB * shadowWeight255 + baseB * invShadowWeight255) / 255);
-                                pRes[offset + 1] = (byte)((sG * shadowWeight255 + baseG * invShadowWeight255) / 255);
-                                pRes[offset + 2] = (byte)((sR * shadowWeight255 + baseR * invShadowWeight255) / 255);
-                                pRes[offset + 3] = (byte)((255 * shadowWeight255 + baseA * invShadowWeight255) / 255);
                             }
                         }
                     }
