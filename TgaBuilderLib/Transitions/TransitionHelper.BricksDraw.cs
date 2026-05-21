@@ -223,14 +223,15 @@ public partial class TransitionHelper
                                 pRes[offset + 3] = pTile[offset + 3];
                             }
                         }
-                        else if (dynamicShadowSize > 0)
+                        if (dynamicShadowSize > 0)
                         {
-                            // Draw shadow only on background pixels close to the selection edge.
-                            int minShadowDist = dynamicShadowSize + 1;
+                            // Draw shadow around the selection border in all directions.
+                            bool currentSelectionState = selection[pixelIndex];
+                            int minOppositeDist = dynamicShadowSize + 1;
 
                             for (int d = 1; d <= dynamicShadowSize; d++)
                             {
-                                bool foundSelectedNeighbor = false;
+                                bool foundOppositeSelection = false;
 
                                 for (int i = -d; i <= d; i++)
                                 {
@@ -238,42 +239,48 @@ public partial class TransitionHelper
                                     int botY = y + d;
                                     int xPlusI = x + i;
 
-                                    if (topY >= 0 && topY < Height && xPlusI >= 0 && xPlusI < Width && selection[topY * Width + xPlusI])
-                                        foundSelectedNeighbor = true;
-                                    if (!foundSelectedNeighbor && botY >= 0 && botY < Height && xPlusI >= 0 && xPlusI < Width && selection[botY * Width + xPlusI])
-                                        foundSelectedNeighbor = true;
+                                    if (topY >= 0 && topY < Height && xPlusI >= 0 && xPlusI < Width && selection[topY * Width + xPlusI] != currentSelectionState)
+                                        foundOppositeSelection = true;
+                                    if (!foundOppositeSelection && botY >= 0 && botY < Height && xPlusI >= 0 && xPlusI < Width && selection[botY * Width + xPlusI] != currentSelectionState)
+                                        foundOppositeSelection = true;
 
                                     int leftX = x - d;
                                     int rightX = x + d;
                                     int yPlusI = y + i;
-                                    if (!foundSelectedNeighbor && i > -d && i < d)
+                                    if (!foundOppositeSelection && i > -d && i < d)
                                     {
-                                        if (leftX >= 0 && leftX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + leftX])
-                                            foundSelectedNeighbor = true;
-                                        else if (rightX >= 0 && rightX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + rightX])
-                                            foundSelectedNeighbor = true;
+                                        if (leftX >= 0 && leftX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + leftX] != currentSelectionState)
+                                            foundOppositeSelection = true;
+                                        else if (rightX >= 0 && rightX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + rightX] != currentSelectionState)
+                                            foundOppositeSelection = true;
                                     }
 
-                                    if (foundSelectedNeighbor) break;
+                                    if (foundOppositeSelection) break;
                                 }
 
-                                if (foundSelectedNeighbor)
+                                if (foundOppositeSelection)
                                 {
-                                    minShadowDist = d;
+                                    minOppositeDist = d;
                                     break;
                                 }
                             }
 
-                            if (minShadowDist <= dynamicShadowSize)
+                            if (minOppositeDist <= dynamicShadowSize)
                             {
-                                double proximity = (double)(dynamicShadowSize - minShadowDist + 1) / dynamicShadowSize;
+                                int borderDist = minOppositeDist - 1;
+                                double proximity = (double)(dynamicShadowSize - borderDist) / dynamicShadowSize;
                                 int shadowWeight255 = (int)Math.Clamp(Math.Round(Math.Pow(proximity, shadowHardnessPower) * sA), 0, 255);
                                 int invShadowWeight255 = 255 - shadowWeight255;
 
-                                pRes[offset + 0] = (byte)((sB * shadowWeight255 + pBg[offset + 0] * invShadowWeight255) / 255);
-                                pRes[offset + 1] = (byte)((sG * shadowWeight255 + pBg[offset + 1] * invShadowWeight255) / 255);
-                                pRes[offset + 2] = (byte)((sR * shadowWeight255 + pBg[offset + 2] * invShadowWeight255) / 255);
-                                pRes[offset + 3] = (byte)((255 * shadowWeight255 + pBg[offset + 3] * invShadowWeight255) / 255);
+                                int baseB = pRes[offset + 0];
+                                int baseG = pRes[offset + 1];
+                                int baseR = pRes[offset + 2];
+                                int baseA = pRes[offset + 3];
+
+                                pRes[offset + 0] = (byte)((sB * shadowWeight255 + baseB * invShadowWeight255) / 255);
+                                pRes[offset + 1] = (byte)((sG * shadowWeight255 + baseG * invShadowWeight255) / 255);
+                                pRes[offset + 2] = (byte)((sR * shadowWeight255 + baseR * invShadowWeight255) / 255);
+                                pRes[offset + 3] = (byte)((255 * shadowWeight255 + baseA * invShadowWeight255) / 255);
                             }
                         }
                     }
