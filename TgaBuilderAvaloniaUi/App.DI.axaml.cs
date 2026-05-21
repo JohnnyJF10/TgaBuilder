@@ -18,6 +18,8 @@ using TgaBuilderLib.Modifications;
 using TgaBuilderLib.ViewModel;
 using TgaBuilderLib.ViewModel.Elements;
 using TgaBuilderLib.ViewModel.Views;
+using Avalonia;
+using Avalonia.Controls;
 
 namespace TgaBuilderAvaloniaUi
 {
@@ -98,8 +100,21 @@ namespace TgaBuilderAvaloniaUi
                 maxMemoryBytes: sp.GetRequiredService<IUsageData>().UndoRedoMemoryBytes
             ));
 
-            services.AddSingleton<ITransitionHelper, TransitionHelper>();
+            services.AddSingleton<ITransitionHelper, TransitionHelper>(sp => new TransitionHelper(
+                AccentColor: GetSystemAccentColor(sp)));
             services.AddSingleton<IModificationsHelper, ModificationsHelper>();
+        }
+
+        private TgaBuilderLib.Abstraction.Color GetSystemAccentColor(IServiceProvider serviceProvider)
+        {
+            if (Application.Current?.TryFindResource("SystemAccentColorDark3", out var resource) == true && resource is Avalonia.Media.Color color)
+            {
+                return new TgaBuilderLib.Abstraction.Color(color.R, color.G, color.B, color.A);
+            }
+            else
+            {
+                return new TgaBuilderLib.Abstraction.Color(128, 128, 128, 128); // Fallback to a default accent color (gray)
+            }
         }
 
         private void AddUIServicesToProvider(IServiceCollection services)
