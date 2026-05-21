@@ -136,9 +136,14 @@
                             <Rectangle
                                 Fill="{StaticResource CheckerBrush}" />
                             <Image
+                                x:Name="InputImage"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 Source="{Binding InputImage, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Fill" />
+                                Stretch="Fill"
+                                MouseMove="InputImage_MouseMove"
+                                MouseEnter="InputImage_MouseEnter"
+                                MouseLeave="InputImage_MouseLeave"
+                                MouseDown="InputImage_MouseDown" />
                         </Grid>
                     </Viewbox>
                     <TextBlock
@@ -232,6 +237,17 @@
                     HorizontalAlignment="Stretch"
                     Margin="0,8,0,0">
                     <local:ModificationsWindowColorUserControl />
+                </Expander>
+
+                <!-- ============================================================= -->
+                <!-- Expander: Color Overlay                                        -->
+                <!-- ============================================================= -->
+                <Expander
+                    Header="Color Overlay"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0">
+                    <local:ModificationsWindowColorOverlayUserControl />
                 </Expander>
 
             </StackPanel>

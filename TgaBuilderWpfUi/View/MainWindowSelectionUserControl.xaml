@@ -46,46 +46,26 @@
                     IsEnabled="{Binding TargetIO.ControlsEnabled}"
                     ap:MouseOverInfoAP.InfoText="Copy entire Source Texture Panel to Target. CAUTION: This clears the undo and redo stacks."/>
             </StackPanel>
-            <StackPanel
+        <StackPanel
                 Orientation="Horizontal"
                 HorizontalAlignment="Center"
                 >
-                <ui:Button
+            <ui:Button
                     Icon="{ui:SymbolIcon ImageEdit24}"
                     Margin="5"
                     Width="36"
                     Height="36"
                     Command="{Binding ModificationsCommand}"
                     ap:MouseOverInfoAP.InfoText="Open Single Texture Modifications"/>
-                <ui:Button
+            <ui:Button
                     Icon="{ui:SymbolIcon TableFreezeColumnAndRow24}"
                     Margin="5"
                     Width="36"
                     Height="36"
                     Command="{Binding TransitionCommand}"
                     ap:MouseOverInfoAP.InfoText="Open Transition Helper"/>
-            </StackPanel>
-            <StackPanel
-                DataContext="{Binding Selection}"
-                HorizontalAlignment="Center"
-                Margin="5"
-                Orientation="Horizontal">
-                <cp:PortableColorPicker
-                    x:Name="SelectionFillColorPicker"
-                    Width="36"
-                    Height="36"
-                    ap:MouseOverInfoAP.InfoText="Select Fill Color for Selection"
-                    SelectedColor="{Binding SelectedFillColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    />
-                <ui:Button
-                    Margin="9.4,0,0,0"
-                    Width="36"
-                    Height="36"
-                    Icon="{ui:SymbolIcon ArrowTurnRightDown48}"
-                    Command="{Binding SelectionMonoColorFillCommand}"
-                    ap:MouseOverInfoAP.InfoText="Fill Selection"/>
-            </StackPanel>
-            <Button
+        </StackPanel>
+        <Button
                 BorderBrush="Gray"
                 BorderThickness="1"
                 Width="100"

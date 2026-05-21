@@ -1,7 +1,10 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Avalonia.Controls;
+using Avalonia.Input;
 using TgaBuilderAvaloniaUi.Elements;
+using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
@@ -31,6 +34,36 @@ namespace TgaBuilderAvaloniaUi.View
 
             if (DataContext is ModificationsViewModel vm)
                 vm.MarkFinished();
+        }
+
+        private void InputImage_PointerMoved(object? sender, PointerEventArgs e)
+        {
+            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode && sender is Image image)
+            {
+                var position = e.GetPosition(image);
+                vm.MouseOverInputCommand.Execute((X: (int)position.X, Y: (int)position.Y));
+            }
+        }
+
+        private void InputImage_PointerEntered(object? sender, PointerEventArgs e)
+        {
+            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+                this.Cursor = CursorProvider.EyedropperCursor;
+        }
+
+        private void InputImage_PointerExited(object? sender, PointerEventArgs e)
+        {
+            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+                this.Cursor = CursorProvider.DefaultCursor;
+        }
+
+        private void InputImage_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+            {
+                vm.IsColorOverlayEyedropperMode = false;
+                this.Cursor = CursorProvider.DefaultCursor;
+            }
         }
     }
 }

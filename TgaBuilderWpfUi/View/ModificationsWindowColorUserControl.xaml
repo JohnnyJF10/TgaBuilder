@@ -189,23 +189,6 @@
                                 Value="{Binding Tint}" />
                         </DockPanel>
 
-                        <!-- Color pickers: Overlay + Target -->
-                        <StackPanel
-                            Orientation="Horizontal"
-                            Margin="0,8,0,0">
-                            <cp:PortableColorPicker
-                                Width="34"
-                                Height="30"
-                                Margin="0,0,8,0"
-                                SelectedColor="{Binding ColorOverlay, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                ap:MouseOverInfoAP.InfoText="Color Overlay: source color for color grading operations" />
-                            <cp:PortableColorPicker
-                                Width="34"
-                                Height="30"
-                                SelectedColor="{Binding ColorTarget, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                ap:MouseOverInfoAP.InfoText="Color Target: target color for color grading operations" />
-                        </StackPanel>
-
                     </StackPanel>
                 
 </UserControl>
