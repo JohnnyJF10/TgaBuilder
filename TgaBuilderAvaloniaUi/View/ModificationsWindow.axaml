@@ -83,9 +83,14 @@
                             <elements:CheckerRectangle
                                 TileDensity="1" />
                             <Image
+                                x:Name="InputImage"
                                 RenderOptions.BitmapInterpolationMode="None"
                                 Source="{Binding InputImage, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Fill" />
+                                Stretch="Fill"
+                                PointerMoved="InputImage_PointerMoved"
+                                PointerEntered="InputImage_PointerEntered"
+                                PointerExited="InputImage_PointerExited"
+                                PointerPressed="InputImage_PointerPressed" />
                         </Grid>
                     </Viewbox>
                     <TextBlock

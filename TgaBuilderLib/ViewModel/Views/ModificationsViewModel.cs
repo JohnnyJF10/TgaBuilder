@@ -82,11 +82,14 @@ public class ModificationsViewModel : ViewModelBase
     // =====================================================================
 
     private RelayCommand? _loadInputImageCommand;
+    private RelayCommand<(int X, int Y)>? _mouseOverInputCommand;
     private RelayCommand? _applyCommand;
     private RelayCommand<IView>? _cancelCommand;
     private RelayCommand<IView>? _oKCommand;
 
     public ICommand LoadInputImageCommand => _loadInputImageCommand ??= new RelayCommand(LoadInputImage);
+    public ICommand MouseOverInputCommand => _mouseOverInputCommand
+        ??= new RelayCommand<(int X, int Y)>(args => MouseOverInput(args.X, args.Y));
     public ICommand ApplyCommand => _applyCommand ??= new RelayCommand(Apply);
     public ICommand CancelCommand => _cancelCommand ??= new RelayCommand<IView>(Cancel);
     public ICommand OKCommand => _oKCommand ??= new RelayCommand<IView>(OK);
@@ -172,6 +175,7 @@ public class ModificationsViewModel : ViewModelBase
     private float _colorOverlaySoftLightStrength = 1f;
     private float _colorOverlayLumaPreservation = 1f;
     private float _colorOverlayChromaBoost = 1f;
+    private bool _isColorOverlayEyedropperMode;
 
     public float Saturation
     {
@@ -271,6 +275,12 @@ public class ModificationsViewModel : ViewModelBase
     public bool IsColorOverlayOklabMode
         => SelectedColorOverlayMixModeIndex == (int)ColorOverlayMixMode.OklabChroma;
 
+    public bool IsColorOverlayEyedropperMode
+    {
+        get => _isColorOverlayEyedropperMode;
+        set => SetCallerProperty(ref _isColorOverlayEyedropperMode, value);
+    }
+
     // =====================================================================
     // Actions
     // =====================================================================
@@ -286,6 +296,14 @@ public class ModificationsViewModel : ViewModelBase
         InitTextVisible = false;
 
         _ = TriggerRecalculation();
+    }
+
+    private void MouseOverInput(int x, int y)
+    {
+        if (!IsColorOverlayEyedropperMode)
+            return;
+
+        ColorOverlay = _bitmapOperations.GetPixelBrush(InputImage, x, y);
     }
 
     private void Apply()

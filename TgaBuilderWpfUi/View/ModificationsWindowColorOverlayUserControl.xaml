@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
@@ -14,6 +15,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converter:ColorStructToMediaColorConverter x:Key="ColorStructToMediaColorConverter" />
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -22,13 +24,45 @@
 
     <StackPanel Margin="8,4,8,8">
 
-        <DockPanel Margin="0,4,0,0">
+        <StackPanel
+            Margin="0,4,0,0"
+            Orientation="Horizontal">
+            <elements:ToggleButtonEx
+                Icon="{ui:SymbolIcon EyeDropper24}"
+                Width="36"
+                Height="36"
+                Margin="0,0,5,0"
+                IsChecked="{Binding IsColorOverlayEyedropperMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                ap:MouseOverInfoAP.InfoText="Pick overlay color from input image" />
             <cp:PortableColorPicker
                 Width="34"
                 Height="30"
                 Margin="0,0,8,0"
                 SelectedColor="{Binding ColorOverlay, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 ap:MouseOverInfoAP.InfoText="Overlay color: single color blended with the texture." />
+        </StackPanel>
+
+        <DockPanel
+            Margin="0,8,0,0"
+            ap:MouseOverInfoAP.InfoText="Overlay Amount: blends selected color with texture (0 = invisible, 100 = only selected color).">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource color_line}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource color_line_accent}" />
             <elements:MouseWheelSlider
                 Style="{StaticResource MouseWheelSliderStyle}"
                 Margin="4,0"

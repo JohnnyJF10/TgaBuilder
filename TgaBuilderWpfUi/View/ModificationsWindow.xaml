@@ -136,9 +136,14 @@
                             <Rectangle
                                 Fill="{StaticResource CheckerBrush}" />
                             <Image
+                                x:Name="InputImage"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 Source="{Binding InputImage, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Fill" />
+                                Stretch="Fill"
+                                MouseMove="InputImage_MouseMove"
+                                MouseEnter="InputImage_MouseEnter"
+                                MouseLeave="InputImage_MouseLeave"
+                                MouseDown="InputImage_MouseDown" />
                         </Grid>
                     </Viewbox>
                     <TextBlock
