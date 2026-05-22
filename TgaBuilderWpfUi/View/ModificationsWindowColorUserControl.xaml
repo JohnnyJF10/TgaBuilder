@@ -135,7 +135,7 @@
                                 Height="14"
                                 Stretch="Uniform"
                                 Margin="5,0,0,0"
-                                Data="{StaticResource temperature}" />
+                                Data="{StaticResource snowflake}" />
                             <Path
                                 DockPanel.Dock="Right"
                                 VerticalAlignment="Center"

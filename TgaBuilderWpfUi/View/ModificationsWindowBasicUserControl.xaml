@@ -63,11 +63,11 @@
                                 VerticalAlignment="Center"
                                 Fill="{DynamicResource TextFillColorPrimaryBrush}"
                                 d:Fill="White"
-                                Width="8"
-                                Height="8"
+                                Width="14"
+                                Height="14"
                                 Stretch="Uniform"
                                 Margin="5,0,0,0"
-                                Data="{StaticResource circle_small}" />
+                                Data="{StaticResource moon}" />
                             <Path
                                 DockPanel.Dock="Right"
                                 VerticalAlignment="Center"
@@ -76,7 +76,7 @@
                                 Width="14"
                                 Height="14"
                                 Stretch="Uniform"
-                                Data="{StaticResource data_sunburst}" />
+                                Data="{StaticResource sun}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"
@@ -228,11 +228,11 @@
                                 VerticalAlignment="Center"
                                 Fill="{DynamicResource TextFillColorPrimaryBrush}"
                                 d:Fill="White"
-                                Width="8"
-                                Height="8"
+                                Width="14"
+                                Height="14"
                                 Stretch="Uniform"
                                 Margin="5,0,0,0"
-                                Data="{StaticResource circle_small}" />
+                                Data="{StaticResource circle}" />
                             <Path
                                 DockPanel.Dock="Right"
                                 VerticalAlignment="Center"
@@ -241,7 +241,7 @@
                                 Width="14"
                                 Height="14"
                                 Stretch="Uniform"
-                                Data="{StaticResource circle_half_fill}" />
+                                Data="{StaticResource circle}" />
                             <elements:MouseWheelSlider
                                 Style="{StaticResource MouseWheelSliderStyle}"
                                 Margin="4,0"

@@ -190,7 +190,7 @@ public class TransitionViewModel : ViewModelBase
     // Mode selection (TransitionType enum)
     // =====================================================================
 
-    private TransitionType _selectedTransitionType = TransitionType.Smooth;
+    private TransitionType _selectedTransitionType = TransitionType.Bricks;
 
     public TransitionType SelectedTransitionType
     {
@@ -245,12 +245,13 @@ public class TransitionViewModel : ViewModelBase
     private IWriteableBitmap? _indicatorMapImage;
     private bool _isIndicatorMapVisible;
     private bool _invertGrayscale;
-    private int _markerCount = 3;
+    private int _markerCount = 42;
+    private int _markerRadius = 5;
     private bool _reversePivot;
     private bool _sliceCornerTiles;
     private bool _protectEdges = true;
     private bool _isLabelMapExpanded;
-    private FilterType _selectedFilter = FilterType.BoxBlur;
+    private FilterType _selectedFilter = FilterType.Gaussian;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Felzenszwalb;
     private int _felzenszwalbMinSize = 50;
     private float _felzenszwalbScale = 100f;
@@ -306,6 +307,13 @@ public class TransitionViewModel : ViewModelBase
     {
         get => _markerCount;
         set => SetPropertyTriggerRecalculation(ref _markerCount, value,
+            BricksPipelineRequirements.RequiresAnalysis);
+    }
+
+    public int MarkerRadius
+    {
+        get => _markerRadius;
+        set => SetPropertyTriggerRecalculation(ref _markerRadius, value,
             BricksPipelineRequirements.RequiresAnalysis);
     }
 
@@ -368,8 +376,10 @@ public class TransitionViewModel : ViewModelBase
                 OnPropertyChanged(nameof(ShowFelzenszwalbParameters));
                 OnPropertyChanged(nameof(ShowSlicParameters));
                 OnPropertyChanged(nameof(ShowQuickshiftParameters));
-                OnPropertyChanged(nameof(ShowGrayBasedSegmentationInputs));
+                OnPropertyChanged(nameof(ShowWatershedBasedSegmentationInputs));
+                OnPropertyChanged(nameof(ShowGridFittingSegmentationInputs));
                 OnPropertyChanged(nameof(SelectedSegmentationMethodIndex));
+                OnPropertyChanged(nameof(ShowGrayBasedSegmentationInputs));
                 _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
                 _ = TriggerRecalculation();
             }
@@ -381,10 +391,14 @@ public class TransitionViewModel : ViewModelBase
     public bool ShowQuickshiftParameters => SelectedSegmentationMethod == SegmentationMethod.Quickshift;
     public bool ShowBilateralSigma => SelectedFilter == FilterType.Bilateral;
     public bool ShowGaussianSigma => SelectedFilter == FilterType.Gaussian;
+    public bool ShowWatershedBasedSegmentationInputs => SelectedSegmentationMethod == SegmentationMethod.Watershed;
+
+    public bool ShowGridFittingSegmentationInputs => 
+        SelectedSegmentationMethod == SegmentationMethod.XYProjection || 
+        SelectedSegmentationMethod == SegmentationMethod.YXProjection;
+
     public bool ShowGrayBasedSegmentationInputs =>
-        SelectedSegmentationMethod == SegmentationMethod.Watershed
-        || SelectedSegmentationMethod == SegmentationMethod.XYProjection
-        || SelectedSegmentationMethod == SegmentationMethod.YXProjection;
+        ShowWatershedBasedSegmentationInputs || ShowGridFittingSegmentationInputs;
 
     public int FelzenszwalbMinSize
     {
@@ -621,6 +635,7 @@ public class TransitionViewModel : ViewModelBase
             _transitionHelper.SliceCornerTiles = SliceCornerTiles;
             _transitionHelper.ProtectEdges = ProtectEdges;
             _transitionHelper.MarkerCount = MarkerCount;
+            _transitionHelper.MarkerRadius = MarkerRadius;
             _transitionHelper.SelectedFilter = SelectedFilter;
             _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
             _transitionHelper.FelzenszwalbMinSize = FelzenszwalbMinSize;

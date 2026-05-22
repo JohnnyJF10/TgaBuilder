@@ -22,6 +22,7 @@ namespace TgaBuilderLib.Transitions
         BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
         bool InvertGrayscale { get; set; }
         int MarkerCount { get; set; }
+        int MarkerRadius { get; set; }
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
         SegmentationMethod SegmentationMethod { get; set; }

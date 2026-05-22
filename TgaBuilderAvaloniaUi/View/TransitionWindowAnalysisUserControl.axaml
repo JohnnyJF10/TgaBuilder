@@ -16,7 +16,7 @@
     </UserControl.Resources>
 
 <Grid ColumnDefinitions="22, *, 22"
-      RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+      RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto">
 
     <!-- Row 1: Segmentation Method -->
     <Path Grid.Row="0" Grid.Column="0"
@@ -85,7 +85,7 @@
 
 
 
-    <!-- Row 4: Bilateral Sigma Slider -->
+    <!-- Row 3: Bilateral Sigma Slider -->
     <TextBlock Grid.Row="3" Grid.Column="0"
                VerticalAlignment="Center"
                Foreground="{DynamicResource IconFillBrush}"
@@ -112,7 +112,7 @@
                IsVisible="{Binding ShowBilateralSigma}"
                ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength" />
 
-    <!-- Row 5: Gaussian Sigma Slider -->
+    <!-- Row 4: Gaussian Sigma Slider -->
     <TextBlock Grid.Row="4" Grid.Column="0"
                VerticalAlignment="Center"
                Foreground="{DynamicResource IconFillBrush}"
@@ -139,7 +139,7 @@
                IsVisible="{Binding ShowGaussianSigma}"
                ap:MouseOverInfoAP.InfoText="Gaussian sigma: blur radius weighting strength" />
 
-    <!-- Row 6: Marker Count Slider -->
+    <!-- Row 5: Marker Count Slider -->
     <TextBlock Grid.Row="5" Grid.Column="0"
                VerticalAlignment="Center"
                Foreground="{DynamicResource IconFillBrush}"
@@ -147,8 +147,8 @@
                TextElement.FontSize="10"
                Margin="10,5,0,5"
                Text="#"
-               IsVisible="{Binding ShowGrayBasedSegmentationInputs}"
-               ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)" />
+               IsVisible="{Binding ShowWatershedBasedSegmentationInputs}"
+               ap:MouseOverInfoAP.InfoText="Marker Count: count of the seed markers for watershed segmentation (1 - 256)" />
     <elements:MouseWheelSlider Grid.Row="5" Grid.Column="1"
                                Margin="5,0"
                                VerticalAlignment="Center"
@@ -159,18 +159,51 @@
                                Minimum="1"
                                SmallChange="1"
                                Value="{Binding MarkerCount}"
-                               IsVisible="{Binding ShowGrayBasedSegmentationInputs}"
-                               ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)" />
+                               IsVisible="{Binding ShowWatershedBasedSegmentationInputs}"
+                               ap:MouseOverInfoAP.InfoText="Marker Count: count of the seed markers for watershed segmentation (1 - 256)" />
     <TextBlock Grid.Row="5" Grid.Column="2"
                VerticalAlignment="Center"
                Foreground="{DynamicResource IconFillBrush}"
                Text=" #"
                TextElement.FontSize="20"
-               IsVisible="{Binding ShowGrayBasedSegmentationInputs}"
-               ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)" />
+               IsVisible="{Binding ShowWatershedBasedSegmentationInputs}"
+               ap:MouseOverInfoAP.InfoText="Marker Count: count of the seed markers for watershed segmentation (1 - 256)" />
+
+    <!-- Row 6: Marker Radius Slider -->
+    <Path Grid.Row="6" Grid.Column="0"
+          VerticalAlignment="Center"
+          Fill="{DynamicResource IconFillBrush}"
+          Width="6"
+          Height="6"
+          Stretch="Uniform"
+          Margin="5,0,0,0"
+          Data="{StaticResource circle_small}"
+          IsVisible="{Binding ShowGridFittingSegmentationInputs}"
+          ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)" />
+    <elements:MouseWheelSlider Grid.Row="6" Grid.Column="1"
+                               Margin="5,0"
+                               VerticalAlignment="Center"
+                               ToolTip.Tip="{Binding MarkerRadius}"
+                               IsSnapToTickEnabled="True"
+                               TickFrequency="1"
+                               Maximum="20"
+                               Minimum="1"
+                               SmallChange="1"
+                               Value="{Binding MarkerRadius}"
+                               IsVisible="{Binding ShowGridFittingSegmentationInputs}"
+                               ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)" />
+    <Path Grid.Row="6" Grid.Column="2"
+          VerticalAlignment="Center"
+          Fill="{DynamicResource IconFillBrush}"
+          Width="14"
+          Height="14"
+          Stretch="Uniform"
+          Data="{StaticResource circle}"
+          IsVisible="{Binding ShowGridFittingSegmentationInputs}"
+          ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)" />
 
     <!-- Row 7: Felzenszwalb Min Size Slider -->
-    <Path Grid.Row="6" Grid.Column="0"
+    <Path Grid.Row="7" Grid.Column="0"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="6"
@@ -180,7 +213,7 @@
           Data="{StaticResource circle_small}"
           IsVisible="{Binding ShowFelzenszwalbParameters}"
           ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging" />
-    <elements:MouseWheelSlider Grid.Row="6" Grid.Column="1"
+    <elements:MouseWheelSlider Grid.Row="7" Grid.Column="1"
                                Margin="5,0"
                                VerticalAlignment="Center"
                                ToolTip.Tip="{Binding FelzenszwalbMinSize}"
@@ -192,7 +225,7 @@
                                Value="{Binding FelzenszwalbMinSize}"
                                IsVisible="{Binding ShowFelzenszwalbParameters}"
                                ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging" />
-    <Path Grid.Row="6" Grid.Column="2"
+    <Path Grid.Row="7" Grid.Column="2"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="14"
@@ -203,7 +236,7 @@
           ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging" />
 
     <!-- Row 8: Felzenszwalb Scale Slider -->
-    <Path Grid.Row="7" Grid.Column="0"
+    <Path Grid.Row="8" Grid.Column="0"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="14"
@@ -213,7 +246,7 @@
           Data="{StaticResource scale_fit}"
           IsVisible="{Binding ShowFelzenszwalbParameters}"
           ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor" />
-    <elements:MouseWheelSlider Grid.Row="7" Grid.Column="1"
+    <elements:MouseWheelSlider Grid.Row="8" Grid.Column="1"
                                Margin="5,0"
                                VerticalAlignment="Center"
                                ToolTip.Tip="{Binding FelzenszwalbScale}"
@@ -223,7 +256,7 @@
                                Value="{Binding FelzenszwalbScale}"
                                IsVisible="{Binding ShowFelzenszwalbParameters}"
                                ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor" />
-    <Path Grid.Row="7" Grid.Column="2"
+    <Path Grid.Row="8" Grid.Column="2"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="14"
@@ -234,7 +267,7 @@
           ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor" />
 
     <!-- Row 9: SLIC Segment Count Slider -->
-    <Path Grid.Row="8" Grid.Column="0"
+    <Path Grid.Row="9" Grid.Column="0"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="14"
@@ -244,7 +277,7 @@
           Data="{StaticResource square_simple}"
           IsVisible="{Binding ShowSlicParameters}"
           ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels" />
-    <elements:MouseWheelSlider Grid.Row="8" Grid.Column="1"
+    <elements:MouseWheelSlider Grid.Row="9" Grid.Column="1"
                                Margin="5,0"
                                VerticalAlignment="Center"
                                ToolTip.Tip="{Binding SlicSegmentCount}"
@@ -256,7 +289,7 @@
                                Value="{Binding SlicSegmentCount}"
                                IsVisible="{Binding ShowSlicParameters}"
                                ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels" />
-    <Path Grid.Row="8" Grid.Column="2"
+    <Path Grid.Row="9" Grid.Column="2"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="14"
@@ -267,7 +300,7 @@
           ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels" />
 
     <!-- Row 10: SLIC Compactness Slider -->
-    <Path Grid.Row="9" Grid.Column="0"
+    <Path Grid.Row="10" Grid.Column="0"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="14"
@@ -277,7 +310,7 @@
           Data="{StaticResource scale_fit}"
           IsVisible="{Binding ShowSlicParameters}"
           ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity" />
-    <elements:MouseWheelSlider Grid.Row="9" Grid.Column="1"
+    <elements:MouseWheelSlider Grid.Row="10" Grid.Column="1"
                                Margin="5,0"
                                VerticalAlignment="Center"
                                ToolTip.Tip="{Binding SlicCompactness}"
@@ -287,7 +320,7 @@
                                Value="{Binding SlicCompactness}"
                                IsVisible="{Binding ShowSlicParameters}"
                                ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity" />
-    <Path Grid.Row="9" Grid.Column="2"
+    <Path Grid.Row="10" Grid.Column="2"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="14"
@@ -298,7 +331,7 @@
           ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity" />
 
     <!-- Row 11: Quickshift Max Distance Slider -->
-    <Path Grid.Row="10" Grid.Column="0"
+    <Path Grid.Row="11" Grid.Column="0"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="14"
@@ -308,7 +341,7 @@
           Data="{StaticResource arrow_minimize}"
           IsVisible="{Binding ShowQuickshiftParameters}"
           ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed" />
-    <elements:MouseWheelSlider Grid.Row="10" Grid.Column="1"
+    <elements:MouseWheelSlider Grid.Row="11" Grid.Column="1"
                                Margin="5,0"
                                VerticalAlignment="Center"
                                ToolTip.Tip="{Binding QuickshiftMaxDist}"
@@ -320,7 +353,7 @@
                                Value="{Binding QuickshiftMaxDist}"
                                IsVisible="{Binding ShowQuickshiftParameters}"
                                ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed" />
-    <Path Grid.Row="10" Grid.Column="2"
+    <Path Grid.Row="11" Grid.Column="2"
           VerticalAlignment="Center"
           Fill="{DynamicResource IconFillBrush}"
           Width="14"
@@ -331,7 +364,7 @@
           ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed" />
 
     <!-- Row 12: Quickshift Ratio Slider -->
-    <TextBlock Grid.Row="11" Grid.Column="0"
+    <TextBlock Grid.Row="12" Grid.Column="0"
           VerticalAlignment="Center"
           Foreground="{DynamicResource IconFillBrush}"
           Margin="5,0,0,0"
@@ -339,7 +372,7 @@
           TextElement.FontSize="22"
           IsVisible="{Binding ShowQuickshiftParameters}"
           ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling" />
-    <elements:MouseWheelSlider Grid.Row="11" Grid.Column="1"
+    <elements:MouseWheelSlider Grid.Row="12" Grid.Column="1"
                                Margin="5,0"
                                VerticalAlignment="Center"
                                ToolTip.Tip="{Binding QuickshiftRatio}"
@@ -349,7 +382,7 @@
                                Value="{Binding QuickshiftRatio}"
                                IsVisible="{Binding ShowQuickshiftParameters}"
                                ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling" />
-    <TextBlock Grid.Row="11" Grid.Column="2"
+    <TextBlock Grid.Row="12" Grid.Column="2"
           VerticalAlignment="Center"
           Foreground="{DynamicResource IconFillBrush}"
           Text="="

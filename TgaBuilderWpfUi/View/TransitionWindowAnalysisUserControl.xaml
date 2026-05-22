@@ -149,8 +149,8 @@
 
                             <DockPanel
                                 Margin="0,10,8,0"
-                                Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
-                                ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
+                                Visibility="{Binding ShowWatershedBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="Marker Count: count of the seed markers for segmentation (1 - 255)">
             <TextBlock
                                     VerticalAlignment="Center"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -179,6 +179,41 @@
                                     Minimum="1"
                                     SmallChange="1"
                                     Value="{Binding MarkerCount}" />
+                            </DockPanel>
+
+                            <DockPanel
+                                Margin="0,16,8,8"
+                                Visibility="{Binding ShowGridFittingSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+                                ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
+                                <Path
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
+                                    Width="14"
+                                    Height="6"
+                                    Stretch="Uniform"
+                                    Margin="5,0,0,0"
+                                    Data="{StaticResource circle_small}" />
+                                <Path
+                                    DockPanel.Dock="Right"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                    d:Fill="White"
+                                    Width="14"
+                                    Height="14"
+                                    Stretch="Uniform"
+                                    Data="{StaticResource circle}" />
+                                <elements:MouseWheelSlider
+                                    Style="{StaticResource MouseWheelSliderStyle}"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    AutoToolTipPlacement="BottomRight"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="1"
+                                    Maximum="20"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Value="{Binding MarkerRadius}" />
                             </DockPanel>
 
                             <DockPanel

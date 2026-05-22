@@ -38,7 +38,8 @@ namespace TgaBuilderLib.Transitions
         public bool InvertGrayscale { get; set; } = false;
         public bool SliceCornerTiles { get; set; } = false;
         public bool ProtectEdges { get; set; } = true;
-        public int MarkerCount { get; set; } = 3;
+        public int MarkerCount { get; set; } = 42;
+        public int MarkerRadius { get; set; } = 5;
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Felzenszwalb;
         public int FelzenszwalbMinSize { get; set; } = 50;
         public float FelzenszwalbScale { get; set; } = 100f;
@@ -46,7 +47,7 @@ namespace TgaBuilderLib.Transitions
         public float SlicCompactness { get; set; } = 10f;
         public int QuickshiftMaxDist { get; set; } = 10;
         public float QuickshiftRatio { get; set; } = 1f;
-        public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
+        public FilterType SelectedFilter { get; set; } = FilterType.Gaussian;
         public float BilateralSigma { get; set; } = 30f;
         public float GaussianSigma { get; set; } = 1f;
 
