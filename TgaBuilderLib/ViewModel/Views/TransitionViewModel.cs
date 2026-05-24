@@ -247,6 +247,7 @@ public class TransitionViewModel : ViewModelBase
     private bool _invertGrayscale;
     private int _markerCount = 42;
     private int _markerRadius = 5;
+    private float _gridFitAngle = 0f;
     private bool _reversePivot;
     private bool _sliceCornerTiles;
     private bool _protectEdges = true;
@@ -314,6 +315,13 @@ public class TransitionViewModel : ViewModelBase
     {
         get => _markerRadius;
         set => SetPropertyTriggerRecalculation(ref _markerRadius, value,
+            BricksPipelineRequirements.RequiresAnalysis);
+    }
+
+    public float GridFitAngle
+    {
+        get => _gridFitAngle;
+        set => SetPropertyTriggerRecalculation(ref _gridFitAngle, value,
             BricksPipelineRequirements.RequiresAnalysis);
     }
 
@@ -394,8 +402,8 @@ public class TransitionViewModel : ViewModelBase
     public bool ShowWatershedBasedSegmentationInputs => SelectedSegmentationMethod == SegmentationMethod.Watershed;
 
     public bool ShowGridFittingSegmentationInputs => 
-        SelectedSegmentationMethod == SegmentationMethod.XYProjection || 
-        SelectedSegmentationMethod == SegmentationMethod.YXProjection;
+        SelectedSegmentationMethod == SegmentationMethod.BrickFit || 
+        SelectedSegmentationMethod == SegmentationMethod.GridFit;
 
     public bool ShowGrayBasedSegmentationInputs =>
         ShowWatershedBasedSegmentationInputs || ShowGridFittingSegmentationInputs;
@@ -636,6 +644,7 @@ public class TransitionViewModel : ViewModelBase
             _transitionHelper.ProtectEdges = ProtectEdges;
             _transitionHelper.MarkerCount = MarkerCount;
             _transitionHelper.MarkerRadius = MarkerRadius;
+            _transitionHelper.GridFitAngle = GridFitAngle;
             _transitionHelper.SelectedFilter = SelectedFilter;
             _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
             _transitionHelper.FelzenszwalbMinSize = FelzenszwalbMinSize;
