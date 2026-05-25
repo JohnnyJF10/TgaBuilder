@@ -157,12 +157,14 @@ namespace TgaBuilderLib.ViewModel
             catch (Exception e) when (IsHandleableOpenFileException(e))
             {
                 _messageService.SendMessage(MessageType.SourceOpenError, ex: e);
+                RemoveFileFromListAfterLoadFail(fileName);
                 _logger.LogError(e);
                 return;
             }
             catch (Exception e)
             {
                 _messageService.SendMessage(MessageType.UnknownError, ex: e);
+                RemoveFileFromListAfterLoadFail(fileName);
                 _logger.LogError(e);
                 throw;
             }
@@ -251,22 +253,7 @@ namespace TgaBuilderLib.ViewModel
                 Path.GetDirectoryName(fileName) ?? string.Empty,
                 DEF_FILE_TYPES | TR_FILE_TYPES);
 
-            int currentIndex = LastFolderFileNames.IndexOf(_lastFilePath);
-
-            if (currentIndex < 1)
-                _previousFile = LastFolderFileNames[LastFolderFileNames.Count - 1];
-            else
-                _previousFile = LastFolderFileNames[currentIndex - 1];
-
-            if (currentIndex < 0 || currentIndex >= LastFolderFileNames.Count - 1)
-                _nextFile = LastFolderFileNames[0];
-            else
-                _nextFile = LastFolderFileNames[currentIndex + 1];
-
-            OnPropertyChanged(nameof(LastFileName));
-            OnPropertyChanged(nameof(ReloadFileText));
-            OnPropertyChanged(nameof(PreviousFileOpenText));
-            OnPropertyChanged(nameof(NextFileOpenText));
+            RefreshLastAndNextFileName();
         }
 
         private List<string> GetFilesWithSpecificExtensions(string directory, FileTypes fileTypes)
@@ -302,6 +289,35 @@ namespace TgaBuilderLib.ViewModel
         {
             if (_panel is SourceTexturePanelViewModel sourcePanel)
                 sourcePanel.VisualGrid.Reset();
+        }
+
+        private void RemoveFileFromListAfterLoadFail(string fileName)
+        {
+            var res = LastFolderFileNames.Remove(fileName);
+
+            if (!res) return;
+
+            RefreshLastAndNextFileName();
+        }
+
+        private void RefreshLastAndNextFileName()
+        {
+            int currentIndex = LastFolderFileNames.IndexOf(_lastFilePath);
+
+            if (currentIndex < 1)
+                _previousFile = LastFolderFileNames[LastFolderFileNames.Count - 1];
+            else
+                _previousFile = LastFolderFileNames[currentIndex - 1];
+
+            if (currentIndex < 0 || currentIndex >= LastFolderFileNames.Count - 1)
+                _nextFile = LastFolderFileNames[0];
+            else
+                _nextFile = LastFolderFileNames[currentIndex + 1];
+
+            OnPropertyChanged(nameof(LastFileName));
+            OnPropertyChanged(nameof(ReloadFileText));
+            OnPropertyChanged(nameof(PreviousFileOpenText));
+            OnPropertyChanged(nameof(NextFileOpenText));
         }
 
         private void OnLoadedSuccessfully()

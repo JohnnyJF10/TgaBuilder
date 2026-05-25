@@ -21,6 +21,8 @@
     ap:PanelMouseAP.LeavePanelCommand="{Binding LeavePanelCommand}"
     ap:PanelMouseAP.PanelMouseCommand="{Binding MousePanelCommand}"
     ap:PanelMouseAP.WheelShiftCommand="{Binding WheelShiftCommand}"
+    ap:ClipboardMonitorAP.MonitorClipboard="{Binding Selection.AutoPaste}"
+    ap:ClipboardMonitorAP.ClipboardChangedCommand="{Binding Selection.AutoPasteCommand}"
     x:DataType="viewmodel:MainViewModel"
     Background="{DynamicResource WindowBackgroundGradient}"
     Foreground="{DynamicResource SystemBaseHighColor}"

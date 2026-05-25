@@ -105,13 +105,13 @@ namespace TgaBuilderLib.ViewModel
         {
             try
             {
-                if (!_clipboardService.ContainsImage())
+                if (!await _clipboardService.CheckContainsImageAsync())
                 {
                     _messageService.SendMessage(MessageType.ClipboardNotContainingImageData, "Clipboard does not contain an image.");
                     return;
                 }
 
-                if (await _clipboardService.GetImageAsync() is not IReadableBitmap bitmap)
+                if (_clipboardService.GetImage() is not IReadableBitmap bitmap)
                     throw new InvalidOperationException("Failed to get image from clipboard.");
 
                 Presenter = _mediaFactory.CloneBitmap(bitmap);

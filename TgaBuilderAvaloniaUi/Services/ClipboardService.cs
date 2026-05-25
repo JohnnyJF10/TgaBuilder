@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input.Platform;
+using Avalonia.Media.Imaging;
 using System;
 using System.Threading.Tasks;
 using TgaBuilderAvaloniaUi.View;
@@ -12,23 +13,17 @@ namespace TgaBuilderAvaloniaUi.Services
     internal class ClipboardService : IClipboardService
     {
         IClipboard? _clipboard;
+        Bitmap? _currentBitmap;
 
-        public bool ContainsImage()
+        public async Task<bool> CheckContainsImageAsync()
         {
-            var bitmap = _clipboard?.TryGetBitmapAsync().Result;
+            Bitmap? bitmap = await (_clipboard?.TryGetBitmapAsync() ?? Task.FromResult<Bitmap?>(null));
+            _currentBitmap = bitmap;
             return bitmap != null;
         }
 
-        public async Task<IReadableBitmap?> GetImageAsync()
-        {
-            if (_clipboard is null) 
-                throw new InvalidOperationException("Clipboard service is not initialized.");
-
-            var bitmap = await _clipboard.TryGetBitmapAsync();
-            if (bitmap is not null)
-                return new BitmapWrapper(bitmap);
-            else throw new InvalidOperationException("Clipboard does not contain an image.");
-        }
+        public IReadableBitmap? GetImage() 
+            => _currentBitmap != null ? new BitmapWrapper(_currentBitmap) : null;
 
         public async Task SetImageAsync(IReadableBitmap bitmap)
         {
