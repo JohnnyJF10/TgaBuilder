@@ -10,6 +10,8 @@ namespace TgaBuilderWpfUi.Elements
     {
         private readonly ToolTip _valueToolTip;
         private readonly DispatcherTimer _toolTipTimer;
+        private bool _hasInitialValue;
+        private double _initialValue;
 
         public MouseWheelSlider()
         {
@@ -24,10 +26,13 @@ namespace TgaBuilderWpfUi.Elements
                 Interval = TimeSpan.FromSeconds(1),
             };
             _toolTipTimer.Tick += OnToolTipTimerTick;
+            Loaded += OnLoaded;
         }
 
         protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
         {
+            EnsureInitialValue();
+
             if (!IsFocused || !IsMouseOver || !IsEnabled || e.Delta == 0)
             {
                 base.OnPreviewMouseWheel(e);
@@ -48,6 +53,35 @@ namespace TgaBuilderWpfUi.Elements
 
             ShowValueToolTip();
             e.Handled = true;
+        }
+
+        protected override void OnPreviewMouseRightButtonDown(MouseButtonEventArgs e)
+        {
+            EnsureInitialValue();
+
+            if (!IsEnabled || !_hasInitialValue)
+            {
+                base.OnPreviewMouseRightButtonDown(e);
+                return;
+            }
+
+            Value = Math.Clamp(_initialValue, Minimum, Maximum);
+            ShowValueToolTip();
+            e.Handled = true;
+        }
+
+        private void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            EnsureInitialValue();
+        }
+
+        private void EnsureInitialValue()
+        {
+            if (_hasInitialValue)
+                return;
+
+            _initialValue = Value;
+            _hasInitialValue = true;
         }
 
         private void ShowValueToolTip()

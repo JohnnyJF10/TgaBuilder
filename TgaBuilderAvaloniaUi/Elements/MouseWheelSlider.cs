@@ -9,6 +9,8 @@ namespace TgaBuilderAvaloniaUi.Elements
     public class MouseWheelSlider : Slider
     {
         private readonly DispatcherTimer _toolTipTimer;
+        private bool _hasInitialValue;
+        private double _initialValue;
 
         protected override Type StyleKeyOverride => typeof(Slider);
 
@@ -23,6 +25,8 @@ namespace TgaBuilderAvaloniaUi.Elements
 
         protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
         {
+            EnsureInitialValue();
+
             if (!IsFocused || !IsPointerOver || !IsEnabled || e.Delta.Y == 0)
             {
                 base.OnPointerWheelChanged(e);
@@ -42,11 +46,41 @@ namespace TgaBuilderAvaloniaUi.Elements
             e.Handled = true;
         }
 
+        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        {
+            EnsureInitialValue();
+
+            if (IsEnabled && _hasInitialValue && e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
+            {
+                Value = Math.Clamp(_initialValue, Minimum, Maximum);
+                ShowValueToolTip();
+                e.Handled = true;
+                return;
+            }
+
+            base.OnPointerPressed(e);
+        }
+
+        protected override void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
+        {
+            EnsureInitialValue();
+            base.OnAttachedToVisualTree(e);
+        }
+
         protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
         {
             ToolTip.SetIsOpen(this, false);
             _toolTipTimer.Stop();
             base.OnDetachedFromVisualTree(e);
+        }
+
+        private void EnsureInitialValue()
+        {
+            if (_hasInitialValue)
+                return;
+
+            _initialValue = Value;
+            _hasInitialValue = true;
         }
 
         private void ShowValueToolTip()
