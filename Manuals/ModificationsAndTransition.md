@@ -43,13 +43,13 @@ This guide covers the **Modifications Window** and both **Transition Helper** wi
 
 The Modifications Window lets you apply non-destructive image adjustments to the current selection before placing it. All changes are previewed in real time. The window contains three expandable sections.
 
-<!-- 📸 SCREENSHOT NEEDED: Full Modifications window showing all three expanders open -->
+![Modifications](../Screenshots/Modifications.png)
 
 ---
 
 ## Basic Adjustments
 
-<!-- 📸 SCREENSHOT NEEDED: Basic expander section with all sliders visible -->
+![ModificationsBasic](../Screenshots/ModificationsBasic.png)
 
 The **Basic** expander contains fundamental luminance and tonal adjustments:
 
@@ -67,7 +67,7 @@ The **Basic** expander contains fundamental luminance and tonal adjustments:
 
 ## Color Adjustments
 
-<!-- 📸 SCREENSHOT NEEDED: Color expander section with all sliders visible -->
+![ModificationsColor](../Screenshots/ModificationsColor.png)
 
 The **Color** expander provides hue, saturation, and white-balance controls:
 
@@ -83,7 +83,7 @@ The **Color** expander provides hue, saturation, and white-balance controls:
 
 ## Color Overlay
 
-<!-- 📸 SCREENSHOT NEEDED: Color Overlay expander showing eyedropper, color picker, amount slider, and mix mode dropdown -->
+![ModificationsColorOverlay](../Screenshots/ModificationsColorOverlay.png)
 
 The **Color Overlay** expander lets you tint the entire selection with a chosen color:
 
@@ -107,6 +107,8 @@ When **OKLab Chroma** mode is selected, two additional sliders appear:
 
 # Transition Helpers — Overview
 
+![Transitions](../Screenshots/Transitions.png)
+
 The transition helper tools open in separate windows and allow you to build transition textures from two input selections (picked from Source or Destination panels). There are two modes:
 
 - **Smooth** — soft directional gradient transitions
@@ -114,7 +116,7 @@ The transition helper tools open in separate windows and allow you to build tran
 
 Both modes share the **Transition Direction** control (Top, Right, Bottom, Left, Diagonal Top-Left, Diagonal Top-Right) and a **Pivot** section.
 
-<!-- 📸 SCREENSHOT NEEDED: Transition window showing mode selection (Smooth/Brick radio buttons) at top -->
+![TransitionsGeneralControls](../Screenshots/TransitionsGeneralControls.png)
 
 ---
 
@@ -124,13 +126,13 @@ Both modes share the **Transition Direction** control (Top, Right, Bottom, Left,
 
 The Smooth mode creates soft directional transitions between two textures. It uses a gradient mask defined by the direction, pivot, hardness, and widening parameters.
 
-<!-- 📸 SCREENSHOT NEEDED: Smooth Transition window with result preview and controls visible -->
+![TransitionsSmooth](../Screenshots/TransitionsSmooth.png)
 
 ---
 
 ## Smooth Controls
 
-<!-- 📸 SCREENSHOT NEEDED: Smooth controls section showing Hardness, Widening, and Shift sliders -->
+![TransitionsSmoothControls](../Screenshots/TransitionsSmoothControls.png)
 
 | Parameter    | Range     | Description                                                                                 |
 |--------------|-----------|-------------------------------------------------------------------------------------------  |
@@ -156,13 +158,13 @@ The Brick mode uses image segmentation algorithms to detect individual "tiles" o
 
 The Brick mode contains **six expandable sections**, each described in detail below.
 
-<!-- 📸 SCREENSHOT NEEDED: Brick Transition window full view showing all expanders (collapsed) in the right panel -->
+![TransitionsBrick](../Screenshots/TransitionsBrick.png)
 
 ---
 
 ## Analysis
 
-<!-- 📸 SCREENSHOT NEEDED: Analysis expander fully expanded, showing segmentation method dropdown, filter dropdown, and all conditional sliders -->
+![TransitionsBrickAnalysis](../Screenshots/TransitionsBrickAnalysis.png)
 
 The **Analysis** expander is the core of the Brick transition. It controls how the input texture is segmented into individual regions (tiles/bricks).
 
@@ -183,7 +185,7 @@ TgaBuilder provides **six** segmentation algorithms. Each algorithm has its own 
 
 #### Felzenszwalb
 
-<!-- 📸 SCREENSHOT NEEDED: Analysis expander with Felzenszwalb selected, showing Min Size and Scale sliders -->
+![TransitionsBrickAnalysisFelzenszwalb](../Screenshots/TransitionsBrickAnalysisFelzenszwalb.png)
 
 **Felzenszwalb** is a graph-based segmentation algorithm that efficiently merges pixels into regions based on boundary evidence. It works well for textures with varying region sizes.
 
@@ -203,7 +205,7 @@ TgaBuilder provides **six** segmentation algorithms. Each algorithm has its own 
 
 #### SLIC (Simple Linear Iterative Clustering)
 
-<!-- 📸 SCREENSHOT NEEDED: Analysis expander with SLIC selected, showing Segment Count and Compactness sliders -->
+![TransitionsBrickAnalysisSlic](../Screenshots/TransitionsBrickAnalysisSlic.png)
 
 **SLIC** produces compact, approximately uniformly sized superpixels by clustering in a combined color + spatial space. It divides the image into a regular grid of regions.
 
@@ -223,7 +225,7 @@ TgaBuilder provides **six** segmentation algorithms. Each algorithm has its own 
 
 #### Quickshift
 
-<!-- 📸 SCREENSHOT NEEDED: Analysis expander with Quickshift selected, showing Max Distance and Ratio sliders -->
+![TransitionsBrickAnalysisQuickshift](../Screenshots/TransitionsBrickAnalysisQuickshift.png)
 
 **Quickshift** is a mode-seeking segmentation algorithm that groups pixels by shifting them toward denser regions in color-spatial space. It produces irregularly shaped segments that closely follow color boundaries.
 
@@ -243,7 +245,7 @@ TgaBuilder provides **six** segmentation algorithms. Each algorithm has its own 
 
 #### Watershed
 
-<!-- 📸 SCREENSHOT NEEDED: Analysis expander with Watershed selected, showing Invert Grayscale toggle, Marker Count slider -->
+![TransitionsBrickAnalysisWatershed](../Screenshots/TransitionsBrickAnalysisWatershed.png)
 
 **Watershed** treats the grayscale image as a topographic surface and "floods" from marker seeds, finding boundaries where different flood regions meet. The markers are automatically placed based on local minima detection.
 
@@ -263,7 +265,7 @@ TgaBuilder provides **six** segmentation algorithms. Each algorithm has its own 
 
 #### Brick Fit
 
-<!-- 📸 SCREENSHOT NEEDED: Analysis expander with Brick Fit selected, showing Marker Radius and Angle sliders -->
+![TransitionsBrickAnalysisBrickFit](../Screenshots/TransitionsBrickAnalysisBrickFit.png)
 
 **Brick Fit** is a custom algorithm that fits a brick-pattern grid to the image. It uses the grayscale structure of the image to determine the best fit for a regular brick layout (staggered rows).
 
@@ -284,7 +286,7 @@ TgaBuilder provides **six** segmentation algorithms. Each algorithm has its own 
 
 #### Grid Fit
 
-<!-- 📸 SCREENSHOT NEEDED: Analysis expander with Grid Fit selected, showing Marker Radius and Angle sliders -->
+![TransitionsBrickAnalysisGridFit](../Screenshots/TransitionsBrickAnalysisGridFit.png)
 
 **Grid Fit** is similar to Brick Fit but uses a regular rectangular grid (no stagger offset). It attempts to align a regular grid to the image structure.
 
@@ -317,8 +319,6 @@ No pre-processing. The raw input image is passed directly to the segmentation al
 
 #### Box Blur
 
-<!-- 📸 SCREENSHOT NEEDED: Result comparison showing effect of Box Blur filter on segmentation -->
-
 A simple averaging blur that replaces each pixel with the mean of its neighborhood. This smooths out fine detail and noise uniformly.
 
 **When to use:** Good general-purpose smoothing. Helps Watershed find cleaner boundaries by removing small surface details while keeping the overall structure intact. Recommended for natural or temple-style old bricks with a small Marker Count.
@@ -327,8 +327,6 @@ A simple averaging blur that replaces each pixel with the mean of its neighborho
 
 #### Median
 
-<!-- 📸 SCREENSHOT NEEDED: Result comparison showing effect of Median filter on segmentation -->
-
 Replaces each pixel with the median value of its neighborhood. Unlike Box Blur, Median preserves edges while removing salt-and-pepper noise.
 
 **When to use:** When the texture has random noise or very small speckles that confuse the segmentation, but you want to keep sharp edges intact. Good for photographed brick textures with sensor noise.
@@ -336,8 +334,6 @@ Replaces each pixel with the median value of its neighborhood. Unlike Box Blur, 
 ---
 
 #### Bilateral
-
-<!-- 📸 SCREENSHOT NEEDED: Analysis expander showing Bilateral selected with Sigma slider visible -->
 
 An edge-preserving smoothing filter that averages pixels based on both spatial distance and color similarity. Pixels across strong edges are not averaged together.
 
@@ -350,8 +346,6 @@ An edge-preserving smoothing filter that averages pixels based on both spatial d
 ---
 
 #### Gaussian
-
-<!-- 📸 SCREENSHOT NEEDED: Analysis expander showing Gaussian selected with Sigma slider visible -->
 
 A Gaussian-weighted blur that smooths the image with a bell-curve kernel. Produces a softer blur than Box Blur with less ringing.
 
@@ -367,7 +361,7 @@ A Gaussian-weighted blur that smooths the image with a bell-curve kernel. Produc
 
 ## Pivot (Brick)
 
-<!-- 📸 SCREENSHOT NEEDED: Pivot expander in brick mode showing Reverse Pivot, Protect Edges, Slice Corners, Widening and Shift -->
+![TransitionsBrickPivot](../Screenshots/TransitionsBrickPivot.png)
 
 The **Pivot** expander controls which detected tiles are drawn (foreground) and which become background, based on a directional shape.
 
@@ -385,7 +379,7 @@ The **Pivot** expander controls which detected tiles are drawn (foreground) and 
 
 ## Edge
 
-<!-- 📸 SCREENSHOT NEEDED: Edge expander showing eyedropper, color picker, blend mode dropdown, and width slider -->
+![TransitionsBrickEdge](../Screenshots/TransitionsBrickEdge.png)
 
 The **Edge** expander adds a colored border/outline around detected tile boundaries in the transition result.
 
@@ -402,7 +396,7 @@ The **Edge** expander adds a colored border/outline around detected tile boundar
 
 ## Shadow
 
-<!-- 📸 SCREENSHOT NEEDED: Shadow expander showing eyedropper, color picker, size and hardness sliders -->
+![TransitionsBrickShadow](../Screenshots/TransitionsBrickShadow.png)
 
 The **Shadow** expander adds a shadow effect along tile borders, giving depth to the transition result.
 
@@ -419,7 +413,7 @@ The **Shadow** expander adds a shadow effect along tile borders, giving depth to
 
 ## Underfilling
 
-<!-- 📸 SCREENSHOT NEEDED: Underfilling expander showing Reverse toggle, Threshold slider, and Pivot slider -->
+![TransitionsBrickUnderfilling](../Screenshots/TransitionsBrickUnderfilling.png)
 
 The **Underfilling** expander provides a luminance-based fallback for the pivot shape. Instead of using only the geometric pivot, tiles can also be selected based on their brightness.
 
@@ -435,7 +429,7 @@ The **Underfilling** expander provides a luminance-based fallback for the pivot 
 
 ## Manual
 
-<!-- 📸 SCREENSHOT NEEDED: Manual expander showing Draw/Erase toggle buttons and Reset button, with manual painting visible on result image -->
+![TransitionsBrickManual](../Screenshots/TransitionsBrickManual.png)
 
 The **Manual** expander allows you to override the algorithmic tile visibility by painting directly on the result image.
 

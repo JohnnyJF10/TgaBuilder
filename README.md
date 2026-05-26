@@ -15,6 +15,8 @@
 
 TgaBuilder is a Texture Panel Building tool for TRLE, which facilitates the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF for Windows and Avalonia UI (cross-platform, experimental).
 
+![Overview](Screenshots/Overview_gif.gif)
+
 If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It covers most of the features TBuilder has and introduces several more, most prominently:
 
 - Texture Panel Panning and Zooming
@@ -27,6 +29,12 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 - **Transition Helper Windows** (Smooth & Brick) for generating transition tiles
 - **Modifications Window** for non-destructive image adjustments
 - and others…
+
+![Modifications](Screenshots/Modifications_gif.gif)
+![TransitionMode](Screenshots/TransitionMode_gif.gif)
+![SmoothTransition](Screenshots/SmoothTransition_gif.gif)
+![BrickTransitionAnalysis](Screenshots/BrickTransitionAnalysis_gif.gif)
+![BrickTransitionManual](Screenshots/BrickTransitionManual_gif.gif)
 
 ---
 

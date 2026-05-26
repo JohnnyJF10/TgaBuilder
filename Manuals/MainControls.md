@@ -2,7 +2,6 @@
 
 ## Title Bar
 
-<!-- 📸 SCREENSHOT NEEDED: Title bar overview showing all buttons -->
 ![TitleBar](../Screenshots/TitleBar.png)
 
 ### Source Loading
@@ -73,7 +72,6 @@
 
 ## Selection Area
 
-<!-- 📸 SCREENSHOT NEEDED: Selection area with transition buttons visible -->
 ![SelectionArea](../Screenshots/Selection.png)
 
 - Click the **Preview Image** to manually switch to Placing Mode on the Destination Panel
@@ -89,7 +87,6 @@
 
 ## Animation Area
 
-<!-- 📸 SCREENSHOT NEEDED: Animation preview panel -->
 ![Animation Area](../Screenshots/Animation.png)
 
 - Set animation speed
@@ -100,7 +97,6 @@
 
 ## Import Tab (Source Panel)
 
-<!-- 📸 SCREENSHOT NEEDED: Import tab bar -->
 ![Import Tab](../Screenshots/TabImport.png)
 
 From left to right:
@@ -125,7 +121,6 @@ From left to right:
 
 ## Batch File Loader
 
-<!-- 📸 SCREENSHOT NEEDED: Batch loader window -->
 ![Batch Loader](../Screenshots/BatchLoader.png)
 
 - Import multiple image files from a folder  
@@ -141,7 +136,6 @@ From left to right:
 
 ## Grid Tab (Source Panel)
 
-<!-- 📸 SCREENSHOT NEEDED: Grid tab bar -->
 ![Grid Tab](../Screenshots/TabGrid.png)
 
 From left to right:
@@ -157,7 +151,6 @@ From left to right:
 
 This tab allows you to modify the pixel format of the texture panel. TgaBuilder fully supports the opening, modification and writing of both **24-bit** and **32-bit** pixel formats.
 
-<!-- 📸 SCREENSHOT NEEDED: Format tab bar -->
 ![Format Tab](../Screenshots/TabFormat.png)
 
 From left to right:
@@ -181,7 +174,6 @@ Switching between the two settings will set the pixel values appropriately (e.g.
 
 ## View Tab (Source and Destination Panel)
 
-<!-- 📸 SCREENSHOT NEEDED: View tab bar -->
 ![View Tab](../Screenshots/TabView.png)
 
 From left to right:
@@ -193,7 +185,6 @@ From left to right:
 
 ## Placing Tab (Destination Panel)
 
-<!-- 📸 SCREENSHOT NEEDED: Placing tab bar -->
 ![Placing Tab](../Screenshots/TabPlacing.png)
 
 From left to right:
@@ -212,7 +203,6 @@ From left to right:
 
 ## Size Tab (Destination Panel)
 
-<!-- 📸 SCREENSHOT NEEDED: Size tab bar -->
 ![Size Tab](../Screenshots/TabSize.png)
 
 From left to right:
@@ -228,7 +218,6 @@ From left to right:
 
 Same functions as in TBuilder.
 
-<!-- 📸 SCREENSHOT NEEDED: Mode tab bar -->
 ![Mode Tab](../Screenshots/TabMode.png)
 
 From left to right:
