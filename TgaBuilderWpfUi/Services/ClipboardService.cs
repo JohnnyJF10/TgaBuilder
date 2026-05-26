@@ -6,6 +6,7 @@ namespace TgaBuilderWpfUi.Services
 {
     internal class ClipboardService : IClipboardService
     {
+        private BitmapSource? _currentBitmap;
 
         public Task SetImageAsync(IReadableBitmap bitmap)
         {
@@ -19,15 +20,18 @@ namespace TgaBuilderWpfUi.Services
             return Task.CompletedTask;
         }
 
-        public bool ContainsImage()
-            => Clipboard.ContainsImage();
-
-        public Task<IReadableBitmap?> GetImageAsync()
+        public async Task<bool> CheckContainsImageAsync()
         {
-            if (Clipboard.GetImage() is not BitmapSource source)
+            _currentBitmap = Clipboard.ContainsImage() ? Clipboard.GetImage() : null;
+            return Task.FromResult(_currentBitmap != null).Result;
+        }
+
+        public IReadableBitmap? GetImage()
+        {
+            if (_currentBitmap is not BitmapSource source)
                 throw new ArgumentException("Clipboard does not contain a valid image");
 
-            return Task.FromResult<IReadableBitmap?>(new BitmapSourceWrapper(source));
+            return new BitmapSourceWrapper(source);
         }
     }
 }

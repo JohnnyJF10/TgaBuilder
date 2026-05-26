@@ -22,8 +22,8 @@ namespace TgaBuilderLib.Transitions
         Slic,
         Quickshift,
         Watershed,
-        XYProjection,
-        YXProjection,
+        BrickFit,
+        GridFit,
     }
 
     public partial class TransitionHelper
@@ -78,9 +78,9 @@ namespace TgaBuilderLib.Transitions
                 SegmentationMethod.Felzenszwalb => Felzenszwalb(filteredColorPixels, labels, FelzenszwalbMinSize, FelzenszwalbScale),
                 SegmentationMethod.Slic => Slic(filteredColorPixels, labels, SlicSegmentCount, SlicCompactness),
                 SegmentationMethod.Quickshift => Quickshift(filteredColorPixels, labels, QuickshiftMaxDist, QuickshiftRatio),
-                SegmentationMethod.Watershed => WatershedSegmentation(filtered, labels),
-                SegmentationMethod.XYProjection => XYProjectionSegmentation(filtered, labels),
-                SegmentationMethod.YXProjection => YXProjectionSegmentation(filtered, labels),
+                SegmentationMethod.Watershed => Watershed(filtered, labels),
+                SegmentationMethod.BrickFit => BrickFit(filtered, labels, GridFitAngle),
+                SegmentationMethod.GridFit => GridFit(filtered, labels, GridFitAngle),
                 _ => 0
             };
 

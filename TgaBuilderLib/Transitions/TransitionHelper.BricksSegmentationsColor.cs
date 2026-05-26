@@ -218,12 +218,115 @@ public partial class TransitionHelper
             }
         }
 
+        // 1. Shift labels from [0...centers.Count-1] to [1...centers.Count]
         for (int i = 0; i < labels.Length; i++)
         {
             labels[i] = Math.Max(0, labels[i]) + 1;
         }
 
-        return centers.Count;
+        int currentMaxLabel = centers.Count;
+
+        // 2. Post-processing: Isolate disconnected edge components
+        currentMaxLabel = IsolateDisconnectedEdgeLabels(labels, currentMaxLabel);
+
+        return currentMaxLabel;
+    }
+
+    private int IsolateDisconnectedEdgeLabels(int[] labels, int maxLabel)
+    {
+        int totalPixels = Width * Height;
+
+        // Track total pixel counts for every label to detect if a label is split/disconnected
+        int[] labelCounts = new int[maxLabel + 1];
+        for (int i = 0; i < totalPixels; i++)
+        {
+            if (labels[i] <= maxLabel)
+                labelCounts[labels[i]]++;
+        }
+
+        // A fast way to find neighbors during a FloodFill
+        int[] dx = { 0, 0, -1, 1 };
+        int[] dy = { -1, 1, 0, 0 };
+
+        bool[] visited = new bool[totalPixels];
+        var queue = new Queue<int>();
+        var currentComponent = new List<int>();
+
+        // Helper to process a specific edge pixel index
+        void ProcessEdgePixel(int edgeIdx)
+        {
+            if (visited[edgeIdx]) return;
+
+            int targetLabel = labels[edgeIdx];
+
+            // If this label only has 1 pixel total in the whole image, it can't be "disconnected" from anything else.
+            if (labelCounts[targetLabel] <= 1)
+            {
+                visited[edgeIdx] = true;
+                return;
+            }
+
+            // Run FloodFill to find the entire connected component sharing this label
+            currentComponent.Clear();
+            queue.Enqueue(edgeIdx);
+            visited[edgeIdx] = true;
+
+            while (queue.Count > 0)
+            {
+                int currIdx = queue.Dequeue();
+                currentComponent.Add(currIdx);
+
+                int cx = currIdx % Width;
+                int cy = currIdx / Width;
+
+                for (int i = 0; i < 4; i++)
+                {
+                    int nx = cx + dx[i];
+                    int ny = cy + dy[i];
+
+                    if (nx >= 0 && nx < Width && ny >= 0 && ny < Height)
+                    {
+                        int nextIdx = ny * Width + nx;
+                        if (!visited[nextIdx] && labels[nextIdx] == targetLabel)
+                        {
+                            visited[nextIdx] = true;
+                            queue.Enqueue(nextIdx);
+                        }
+                    }
+                }
+            }
+
+            // CRITICAL CHECK: If the connected clump we just found is smaller than the total
+            // global pixel count for this label, it means there are disconnected pieces elsewhere!
+            if (currentComponent.Count < labelCounts[targetLabel])
+            {
+                maxLabel++; // Allocate a brand-new unique label
+
+                foreach (int idx in currentComponent)
+                {
+                    labels[idx] = maxLabel;
+                }
+
+                // Subtract the elements we just isolated from the original global count
+                labelCounts[targetLabel] -= currentComponent.Count;
+            }
+        }
+
+        // --- Scan Top and Bottom Edges ---
+        for (int x = 0; x < Width; x++)
+        {
+            ProcessEdgePixel(x);                  // Top row (y = 0)
+            ProcessEdgePixel((Height - 1) * Width + x); // Bottom row (y = Height - 1)
+        }
+
+        // --- Scan Left and Right Edges ---
+        for (int y = 0; y < Height; y++)
+        {
+            ProcessEdgePixel(y * Width);             // Left column (x = 0)
+            ProcessEdgePixel(y * Width + (Width - 1)); // Right column (x = Width - 1)
+        }
+
+        return maxLabel;
     }
 
     private int Quickshift(byte[] pixels, int[] labels, int max_dist = 10, float ratio = 1f)

@@ -126,11 +126,13 @@ public partial class TransitionHelper
 
                         byte* pxValley = rowValley + x * TRANSITIONS_BPP;
 
-                        int grey = ReverseUnderfilling  
+                        int grey = ReverseUnderfilling
                             ? (int)(255f - (pxValley[2] * 0.299f + pxValley[1] * 0.587f + pxValley[0] * 0.114f))
                             : (int)(pxValley[2] * 0.299f + pxValley[1] * 0.587f + pxValley[0] * 0.114f);
 
-                        if (grey < UnderfillingThreshold && v < UnderfillingPivot)
+                        bool Underfilling = grey < UnderfillingThreshold && (ReversePivot ? (v >= UnderfillingPivot) : (v < UnderfillingPivot));
+
+                        if (Underfilling)
                         {
                             for (int b = 0; b < TRANSITIONS_BPP; b++)
                             {

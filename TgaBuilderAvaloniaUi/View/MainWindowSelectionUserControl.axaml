@@ -101,7 +101,7 @@
                     HorizontalAlignment="Right"
                     ap:MouseOverInfoAP.InfoText="Copy (Ctrl + C)"
                     Command="{Binding CopyCommand}"
-                    Icon="{StaticResource copy}" />
+                    Icon="{StaticResource image_copy}" />
                 <elements:IconButton
                     Width="36"
                     Height="36"
@@ -109,31 +109,33 @@
                     HorizontalAlignment="Right"
                     ap:MouseOverInfoAP.InfoText="Paste (Ctrl + V)"
                     Command="{Binding PasteCommand}"
-                    Icon="{StaticResource clipboard_paste}" />
+                    Icon="{StaticResource clipboard_image}" />
             </StackPanel>
             <StackPanel
                 HorizontalAlignment="Center"
                 DataContext="{Binding Selection}"
                 Orientation="Horizontal"
-                IsVisible="False"
                 >
-                <ToggleButton
+                <elements:IconToggleButton
+                Classes="outlined"
                     Width="36"
                     Height="36"
                     Margin="5"
                     HorizontalAlignment="Right"
                     ap:MouseOverInfoAP.InfoText="Copy Automatically"
-                    Content="CopyArrowRight"
+                    Icon="{StaticResource image_arrow_forward}"
                     IsChecked="{Binding AutoCopy, Mode=TwoWay}" />
 
-                <ToggleButton
+                <elements:IconToggleButton
                     x:Name="AutoPasteToggleButton"
+                    Classes="outlined"
                     Width="36"
                     Height="36"
+                    Padding="4,0,0,0"
                     Margin="5"
                     HorizontalAlignment="Right"
                     ap:MouseOverInfoAP.InfoText="Paste Automatically"
-                    Content="ClipboardArrowRight"
+                    Icon="{StaticResource clipboard_arrow_right}"
                     IsChecked="{Binding AutoPaste, Mode=TwoWay}" />
             </StackPanel>
     </StackPanel>

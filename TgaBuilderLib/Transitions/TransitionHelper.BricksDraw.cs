@@ -66,12 +66,15 @@ public partial class TransitionHelper
                 // Copy the background first for dedicated shadow rendering.
                 Buffer.MemoryCopy(pBg, pShadowBg, Height * stride, Height * stride);
 
-
                 int sA = ShadowColor.A ?? 255;
                 int sR = ShadowColor.R;
                 int sG = ShadowColor.G;
                 int sB = ShadowColor.B;
-                double shadowHardnessPower = 1.0 + (ShadowHardness / 100.0) * 4.0;
+
+                // Assuming ShadowHardness is stored as a percentage (0-100).
+                // If your property is already normalized between 0.0 and 1.0, 
+                // you can remove the `/ 100.0`.
+                double hardness = Math.Clamp(ShadowHardness / 100.0, 0.0, 1.0);
 
                 // Pass 1: render shadows on top of the background-only buffer.
                 for (int y = 0; y < Height; y++)
@@ -133,7 +136,14 @@ public partial class TransitionHelper
                         {
                             int borderDist = minOppositeDist - 1;
                             double proximity = (double)(dynamicShadowSize - borderDist) / dynamicShadowSize;
-                            int shadowWeight255 = (int)Math.Clamp(Math.Round(Math.Pow(proximity, shadowHardnessPower) * sA), 0, 255);
+
+                            // Interploate based on hardness: 
+                            // 0.0 -> gradient reduces linearly to 0
+                            // 1.0 -> adjustedProximity stays locked at 1.0
+                            // In-between -> flatter gradient that drops sharply to 0 out of bounds
+                            double adjustedProximity = proximity + hardness * (1.0 - proximity);
+
+                            int shadowWeight255 = (int)Math.Clamp(Math.Round(adjustedProximity * sA), 0, 255);
                             int invShadowWeight255 = 255 - shadowWeight255;
 
                             pShadowBg[offset + 0] = (byte)((sB * shadowWeight255 + pBg[offset + 0] * invShadowWeight255) / 255);
@@ -143,7 +153,6 @@ public partial class TransitionHelper
                         }
                     }
                 }
-
             }
         }
     }

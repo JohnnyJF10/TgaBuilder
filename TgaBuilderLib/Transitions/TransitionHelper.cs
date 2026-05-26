@@ -38,7 +38,9 @@ namespace TgaBuilderLib.Transitions
         public bool InvertGrayscale { get; set; } = false;
         public bool SliceCornerTiles { get; set; } = false;
         public bool ProtectEdges { get; set; } = true;
-        public int MarkerCount { get; set; } = 3;
+        public int MarkerCount { get; set; } = 42;
+        public int MarkerRadius { get; set; } = 5;
+        public float GridFitAngle { get; set; } = 0f;
         public SegmentationMethod SegmentationMethod { get; set; } = SegmentationMethod.Felzenszwalb;
         public int FelzenszwalbMinSize { get; set; } = 50;
         public float FelzenszwalbScale { get; set; } = 100f;
@@ -46,7 +48,7 @@ namespace TgaBuilderLib.Transitions
         public float SlicCompactness { get; set; } = 10f;
         public int QuickshiftMaxDist { get; set; } = 10;
         public float QuickshiftRatio { get; set; } = 1f;
-        public FilterType SelectedFilter { get; set; } = FilterType.BoxBlur;
+        public FilterType SelectedFilter { get; set; } = FilterType.Gaussian;
         public float BilateralSigma { get; set; } = 30f;
         public float GaussianSigma { get; set; } = 1f;
 
@@ -76,7 +78,9 @@ namespace TgaBuilderLib.Transitions
             Hardness = 0.5f;
             Widening = 0f;
 
-            MarkerCount = 3; 
+            MarkerCount = 42; 
+            MarkerRadius = 5;
+            GridFitAngle = 0f;
             ReversePivot = false;
             SliceCornerTiles = false;
             ProtectEdges = true;
@@ -93,7 +97,7 @@ namespace TgaBuilderLib.Transitions
             EdgeColor = new Color(0, 0, 0, 128);
             BlendMode = EdgeBlendMode.Multiply;
             EdgeWidth = 1;
-            ShadowColor = new Color(128, 128, 128, 128);
+            ShadowColor = new Color(42, 42, 42, 42);
             ShadowSize = 3;
             ShadowHardness = 50;
         }

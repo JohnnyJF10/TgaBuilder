@@ -12,13 +12,13 @@
         /// Checks if the clipboard contains an image.
         /// </summary>
         /// <returns>True, if an image is present.</returns>
-        bool ContainsImage();
+        Task<bool> CheckContainsImageAsync();
 
         /// <summary>
         /// Returns the image from the clipboard.
         /// </summary>
         /// <returns>The bitmap or null if no image is present.</returns>
-        Task<IReadableBitmap?> GetImageAsync();
+        IReadableBitmap? GetImage();
     }
 }
 
