@@ -21,8 +21,13 @@
 .sidebar li a {
   text-decoration: none;
   display: block;
-  padding: 5px 0;
+  padding: 6px 0;
   color: #333;
+  font-size: 14px;
+}
+
+.sidebar li a:hover {
+  color: #0366d6;
 }
 
 #main-content {
@@ -58,10 +63,10 @@
 .mobile-menu a {
   display: block;
   width: 100%;
-  padding: 16px 12px;
+  padding: 14px 12px;
   text-decoration: none;
   color: #000;
-  font-size: 18px;
+  font-size: 16px;
   border-bottom: 1px solid #ccc;
 }
 
@@ -94,6 +99,7 @@
   }
 }
 
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #121212;
@@ -107,6 +113,10 @@
 
   .sidebar li a {
     color: #ddd;
+  }
+
+  .sidebar li a:hover {
+    color: #8ab4f8;
   }
 
   .mobile-menu {
@@ -129,15 +139,6 @@
 
   a {
     color: #8ab4f8;
-  }
-
-  table {
-    border-color: #444;
-  }
-
-  th,
-  td {
-    border: 1px solid #444;
   }
 
   #menu-toggle {
