@@ -19,13 +19,12 @@
       Margin="8,6,8,8">
 
     <!-- Row 1: Action Toggle Buttons -->
-    <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+    <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                 Orientation="Horizontal"
                 Spacing="8"
                 Margin="0,0,0,8">
         <elements:IconToggleButton
             Classes="outlined"
-            VerticalAlignment="Center"
             MinHeight="36"
             MinWidth="36"
             Icon="{StaticResource camera_switch}"

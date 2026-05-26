@@ -26,7 +26,7 @@
                   Width="18"
                   Height="18"
                   Stretch="Uniform"
-                  Data="{StaticResource shapes}"
+                  Data="{StaticResource math_formula}"
                   ap:MouseOverInfoAP.InfoText="Segmentation method: algorithm used to identify brick regions" />
             <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
                       VerticalAlignment="Center"

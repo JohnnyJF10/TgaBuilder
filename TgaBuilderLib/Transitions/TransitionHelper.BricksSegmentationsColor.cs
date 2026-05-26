@@ -232,6 +232,60 @@ public partial class TransitionHelper
         return currentMaxLabel;
     }
 
+    private int Quickshift(byte[] pixels, int[] labels, int max_dist = 10, float ratio = 1f)
+    {
+        int totalPixels = Width * Height;
+        if (totalPixels == 0 || pixels.Length < totalPixels * TRANSITIONS_BPP || labels.Length != totalPixels)
+            return 0;
+
+        max_dist = Math.Max(1, max_dist);
+        ratio = Math.Max(0.1f, ratio);
+        Array.Clear(labels, 0, labels.Length);
+
+        int[] queue = new int[totalPixels];
+        int label = 0;
+        float colorThreshold = MathF.Max(4f, 25f * ratio);
+        float colorThresholdSq = colorThreshold * colorThreshold;
+
+        for (int seed = 0; seed < totalPixels; seed++)
+        {
+            if (labels[seed] != 0)
+                continue;
+
+            int seedX = seed % Width;
+            int seedY = seed / Width;
+            int seedPixel = seed * TRANSITIONS_BPP;
+
+            float sumB = pixels[seedPixel];
+            float sumG = pixels[seedPixel + 1];
+            float sumR = pixels[seedPixel + 2];
+            int count = 1;
+
+            label++;
+            labels[seed] = label;
+
+            int head = 0;
+            int tail = 0;
+            queue[tail++] = seed;
+
+            while (head < tail)
+            {
+                int current = queue[head++];
+                int x = current % Width;
+                int y = current / Width;
+
+                TryGrowQuickshiftRegion(x - 1, y, seedX, seedY, max_dist, label, pixels, labels, queue, ref tail, ref sumB, ref sumG, ref sumR, ref count, colorThresholdSq);
+                TryGrowQuickshiftRegion(x + 1, y, seedX, seedY, max_dist, label, pixels, labels, queue, ref tail, ref sumB, ref sumG, ref sumR, ref count, colorThresholdSq);
+                TryGrowQuickshiftRegion(x, y - 1, seedX, seedY, max_dist, label, pixels, labels, queue, ref tail, ref sumB, ref sumG, ref sumR, ref count, colorThresholdSq);
+                TryGrowQuickshiftRegion(x, y + 1, seedX, seedY, max_dist, label, pixels, labels, queue, ref tail, ref sumB, ref sumG, ref sumR, ref count, colorThresholdSq);
+            }
+        }
+
+        label = IsolateDisconnectedEdgeLabels(labels, label);
+
+        return label;
+    }
+
     private int IsolateDisconnectedEdgeLabels(int[] labels, int maxLabel)
     {
         int totalPixels = Width * Height;
@@ -327,58 +381,6 @@ public partial class TransitionHelper
         }
 
         return maxLabel;
-    }
-
-    private int Quickshift(byte[] pixels, int[] labels, int max_dist = 10, float ratio = 1f)
-    {
-        int totalPixels = Width * Height;
-        if (totalPixels == 0 || pixels.Length < totalPixels * TRANSITIONS_BPP || labels.Length != totalPixels)
-            return 0;
-
-        max_dist = Math.Max(1, max_dist);
-        ratio = Math.Max(0.1f, ratio);
-        Array.Clear(labels, 0, labels.Length);
-
-        int[] queue = new int[totalPixels];
-        int label = 0;
-        float colorThreshold = MathF.Max(4f, 25f * ratio);
-        float colorThresholdSq = colorThreshold * colorThreshold;
-
-        for (int seed = 0; seed < totalPixels; seed++)
-        {
-            if (labels[seed] != 0)
-                continue;
-
-            int seedX = seed % Width;
-            int seedY = seed / Width;
-            int seedPixel = seed * TRANSITIONS_BPP;
-
-            float sumB = pixels[seedPixel];
-            float sumG = pixels[seedPixel + 1];
-            float sumR = pixels[seedPixel + 2];
-            int count = 1;
-
-            label++;
-            labels[seed] = label;
-
-            int head = 0;
-            int tail = 0;
-            queue[tail++] = seed;
-
-            while (head < tail)
-            {
-                int current = queue[head++];
-                int x = current % Width;
-                int y = current / Width;
-
-                TryGrowQuickshiftRegion(x - 1, y, seedX, seedY, max_dist, label, pixels, labels, queue, ref tail, ref sumB, ref sumG, ref sumR, ref count, colorThresholdSq);
-                TryGrowQuickshiftRegion(x + 1, y, seedX, seedY, max_dist, label, pixels, labels, queue, ref tail, ref sumB, ref sumG, ref sumR, ref count, colorThresholdSq);
-                TryGrowQuickshiftRegion(x, y - 1, seedX, seedY, max_dist, label, pixels, labels, queue, ref tail, ref sumB, ref sumG, ref sumR, ref count, colorThresholdSq);
-                TryGrowQuickshiftRegion(x, y + 1, seedX, seedY, max_dist, label, pixels, labels, queue, ref tail, ref sumB, ref sumG, ref sumR, ref count, colorThresholdSq);
-            }
-        }
-
-        return label;
     }
 
     private void TryGrowQuickshiftRegion(

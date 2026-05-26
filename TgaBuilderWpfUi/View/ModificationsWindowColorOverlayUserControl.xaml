@@ -100,7 +100,7 @@
 
         <DockPanel
             Margin="0,8,0,0"
-            Visibility="{Binding IsColorOverlaySoftLightMode, Converter={StaticResource BoolToVisibilityConverter}}"
+            Visibility="Collapsed"
             ap:MouseOverInfoAP.InfoText="Soft Light strength: controls the intensity of the filmic soft-light response.">
             <Path
                 VerticalAlignment="Center"
@@ -143,7 +143,7 @@
                 Height="14"
                 Stretch="Uniform"
                 Margin="5,0,0,0"
-                Data="{StaticResource lightbulb_filament}" />
+                Data="{StaticResource lightbulb}" />
             <Path
                 DockPanel.Dock="Right"
                 VerticalAlignment="Center"
@@ -152,7 +152,7 @@
                 Width="14"
                 Height="14"
                 Stretch="Uniform"
-                Data="{StaticResource lightbulb}" />
+                Data="{StaticResource lightbulb_filament}" />
             <elements:MouseWheelSlider
                 Style="{StaticResource MouseWheelSliderStyle}"
                 Margin="4,0"

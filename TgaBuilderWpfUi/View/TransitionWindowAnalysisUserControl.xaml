@@ -33,7 +33,7 @@
                                     Width="18"
                                     Height="18"
                                     Stretch="Uniform"
-                                    Data="{StaticResource shapes}" />
+                                    Data="{StaticResource math_formula}" />
                                 <ComboBox
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Center"
