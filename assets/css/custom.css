@@ -351,11 +351,6 @@ img {
   box-shadow: var(--shadow-sm);
 }
 
-.feature-icon {
-  font-size: 2rem;
-  margin-bottom: 14px;
-}
-
 .feature-card h3 {
   font-size: 1.05rem;
   font-weight: 600;
@@ -442,11 +437,6 @@ img {
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
   color: var(--text-primary);
-}
-
-.doc-icon {
-  font-size: 2rem;
-  margin-bottom: 14px;
 }
 
 .doc-card h3 {

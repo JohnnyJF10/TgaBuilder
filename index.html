@@ -62,7 +62,7 @@
       <h1>TgaBuilder</h1>
       <p class="hero-subtitle">Texture Panel Building Tool for TRLE</p>
       <p class="hero-description">
-        Build texture panels with smooth &amp; brick transitions, non-destructive modifications, batch loading, and more.
+        A modern re-creation of the classic TBuilder tool to build texture panels for TRLE with new features like batch loading, transitions making, on-the-fly non destructive image modificationsand more.
         Built in .NET with WPF (Windows) and Avalonia UI (cross-platform).
       </p>
       <div class="hero-badges">
@@ -91,44 +91,36 @@
       <h2 class="section-title">Features</h2>
       <div class="features-grid">
         <div class="feature-card">
-          <div class="feature-icon">🎨</div>
           <h3>Texture Panel Building</h3>
           <p>Pan, zoom, and place textures with extended dimensioning — up to 128 pages height and 16 pages width.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">↩️</div>
           <h3>Undo / Redo</h3>
-          <p>Full undo/redo history for all operations. Never worry about making mistakes.</p>
+          <p>Full undo/redo history for all operations.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">📦</div>
           <h3>Batch Loader</h3>
           <p>Create texture panels from multiple single texture files at once with automatic layout.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🔀</div>
           <h3>Smooth Transitions</h3>
           <p>Generate smooth transition tiles with configurable hardness, widening, shift, and pivot controls.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🧱</div>
           <h3>Brick Transitions</h3>
           <p>Advanced brick segmentation with 6 algorithms (Felzenszwalb, SLIC, Quickshift, Watershed, Brick Fit, Grid Fit).</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">✨</div>
           <h3>Modifications</h3>
           <p>Non-destructive adjustments — brightness, contrast, hue, saturation, color overlay with OKLab blending.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🔲</div>
           <h3>Multi-Format Support</h3>
           <p>Better support for 128×128 or 256×256 px texture sets with imported texture repacking.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🖥️</div>
           <h3>Cross-Platform</h3>
-          <p>WPF for Windows (.NET 6/8) and Avalonia UI for Linux/macOS (experimental).</p>
+          <p>WPF for Windows (.NET 6/8) and Avalonia UI for Linux/macOS (preview).</p>
         </div>
       </div>
     </div>
@@ -138,7 +130,7 @@
   <section id="demos" class="section section-alt">
     <div class="container">
       <h2 class="section-title">See It In Action</h2>
-      <p class="section-subtitle">Watch TgaBuilder's powerful features in real-time demos</p>
+      <p class="section-subtitle">A few demo videos...</p>
 
       <div class="demos-grid">
         <div class="demo-card">
@@ -157,7 +149,7 @@
           </div>
           <div class="demo-info">
             <h3>Transition Mode</h3>
-            <p>Quickly switch between smooth and brick transition modes to generate the perfect transition tiles.</p>
+            <p>Quickly switch the transition direction to generate the perfect transition tiles.</p>
           </div>
         </div>
 
@@ -177,7 +169,7 @@
           </div>
           <div class="demo-info">
             <h3>Brick Transition — Analysis</h3>
-            <p>Analyze brick patterns using segmentation algorithms like Felzenszwalb, SLIC, and Quickshift with configurable filters.</p>
+            <p>Analyze brick patterns using segmentation algorithms like Felzenszwalb, Watershed, BrickFit (shown) and others with configurable filters.</p>
           </div>
         </div>
 
@@ -190,46 +182,6 @@
             <p>Draw and erase brick regions manually for complete control over the transition result.</p>
           </div>
         </div>
-
-        <div class="demo-card">
-          <div class="demo-video">
-            <video src="Screenshots/EdgeProtection.mp4" autoplay loop muted playsinline></video>
-          </div>
-          <div class="demo-info">
-            <h3>Edge Protection</h3>
-            <p>Protect tile edges during transitions to maintain clean boundaries between texture segments.</p>
-          </div>
-        </div>
-
-        <div class="demo-card">
-          <div class="demo-video">
-            <video src="Screenshots/EdgeTinting.mp4" autoplay loop muted playsinline></video>
-          </div>
-          <div class="demo-info">
-            <h3>Edge Tinting</h3>
-            <p>Apply color tinting to transition edges for seamless blending between different texture types.</p>
-          </div>
-        </div>
-
-        <div class="demo-card">
-          <div class="demo-video">
-            <video src="Screenshots/WideningShift.mp4" autoplay loop muted playsinline></video>
-          </div>
-          <div class="demo-info">
-            <h3>Widening &amp; Shift</h3>
-            <p>Fine-tune transition width and position with real-time preview of the transition boundary.</p>
-          </div>
-        </div>
-
-        <div class="demo-card">
-          <div class="demo-video">
-            <video src="Screenshots/WideningToEdge.mp4" autoplay loop muted playsinline></video>
-          </div>
-          <div class="demo-info">
-            <h3>Widening to Edge</h3>
-            <p>Extend transitions all the way to tile edges for full coverage blending effects.</p>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -238,27 +190,23 @@
   <section id="docs" class="section">
     <div class="container">
       <h2 class="section-title">Documentation</h2>
-      <p class="section-subtitle">Everything you need to get started and master TgaBuilder</p>
+      <p class="section-subtitle">Please check the documentations section to learn more about TgaBuilder's features and usage.</p>
       <div class="docs-grid">
         <a href="https://github.com/JohnnyJF10/TgaBuilder/blob/master/Manuals/Installation.md" class="doc-card" target="_blank" rel="noopener">
-          <div class="doc-icon">⬇️</div>
           <h3>Installation</h3>
           <p>Download links, system requirements, and platform setup for Windows and Linux.</p>
         </a>
         <a href="https://github.com/JohnnyJF10/TgaBuilder/blob/master/Manuals/MainControls.md" class="doc-card" target="_blank" rel="noopener">
-          <div class="doc-icon">🎮</div>
           <h3>Main Controls</h3>
           <p>All panels, tabs, mouse/keyboard controls, and keyboard shortcuts.</p>
         </a>
         <a href="https://github.com/JohnnyJF10/TgaBuilder/blob/master/Manuals/ModificationsAndTransition.md" class="doc-card" target="_blank" rel="noopener">
-          <div class="doc-icon">🔧</div>
           <h3>Modifications &amp; Transitions</h3>
           <p>Comprehensive guide to all modification parameters and transition algorithms.</p>
         </a>
         <a href="https://github.com/JohnnyJF10/TgaBuilder/blob/master/Manuals/ThirdPartyLicenses.md" class="doc-card" target="_blank" rel="noopener">
-          <div class="doc-icon">📄</div>
           <h3>Third-Party Licenses</h3>
-          <p>All third-party library licenses and attributions in one place.</p>
+          <p>Third-party library licenses and attributions.</p>
         </a>
       </div>
     </div>
