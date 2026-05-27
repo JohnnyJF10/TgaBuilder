@@ -20,9 +20,16 @@ namespace TgaBuilderAvaloniaUi.Wrappers
 
             else
                 throw new ArgumentException("Bitmap is not a WriteableBitmap or BitmapSource", nameof(bitmap));
+
+            using (var fb = _innerWriteableBitmap.Lock())
+            {
+                _backBufferStride = fb.RowBytes;
+            }
         }
 
-        public int BackBufferStride => _innerWriteableBitmap.PixelSize.Width * (HasAlpha ? 4 : 3);
+        public int BackBufferStride => _backBufferStride;
+
+        private readonly int _backBufferStride;
 
         private WriteableBitmap _innerWriteableBitmap;
 
