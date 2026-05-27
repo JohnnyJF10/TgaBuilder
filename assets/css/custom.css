@@ -646,6 +646,26 @@ img {
   color: var(--text-muted);
 }
 
+.footer-opensource {
+  max-width: var(--max-width);
+  margin: 0 auto 24px;
+  padding: 16px 24px;
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.footer-opensource p {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.footer-opensource a {
+  font-weight: 600;
+}
+
 /* --- Responsive --- */
 @media (max-width: 900px) {
   .hero {
