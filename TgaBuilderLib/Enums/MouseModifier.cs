@@ -8,6 +8,8 @@
         Double,
         Space,
         SpaceLeft,
+        Alt,
+        AltLeft,
         Shift,
         Eyedropper,
         Middle

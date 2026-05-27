@@ -156,6 +156,10 @@ namespace TgaBuilderLib.ViewModel
             SetSelectionSizeGridless();
         }
 
+        public override void AltMove() => MouseMove();
+
+        public override void AltDrag() => Drag();
+
         public override void DoubleDrag()
         {
             if (Picker.Size >= Presenter.PixelHeight || Picker.Size >= Presenter.PixelWidth)
@@ -202,6 +206,8 @@ namespace TgaBuilderLib.ViewModel
         public override void DragEndShift() => DragEnd();
 
         public override void DragEndSpace() => DragEnd();
+
+        public override void DragEndAlt() => DragEnd();
 
         public override void DoubleDragEnd()
         {

@@ -211,6 +211,8 @@ namespace TgaBuilderLib.ViewModel
 
         public override void DragEndSpace() => DecideAndDoAction();//PlaceAndSwap: true);
 
+        public override void DragEndAlt() => DecideAndDoAction();
+
         private void DecideAndDoAction(bool? PlaceContiniously = null, bool? PlaceAndSwap = null)
         {
             if (!IsDragging)
@@ -322,6 +324,10 @@ namespace TgaBuilderLib.ViewModel
             SelectionShape.IsVisible = true;
             SetSelectionSizeGridless();
         }
+
+        public override void AltMove() => MouseMove();
+
+        public override void AltDrag() => Drag();
 
         internal void Undo()
         {

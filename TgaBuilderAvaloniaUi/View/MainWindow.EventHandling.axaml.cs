@@ -25,6 +25,9 @@ namespace TgaBuilderAvaloniaUi.View
         private bool IsGridlessModifier()
             => _isSpacePressed;
 
+        private static bool IsAltModifier(KeyModifiers modifiers)
+            => modifiers.HasFlag(KeyModifiers.Alt);
+
         private void Window_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space)
@@ -69,6 +72,7 @@ namespace TgaBuilderAvaloniaUi.View
             _modifier = updateKind switch
             {
                 PointerUpdateKind.LeftButtonPressed when IsGridlessModifier() => MouseModifier.SpaceLeft,
+                PointerUpdateKind.LeftButtonPressed when IsAltModifier(e.KeyModifiers) => MouseModifier.AltLeft,
                 PointerUpdateKind.LeftButtonPressed when _modifier == MouseModifier.Double => MouseModifier.Double,
                 PointerUpdateKind.LeftButtonPressed => MouseModifier.Left,
                 PointerUpdateKind.RightButtonPressed => MouseModifier.Right,
@@ -102,10 +106,14 @@ namespace TgaBuilderAvaloniaUi.View
 
                 if (IsGridlessModifier())
                     _modifier = MouseModifier.SpaceLeft;
+                else if (IsAltModifier(e.KeyModifiers))
+                    _modifier = MouseModifier.AltLeft;
             }
             else
             {
-                _modifier = IsGridlessModifier() ? MouseModifier.Space : MouseModifier.None;
+                _modifier = IsGridlessModifier() ? MouseModifier.Space
+                    : IsAltModifier(e.KeyModifiers) ? MouseModifier.Alt
+                    : MouseModifier.None;
             }
 
             if (CurrentPanel != null && 
