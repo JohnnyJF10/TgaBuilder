@@ -1,6 +1,6 @@
 /**
  * TgaBuilder Homepage — Main Script
- * Handles theme toggling and smooth scroll behavior.
+ * Handles theme toggling, smooth scroll, and video carousel.
  */
 
 (function () {
@@ -56,22 +56,77 @@
     }, { passive: true });
   }
 
-  // --- Lazy video play on intersect (for performance) ---
-  const videos = document.querySelectorAll('.demo-video video');
-  if ('IntersectionObserver' in window && videos.length > 0) {
-    const observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.play();
-        } else {
-          entry.target.pause();
-        }
-      });
-    }, { threshold: 0.25 });
+  // --- Video Carousel ---
+  var video = document.querySelector('.carousel-video');
+  var thumbs = document.querySelectorAll('.carousel-thumb');
+  var captionTitle = document.querySelector('.carousel-caption-title');
+  var captionText = document.querySelector('.carousel-caption-text');
+  var currentIndex = 0;
 
-    videos.forEach(function (video) {
-      video.pause();
-      observer.observe(video);
+  function activateSlide(index) {
+    // Reset all thumbs
+    thumbs.forEach(function (t) {
+      t.classList.remove('active');
+      t.querySelector('.thumb-progress').style.width = '0%';
+      t.querySelector('.thumb-progress').style.transitionDuration = '0s';
     });
+
+    currentIndex = index;
+    var thumb = thumbs[index];
+    thumb.classList.add('active');
+
+    // Load and play video
+    var src = thumb.getAttribute('data-src');
+    captionTitle.textContent = thumb.getAttribute('data-title');
+    captionText.textContent = thumb.getAttribute('data-desc');
+
+    video.src = src;
+    video.load();
+    video.play().catch(function () { /* autoplay blocked */ });
+  }
+
+  // Update progress bar as video plays
+  function onTimeUpdate() {
+    if (!video.duration) return;
+    var progress = (video.currentTime / video.duration) * 100;
+    var activeThumb = thumbs[currentIndex];
+    if (activeThumb) {
+      var bar = activeThumb.querySelector('.thumb-progress');
+      bar.style.transitionDuration = '0.2s';
+      bar.style.width = progress + '%';
+    }
+  }
+
+  // Advance to next video when current one ends
+  function onVideoEnded() {
+    var nextIndex = (currentIndex + 1) % thumbs.length;
+    activateSlide(nextIndex);
+  }
+
+  if (video && thumbs.length > 0) {
+    video.addEventListener('timeupdate', onTimeUpdate);
+    video.addEventListener('ended', onVideoEnded);
+
+    // Thumb click handlers
+    thumbs.forEach(function (thumb, idx) {
+      thumb.addEventListener('click', function () {
+        activateSlide(idx);
+      });
+    });
+
+    // Start first video only when carousel is visible
+    if ('IntersectionObserver' in window) {
+      var carouselObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            activateSlide(0);
+            carouselObserver.disconnect();
+          }
+        });
+      }, { threshold: 0.2 });
+      carouselObserver.observe(document.querySelector('.carousel-stage'));
+    } else {
+      activateSlide(0);
+    }
   }
 })();
