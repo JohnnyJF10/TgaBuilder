@@ -6,8 +6,8 @@
         Left,
         Right,
         Double,
-        Alt,
-        AltLeft,
+        Space,
+        SpaceLeft,
         Shift,
         Eyedropper,
         Middle

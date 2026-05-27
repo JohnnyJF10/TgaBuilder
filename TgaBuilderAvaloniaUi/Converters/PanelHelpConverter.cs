@@ -15,7 +15,7 @@ namespace TgaBuilderAvaloniaUi.Converters
             return panelInfoType switch
             {
                 PanelHelpType.SourceOnPanZoomInfo => "Source Panel: Mouse Middle: Move, Mouse Wheel: Zoom",
-                PanelHelpType.SourceOnPanelInfo => "Source Panel: Left: Select, Right: Animate, Alt: Free selecting, Double Left: Move Grid",
+                PanelHelpType.SourceOnPanelInfo => "Source Panel: Left: Select, Right: Animate, Space: Free selecting, Double Left: Move Grid",
                 PanelHelpType.DestinationOnPanZoomInfo => "Destination Panel: Mouse Middle: Move, Mouse Wheel: Zoom",
                 PanelHelpType.DestinationOnPanelPickingInfo => "Left: Select, Right: Animate",
                 PanelHelpType.DestinationOnPanelPlacingInfo => "Left: Place, Right: Discard",

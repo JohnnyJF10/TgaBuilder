@@ -209,7 +209,7 @@ namespace TgaBuilderLib.ViewModel
 
         public override void DragEndShift() => DecideAndDoAction(PlaceContiniously: true);
 
-        public override void DragEndAlt() => DecideAndDoAction();//PlaceAndSwap: true);
+        public override void DragEndSpace() => DecideAndDoAction();//PlaceAndSwap: true);
 
         private void DecideAndDoAction(bool? PlaceContiniously = null, bool? PlaceAndSwap = null)
         {
@@ -285,7 +285,7 @@ namespace TgaBuilderLib.ViewModel
 
         public override void DoubleDragEnd() => DragEnd();
 
-        public override void AltMove() //=> MouseMove();
+        public override void SpaceMove() //=> MouseMove();
         {
             if (mode != TargetMode.Default)
             {
@@ -299,7 +299,7 @@ namespace TgaBuilderLib.ViewModel
             Picker.Y = YPointer;
         }
 
-        public override void AltDrag() //=> Drag();
+        public override void SpaceDrag() //=> Drag();
         {
             if (mode != TargetMode.Default) return;
 
