@@ -20,11 +20,10 @@ I would like to express my gratitude to the [TombEditor](https://github.com/Mont
 | *Avalonia UI version:* | | | | |
 | Avalonia UI | 12.0.2 | NuGet | MIT | [GitHub](https://github.com/AvaloniaUI/Avalonia) |
 | PanAndZoom | 12.0.0.1 | NuGet | MIT | [GitHub](https://github.com/wieslawsoltes/PanAndZoom) |
-| Notifications.Avalonia | - | NuGet | MIT | [GitHub](https://github.com/Jeansen/Notifications.Avalonia) |
 | Microsoft Dependency Injection | 9.0.9 | NuGet | MIT | [GitHub](https://github.com/dotnet/runtime) |
 | *Core Library:* | | | | |
 | Pfim | 0.11.4 | NuGet | MIT | [GitHub](https://github.com/nickbabcock/Pfim) |
-| bzPSD | - | GitHub | BSD-3-Clause | [GitHub](https://github.com/DsonKing/System.Drawing.PSD) |
+| bzPSD | - | GitHub | BSD-3-Clause | [GitHub](https://github.com/bizzehdee/bzPSD) |
 | SharpZipLib | 1.4.2 | NuGet | MIT | [GitHub](https://github.com/icsharpcode/SharpZipLib) |
 
 ---
@@ -76,39 +75,6 @@ The MIT License (MIT)
 Copyright (c) .NET Foundation and Contributors
 
 All rights reserved.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-## Notifications.Avalonia
-
-- **Project:** Notifications.Avalonia
-- **Repository:** <https://github.com/Jeansen/Notifications.Avalonia>
-- **License file:** <https://github.com/Jeansen/Notifications.Avalonia/blob/master/LICENSE.txt>
-- **License fetched:** 2025-01-15
-
-```
-MIT License
-
-Copyright (c) 2019 CreateLab
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -294,12 +260,45 @@ SOFTWARE.
 
 ---
 
+## ColorPicker
+
+- **Project:** ColorPicker
+- **Repository:** <https://github.com/PixiEditor/ColorPicker>
+- **License file:** <https://github.com/PixiEditor/ColorPicker/blob/master/LICENSE.md>
+- **License fetched:** 2026-05-27
+
+```
+The MIT License (MIT)
+
+Copyright (c) PixiEditor Organization
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
+
 ## bzPSD
 
-- **Project:** System.Drawing.PSD (bzPSD)
-- **Repository:** <https://github.com/DsonKing/System.Drawing.PSD>
-- **License file:** <https://github.com/DsonKing/System.Drawing.PSD/blob/master/LICENSE>
-- **License fetched:** 2025-01-15
+- **Project:** bzPSD
+- **Repository:** <https://github.com/bizzehdee/bzPSD>
+- **License file:** <https://github.com/bizzehdee/bzPSD/blob/master/LICENSE>
+- **License fetched:** 2026-05-27
 
 ```
 BSD 3-Clause License
