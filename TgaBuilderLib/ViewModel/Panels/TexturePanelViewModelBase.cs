@@ -98,6 +98,7 @@ namespace TgaBuilderLib.ViewModel
         public abstract void Drag();
         public abstract void DragEnd();
         public abstract void DragEndShift();
+        public abstract void DragEndSpace();
         public abstract void DragEndAlt();
 
         public abstract void RightDrag();
@@ -105,6 +106,9 @@ namespace TgaBuilderLib.ViewModel
 
         public abstract void DoubleDrag();
         public abstract void DoubleDragEnd();
+
+        public abstract void SpaceMove();
+        public abstract void SpaceDrag();
 
         public abstract void AltMove();
         public abstract void AltDrag();

@@ -209,7 +209,9 @@ namespace TgaBuilderLib.ViewModel
 
         public override void DragEndShift() => DecideAndDoAction(PlaceContiniously: true);
 
-        public override void DragEndAlt() => DecideAndDoAction();//PlaceAndSwap: true);
+        public override void DragEndSpace() => DecideAndDoAction();
+
+        public override void DragEndAlt() => DecideAndDoAction(PlaceAndSwap: true);
 
         private void DecideAndDoAction(bool? PlaceContiniously = null, bool? PlaceAndSwap = null)
         {
@@ -285,7 +287,7 @@ namespace TgaBuilderLib.ViewModel
 
         public override void DoubleDragEnd() => DragEnd();
 
-        public override void AltMove() //=> MouseMove();
+        public override void SpaceMove()
         {
             if (mode != TargetMode.Default)
             {
@@ -299,7 +301,7 @@ namespace TgaBuilderLib.ViewModel
             Picker.Y = YPointer;
         }
 
-        public override void AltDrag() //=> Drag();
+        public override void SpaceDrag() 
         {
             if (mode != TargetMode.Default) return;
 
@@ -309,19 +311,16 @@ namespace TgaBuilderLib.ViewModel
             IsDragging = true;
             Picker.IsVisible = false;
 
-            //_xGrid = XPointer & ~(Picker.Size - 1);
-            //_yGrid = YPointer & ~(Picker.Size - 1);
-            //
-            //SetSelectionHorizontal();
-            //SetSelectionVertical();
-
-
-
-            //IsDragging = true;
+            _xGrid = XPointer;
+            _yGrid = YPointer;
 
             SelectionShape.IsVisible = true;
             SetSelectionSizeGridless();
         }
+
+        public override void AltMove() => MouseMove();
+
+        public override void AltDrag() => Drag();
 
         internal void Undo()
         {

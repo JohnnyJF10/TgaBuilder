@@ -120,7 +120,7 @@ namespace TgaBuilderLib.ViewModel
             Picker.Y = (y - VisualGrid.OffsetY & ~(Picker.Size - 1)) + VisualGrid.OffsetY;
         }
 
-        public override void AltMove()
+        public override void SpaceMove()
         {
             IsGridlessMode = true;
             Picker.IsVisible = false;
@@ -148,13 +148,17 @@ namespace TgaBuilderLib.ViewModel
                 SetSelectionSizeWithOffsetVer();
         }
 
-        public override void AltDrag()
+        public override void SpaceDrag()
         {
             IsDragging = true;
 
             SelectionShape.IsVisible = true;
             SetSelectionSizeGridless();
         }
+
+        public override void AltMove() => MouseMove();
+
+        public override void AltDrag() => Drag();
 
         public override void DoubleDrag()
         {
@@ -200,6 +204,8 @@ namespace TgaBuilderLib.ViewModel
         }
 
         public override void DragEndShift() => DragEnd();
+
+        public override void DragEndSpace() => DragEnd();
 
         public override void DragEndAlt() => DragEnd();
 

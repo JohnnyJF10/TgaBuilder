@@ -34,7 +34,7 @@
                             Classes="outlined"
                             Icon="{StaticResource arrow_sync_circle}"
                             Margin="0,0,10,0"
-                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Alt on the panel)"
+                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Space on the panel)"
                             DockPanel.Dock="Left"
                             IsChecked="{Binding SwapAndPlaceModeSelected}" />
                         <elements:IconToggleButton

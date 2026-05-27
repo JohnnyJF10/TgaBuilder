@@ -316,6 +316,14 @@ namespace TgaBuilderLib.ViewModel
                     TileInfoVisible = false;
                     break;
 
+                case (MouseAction.Move, MouseModifier.Space):
+                    panel.SpaceMove();
+                    break;
+
+                case (MouseAction.Move, MouseModifier.SpaceLeft):
+                    panel.SpaceDrag();
+                    break;
+
                 case (MouseAction.Move, MouseModifier.Alt):
                     panel.AltMove();
                     break;
@@ -349,6 +357,13 @@ namespace TgaBuilderLib.ViewModel
 
                 case (MouseAction.DragEnd, MouseModifier.Left):
                     panel.DragEnd();
+                    TileInfoVisible = true;
+                    EndScrolling();
+                    break;
+
+                case (MouseAction.DragEnd, MouseModifier.Space):
+                case (MouseAction.DragEnd, MouseModifier.SpaceLeft):
+                    panel.DragEndSpace();
                     TileInfoVisible = true;
                     EndScrolling();
                     break;

@@ -2,6 +2,9 @@
 
 This guide covers the **Modifications Window** and both **Transition Helper** windows (Smooth and Brick). These tools are accessed from the Selection Area action buttons in the main window.
 
+Access either the **Modifications Window** or the **Transition Helper** from the main window using these buttons:
+![ModificationsTransitionsButtons](../Screenshots/ModificationsTransitionsButtons.png)
+
 ---
 
 ## Table of Contents

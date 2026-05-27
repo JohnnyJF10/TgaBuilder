@@ -20,9 +20,25 @@ namespace TgaBuilderAvaloniaUi.View
         private Avalonia.Point _lastPanPosition;
         private Avalonia.Point _lastPointerPosition;
         private bool _isPanning;
+        private bool _isSpacePressed;
 
-        private static bool IsGridlessModifier(KeyModifiers modifiers)
+        private bool IsGridlessModifier()
+            => _isSpacePressed;
+
+        private static bool IsAltModifier(KeyModifiers modifiers)
             => modifiers.HasFlag(KeyModifiers.Alt);
+
+        private void Window_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+                _isSpacePressed = true;
+        }
+
+        private void Window_KeyUp(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+                _isSpacePressed = false;
+        }
 
         private void Window_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
@@ -55,7 +71,8 @@ namespace TgaBuilderAvaloniaUi.View
 
             _modifier = updateKind switch
             {
-                PointerUpdateKind.LeftButtonPressed when IsGridlessModifier(e.KeyModifiers) => MouseModifier.AltLeft,
+                PointerUpdateKind.LeftButtonPressed when IsGridlessModifier() => MouseModifier.SpaceLeft,
+                PointerUpdateKind.LeftButtonPressed when IsAltModifier(e.KeyModifiers) => MouseModifier.AltLeft,
                 PointerUpdateKind.LeftButtonPressed when _modifier == MouseModifier.Double => MouseModifier.Double,
                 PointerUpdateKind.LeftButtonPressed => MouseModifier.Left,
                 PointerUpdateKind.RightButtonPressed => MouseModifier.Right,
@@ -87,12 +104,16 @@ namespace TgaBuilderAvaloniaUi.View
                 x = Math.Clamp(x, 0, (int)CurrentImage.Bounds.Width - 1);
                 y = Math.Clamp(y, 0, (int)CurrentImage.Bounds.Height - 1);
 
-                if (IsGridlessModifier(e.KeyModifiers))
+                if (IsGridlessModifier())
+                    _modifier = MouseModifier.SpaceLeft;
+                else if (IsAltModifier(e.KeyModifiers))
                     _modifier = MouseModifier.AltLeft;
             }
             else
             {
-                _modifier = IsGridlessModifier(e.KeyModifiers) ? MouseModifier.Alt : MouseModifier.None;
+                _modifier = IsGridlessModifier() ? MouseModifier.Space
+                    : IsAltModifier(e.KeyModifiers) ? MouseModifier.Alt
+                    : MouseModifier.None;
             }
 
             if (CurrentPanel != null && 

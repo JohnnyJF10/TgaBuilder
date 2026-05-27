@@ -26,6 +26,7 @@ namespace TgaBuilderWpfUi.View
 
             _modifier = e.ChangedButton switch
             {
+                MouseButton.Left when Keyboard.IsKeyDown(Key.Space) => MouseModifier.SpaceLeft,
                 MouseButton.Left when Keyboard.Modifiers == ModifierKeys.Alt => MouseModifier.AltLeft,
                 MouseButton.Left when _modifier == MouseModifier.Double => MouseModifier.Double,
                 MouseButton.Left => MouseModifier.Left,
@@ -57,13 +58,17 @@ namespace TgaBuilderWpfUi.View
                 x = Math.Clamp(x, 0, (int)CurrentImage.ActualWidth - 1);
                 y = Math.Clamp(y, 0, (int)CurrentImage.ActualHeight - 1);
 
-                if (Keyboard.Modifiers == ModifierKeys.Alt)
+                if (Keyboard.IsKeyDown(Key.Space))
+                    _modifier = MouseModifier.SpaceLeft;
+                else if (Keyboard.Modifiers == ModifierKeys.Alt)
                     _modifier = MouseModifier.AltLeft;
             }
             else
             {
-                _modifier = Keyboard.Modifiers == ModifierKeys.Alt
-                    ? MouseModifier.Alt : MouseModifier.None;
+                _modifier = Keyboard.IsKeyDown(Key.Space)
+                    ? MouseModifier.Space
+                    : Keyboard.Modifiers == ModifierKeys.Alt
+                        ? MouseModifier.Alt : MouseModifier.None;
             }
 
             if (CurrentPanel != null &&
