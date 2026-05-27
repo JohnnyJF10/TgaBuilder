@@ -20,7 +20,7 @@ namespace TgaBuilderLib.BitmapOperations
 
             int sourceStride = source.BackBufferStride;
             int targetStride = target.BackBufferStride;
-            int strideDelta = sourceStride - targetStride;
+            int rowBytes = recWidth * bytesPerPixel;
 
             var targetDirtyRect = new PixelRect(0, 0, recWidth, recHeight);
 
@@ -36,11 +36,12 @@ namespace TgaBuilderLib.BitmapOperations
 
                     for (int r = 0; r < recHeight; r++)
                     {
-                        for (int s = 0; s < targetStride; s++)
+                        for (int s = 0; s < rowBytes; s++)
                         {
                             *targetPtr++ = *sourcePtr++;
                         }
-                        sourcePtr += strideDelta;
+                        sourcePtr += sourceStride - rowBytes;
+                        targetPtr += targetStride - rowBytes;
                     }
                 }
             }
