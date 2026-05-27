@@ -28,103 +28,50 @@ Version 2.2.5 with major transition performance improvements, new controls to ma
 
 2. Version 2.2.6 with a new unified Transition window, a fully featured Modifications window, four new brick segmentation methods, new brick transition sections (Shadow, Underfilling, Manual), and quality-of-life additions to the main window.
 
-### Modifications Window
-
-The Modifications window has been redesigned as a dedicated side-panel dialog with a resizable split layout (image previews on the left, scrollable controls on the right). Controls are organized into three collapsible expanders:
-
-- **Basic** expander:
-    - **Exposure** (`-5` to `+5`): adjusts overall brightness in photographic stops.
-    - **Brightness** (`-1` to `+1`): shifts overall luminosity linearly.
-    - **Contrast** (`-1` to `+1`): increases or reduces tonal range.
-    - **Highlights** (`-1` to `+1`): recovers or boosts bright tonal regions.
-    - **Shadows** (`-1` to `+1`): lifts or crushes dark tonal regions.
-    - **Whites** (`-1` to `+1`): clips or expands the brightest point of the image.
-    - **Blacks** (`-1` to `+1`): clips or expands the darkest point of the image.
-
-- **Color** expander:
-    - **Saturation** (`-1` to `+1`): uniform increase or decrease of color intensity.
-    - **Vibrance** (`-1` to `+1`): smart saturation that boosts muted colors while protecting already-saturated ones.
-    - **Hue** (`-180` to `+180`): rotates all colors around the color wheel.
-    - **Temperature** (`-1` to `+1`): shifts the image toward cooler (blue) or warmer (orange) tones.
-    - **Tint** (`-1` to `+1`): shifts the image toward green (negative) or magenta (positive).
-
-- **Color Overlay** expander:
-    - **Eyedropper toggle**: samples the overlay color directly from the input image.
-    - **Color picker**: selects a single color to blend with the texture.
-    - **Overlay Amount** (`0` to `100`): blends the selected color with the texture; `0` is invisible, `100` replaces the texture entirely.
-    - **Mix Mode** selector: controls how the overlay color is combined with the texture:
-        - *Linear*: straightforward linear interpolation.
-        - *Soft Light*: filmic soft-light response for subtle tonal shaping.
-        - *OKLab Chroma*: transfers overlay chroma in perceptual color space while preserving luminance.
-    - **Luma Preservation** (`0` to `1`) *(OKLab Chroma mode only)*: keeps original luminance while transferring overlay chroma.
-    - **Chroma Boost** (`0` to `2`) *(OKLab Chroma mode only)*: increases or reduces overlay chroma intensity in perceptual color space.
-
-- **Apply / Cancel / OK** action bar at the bottom of the window. The new **Apply** button previews changes without closing the dialog.
-
-### Transition Window — Unified Smooth & Brick Window
-
-The former separate Smooth Transition and Brick Transition windows have been **merged into a single unified Transition Helper window**. A pair of radio buttons at the top left of the window selects the active mode:
-
-- **Smooth** mode: exposes the familiar Hardness, Widening, and Shift sliders.
-- **Brick** mode: exposes a scrollable set of expanders for all brick-specific controls (Analysis, Pivot, Edge, Shadow, Underfilling, Manual — see below).
-
-A shared **Apply / Cancel / OK** action bar is present at the bottom of the window. The **Apply** button lets you preview the transition result without closing the dialog.
-
-#### Brick Transition — Four New Segmentation Methods
-
-The Analysis expander now offers six segmentation methods via a drop-down selector. The four new color-based methods are:
-
-1. **Felzenszwalb** — graph-based color segmentation.
-    - **Min Size** (`1` – `500`): minimum component size before region merging.
-    - **Scale** (`1` – `500`): merge tolerance scale factor (higher = larger, fewer segments).
-
-2. **SLIC** — superpixel segmentation.
-    - **Segment Count** (`1` – `2000`): target number of superpixels.
-    - **Compactness** (`0.1` – `50`): trade-off between color similarity and spatial regularity.
-
-3. **Quickshift** — mode-seeking color segmentation.
-    - **Max Distance** (`1` – `50`): maximum local growth distance from seed pixel.
-    - **Ratio** (`0.1` – `5`): color similarity threshold scaling.
-
-4. **Grid Fit** — grid-aligned segmentation.
-    - **Marker Radius** (`1` – `20`): size of the seed markers (1 = small, 20 = large).
-    - **Angle** (`-90` – `+90`): rotation angle for the grid fitting.
-
-#### Brick Transition — New Controls on Existing Methods
-
-- **Watershed**: new **Marker Count** (`#`, `1` – `256`) slider — sets the number of seed markers used for watershed segmentation.
-- **Brick Fit**: new **Angle** (`-90` – `+90`) slider — rotates the fitting grid.
-
-#### Brick Transition — Gaussian Filter
-
-A new **Gaussian** option has been added to the pre-processing filter drop-down (alongside None, Box Blur, Median, and Bilateral). When selected, a dedicated **Gaussian σ** slider (`0.1` – `20`) controls the blur radius.
-
-#### Brick Transition — Shadow Section
-
-A new **Shadow** expander in brick mode adds shadow rendering behind tile borders:
-
-- **Eyedropper toggle**: samples the shadow color directly from the result image.
-- **Shadow Color** picker: selects the color drawn over the background behind tile borders.
-- **Shadow Size** (`0` – `32`): maximum shadow extent in pixels from the tile border.
-- **Shadow Hardness** (`0` – `100`): controls how quickly the shadow fades away from tile borders.
-
-#### Brick Transition — Underfilling Section
-
-A new **Underfilling** expander lets you fill in under-exposed areas between tiles:
-
-- **Reverse toggle**: turns underfilling into overfilling by substituting bright pixels instead (useful for sandy textures and bright backgrounds).
-- **Underfilling Threshold** (`0` – `255`): `0` = no underfilling, `255` = maximum underfilling.
-- **Underfilling Pivot** (`0` – `1`): sets the positional bias of the underfilling area (`0` = left, `1` = right).
-
-#### Brick Transition — Manual Operations
-
-A new **Manual** expander in brick mode enables direct pixel-level control over tile visibility on the result image:
-
-- **Tile Visibility Pen** toggle: activates drawing mode — left-click on the result image to mark tiles as visible.
-- **Tile Visibility Eraser** toggle: activates erase mode — left-click on the result image to mark tiles as hidden.
-- **Reset** button: clears all manual visibility overrides and reverts to the computed result.
-
-### Main Window
-
-- **Gridless mode on the target panel**: hold **Space** while clicking or dragging on the target panel to make a free (grid-independent) selection. Releasing Space returns to normal grid-snapped behavior.
-- **Copy / Paste** (`Ctrl+C` / `Ctrl+V`) is now supported in the **Avalonia UI** version, allowing you to copy the current selection and paste it directly from the system clipboard.
+- **Modifications window** redesigned as a dedicated split-layout dialog (image previews left, scrollable controls right) with three collapsible expanders.
+- **Modifications / Basic** expander: **Exposure** (`-5` to `+5`) adjusts overall brightness in photographic stops.
+- **Modifications / Basic** expander: **Brightness** (`-1` to `+1`) shifts overall luminosity linearly.
+- **Modifications / Basic** expander: **Contrast** (`-1` to `+1`) increases or reduces tonal range.
+- **Modifications / Basic** expander: **Highlights** (`-1` to `+1`) recovers or boosts bright tonal regions.
+- **Modifications / Basic** expander: **Shadows** (`-1` to `+1`) lifts or crushes dark tonal regions.
+- **Modifications / Basic** expander: **Whites** (`-1` to `+1`) clips or expands the brightest point of the image.
+- **Modifications / Basic** expander: **Blacks** (`-1` to `+1`) clips or expands the darkest point of the image.
+- **Modifications / Color** expander: **Saturation** (`-1` to `+1`) uniformly increases or decreases color intensity.
+- **Modifications / Color** expander: **Vibrance** (`-1` to `+1`) boosts muted colors while protecting already-saturated ones.
+- **Modifications / Color** expander: **Hue** (`-180` to `+180`) rotates all colors around the color wheel.
+- **Modifications / Color** expander: **Temperature** (`-1` to `+1`) shifts the image toward cooler (blue) or warmer (orange) tones.
+- **Modifications / Color** expander: **Tint** (`-1` to `+1`) shifts the image toward green (negative) or magenta (positive).
+- **Modifications / Color Overlay** expander: eyedropper toggle to sample the overlay color from the input image.
+- **Modifications / Color Overlay** expander: color picker to select a single color to blend with the texture.
+- **Modifications / Color Overlay** expander: **Overlay Amount** (`0` – `100`) blends the selected color with the texture.
+- **Modifications / Color Overlay** expander: **Mix Mode** selector — Linear, Soft Light, or OKLab Chroma.
+- **Modifications / Color Overlay** expander: **Luma Preservation** (`0` – `1`) keeps original luminance while transferring overlay chroma (OKLab Chroma mode only).
+- **Modifications / Color Overlay** expander: **Chroma Boost** (`0` – `2`) increases or reduces overlay chroma intensity in perceptual color space (OKLab Chroma mode only).
+- **Modifications window**: new **Apply** button previews changes without closing the dialog.
+- **Smooth and Brick transition windows merged** into a single unified **Transition Helper** window; mode is toggled via radio buttons at the top left.
+- **Transition window**: new **Apply** button previews the transition result without closing the dialog.
+- **Brick / Analysis**: four new color-based segmentation methods added to the method drop-down — **Felzenszwalb**, **SLIC**, **Quickshift**, and **Grid Fit** — alongside the existing Watershed and Brick Fit.
+- **Brick / Analysis / Felzenszwalb**: **Min Size** (`1` – `500`) sets the minimum component size before region merging.
+- **Brick / Analysis / Felzenszwalb**: **Scale** (`1` – `500`) sets the merge tolerance scale factor (higher = larger, fewer segments).
+- **Brick / Analysis / SLIC**: **Segment Count** (`1` – `2000`) sets the target number of superpixels.
+- **Brick / Analysis / SLIC**: **Compactness** (`0.1` – `50`) trades off color similarity against spatial regularity.
+- **Brick / Analysis / Quickshift**: **Max Distance** (`1` – `50`) sets the maximum local growth distance from the seed pixel.
+- **Brick / Analysis / Quickshift**: **Ratio** (`0.1` – `5`) scales the color similarity threshold.
+- **Brick / Analysis / Grid Fit**: **Marker Radius** (`1` – `20`) sets the size of the seed markers.
+- **Brick / Analysis / Grid Fit**: **Angle** (`-90` – `+90`) rotates the grid fitting.
+- **Brick / Analysis / Watershed**: new **Marker Count** (`#`, `1` – `256`) slider sets the number of seed markers for watershed segmentation.
+- **Brick / Analysis / Brick Fit**: new **Angle** (`-90` – `+90`) slider rotates the fitting grid.
+- **Brick / Analysis**: new **Gaussian** pre-processing filter option added to the filter drop-down.
+- **Brick / Analysis / Gaussian filter**: **σ** slider (`0.1` – `20`) controls the blur radius.
+- **Brick / Shadow** expander (new): eyedropper toggle to sample the shadow color from the result image.
+- **Brick / Shadow** expander: color picker to select the shadow color drawn over the background behind tile borders.
+- **Brick / Shadow** expander: **Shadow Size** (`0` – `32`) sets the maximum shadow extent in pixels from the tile border.
+- **Brick / Shadow** expander: **Shadow Hardness** (`0` – `100`) controls how quickly the shadow fades away from tile borders.
+- **Brick / Underfilling** expander (new): reverse toggle turns underfilling into overfilling by substituting bright pixels (useful for sandy textures and bright backgrounds).
+- **Brick / Underfilling** expander: **Threshold** (`0` – `255`) sets the underfilling intensity (`0` = none, `255` = maximum).
+- **Brick / Underfilling** expander: **Pivot** (`0` – `1`) sets the positional bias of the underfilling area.
+- **Brick / Manual** expander (new): **Tile Visibility Pen** toggle — draw on the result image to mark tiles as visible.
+- **Brick / Manual** expander: **Tile Visibility Eraser** toggle — draw on the result image to mark tiles as hidden.
+- **Brick / Manual** expander: **Reset** button clears all manual visibility overrides and reverts to the computed result.
+- **Main window / Target panel**: hold **Space** while clicking or dragging to make a free (grid-independent) selection; release Space to return to normal grid-snapped behavior.
+- **Main window (Avalonia UI)**: **Copy / Paste** (`Ctrl+C` / `Ctrl+V`) support added.
