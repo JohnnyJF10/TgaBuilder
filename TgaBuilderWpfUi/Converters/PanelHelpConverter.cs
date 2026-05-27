@@ -14,7 +14,7 @@ namespace TgaBuilderWpfUi.Converters
             return panelInfoType switch
             {
                 PanelHelpType.SourceOnPanZoomInfo => "Source Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom",
-                PanelHelpType.SourceOnPanelInfo => "Source Panel: Left: Select, Right: Animate, Alt: Free selecting, Double Left: Move Grid",
+                PanelHelpType.SourceOnPanelInfo => "Source Panel: Left: Select, Right: Animate, Space: Free selecting, Double Left: Move Grid",
                 PanelHelpType.DestinationOnPanZoomInfo => "Destination Panel: Ctrl + Mouse: Move, Mouse Wheel: Zoom",
                 PanelHelpType.DestinationOnPanelPickingInfo => "Left: Select, Right: Animate",
                 PanelHelpType.DestinationOnPanelPlacingInfo => "Left: Place, Right: Discard",

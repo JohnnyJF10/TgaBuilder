@@ -46,7 +46,7 @@
                             Margin="0,0,10,0"
                             IsChecked="{Binding SwapAndPlaceModeSelected}"
                             Icon="{ui:SymbolIcon ArrowSwap24}"
-                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Alt on the panel)"/>
+                            ap:MouseOverInfoAP.InfoText="Directly put the replaced tile into the selection (Left + Space on the panel)"/>
                         <elements:ToggleButtonEx
                             DockPanel.Dock="Left"
                             Width="36"

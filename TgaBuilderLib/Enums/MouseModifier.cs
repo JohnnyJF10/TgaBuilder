@@ -6,6 +6,8 @@
         Left,
         Right,
         Double,
+        Space,
+        SpaceLeft,
         Alt,
         AltLeft,
         Shift,
