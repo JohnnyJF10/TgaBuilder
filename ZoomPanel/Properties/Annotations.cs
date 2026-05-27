@@ -169,7 +169,7 @@
     /// </list>
     /// If method has single input parameter, it's name could be omitted. <br />
     /// Using <c>halt</c> (or <c>void</c>/ <c>nothing</c>, which is the same)
-    /// for method output means that the methos doesn't return normally.
+    /// for method output means that the method doesn't return normally.
     /// <br /><c>canbenull</c> annotation is only applicable for output
     /// parameters. <br /> You can use multiple <c>[ContractAnnotation]</c> for
     /// each FDT row, or use single attribute with rows separated by semicolon. <br />
@@ -432,7 +432,7 @@
     ///[Pure] private int Multiply(int x, int y) { return x * y; }
     ///public void Foo() {
     ///const int a = 2, b = 2;
-    ///Multiply(a, b); // Waring: Return value of pure method is not used
+    ///Multiply(a, b); // Warning: Return value of pure method is not used
     ///}
     /// </code>
     /// </example>
@@ -884,7 +884,7 @@
     public sealed class XamlItemsControlAttribute : Attribute { }
 
     /// <summary>
-    /// XAML attibute. Indicates the property of some <c>BindingBase</c>-derived
+    /// XAML attribute. Indicates the property of some <c>BindingBase</c>-derived
     /// type, that is used to bind some item of <c>ItemsControl</c>-derived
     /// type. This annotation will enable the <c>DataContext</c> type resolve
     /// for XAML bindings for such properties.

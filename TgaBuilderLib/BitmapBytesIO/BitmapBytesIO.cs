@@ -70,7 +70,7 @@ namespace TgaBuilderLib.BitmapBytesIO
                 max: mode == ResizeMode.TargetResize ? MAX_TARGET_WIDTH : MAX_SIZE);
 
             if (paddedWidth != width)
-                ResultInfo = ResultStatus.RezisingRequired;
+                ResultInfo = ResultStatus.ResizingRequired;
 
             return paddedWidth;
         }
@@ -85,7 +85,7 @@ namespace TgaBuilderLib.BitmapBytesIO
                 max: MAX_SIZE);
 
             if (paddedHeight != height)
-                ResultInfo = ResultStatus.RezisingRequired;
+                ResultInfo = ResultStatus.ResizingRequired;
 
             return paddedHeight;
         }

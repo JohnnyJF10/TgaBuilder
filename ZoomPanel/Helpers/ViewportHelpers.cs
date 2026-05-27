@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace WPFZoomPanel.Helpers
 {
-    internal static class ViewporTgaBuilders
+    internal static class ViewportHelpers
     {
         #region Public Methods
 
@@ -18,8 +18,8 @@ namespace WPFZoomPanel.Helpers
         /// Limits the extent of a Point to the area between two points
         /// </summary>
         /// <param name="value"></param>
-        /// <param name="topLeft">Point specifiying the Top Left corner</param>
-        /// <param name="bottomRight">Point specifiying the Bottom Right corner</param>
+        /// <param name="topLeft">Point specifying the Top Left corner</param>
+        /// <param name="bottomRight">Point specifying the Bottom Right corner</param>
         /// <returns>The Point clamped by the Top Left and Bottom Right points</returns>
         public static Point Clamp(this Point value, Point topLeft, Point bottomRight)
         {
@@ -29,20 +29,20 @@ namespace WPFZoomPanel.Helpers
         }
 
         /// <summary>
-        /// Return a Rect that specificed by two points and clipped by a
+        /// Return a Rect that specified by two points and clipped by a
         /// rectangle specified by two other points
         /// </summary>
         /// <param name="value1">
-        /// First Point specifing the rectangle to be clipped
+        /// First Point specifying the rectangle to be clipped
         /// </param>
         /// <param name="value2">
-        /// Second Point specifing the rectangle to be clipped
+        /// Second Point specifying the rectangle to be clipped
         /// </param>
         /// <param name="topLeft">
-        /// Point specifiying the Top Left corner of the clipping rectangle
+        /// Point specifying the Top Left corner of the clipping rectangle
         /// </param>
         /// <param name="bottomRight">
-        /// Point specifiying the Bottom Right corner of the clipping rectangle
+        /// Point specifying the Bottom Right corner of the clipping rectangle
         /// </param>
         /// <returns>
         /// Rectangle specified by two points clipped by the other two points
@@ -68,7 +68,7 @@ namespace WPFZoomPanel.Helpers
 
         /// <summary>
         /// Limits the extent of a Point to the area where X and Y are at least
-        /// 0 and the X and y valuses specified, returning null if Point is
+        /// 0 and the X and y values specified, returning null if Point is
         /// outside this area
         /// </summary>
         /// <param name="value">Point to be clamped</param>
@@ -94,7 +94,7 @@ namespace WPFZoomPanel.Helpers
         /// </summary>
         /// <param name="border">Border to be moved and sized</param>
         /// <param name="rect">
-        /// Rect that specifies the size and postion of the Border on the Canvas
+        /// Rect that specifies the size and position of the Border on the Canvas
         /// </param>
         public static void PositionBorderOnCanvas(Border border, Rect rect)
         {

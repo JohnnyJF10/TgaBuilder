@@ -1,0 +1,80 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.MainWindowGridUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
+             x:DataType="viewmodel:MainViewModel"
+             x:CompileBindings="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+                    <Grid Margin="5,0,5,0" DataContext="{Binding Source.VisualGrid}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <elements:MouseWheelNumericUpDown
+                            Margin="0,0,2.5,0"
+                            Padding="-5,0,-5,0"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            HorizontalAlignment="Stretch"
+                            Maximum="{Binding CellSize, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            FormatString="N0"
+                            ParsingNumberStyle="Integer"
+                            ap:MouseOverInfoAP.InfoText="Set the offset of the source texture panel in X direction"
+                            Value="{Binding OffsetX, UpdateSourceTrigger=PropertyChanged}" />
+                        <elements:MouseWheelNumericUpDown
+                            Grid.Column="1"
+                            Margin="2.5,0,0,0"
+                            Padding="-5,0,-5,0"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Minimum="0"
+                            Maximum="{Binding CellSize, UpdateSourceTrigger=PropertyChanged}"
+                            HorizontalAlignment="Stretch"
+                            FormatString="N0"
+                            ParsingNumberStyle="Integer"
+                            ap:MouseOverInfoAP.InfoText="Set the offset of the source texture panel in Y direction"
+                            Value="{Binding OffsetY, UpdateSourceTrigger=PropertyChanged}" />
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <elements:IconButton
+                                Classes="outlined"
+                                Icon="{StaticResource backspace}"
+                                Grid.Column="2"
+                                Margin="5,0,0,0"
+                                ap:MouseOverInfoAP.InfoText="Reset Offset"
+                                Command="{Binding ResetCommand}"
+                                />
+
+                            <elements:IconToggleButton
+                                Classes="outlined"
+                                Icon="{StaticResource grid}"
+                                Margin="5,0,5,0"
+                                ap:MouseOverInfoAP.InfoText="Display Grid"
+                                DockPanel.Dock="Left"
+                                IsChecked="{Binding GridVisibleSelected, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <elements:IconToggleButton
+                                Classes="outlined"
+                                Icon="{StaticResource square_hint}"
+                                ap:MouseOverInfoAP.InfoText="Change between grid designs"
+                                DockPanel.Dock="Left"
+                                IsChecked="{Binding GridPointedSelected, UpdateSourceTrigger=PropertyChanged}" />
+
+                        </StackPanel>
+
+
+                    </Grid>
+                
+</UserControl>

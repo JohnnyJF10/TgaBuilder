@@ -21,21 +21,43 @@ namespace TgaBuilderLib.Transitions
         // Bricks / Segmented Transition Parameters
         BricksPipelineRequirements CurrentBricksPipelineRequirements { get; set; }
         bool InvertGrayscale { get; set; }
+        int MarkerCount { get; set; }
         int MarkerRadius { get; set; }
+        float GridFitAngle { get; set; }
         bool ReversePivot { get; set; }
         FilterType SelectedFilter { get; set; }
         SegmentationMethod SegmentationMethod { get; set; }
+        int FelzenszwalbMinSize { get; set; }
+        float FelzenszwalbScale { get; set; }
+        int SlicSegmentCount { get; set; }
+        float SlicCompactness { get; set; }
+        int QuickshiftMaxDist { get; set; }
+        float QuickshiftRatio { get; set; }
         Color EdgeColor { get; set; }
+        float BilateralSigma { get; set; }
+        float GaussianSigma { get; set; }
         int EdgeWidth { get; set; }
+        int ShadowSize { get; set; }
+        int ShadowHardness { get; set; }
         EdgeBlendMode BlendMode { get; set; }
         bool SliceCornerTiles { get; set; }
         bool ProtectEdges { get; set; }
         float Shift { get; set; }
+        Color ShadowColor { get; set; }
+
+        float UnderfillingPivot { get; set; }
+        bool ReverseUnderfilling { get; set; }
+        int UnderfillingThreshold { get; set; }
 
         // Methods
         byte[] MixSmooth(byte[] pixels1, byte[] pixels2);
         byte[] MixBricks(byte[] tilePixels, byte[] bgPixels);
         byte[] GetLabelMap();
+        int GetLabelAtPixel(int x, int y);
+        byte[] GetTileIndicator(int tileIndex);
+        bool SetExplicitTileVisibility(int tileIndex, bool shouldDraw);
+
+        void ResetAllExplicitTileVisibility();
         void CleanUp();
     }
 }

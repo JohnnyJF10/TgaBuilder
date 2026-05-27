@@ -101,8 +101,8 @@ namespace TgaBuilderLib.ViewModel
 
         private PanelMouseCommand? _mousePanelCommand;
         private AsyncCommand? _batchLoaderCommand;
-        private AsyncCommand? _smoothTransitionCommand;
-        private AsyncCommand? _brickTransitionCommand;
+        private AsyncCommand? _transitionCommand;
+        private AsyncCommand? _modificationsCommand;
         private RelayCommand? _aboutCommand;
         private RelayCommand? _entireToSourceCommand;
         private AsyncCommand? _entireToTargetCommand;
@@ -154,6 +154,8 @@ namespace TgaBuilderLib.ViewModel
 
 
         public bool IsTransitionViewOpen {  get; set; }
+
+        public bool IsModificationsViewOpen { get; set; }
 
 
         public bool PanelInfoVisible
@@ -209,11 +211,11 @@ namespace TgaBuilderLib.ViewModel
         public ICommand BatchLoaderCommand => _batchLoaderCommand
             ??= new(SourceIO.BatchLoader);
 
-        public ICommand SmoothTransitionCommand => _smoothTransitionCommand
-            ??= new(OpenSmoothTransitionHelper);
+        public ICommand TransitionCommand => _transitionCommand
+            ??= new(OpenTransitionHelper);
 
-        public ICommand BrickTransitionCommand => _brickTransitionCommand
-            ??= new(OpenBrickTransitionHelper);
+        public ICommand ModificationsCommand => _modificationsCommand
+            ??= new(OpenModifications);
 
         public ICommand AboutCommand => _aboutCommand
             ??= new(About);
@@ -422,38 +424,34 @@ namespace TgaBuilderLib.ViewModel
             aboutView.ShowDialogAsync();
         }
 
-        private async Task OpenSmoothTransitionHelper()
+        private async Task OpenTransitionHelper()
         {
             if (IsTransitionViewOpen)
                 return;
 
-            var smoothTransitionView = _getViewCallback(ViewIndex.SmoothTransition);
-            if (smoothTransitionView.DataContext is not SmoothTransitionViewModel smoothTransitionVM)
+            var transitionView = _getViewCallback(ViewIndex.Transition);
+            if (transitionView.DataContext is not TransitionViewModel)
                 return;
 
-            smoothTransitionView.Topmost = true;
+            transitionView.Topmost = true;
             IsTransitionViewOpen = true;
 
-            await smoothTransitionView.ShowAsync();
-
-            //Put result to selection
+            await transitionView.ShowAsync();
         }
 
-        private async Task OpenBrickTransitionHelper()
+        private async Task OpenModifications()
         {
-            if (IsTransitionViewOpen)
+            if (IsModificationsViewOpen)
                 return;
 
-            var brickTransitionView = _getViewCallback(ViewIndex.BrickTransition);
-            if (brickTransitionView.DataContext is not BrickTransitionViewModel brickTransitionVM)
+            var view = _getViewCallback(ViewIndex.Modifications);
+            if (view.DataContext is not ModificationsViewModel)
                 return;
 
-            brickTransitionView.Topmost = true;
-            IsTransitionViewOpen = true;
+            view.Topmost = true;
+            IsModificationsViewOpen = true;
 
-            await brickTransitionView.ShowAsync();
-
-            //Put result to selection
+            await view.ShowAsync();
         }
 
 

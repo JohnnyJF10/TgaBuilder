@@ -21,7 +21,7 @@
         DestinationSaveError,
 
         UnsupportedDimensions,
-        SortedRezisingNoPossible,
+        SortedResizingNotPossible,
 
         BatchLoaderPanelExceedsMaxDimensions,
         BatchLoaderFolderSetSuccess,

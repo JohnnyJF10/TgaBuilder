@@ -1,0 +1,58 @@
+<UserControl x:Class="TgaBuilderWpfUi.View.MainWindowImportUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+             xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
+             xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/ModifiedUiNumberBoxStyle.xaml" />
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+                    <DockPanel
+                        Margin="5,0,5,0"
+                        HorizontalAlignment="Stretch"
+                        >
+                        <ui:Button
+                            Icon="{ui:SymbolIcon XBoxController24}"
+                            Width="36"
+                            Height="36"
+                            DockPanel.Dock="Left"
+                            Command="{Binding OpenSourceTrCommand}"
+                            ap:MouseOverInfoAP.InfoText="Import from Classic TR... (Ctrl + Q)"/>
+                        <elements:ToggleButtonEx
+                            DockPanel.Dock="Left"
+                            Width="36"
+                            Height="36"
+                            Margin="5,0,0,0"
+                            Icon="{ui:SymbolIcon Map24}"
+                            IsChecked="{Binding SourceIO.TrImportRepackingSelected}"
+                            ap:MouseOverInfoAP.InfoText="Use Texture Repacking (remove TE Padding)"/>
+                        <ui:Button
+                            DockPanel.Dock="Right"
+                            Margin="0,0,5,0"
+                            Icon="{ui:SymbolIcon StackArrowForward24}"
+                            Width="36"
+                            Height="36"
+                            Command="{Binding BatchLoaderCommand}"
+                            ap:MouseOverInfoAP.InfoText="Open Batch Loader... (Ctrl + W)"/>
+                        <elements:MouseWheelNumberBox
+                            Style="{StaticResource ModifiedUiNumberBoxStyle}"
+                            Icon="{ui:SymbolIcon ArrowAutoFitWidth24}"
+                            Margin="5,0"
+                            ap:MouseOverInfoAP.InfoText="Set the number of pages of the TR file to import. Each page has a width of 256 pix."
+                            Value="{Binding SourceIO.TrImportHorPageNum, UpdateSourceTrigger=PropertyChanged}"/>
+                    </DockPanel>
+                
+</UserControl>

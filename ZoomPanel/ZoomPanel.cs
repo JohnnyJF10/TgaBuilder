@@ -107,7 +107,7 @@ namespace WPFZoomPanel
         private CurrentZoomTypeEnum _currentZoomTypeEnum;
         /// <summary>
         /// Normally when content offsets changes the content focus is
-        /// automatically updated. This syncronization is disabled when
+        /// automatically updated. This synchronization is disabled when
         /// 'disableContentFocusSync' is set to 'true'. When we are zooming in
         /// or out we 'disableContentFocusSync' is set to 'true' because we are
         /// zooming in or out relative to the content focus we don't want to
@@ -116,7 +116,7 @@ namespace WPFZoomPanel
         private bool _disableContentFocusSync = false;
 
         /// <summary>
-        /// Used to disable syncronization between IScrollInfo interface and ContentOffsetX/ContentOffsetY.
+        /// Used to disable synchronization between IScrollInfo interface and ContentOffsetX/ContentOffsetY.
         /// </summary>
         private bool _disableScrollOffsetSync = false;
 
@@ -263,12 +263,12 @@ namespace WPFZoomPanel
         /// <summary>
         /// The Fill Zoom of the viewport.
         /// </summary>
-        public double FillZoomValue => ViewporTgaBuilders.FillZoom(ActualWidth, ActualHeight, _content?.ActualWidth, _content?.ActualHeight);
+        public double FillZoomValue => ViewportHelpers.FillZoom(ActualWidth, ActualHeight, _content?.ActualWidth, _content?.ActualHeight);
 
         /// <summary>
         /// The Fit Zoom of the viewport.
         /// </summary>
-        public double FitZoomValue => ViewporTgaBuilders.FitZoom(ActualWidth, ActualHeight, _content?.ActualWidth, _content?.ActualHeight);
+        public double FitZoomValue => ViewportHelpers.FitZoom(ActualWidth, ActualHeight, _content?.ActualWidth, _content?.ActualHeight);
 
         /// <summary>
         /// Set to 'true' to enable the mouse wheel to scroll the zoom and pan
@@ -568,12 +568,12 @@ namespace WPFZoomPanel
             switch (_currentZoomTypeEnum)
             {
                 case CurrentZoomTypeEnum.Fit:
-                    InternalViewportZoom = ViewporTgaBuilders.FitZoom(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height,
+                    InternalViewportZoom = ViewportHelpers.FitZoom(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height,
                         _content?.ActualWidth, _content?.ActualHeight);
                     break;
 
                 case CurrentZoomTypeEnum.Fill:
-                    InternalViewportZoom = ViewporTgaBuilders.FillZoom(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height,
+                    InternalViewportZoom = ViewportHelpers.FillZoom(sizeInfo.NewSize.Width, sizeInfo.NewSize.Height,
                         _content?.ActualWidth, _content?.ActualHeight);
                     break;
             }
@@ -723,7 +723,7 @@ namespace WPFZoomPanel
             {
                 try
                 {
-                    // Disable content focus syncronization. We are about to
+                    // Disable content focus synchronization. We are about to
                     // update content offset whilst zooming to ensure that the
                     // viewport is focused on our desired content focus point.
                     // Setting this to 'true' stops the automatic update of the
@@ -777,7 +777,6 @@ namespace WPFZoomPanel
 
         private static void ZoomAndPanInitialPositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            //ZoomAndPanControl zoomAndPanControl = (ZoomAndPanControl)d;
         }
 
         /// <summary>
@@ -885,7 +884,7 @@ namespace WPFZoomPanel
 
             _viewport = newSize;
 
-            // Update the viewport size in content coordiates.
+            // Update the viewport size in content coordinates.
             UpdateContentViewportSize();
 
             // Initialise the content zoom focus point.

@@ -1,4 +1,5 @@
 ﻿using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using System;
 using System.IO;
 using TgaBuilderLib.Abstraction;
@@ -11,7 +12,11 @@ namespace TgaBuilderAvaloniaUi.Wrappers
 
         public BitmapWrapper(Bitmap bitmap)
         {
-            _innerBitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
+            _innerBitmap = bitmap.AlphaFormat switch
+            {
+                AlphaFormat.Opaque when bitmap.Format == PixelFormats.Bgra8888 => OpaqueToUnpremul(bitmap),
+                _ => bitmap
+            };
         }
         private readonly Bitmap _innerBitmap;
 
@@ -70,6 +75,25 @@ namespace TgaBuilderAvaloniaUi.Wrappers
             Save(ms, encoderType);
             ms.Position = 0;
             return ms;
+        }
+
+        private Bitmap OpaqueToUnpremul(Bitmap opaqueBitmap)
+        {
+            var unpremulBitmap = new WriteableBitmap(
+                opaqueBitmap.PixelSize,
+                opaqueBitmap.Dpi,
+                opaqueBitmap.Format ?? PixelFormats.Rgba8888, 
+                AlphaFormat.Unpremul);
+
+            using (var lockedBuffer = unpremulBitmap.Lock())
+            {
+                opaqueBitmap.CopyPixels(
+                    sourceRect: new Avalonia.PixelRect(0, 0, opaqueBitmap.PixelSize.Width, opaqueBitmap.PixelSize.Height),
+                    buffer: lockedBuffer.Address,
+                    bufferSize: lockedBuffer.Size.Width * lockedBuffer.Size.Height * ((opaqueBitmap.Format?.BitsPerPixel ?? 32) / 8),
+                    stride: lockedBuffer.RowBytes);
+            }
+            return unpremulBitmap;
         }
     }
 }

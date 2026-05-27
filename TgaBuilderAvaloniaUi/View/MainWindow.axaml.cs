@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.Enums;
@@ -45,18 +46,26 @@ namespace TgaBuilderAvaloniaUi.View
                     var targetPanel = this.FindControl<ZoomBorder>("TargetPanel");
                     var sourceScrollViewer = this.FindControl<ScrollViewer>("SourceScrollViewer");
                     var targetScrollViewer = this.FindControl<ScrollViewer>("TargetScrollViewer");
-                    if (sourcePanel != null && vm.SourceViewTab is ReadOnlyViewTabViewModel sourceVm)
-                        RegisterZoomBorderCallbacks(sourceVm, sourcePanel);
-                    if (targetPanel != null && vm.DestinationViewTab is ReadOnlyViewTabViewModel targetVm)
-                        RegisterZoomBorderCallbacks(targetVm, targetPanel);
+
                     if (sourcePanel != null && sourceScrollViewer != null)
-                        RegisterPresenterChangedCallback(vm.Source, sourcePanel, sourceScrollViewer);
+                        SubscribeToPresenterChangedEvent(vm.Source, sourcePanel, sourceScrollViewer);
                     if (targetPanel != null && targetScrollViewer != null)
-                        RegisterPresenterChangedCallback(vm.Destination, targetPanel, targetScrollViewer);
+                        SubscribeToPresenterChangedEvent(vm.Destination, targetPanel, targetScrollViewer);
                     if (sourceScrollViewer != null)
                         RegisterScrollViewScrollSpeedModification(sourceScrollViewer);
                     if (targetScrollViewer != null)
                         RegisterScrollViewScrollSpeedModification(targetScrollViewer);
+
+                    if (sourcePanel != null && vm.SourceViewTab is ReadOnlyViewTabViewModel sourceVm)
+                    {
+                        RegisterZoomBorderCallbacks(sourceVm, sourcePanel);
+                        sourceVm?.Fit();
+                    }
+                    if (targetPanel != null && vm.DestinationViewTab is ReadOnlyViewTabViewModel targetVm)
+                    {
+                        RegisterZoomBorderCallbacks(targetVm, targetPanel);
+                        targetVm?.Fit();
+                    }
                 };
             }
         }
@@ -71,6 +80,18 @@ namespace TgaBuilderAvaloniaUi.View
             Manager = serviceProvider.GetRequiredService<NotificationManager>();
             InitializeComponent();
             base.DataContext = mainViewModel;
+        }
+
+        private async void RecentTargetButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            await Task.Delay(42);
+            OpenDestinationSplitButton.Flyout?.Hide();
+        }
+
+        private async void RecentSourceButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            await Task.Delay(42);
+            OpenSourceSplitButton.Flyout?.Hide();
         }
     }
 }

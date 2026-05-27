@@ -190,7 +190,6 @@ namespace TgaBuilderWpfUi.Elements
             }
             drawingContext.DrawLine(pen, points[points.Length - 1], points[0]);
 
-            Debug.WriteLine($"AnimRangeSelectionShape rendered with Width={Width}, Height={Height}, TopStepPosition={TopStepPosition}, BottomStepPosition={BottomStepPosition}, StepHeight={StepHeight}");
         }
     }
 }

@@ -5,63 +5,26 @@
              xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:transitions="clr-namespace:TgaBuilderLib.Transitions;assembly=TgaBuilderLib"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
              mc:Ignorable="d"
              x:CompileBindings="False">
     <UserControl.Resources>
-        <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        <ResourceDictionary>
+           <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude
+                    Source="/Styles/IconRadioButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+			 <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        </ResourceDictionary>
     </UserControl.Resources>
-    <UserControl.Styles>
-        <Style Selector="RadioButton.toggle-look">
-            <Setter Property="MinHeight" Value="0" />
-            <Setter Property="MinWidth" Value="0" />
-            <Setter Property="Padding" Value="4" />
-            <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
-            <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
-            <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThemeThickness}" />
-            <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border x:Name="PART_Border"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}"
-                            Padding="{TemplateBinding Padding}">
-                        <ContentPresenter Content="{TemplateBinding Content}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center" />
-                    </Border>
-                </ControlTemplate>
-            </Setter>
-        </Style>
-        <Style Selector="RadioButton.toggle-look:pointerover /template/ Border#PART_Border">
-            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
-        </Style>
-        <Style Selector="RadioButton.toggle-look:pressed /template/ Border#PART_Border">
-            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" />
-        </Style>
-        <Style Selector="RadioButton.toggle-look:checked /template/ Border#PART_Border">
-            <Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundChecked}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushChecked}" />
-        </Style>
-        <Style Selector="RadioButton.toggle-look:checked:pointerover /template/ Border#PART_Border">
-            <Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundCheckedPointerOver}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushCheckedPointerOver}" />
-        </Style>
-        <Style Selector="RadioButton.toggle-look:checked:pressed /template/ Border#PART_Border">
-            <Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundCheckedPressed}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushCheckedPressed}" />
-        </Style>
-    </UserControl.Styles>
     <StackPanel Orientation="Horizontal">
         <!-- Top edge -->
-        <RadioButton
-            Classes="toggle-look"
+        <elements:IconRadioButton
+            Classes="outlined"
             GroupName="SelectedTransitionMode"
+            Width="36"
+            Height="36"
+            Padding="-16,0,0,0"
             ap:MouseOverInfoAP.InfoText="Transition from top edge"
             IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Top}}"
             Margin="0,0,5,0">
@@ -73,12 +36,15 @@
                       Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
-        </RadioButton>
+        </elements:IconRadioButton>
 
         <!-- Right edge -->
-        <RadioButton
-            Classes="toggle-look"
+        <elements:IconRadioButton
+            Classes="outlined"
             GroupName="SelectedTransitionMode"
+            Width="36"
+            Height="36"
+            Padding="-16,0,0,0"
             ap:MouseOverInfoAP.InfoText="Transition from right edge"
             IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Right}}"
             Margin="0,0,5,0">
@@ -90,12 +56,15 @@
                       Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
-        </RadioButton>
+        </elements:IconRadioButton>
 
         <!-- Bottom edge -->
-        <RadioButton
-            Classes="toggle-look"
+        <elements:IconRadioButton
+            Classes="outlined"
             GroupName="SelectedTransitionMode"
+            Width="36"
+            Height="36"
+            Padding="-16,0,0,0"
             ap:MouseOverInfoAP.InfoText="Transition from bottom edge"
             IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Bottom}}"
             Margin="0,0,5,0">
@@ -107,12 +76,15 @@
                       Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
-        </RadioButton>
+        </elements:IconRadioButton>
 
         <!-- Left edge -->
-        <RadioButton
-            Classes="toggle-look"
+        <elements:IconRadioButton
+            Classes="outlined"
             GroupName="SelectedTransitionMode"
+            Width="36"
+            Height="36"
+            Padding="-16,0,0,0"
             ap:MouseOverInfoAP.InfoText="Transition from left edge"
             IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.Left}}"
             Margin="0,0,5,0">
@@ -124,12 +96,15 @@
                       Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
-        </RadioButton>
+        </elements:IconRadioButton>
 
         <!-- Diagonal top-left -->
-        <RadioButton
-            Classes="toggle-look"
+        <elements:IconRadioButton
+            Classes="outlined"
             GroupName="SelectedTransitionMode"
+            Width="36"
+            Height="36"
+            Padding="-16,0,0,0"
             ap:MouseOverInfoAP.InfoText="Transition from diagonal (top-left)"
             IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopLeft}}"
             Margin="0,0,5,0">
@@ -141,12 +116,15 @@
                       Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
-        </RadioButton>
+        </elements:IconRadioButton>
 
         <!-- Diagonal top-right -->
-        <RadioButton
-            Classes="toggle-look"
+        <elements:IconRadioButton
+            Classes="outlined"
             GroupName="SelectedTransitionMode"
+            Width="36"
+            Height="36"
+            Padding="-16,0,0,0"
             ap:MouseOverInfoAP.InfoText="Transition from diagonal (top-right)"
             IsChecked="{Binding SelectedTransitionMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static transitions:TransitionMode.DiagonalTopRight}}"
             Margin="0,0,5,0">
@@ -158,6 +136,6 @@
                       Stroke="{DynamicResource SystemAccentColorLight3}"
                       StrokeThickness="2"/>
             </Panel>
-        </RadioButton>
+        </elements:IconRadioButton>
     </StackPanel>
 </UserControl>

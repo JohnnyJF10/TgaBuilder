@@ -209,7 +209,6 @@ namespace TgaBuilderLib.Psd
             #endregion //End Headers
 
             #region "ColorModeData"
-            Debug.WriteLine("LoadColorModeData started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
             uint paletteLength = reader.ReadUInt32(); //readUint32() advances the reader 4 bytes.
             if (paletteLength > 0)
@@ -221,8 +220,6 @@ namespace TgaBuilderLib.Psd
             #region "Loading Image Resources"
             //This part takes extensive use of classes that I didn't write therefore
             //I can't document much on what they do.
-
-            Debug.WriteLine("LoadingImageResources started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
             _imageResources.Clear();
 
@@ -287,8 +284,6 @@ namespace TgaBuilderLib.Psd
             //lets finish loading the raw data that defines the image 
             //in the picture.
 
-            Debug.WriteLine("LoadImage started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
-
             ImageCompression = (ImageCompression)reader.ReadInt16();
 
             ImageData = new byte[_channels][];
@@ -352,8 +347,6 @@ namespace TgaBuilderLib.Psd
         /// </summary>      
         private void LoadLayers(BinaryReverseReader reader)
         {
-            Debug.WriteLine("LoadLayers started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
-
             uint layersInfoSectionLength = reader.ReadUInt32();
 
             if (layersInfoSectionLength <= 0)
@@ -403,8 +396,6 @@ namespace TgaBuilderLib.Psd
         /// </summary>        
         private void LoadGlobalLayerMask(BinaryReverseReader reader)
         {
-            Debug.WriteLine("LoadGlobalLayerMask started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
-
             uint maskLength = reader.ReadUInt32();
 
             if (maskLength <= 0) return;

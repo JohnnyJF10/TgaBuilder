@@ -14,9 +14,12 @@ using TgaBuilderLib.Messaging;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
 using TgaBuilderLib.Transitions;
+using TgaBuilderLib.Modifications;
 using TgaBuilderLib.ViewModel;
 using TgaBuilderLib.ViewModel.Elements;
 using TgaBuilderLib.ViewModel.Views;
+using Avalonia;
+using Avalonia.Controls;
 
 namespace TgaBuilderAvaloniaUi
 {
@@ -97,7 +100,21 @@ namespace TgaBuilderAvaloniaUi
                 maxMemoryBytes: sp.GetRequiredService<IUsageData>().UndoRedoMemoryBytes
             ));
 
-            services.AddSingleton<ITransitionHelper, TransitionHelper>();
+            services.AddSingleton<ITransitionHelper, TransitionHelper>(sp => new TransitionHelper(
+                AccentColor: GetSystemAccentColor(sp)));
+            services.AddSingleton<IModificationsHelper, ModificationsHelper>();
+        }
+
+        private TgaBuilderLib.Abstraction.Color GetSystemAccentColor(IServiceProvider serviceProvider)
+        {
+            if (Application.Current?.TryFindResource("SystemAccentColorDark3", out var resource) == true && resource is Avalonia.Media.Color color)
+            {
+                return new TgaBuilderLib.Abstraction.Color(color.R, color.G, color.B, color.A);
+            }
+            else
+            {
+                return new TgaBuilderLib.Abstraction.Color(128, 128, 128, 128); // Fallback to a default accent color (gray)
+            }
         }
 
         private void AddUIServicesToProvider(IServiceCollection services)
@@ -277,15 +294,15 @@ namespace TgaBuilderAvaloniaUi
 
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
-            services.AddTransient(sp => new SmoothTransitionViewModel(
+            services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
-            services.AddTransient(sp => new BrickTransitionViewModel(
+            services.AddTransient(sp => new ModificationsViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
-                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
@@ -339,13 +356,13 @@ namespace TgaBuilderAvaloniaUi
                 sp => new AboutWindow(
                     viewModel: sp.GetRequiredService<AboutViewModel>()));
 
-            services.AddTransient<IView, SmoothTransitionWindow>(
-                sp => new SmoothTransitionWindow(
-                    viewModel: sp.GetRequiredService<SmoothTransitionViewModel>()));
+            services.AddTransient<IView, TransitionWindow>(
+                sp => new TransitionWindow(
+                    viewModel: sp.GetRequiredService<TransitionViewModel>()));
 
-            services.AddTransient<IView, BrickTransitionWindow>(
-                sp => new BrickTransitionWindow(
-                    viewModel: sp.GetRequiredService<BrickTransitionViewModel>()));
+            services.AddTransient<IView, ModificationsWindow>(
+                sp => new ModificationsWindow(
+                    viewModel: sp.GetRequiredService<ModificationsViewModel>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)

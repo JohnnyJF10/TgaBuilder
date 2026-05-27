@@ -20,7 +20,6 @@ namespace TgaBuilderWpfUi.Converters
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("BrushToColorStruct: Value is not of type SolidColorBrush. Returning Fallback color.");
                 return new TgaBuilderLib.Abstraction.Color(0, 0, 0, 0);
             }
         }
@@ -41,7 +40,6 @@ namespace TgaBuilderWpfUi.Converters
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("BrushToColorStruct: Value is not of type Color. Returning Fallback brush.");
                 return new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent);
             }
         }

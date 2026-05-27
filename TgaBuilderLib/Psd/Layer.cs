@@ -44,7 +44,7 @@ namespace TgaBuilderLib.Psd
         public Layer(PsdFile psdFile)
         {
             SortedChannels = new SortedList<short, Channel>();
-            AdjustmentInfo = new List<AdjusmentLayerInfo>();
+            AdjustmentInfo = new List<AdjustmentLayerInfo>();
             Channels = new List<Channel>();
             Rect = PixelRect.Empty;
             PsdFile = psdFile;
@@ -54,9 +54,8 @@ namespace TgaBuilderLib.Psd
         public Layer(BinaryReverseReader reverseReader, PsdFile psdFile)
         {
             SortedChannels = new SortedList<short, Channel>();
-            AdjustmentInfo = new List<AdjusmentLayerInfo>();
+            AdjustmentInfo = new List<AdjustmentLayerInfo>();
             Channels = new List<Channel>();
-            Debug.WriteLine("Layer started at " + reverseReader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
             PsdFile = psdFile;
 
@@ -98,7 +97,6 @@ namespace TgaBuilderLib.Psd
 
             reverseReader.ReadByte(); //padding
 
-            Debug.WriteLine("Layer extraDataSize started at " + reverseReader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
             // this is the total size of the MaskData, the BlendingRangesData, the 
             // Name and the AdjustmenLayerInfo
@@ -122,22 +120,22 @@ namespace TgaBuilderLib.Psd
 
             AdjustmentInfo.Clear();
 
-            long adjustmenLayerEndPos = extraDataStartPosition + extraDataSize;
-            while (reverseReader.BaseStream.Position < adjustmenLayerEndPos)
+            long adjustmentLayerEndPos = extraDataStartPosition + extraDataSize;
+            while (reverseReader.BaseStream.Position < adjustmentLayerEndPos)
             {
                 try
                 {
-                    AdjustmentInfo.Add(new AdjusmentLayerInfo(reverseReader, this));
+                    AdjustmentInfo.Add(new AdjustmentLayerInfo(reverseReader, this));
                 }
                 catch
                 {
-                    reverseReader.BaseStream.Position = adjustmenLayerEndPos;
+                    reverseReader.BaseStream.Position = adjustmentLayerEndPos;
                 }
             }
 
-            // make shure we are not on a wrong offset, so set the stream position 
+            // make sure we are not on a wrong offset, so set the stream position 
             // manually
-            reverseReader.BaseStream.Position = adjustmenLayerEndPos;
+            reverseReader.BaseStream.Position = adjustmentLayerEndPos;
         }
 
 
@@ -171,7 +169,7 @@ namespace TgaBuilderLib.Psd
         /// <term>hLit</term><description>hard light</description>
         /// <term>sLit</term><description>soft light</description>
         /// <term>diff</term><description>difference</description>
-        /// <term>smud</term><description>exlusion</description>
+        /// <term>smud</term><description>exclusion</description>
         /// <term>div </term><description>color dodge</description>
         /// <term>idiv</term><description>color burn</description>
         /// </list>
@@ -227,11 +225,10 @@ namespace TgaBuilderLib.Psd
 
         public Mask? MaskData { get; private set; }
 
-        public List<AdjusmentLayerInfo> AdjustmentInfo { get; }
+        public List<AdjustmentLayerInfo> AdjustmentInfo { get; }
 
         public void Save(BinaryReverseWriter reverseWriter)
         {
-            Debug.WriteLine("Layer Save started at " + reverseWriter.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
             reverseWriter.Write(Rect.Top);
             reverseWriter.Write(Rect.Left);
@@ -273,7 +270,7 @@ namespace TgaBuilderLib.Psd
                     reverseWriter.Write((byte)0);
                 }
 
-                foreach (AdjusmentLayerInfo info in AdjustmentInfo) info.Save(reverseWriter);
+                foreach (AdjustmentLayerInfo info in AdjustmentInfo) info.Save(reverseWriter);
             }
         }
 

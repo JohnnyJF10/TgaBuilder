@@ -1,0 +1,142 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.MainWindowSelectionUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+             xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             x:DataType="viewmodel:MainViewModel"
+             x:CompileBindings="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:WriteableBitmapConverter x:Key="WriteableBitmapConverter" />
+            <converter:ColorStructToMediaColor x:Key="ColorStructToMediaColor" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <StackPanel>
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <elements:IconButton
+                    Icon="{StaticResource double_chevron_left}"
+                    Margin="5"
+                    ap:MouseOverInfoAP.InfoText="Copy entire Target Texture Panel to Source."
+                    Command="{Binding EntireToSourceCommand}"
+                    DockPanel.Dock="Right"
+                    IsEnabled="{Binding TargetIO.ControlsEnabled}" />
+                <elements:IconButton
+                    Icon="{StaticResource double_chevron_right}"
+                    Margin="5"
+                    ap:MouseOverInfoAP.InfoText="Copy entire Source Texture Panel to Target. CAUTION: This clears the undo and redo stacks."
+                    Command="{Binding EntireToTargetCommand}"
+                    DockPanel.Dock="Right"
+                    IsEnabled="{Binding TargetIO.ControlsEnabled}" />
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Padding="0"
+                    Background="Transparent"
+                    ap:MouseOverInfoAP.InfoText="Open Single Texture Modifications"
+                    Command="{Binding ModificationsCommand}">
+                    <PathIcon Data="{StaticResource image_edit}"
+                              Width="18" Height="18" />
+                </Button>
+                <Button
+                    Margin="5"
+                    Width="36"
+                    Height="36"
+                    Padding="0"
+                    Background="Transparent"
+                    ap:MouseOverInfoAP.InfoText="Open Transition Helper"
+                    Command="{Binding TransitionCommand}">
+                    <PathIcon Data="{StaticResource table_freeze_regular}"
+                              Width="18" Height="18" />
+                </Button>
+            </StackPanel>
+            <Button
+                Width="100"
+                Height="100"
+                Padding="0"
+                HorizontalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Current Tile Preview (Click to place)"
+                BorderBrush="Transparent"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{Binding SwitchToDestinationPlacingModeCommand}">
+                <Grid Width="100" Height="100">
+                    <elements:CheckerRectangle
+                        Width="{Binding #SelectionImage.Bounds.Width}"
+                        Height="{Binding #SelectionImage.Bounds.Height}"
+                        TileDensity="1.25" />
+                    <Image x:Name="SelectionImage"
+                           RenderOptions.BitmapInterpolationMode="None"
+                           Source="{Binding Selection.Presenter, Converter={StaticResource WriteableBitmapConverter}}" />
+                </Grid>
+                <Button.Styles>
+                    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                    </Style>
+
+                    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                    </Style>
+                </Button.Styles>
+            </Button>
+            <StackPanel
+                HorizontalAlignment="Center"
+                DataContext="{Binding Selection}"
+                Orientation="Horizontal">
+                <elements:IconButton
+                    Width="36"
+                    Height="36"
+                    Margin="5"
+                    HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Copy (Ctrl + C)"
+                    Command="{Binding CopyCommand}"
+                    Icon="{StaticResource image_copy}" />
+                <elements:IconButton
+                    Width="36"
+                    Height="36"
+                    Margin="5"
+                    HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Paste (Ctrl + V)"
+                    Command="{Binding PasteCommand}"
+                    Icon="{StaticResource clipboard_image}" />
+            </StackPanel>
+            <StackPanel
+                HorizontalAlignment="Center"
+                DataContext="{Binding Selection}"
+                Orientation="Horizontal"
+                >
+                <elements:IconToggleButton
+                Classes="outlined"
+                    Width="36"
+                    Height="36"
+                    Margin="5"
+                    HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Copy Automatically"
+                    Icon="{StaticResource image_arrow_forward}"
+                    IsChecked="{Binding AutoCopy, Mode=TwoWay}" />
+
+                <elements:IconToggleButton
+                    x:Name="AutoPasteToggleButton"
+                    Classes="outlined"
+                    Width="36"
+                    Height="36"
+                    Padding="4,0,0,0"
+                    Margin="5"
+                    HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Paste Automatically"
+                    Icon="{StaticResource clipboard_arrow_right}"
+                    IsChecked="{Binding AutoPaste, Mode=TwoWay}" />
+            </StackPanel>
+    </StackPanel>
+</UserControl>

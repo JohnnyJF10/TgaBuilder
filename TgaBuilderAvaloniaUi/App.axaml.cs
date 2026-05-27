@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -40,19 +41,22 @@ namespace TgaBuilderAvaloniaUi
 
             // This is required in Avalonia UI as partial changes on Images are not automatically redrawn.
             mainViewModel.VisualInvalidator = new VisualInvalidator(mainWindow.TargetImage);
-            mainViewModel.Selection.VisualInvalidator = new VisualInvalidator(mainWindow.SelectionImage);
+            var SelectionUserControl = mainWindow.FindControl<MainWindowSelectionUserControl>("SelectionUserControl")
+                ?? throw new InvalidOperationException("SelectionUserControl not found in MainWindow visual tree");
+            var selectionImage = SelectionUserControl.FindControl<Image>("SelectionImage")
+                ?? throw new InvalidOperationException("SelectionImage not found in MainWindow visual tree");
+            mainViewModel.Selection.VisualInvalidator = new VisualInvalidator(selectionImage);
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = mainWindow;
             }
 
-            mainWindow.Loaded += (_, _) =>
-            {
-                //_ = PeriodicDebugLogging();
-            };
-
             mainWindow.ThemeToggleButton.Click += (_, _) => ToggleTheme();
+
+            var clipboardService = provider.GetRequiredService<IClipboardService>();
+            if (clipboardService is ClipboardService clipboardServiceImpl && mainWindow.Clipboard is not null) 
+                clipboardServiceImpl.RegisterClipboard(mainWindow.Clipboard);
 
             mainWindow.Show();
 
@@ -95,17 +99,6 @@ namespace TgaBuilderAvaloniaUi
 
         if (mainWindow.TargetPanel is not ZoomBorder targetPanel)
             return;
-
-
-        //Debug.WriteLine(
-        //    $"Periodic Debug Log - " +
-        //    $"SourceZoom: {sourcePanel.ZoomX:F2}, " +
-        //    $"SourceOffset: ({sourcePanel.OffsetX:F2}, {sourcePanel.OffsetY:F2}), " +
-        //    $"TargetZoom: {targetPanel.ZoomX:F2}, " +
-        //    $"TargetOffset: ({targetPanel.OffsetX:F2}, {targetPanel.OffsetY:F2})"
-        //);
-            
-        
 
         await Task.Delay(500);
         }

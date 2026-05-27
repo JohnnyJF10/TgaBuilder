@@ -70,15 +70,10 @@ namespace TgaBuilderLib.ViewModel
 
         internal bool ReplaceColorEnabled { get; set; }
 
+        internal bool IsGridlessMode = false;
+
 
         public event EventHandler? PresenterChanged;
-
-        /// <summary>
-        /// Optional callback invoked when the presenter changes (at the end of OnPresenterChanged).
-        /// The Avalonia UI version registers this to reset the ZoomBorder matrix
-        /// and invalidate the ScrollViewer layout when the presenter changes.
-        /// </summary>
-        public Action? PresenterChangedCallback { get; set; }
 
         public string PixelInfo => $"{XPointer}, {YPointer}px";
 
@@ -157,7 +152,6 @@ namespace TgaBuilderLib.ViewModel
 
             AnimSelectShape.SetShapeProperties(xGrid, yGrid, Picker.Size);
 
-            Debug.WriteLine($"AnimSelectShape: {AnimSelectShape.X}, {AnimSelectShape.Y}, {AnimSelectShape.Width}, {AnimSelectShape.Height}");
         }
 
         public void SetupAnimation()
@@ -177,7 +171,6 @@ namespace TgaBuilderLib.ViewModel
         protected void OnPresenterChanged()
         {
             PresenterChanged?.Invoke(this, EventArgs.Empty);
-            PresenterChangedCallback?.Invoke();
         }
 
         protected void SetSelectionBase()
@@ -198,6 +191,24 @@ namespace TgaBuilderLib.ViewModel
         }
 
         public void RefreshPresenter() => Presenter.Refresh();
+
+
+        protected void SetSelectionSizeGridless()
+        {
+            SelectionShape.Width = XPointer - Picker.X > 0
+                ? XPointer - Picker.X
+                : Picker.X - XPointer;
+            SelectionShape.X = (XPointer - Picker.X > 0)
+                ? Picker.X
+                : Picker.X - SelectionShape.Width;
+
+            SelectionShape.Height = YPointer - Picker.Y > 0
+                ? YPointer - Picker.Y
+                : Picker.Y - YPointer;
+            SelectionShape.Y = (YPointer - Picker.Y > 0)
+                ? Picker.Y
+                : Picker.Y - SelectionShape.Height;
+        }
 
         protected void SetSelectionHorizontal()
         {

@@ -42,8 +42,6 @@ namespace TgaBuilderLib.ViewModel
         private bool _isGridDragging;
         private double _zoom = 1.0;
 
-        internal bool IsGridlessMode = false;
-
         public VisualGridViewModel VisualGrid { get; set; }
 
         public override string PanelInfo
@@ -85,7 +83,6 @@ namespace TgaBuilderLib.ViewModel
 
             RefreshPresenter();
             OnPresenterChanged();
-            Debug.WriteLine($"Presenter set to {bitmap.PixelWidth}x{bitmap.PixelHeight} pixels.");
         }
 
         public override void SetZoom(double zoom)
@@ -126,7 +123,7 @@ namespace TgaBuilderLib.ViewModel
         public override void AltMove()
         {
             IsGridlessMode = true;
-            Picker.IsVisible = true;
+            Picker.IsVisible = false;
             Picker.X = XPointer;
             Picker.Y = YPointer;
         }
@@ -252,23 +249,6 @@ namespace TgaBuilderLib.ViewModel
             AnimSelectShape.StrokeThickness = 2 / value;
             Picker.StrokeThickness = 2 / value;
             VisualGrid.StrokeThickness = 2 / value;
-        }
-
-        private void SetSelectionSizeGridless()
-        {
-            SelectionShape.Width = XPointer - Picker.X > 0
-                ? XPointer - Picker.X
-                : Picker.X - XPointer;
-            SelectionShape.X = (XPointer - Picker.X > 0)
-                ? Picker.X
-                : Picker.X - SelectionShape.Width;
-
-            SelectionShape.Height = YPointer - Picker.Y > 0
-                ? YPointer - Picker.Y
-                : Picker.Y - YPointer;
-            SelectionShape.Y = (YPointer - Picker.Y > 0)
-                ? Picker.Y
-                : Picker.Y - SelectionShape.Height;
         }
 
         private void SetSelectionSizeWithOffsetHor()

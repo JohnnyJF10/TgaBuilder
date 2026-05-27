@@ -12,73 +12,75 @@ namespace TgaBuilderLib.Transitions
         None,
         BoxBlur,
         Median,
-        Bilateral
+        Bilateral,
+        Gaussian
     }
 
     public enum SegmentationMethod
     {
+        Felzenszwalb,
+        Slic,
+        Quickshift,
         Watershed,
-        XYProjection
+        BrickFit,
+        GridFit,
     }
 
     public partial class TransitionHelper
     {
 
         // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
-        private unsafe (int[] labels, List<TileSegment> tileSegmentList) BricksAnalyze(byte[] pixels)
+        private (int[] labels, List<TileSegment> tileSegmentList) BricksAnalyze(byte[] pixels)
         {
             int totalPixels = Width * Height;
 
             float[] filtered = new float[totalPixels];
             int[] labels = new int[totalPixels];
-            
+            byte[] filteredColorPixels = pixels;
 
             // 1. Compute grayscale values
             float[] gray = new float[totalPixels];
-
-            fixed (byte* p = pixels)
-            {
-                if (!InvertGrayscale)
-                {
-                    for (int i = 0; i < totalPixels; i++)
-                    {
-                        byte* px = p + (i * TRANSITIONS_BPP);
-                        gray[i] = px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f;
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < totalPixels; i++)
-                    {
-                        byte* px = p + (i * TRANSITIONS_BPP);
-                        gray[i] = 255f - (px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f);
-                    }
-                }
-            }
+            ComputeGrayValues(pixels, gray);
 
             // 2. Initial Filter
             switch (SelectedFilter)
             {
                 case FilterType.BoxBlur:
-                    BoxBlur(filtered, gray);
+                    BoxBlurGray(filtered, gray);
+                    filteredColorPixels = (byte[])pixels.Clone();
+                    BoxBlurColor(filteredColorPixels, pixels);
                     break;
                 case FilterType.Median:
-                    MedianFilter3x3(filtered, gray);
+                    MedianFilter3x3Gray(filtered, gray);
+                    filteredColorPixels = (byte[])pixels.Clone();
+                    MedianFilter3x3Color(filteredColorPixels, pixels);
                     break;
                 case FilterType.Bilateral:
-                    BilateralFilter3x3(filtered, gray, 30f);
+                    BilateralFilter3x3Gray(filtered, gray, BilateralSigma);
+                    filteredColorPixels = (byte[])pixels.Clone();
+                    BilateralFilter3x3Color(filteredColorPixels, pixels, BilateralSigma);
+                    break;
+                case FilterType.Gaussian:
+                    GaussianBlur3x3Gray(filtered, gray, GaussianSigma);
+                    filteredColorPixels = (byte[])pixels.Clone();
+                    GaussianBlur3x3Color(filteredColorPixels, pixels, GaussianSigma);
                     break;
                 case FilterType.None:
                 default:
                     filtered = gray;
+                    filteredColorPixels = pixels;
                     break;
             }
 
             // 3. Segmentation
             int labelCount = SegmentationMethod switch
             {
-                SegmentationMethod.Watershed => WatershedSegmentation(filtered, labels),
-                SegmentationMethod.XYProjection => XYProjectionSegmentation(filtered, labels),
+                SegmentationMethod.Felzenszwalb => Felzenszwalb(filteredColorPixels, labels, FelzenszwalbMinSize, FelzenszwalbScale),
+                SegmentationMethod.Slic => Slic(filteredColorPixels, labels, SlicSegmentCount, SlicCompactness),
+                SegmentationMethod.Quickshift => Quickshift(filteredColorPixels, labels, QuickshiftMaxDist, QuickshiftRatio),
+                SegmentationMethod.Watershed => Watershed(filtered, labels),
+                SegmentationMethod.BrickFit => BrickFit(filtered, labels, GridFitAngle),
+                SegmentationMethod.GridFit => GridFit(filtered, labels, GridFitAngle),
                 _ => 0
             };
 
@@ -88,6 +90,36 @@ namespace TgaBuilderLib.Transitions
             return (labels, tileSegmentList);
         }
 
+        private void ComputeGrayValues(byte[] pixels, float[] gray)
+        {
+            int totalPixels = Width * Height;
+
+            if (gray.Length != totalPixels)
+                throw new ArgumentException("Gray array length does not match pixel data.");
+
+            unsafe
+            {
+                fixed (byte* p = pixels)
+                {
+                    if (!InvertGrayscale)
+                    {
+                        for (int i = 0; i < totalPixels; i++)
+                        {
+                            byte* px = p + (i * TRANSITIONS_BPP);
+                            gray[i] = px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f;
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < totalPixels; i++)
+                        {
+                            byte* px = p + (i * TRANSITIONS_BPP);
+                            gray[i] = 255f - (px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f);
+                        }
+                    }
+                } 
+            }
+        }
 
         private List<TileSegment> BuildTileSegmentList(int[] labels, int width, int height, int labelCount)
         {

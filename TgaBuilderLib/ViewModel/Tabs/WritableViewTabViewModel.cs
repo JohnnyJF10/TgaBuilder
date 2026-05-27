@@ -104,7 +104,6 @@ namespace TgaBuilderLib.ViewModel
             OffsetY -= 1000;
             OffsetY = 0;
 
-            Debug.WriteLine("DefferedFill called, OffsetY reset to 0");
         }
 
         public void Fill()

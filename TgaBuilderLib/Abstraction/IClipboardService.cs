@@ -6,13 +6,13 @@
         /// Sets the given bitmap into the clipboard.
         /// </summary>
         /// <param name="bitmap">The bitmap to set.</param>
-        void SetImage(IReadableBitmap bitmap);
+        Task SetImageAsync(IReadableBitmap bitmap);
 
         /// <summary>
         /// Checks if the clipboard contains an image.
         /// </summary>
         /// <returns>True, if an image is present.</returns>
-        bool ContainsImage();
+        Task<bool> CheckContainsImageAsync();
 
         /// <summary>
         /// Returns the image from the clipboard.

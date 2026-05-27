@@ -24,5 +24,5 @@ public enum BricksPipelineRequirements
     /// <summary>
     /// Indicates that only edge coloring is required for the associated operation or algorithm.
     /// </summary>
-    RequiresEdgeColoring = 2,
+    RequiresDrawing = 2,
 }

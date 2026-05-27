@@ -49,7 +49,6 @@ namespace TgaBuilderLib.Psd
 
             internal Mask(BinaryReverseReader reader, Layer layer)
             {
-                Debug.WriteLine("Mask started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 Layer = layer;
 
@@ -96,7 +95,6 @@ namespace TgaBuilderLib.Psd
 
             public void Save(BinaryReverseWriter writer)
             {
-                Debug.WriteLine("Mask Save started at " + writer.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 if (Rect.IsEmpty)
                 {
@@ -162,7 +160,6 @@ namespace TgaBuilderLib.Psd
 
             internal void LoadPixelData(BinaryReverseReader reader)
             {
-                Debug.WriteLine("Mask.LoadPixelData started at " + reader.BaseStream.Position.ToString(CultureInfo.InvariantCulture));
 
                 if (Layer.SortedChannels.ContainsKey(-2) == false)
                     return;
@@ -183,7 +180,7 @@ namespace TgaBuilderLib.Psd
                     switch (Layer.PsdFile.Depth)
                     {
                         case 1:
-                            bytesPerRow = Rect.Width;//NOT Shure
+                            bytesPerRow = Rect.Width;//NOT Sure
                             break;
                         case 8:
                             bytesPerRow = Rect.Width;
@@ -209,10 +206,10 @@ namespace TgaBuilderLib.Psd
                             break;
                         case ImageCompression.Rle:
                             {
-                                int[] rowLenghtList = new int[Rect.Height];
+                                int[] rowLengthList = new int[Rect.Height];
 
-                                for (int i = 0; i < rowLenghtList.Length; i++)
-                                    rowLenghtList[i] = readerImg.ReadInt16();
+                                for (int i = 0; i < rowLengthList.Length; i++)
+                                    rowLengthList[i] = readerImg.ReadInt16();
 
                                 for (int i = 0; i < Rect.Height; i++)
                                 {

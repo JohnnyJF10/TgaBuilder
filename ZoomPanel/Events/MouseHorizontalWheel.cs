@@ -4,7 +4,7 @@ using System.Windows.Input;
 namespace WPFZoomPanel.Events
 {
     /// <summary>
-    /// Provides events for handling mouse horizontal wheel scrollin or mouse
+    /// Provides events for handling mouse horizontal wheel scrolling or mouse
     /// wheel tilt
     /// </summary>
     public class MouseHorizontalWheel

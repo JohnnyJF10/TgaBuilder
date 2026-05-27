@@ -6,7 +6,7 @@ namespace TgaBuilderLib.FileHandling
     public enum ResultStatus
     {
         Success,
-        RezisingRequired,
+        ResizingRequired,
         BitmapAreaNotSufficient,
     }
 

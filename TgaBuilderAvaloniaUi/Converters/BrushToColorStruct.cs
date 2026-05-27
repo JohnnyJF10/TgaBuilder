@@ -22,8 +22,6 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("BrushToColorStruct: Value is not an ISolidColorBrush. Returning Fallback color.");
-                System.Diagnostics.Debug.WriteLine("Type: " + (value?.GetType().FullName ?? "null"));
                 return new TgaBuilderLib.Abstraction.Color(0, 0, 0, 0);
             }
         }
@@ -44,7 +42,6 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("BrushToColorStruct: Value is not of type Color. Returning Fallback brush.");
                 return new SolidColorBrush(Colors.Transparent);
             }
         }

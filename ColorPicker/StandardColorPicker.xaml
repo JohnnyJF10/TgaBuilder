@@ -34,12 +34,6 @@
                             PickerType="{Binding ElementName=uc, Path=PickerType}"
                             SmallChange="{Binding ElementName=uc, Path=SmallChange}"
                             ColorState="{Binding ElementName=uc, Path=ColorState, Mode=TwoWay}" />
-        <!--<local:ColorDisplay Grid.RowSpan="3" Grid.Row="1" Margin="5" MaxWidth="80" VerticalAlignment="Stretch"
-                            HorizontalAlignment="Stretch"
-                            ColorState="{Binding ElementName=uc, Path=ColorState, Mode=TwoWay}"
-                            SecondColorState="{Binding ElementName=uc, Path=SecondColorState, Mode=TwoWay}"
-                            HintColorState="{Binding ElementName=uc, Path=HintColorState, Mode=TwoWay}"
-                            UseHintColor="{Binding ElementName=uc, Path=UseHintColor, Mode=TwoWay}" />-->
         <DockPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,5,0">
             <Label Content="Hex" Visibility="Collapsed"/>
             <local:HexColorTextBox 

@@ -101,24 +101,9 @@ namespace TgaBuilderLib.ViewModel
 
         public async Task DefferedFill()
         {
-            await Task.Delay(20);
+            await Task.Delay(42);
 
-            ZoomBorderProxy?.ResetView();
-
-            var zoom = VisualPanelSize.ViewportHeight / _panel.Presenter.PixelHeight;
-
-            _panel.Zoom = zoom;
-            OnPropertyChanged(nameof(Zoom));
-            OnContentActualSizeChanged();
-            await Task.Delay(20);
-
-            var centerX = _panel.Presenter.PixelWidth > VisualPanelSize.ViewportWidth
-                ? VisualPanelSize.ViewportWidth / zoom / 2
-                : _panel.Presenter.PixelWidth / 2.0;
-
-            var centerY = _panel.Presenter.PixelHeight / 2.0;
-
-            ZoomBorderProxy?.CenterOn(centerX, centerY, zoom);
+            Fit();
         }
 
         public void Fill()
@@ -129,8 +114,8 @@ namespace TgaBuilderLib.ViewModel
             OnPropertyChanged(nameof(Zoom));
             OnContentActualSizeChanged();
 
-            var centerX = _panel.Presenter.PixelWidth > VisualPanelSize.ViewportWidth
-                ? VisualPanelSize.ViewportWidth / zoom / 2
+            var centerX = _panel.Presenter.PixelWidth * zoom > VisualPanelSize.ViewportWidth
+                ? VisualPanelSize.ViewportWidth / zoom / 2.0
                 : _panel.Presenter.PixelWidth / 2.0;
 
             var centerY = _panel.Presenter.PixelHeight / 2.0;
@@ -148,8 +133,8 @@ namespace TgaBuilderLib.ViewModel
 
             var centerX = _panel.Presenter.PixelWidth / 2.0;
 
-            var centerY = _panel.Presenter.PixelHeight > VisualPanelSize.ViewportHeight
-                ? VisualPanelSize.ViewportHeight / zoom / 2
+            var centerY = _panel.Presenter.PixelHeight * zoom > VisualPanelSize.ViewportHeight
+                ? VisualPanelSize.ViewportHeight / zoom / 2.0
                 : _panel.Presenter.PixelHeight / 2.0;
 
             ZoomBorderProxy?.CenterOn(centerX, centerY, zoom);

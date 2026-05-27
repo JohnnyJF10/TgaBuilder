@@ -1,0 +1,112 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.MainWindowFormatUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+                          x:DataType="viewmodel:FormatTabViewModel"
+             x:CompileBindings="False"
+             xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:ColorStructToMediaColor x:Key="ColorStructToMediaColor" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+                    <StackPanel
+                        Margin="5,0"
+                                                Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,0,1.6"
+                            VerticalAlignment="Center"
+                            Text="BPP:" />
+
+                        <Grid Margin="0,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                Grid.Column="0"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding IsRgb24}"
+                                Text="24" />
+                            <TextBlock
+                                Grid.Column="0"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                IsVisible="{Binding IsBgra32}"
+                                Text="24" />
+
+                            <ToggleSwitch
+                                x:Name="FormatSwitch"
+                                Grid.Column="1"
+                                OffContent=""
+                                OnContent=""
+                                ap:MouseOverInfoAP.InfoText="Sets image format"
+                                IsChecked="{Binding IsBgra32}" 
+                                Click="FormatSwitch_Click"
+                                />
+
+                            <TextBlock
+                                Grid.Column="2"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding IsBgra32}"
+                                Text="32" />
+                            <TextBlock
+                                Grid.Column="2"
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                IsVisible="{Binding IsRgb24}"
+                                Text="32" />
+                        </Grid>
+                        <elements:IconToggleButton
+                            Classes="outlined"
+                            Width="36"
+                            Height="36"
+                            Padding="-6,0,15,0"
+                            Margin="5,0,5,0"
+                            IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            DockPanel.Dock="Left">
+                            <ToggleButton.Content>
+								<Path VerticalAlignment="Center"
+                                  Fill="Transparent" Width="15" Height="15" Stretch="Uniform"
+                                  StrokeThickness="1.5"
+                                  Stroke="{DynamicResource IconFillBrush}"
+                                  Data="{StaticResource eye_dropper}" />
+                            </ToggleButton.Content>       
+                        
+                        </elements:IconToggleButton>
+
+                        <ColorPicker 
+                            x:Name="TargetColorPicker"
+                            ap:MouseOverInfoAP.InfoText="Pick the color which shall be replaced with magenta as transparent color"
+                            Color="{Binding ColorToReplace, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}"                            
+                        />
+
+                        <elements:IconToggleButton
+                            Classes="outlined"
+                            Icon="{StaticResource calligraphy_pen}"
+                            Margin="5,0,5,0"
+                            ap:MouseOverInfoAP.InfoText="When selecting textures which shall be replaced with magenta as transparent color"
+                            DockPanel.Dock="Right"
+                            IsChecked="{Binding IsReplaceSelectionColor, Mode=OneWayToSource}" />
+                        <elements:IconButton
+                            Classes="outlined"
+                            Icon="{StaticResource color_fill}"
+                            ap:MouseOverInfoAP.InfoText="Convert all instances of the selected color to magenta as transparent color"
+                            Command="{Binding ReplaceSourceColorCommand}"
+                            DockPanel.Dock="Left" />
+                    </StackPanel>
+                
+</UserControl>

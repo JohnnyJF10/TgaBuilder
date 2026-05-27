@@ -12,11 +12,11 @@ namespace TgaBuilderAvaloniaUi.Converters
         {
             if (value is bool b)
             {
-                return b ? DashStyle.Dot : DashStyle.Dash;
+                return b ? DashStyle.Dot : null;
             }
             else
             {
-                return DashStyle.Dash;
+                return null;
             }
         }
         public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -27,7 +27,7 @@ namespace TgaBuilderAvaloniaUi.Converters
             }
             else
             {
-                return false;
+                return true;
             }
         }
     }

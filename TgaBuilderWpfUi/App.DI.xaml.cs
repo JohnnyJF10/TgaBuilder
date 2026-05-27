@@ -8,6 +8,7 @@ using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Level;
 using TgaBuilderLib.Messaging;
 using TgaBuilderLib.Transitions;
+using TgaBuilderLib.Modifications;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
 using TgaBuilderLib.ViewModel;
@@ -17,6 +18,7 @@ using TgaBuilderWpfUi.Services;
 using TgaBuilderWpfUi.View;
 using TgaBuilderWpfUi.Wrappers;
 using Application = System.Windows.Application;
+using Wpf.Ui.Appearance;
 
 namespace TgaBuilderWpfUi
 {
@@ -94,7 +96,9 @@ namespace TgaBuilderWpfUi
         private void AddUIServicesToProvider(IServiceCollection services)
         {
             services.AddSingleton<IMediaFactory, MediaFactory>();
-            services.AddSingleton<ITransitionHelper, TransitionHelper>();
+            services.AddSingleton<ITransitionHelper, TransitionHelper>( sp => new TransitionHelper(
+                AccentColor: GetColorStructFromWpfColor(ApplicationAccentColorManager.GetColorizationColor())));
+            services.AddSingleton<IModificationsHelper, ModificationsHelper>();
             services.AddSingleton<IClipboardService, ClipboardService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<ICursorSetter, CursorSetter>(sp => new CursorSetter(
@@ -105,6 +109,9 @@ namespace TgaBuilderWpfUi
             services.AddSingleton<IMessageBoxService, MessageBoxService>();
             services.AddSingleton<IDispatcherService, DispatcherService>();
         }
+
+        private TgaBuilderLib.Abstraction.Color GetColorStructFromWpfColor(System.Windows.Media.Color wpfColor)
+            => new TgaBuilderLib.Abstraction.Color(wpfColor.R, wpfColor.G, wpfColor.B, wpfColor.A);
 
         private void AddBitmapFactoryProvider(IServiceCollection services)
         {
@@ -271,14 +278,15 @@ namespace TgaBuilderWpfUi
 
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
-            services.AddTransient(sp => new SmoothTransitionViewModel(
+            services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
-            services.AddTransient(sp => new BrickTransitionViewModel(
+
+            services.AddTransient(sp => new ModificationsViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
-                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
@@ -331,13 +339,13 @@ namespace TgaBuilderWpfUi
                 sp => new AboutWindow(
                     viewModel: sp.GetRequiredService<AboutViewModel>()));
 
-            services.AddTransient<IView, SmoothTransitionWindow>(
-                sp => new SmoothTransitionWindow(
-                    viewModel: sp.GetRequiredService<SmoothTransitionViewModel>()));
+            services.AddTransient<IView, TransitionWindow>(
+                sp => new TransitionWindow(
+                    viewModel: sp.GetRequiredService<TransitionViewModel>()));
 
-            services.AddTransient<IView, BrickTransitionWindow>(
-                sp => new BrickTransitionWindow(
-                    viewModel: sp.GetRequiredService<BrickTransitionViewModel>()));
+            services.AddTransient<IView, ModificationsWindow>(
+                sp => new ModificationsWindow(
+                    viewModel: sp.GetRequiredService<ModificationsViewModel>()));
         }
 
         private IWriteableBitmap GetBitmapFromFactory(IServiceProvider serviceProvider, int width, int height, bool hasAlpha)
