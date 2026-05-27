@@ -45,6 +45,7 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 | [Installation](Manuals/Installation.md) | Download links, system requirements, platform setup |
 | [Main Controls](Manuals/MainControls.md) | All panels, tabs, mouse/keyboard controls, and shortcuts |
 | [Modifications & Transitions](Manuals/ModificationsAndTransition.md) | Modifications window, Smooth transitions, Brick transitions with all segmentation algorithms and filters |
+| [Third-Party Licenses](Manuals/ThirdPartyLicenses.md) | All third-party library licenses and attributions |
 
 ---
 
@@ -62,29 +63,9 @@ For detailed instructions, see the [Installation Guide](Manuals/Installation.md)
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See [LICENSE.txt](LICENSE.txt).
 
-### Third-Party Libraries
-
-For WPFZoomPanel, bzPSD and ColorPicker, I did a significant amount of custom modifications, so it was not sufficient to just add them as NuGet packages. These modified projects are included in this repository as well. bzPSD has been modernized to .NET Core and is fully integrated into the TgaBuilderLib assembly. WPFZoomPanel and ColorPicker have own assemblies.
-
-| Package                          | Version  | Source      | License              | Project URL                                                          |
-|----------------------------------|----------|-------------|----------------------|----------------------------------------------------------------------|
-| *WPF UI version:*                |          |             |                      |                                                                      |
-| WPF UI                           | 4.0.3    | NuGet       | MIT                  | [GitHub](https://github.com/lepoco/wpfui)                            |
-| WPFZoomPanel                     | -        | GitHub      | MIT                  | [GitHub](https://github.com/Moravuscz/WPFZoomPanel)                  |
-| ColorPicker                      | 1.0.11   | GitHub      | MIT                  | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
-| Microsoft Dependency Injection   | 9.0.9    | NuGet       | MIT                  | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
-| *Avalonia UI version:*           |          |             |                      |                                                                      |
-| Avalonia UI                      | 12.0.2   | Avalonia UI | MIT                  | [Avalonia UI](https://avaloniaui.net/)                               |
-| PanAndZoom                       | 12.0.0.1 | NuGet       | MIT                  | [GitHub](https://github.com/wieslawsoltes/PanAndZoom)                |
-| Microsoft Dependency Injection   | 9.0.9    | NuGet       | MIT                  | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
-| *Core Library:*                  |          |             |                      |                                                                      |
-| Pfim                             | 0.11.4   | NuGet       | MIT                  | [GitHub](https://github.com/nickbabcock/Pfim)                        |
-| bzPSD                            | -        | GitHub      | BSD-3-Clause         | [GitHub](https://github.com/DsonKing/System.Drawing.PSD)             |
-| SharpZipLib                      | 1.4.2    | NuGet       | MIT                  | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
-
-I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their impressive public contributions immensely helped me understand the TR level file format.
+For third-party library licenses and attributions, see [Third-Party Licenses](Manuals/ThirdPartyLicenses.md).
 
 ## Contributing
 
