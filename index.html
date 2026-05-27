@@ -132,55 +132,54 @@
       <h2 class="section-title">See It In Action</h2>
       <p class="section-subtitle">A few demo videos...</p>
 
-      <div class="demos-grid">
-        <div class="demo-card">
-          <div class="demo-video">
-            <video src="Screenshots/Modifications.mp4" autoplay loop muted playsinline></video>
-          </div>
-          <div class="demo-info">
-            <h3>Modifications Window</h3>
-            <p>Apply non-destructive adjustments with real-time preview — brightness, contrast, hue rotation, saturation, color overlay and more.</p>
-          </div>
-        </div>
-
-        <div class="demo-card">
-          <div class="demo-video">
-            <video src="Screenshots/TransitionMode.mp4" autoplay loop muted playsinline></video>
-          </div>
-          <div class="demo-info">
-            <h3>Transition Mode</h3>
-            <p>Quickly switch the transition direction to generate the perfect transition tiles.</p>
+      <!-- Video Carousel -->
+      <div class="carousel">
+        <!-- Main video stage -->
+        <div class="carousel-stage">
+          <video class="carousel-video" muted playsinline></video>
+          <div class="carousel-caption">
+            <h3 class="carousel-caption-title"></h3>
+            <p class="carousel-caption-text"></p>
           </div>
         </div>
 
-        <div class="demo-card">
-          <div class="demo-video">
-            <video src="Screenshots/SmoothTransition.mp4" autoplay loop muted playsinline></video>
-          </div>
-          <div class="demo-info">
-            <h3>Smooth Transition</h3>
-            <p>Create smooth gradient transitions between textures with configurable hardness, widening, and shift.</p>
-          </div>
-        </div>
-
-        <div class="demo-card">
-          <div class="demo-video">
-            <video src="Screenshots/BrickTransitionAnalysis.mp4" autoplay loop muted playsinline></video>
-          </div>
-          <div class="demo-info">
-            <h3>Brick Transition — Analysis</h3>
-            <p>Analyze brick patterns using segmentation algorithms like Felzenszwalb, Watershed, BrickFit (shown) and others with configurable filters.</p>
-          </div>
-        </div>
-
-        <div class="demo-card">
-          <div class="demo-video">
-            <video src="Screenshots/BrickTransitionManual.mp4" autoplay loop muted playsinline></video>
-          </div>
-          <div class="demo-info">
-            <h3>Brick Transition — Manual</h3>
-            <p>Draw and erase brick regions manually for complete control over the transition result.</p>
-          </div>
+        <!-- Thumbnail selector panel -->
+        <div class="carousel-selector">
+          <button class="carousel-thumb active"
+                  data-src="Screenshots/Modifications.mp4"
+                  data-title="Modifications Window"
+                  data-desc="Apply non-destructive adjustments with real-time preview — brightness, contrast, hue rotation, saturation, color overlay and more.">
+            <span class="thumb-label">Modifications</span>
+            <span class="thumb-progress"></span>
+          </button>
+          <button class="carousel-thumb"
+                  data-src="Screenshots/TransitionMode.mp4"
+                  data-title="Transition Mode"
+                  data-desc="Quickly switch the transition direction to generate the perfect transition tiles.">
+            <span class="thumb-label">Transition Mode</span>
+            <span class="thumb-progress"></span>
+          </button>
+          <button class="carousel-thumb"
+                  data-src="Screenshots/SmoothTransition.mp4"
+                  data-title="Smooth Transition"
+                  data-desc="Create smooth gradient transitions between textures with configurable hardness, widening, and shift.">
+            <span class="thumb-label">Smooth Transition</span>
+            <span class="thumb-progress"></span>
+          </button>
+          <button class="carousel-thumb"
+                  data-src="Screenshots/BrickTransitionAnalysis.mp4"
+                  data-title="Brick Transition — Analysis"
+                  data-desc="Analyze brick patterns using segmentation algorithms like Felzenszwalb, Watershed, BrickFit (shown) and others with configurable filters.">
+            <span class="thumb-label">Brick Analysis</span>
+            <span class="thumb-progress"></span>
+          </button>
+          <button class="carousel-thumb"
+                  data-src="Screenshots/BrickTransitionManual.mp4"
+                  data-title="Brick Transition — Manual"
+                  data-desc="Draw and erase brick regions manually for complete control over the transition result.">
+            <span class="thumb-label">Brick Manual</span>
+            <span class="thumb-progress"></span>
+          </button>
         </div>
       </div>
     </div>
