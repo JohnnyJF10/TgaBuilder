@@ -3,7 +3,7 @@
 
 [Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [GitHub Page](https://johnnyjf10.github.io/TgaBuilder/)
 
-![LatestReleaseBuildStatus](https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release.yml/badge.svg)
+![LatestReleaseBuildStatus](https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release-combined.yml/badge.svg)
 ![Github All Releases](https://img.shields.io/github/downloads/JohnnyJF10/TgaBuilder/total.svg)
 ![GitHub License](https://img.shields.io/github/license/JohnnyJF10/TgaBuilder)
 
