@@ -90,7 +90,7 @@ jobs:
             -r win-x64 `
             --self-contained true `
             /p:PublishReadyToRun=false `
-            /p:PublishSingleFile=false `
+            /p:PublishSingleFile=true `
             -o publish/avalonia-windows
 
       - name: Remove .pdb files (Avalonia Windows)
@@ -119,7 +119,7 @@ jobs:
             -r linux-x64 `
             --self-contained true `
             /p:PublishReadyToRun=false `
-            /p:PublishSingleFile=false `
+            /p:PublishSingleFile=true `
             -o publish/avalonia-linux
 
       - name: Remove .pdb files (Avalonia Linux)
