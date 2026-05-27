@@ -38,7 +38,7 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 
 ---
 
-## 📖 Documentation
+## Documentation
 
 | Guide | Description |
 |-------|-------------|

@@ -9,9 +9,9 @@ jobs:
 
     outputs:
       tag: ${{ steps.meta.outputs.tag }}
-      artifact-name-wpf-net6: ${{ steps.meta.outputs.artifact_name_wpf_net6 }}
-      artifact-name-wpf-net8: ${{ steps.meta.outputs.artifact_name_wpf_net8 }}
-      artifact-name-avalonia-net8: ${{ steps.meta.outputs.artifact_name_avalonia_net8 }}
+      artifact-name-standard: ${{ steps.meta.outputs.artifact_name_standard }}
+      artifact-name-avalonia-windows: ${{ steps.meta.outputs.artifact_name_avalonia_windows }}
+      artifact-name-avalonia-linux: ${{ steps.meta.outputs.artifact_name_avalonia_linux }}
       last-commit-msg: ${{ steps.commit.outputs.message }}
 
     steps:
@@ -37,13 +37,13 @@ jobs:
           $version = $csproj.Project.PropertyGroup.AssemblyVersion
           $shortVersion = ($version -split '\.')[0..2] -join '.'
           $tag = "v$shortVersion"
-          $artifactNameWpfNet6 = "${title}-WPF-dotnet6-V${shortVersion}"
-          $artifactNameWpfNet8 = "${title}-WPF-dotnet8-V${shortVersion}"
-          $artifactNameAvaloniaNet8 = "${title}-Avalonia-dotnet8-V${shortVersion}"
+          $artifactNameStandard = "${title}-Standard-V${shortVersion}"
+          $artifactNameAvaloniaWindows = "${title}-PreviewAvalonia-Windows-V${shortVersion}"
+          $artifactNameAvaloniaLinux = "${title}-PreviewAvalonia-Linux-V${shortVersion}"
           echo "tag=$tag" >> $env:GITHUB_OUTPUT
-          echo "artifact_name_wpf_net6=$artifactNameWpfNet6" >> $env:GITHUB_OUTPUT
-          echo "artifact_name_wpf_net8=$artifactNameWpfNet8" >> $env:GITHUB_OUTPUT
-          echo "artifact_name_avalonia_net8=$artifactNameAvaloniaNet8" >> $env:GITHUB_OUTPUT
+          echo "artifact_name_standard=$artifactNameStandard" >> $env:GITHUB_OUTPUT
+          echo "artifact_name_avalonia_windows=$artifactNameAvaloniaWindows" >> $env:GITHUB_OUTPUT
+          echo "artifact_name_avalonia_linux=$artifactNameAvaloniaLinux" >> $env:GITHUB_OUTPUT
 
       - name: Get last commit message
         id: commit
@@ -52,8 +52,8 @@ jobs:
           $msg = git log -1 --pretty=format:"%s"
           echo "message=$msg" >> $env:GITHUB_OUTPUT
 
-      # WPF .NET 6
-      - name: Publish WPF .NET 6
+      # Standard: WPF .NET 6
+      - name: Publish WPF .NET 6 (Standard)
         run: |
           dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
             -c Release `
@@ -62,81 +62,82 @@ jobs:
             /p:SelfContained=false `
             /p:PublishReadyToRun=true `
             /p:PublishSingleFile=false `
-            -o publish/wpf-net6
+            -o publish/standard
 
-      - name: Remove .pdb files (WPF .NET 6)
+      - name: Remove .pdb files (Standard)
         shell: pwsh
         run: |
-          Get-ChildItem publish/wpf-net6 -Recurse -Filter *.pdb | Remove-Item -Force
+          Get-ChildItem publish/standard -Recurse -Filter *.pdb | Remove-Item -Force
 
-      - name: Zip WPF .NET 6
+      - name: Zip Standard
         shell: pwsh
         run: |
-          $zipName = "${{ steps.meta.outputs.artifact_name_wpf_net6 }}.zip"
-          Compress-Archive -Path publish/wpf-net6/* -DestinationPath $zipName
+          $zipName = "${{ steps.meta.outputs.artifact_name_standard }}.zip"
+          Compress-Archive -Path publish/standard/* -DestinationPath $zipName
 
-      - name: Upload WPF .NET 6 Artifact
+      - name: Upload Standard Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.meta.outputs.artifact_name_wpf_net6 }}
-          path: ${{ steps.meta.outputs.artifact_name_wpf_net6 }}.zip
+          name: ${{ steps.meta.outputs.artifact_name_standard }}
+          path: ${{ steps.meta.outputs.artifact_name_standard }}.zip
 
-      # WPF .NET 8
-      - name: Publish WPF .NET 8
-        run: |
-          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
-            -c Release `
-            -f net8.0-windows `
-            -r win-x64 `
-            --self-contained false `
-            /p:PublishReadyToRun=true `
-            /p:PublishSingleFile=false `
-            -o publish/wpf-net8
-
-      - name: Remove .pdb files (WPF .NET 8)
-        shell: pwsh
-        run: |
-          Get-ChildItem publish/wpf-net8 -Recurse -Filter *.pdb | Remove-Item -Force
-
-      - name: Zip WPF .NET 8
-        shell: pwsh
-        run: |
-          $zipName = "${{ steps.meta.outputs.artifact_name_wpf_net8 }}.zip"
-          Compress-Archive -Path publish/wpf-net8/* -DestinationPath $zipName
-
-      - name: Upload WPF .NET 8 Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.meta.outputs.artifact_name_wpf_net8 }}
-          path: ${{ steps.meta.outputs.artifact_name_wpf_net8 }}.zip
-
-      # Avalonia UI .NET 8 (Windows)
-      - name: Publish Avalonia UI .NET 8 Windows
+      # Preview Avalonia: Windows, self-contained
+      - name: Publish Avalonia Windows (self-contained)
         run: |
           dotnet publish ./TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj `
             -c Release `
             -f net8.0 `
-            --self-contained false `
+            -r win-x64 `
+            --self-contained true `
             /p:PublishReadyToRun=false `
             /p:PublishSingleFile=false `
-            -o publish/avalonia-net8
+            -o publish/avalonia-windows
 
-      - name: Remove .pdb files (Avalonia UI .NET 8)
+      - name: Remove .pdb files (Avalonia Windows)
         shell: pwsh
         run: |
-          Get-ChildItem publish/avalonia-net8 -Recurse -Filter *.pdb | Remove-Item -Force
+          Get-ChildItem publish/avalonia-windows -Recurse -Filter *.pdb | Remove-Item -Force
 
-      - name: Zip Avalonia UI .NET 8
+      - name: Zip Avalonia Windows
         shell: pwsh
         run: |
-          $zipName = "${{ steps.meta.outputs.artifact_name_avalonia_net8 }}.zip"
-          Compress-Archive -Path publish/avalonia-net8/* -DestinationPath $zipName
+          $zipName = "${{ steps.meta.outputs.artifact_name_avalonia_windows }}.zip"
+          Compress-Archive -Path publish/avalonia-windows/* -DestinationPath $zipName
 
-      - name: Upload Avalonia UI .NET 8 Artifact
+      - name: Upload Avalonia Windows Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.meta.outputs.artifact_name_avalonia_net8 }}
-          path: ${{ steps.meta.outputs.artifact_name_avalonia_net8 }}.zip
+          name: ${{ steps.meta.outputs.artifact_name_avalonia_windows }}
+          path: ${{ steps.meta.outputs.artifact_name_avalonia_windows }}.zip
+
+      # Preview Avalonia: Linux, self-contained (cross-compiled)
+      - name: Publish Avalonia Linux (self-contained)
+        run: |
+          dotnet publish ./TgaBuilderAvaloniaUi/TgaBuilderAvaloniaUi.csproj `
+            -c Release `
+            -f net8.0 `
+            -r linux-x64 `
+            --self-contained true `
+            /p:PublishReadyToRun=false `
+            /p:PublishSingleFile=false `
+            -o publish/avalonia-linux
+
+      - name: Remove .pdb files (Avalonia Linux)
+        shell: pwsh
+        run: |
+          Get-ChildItem publish/avalonia-linux -Recurse -Filter *.pdb | Remove-Item -Force
+
+      - name: Zip Avalonia Linux
+        shell: pwsh
+        run: |
+          $zipName = "${{ steps.meta.outputs.artifact_name_avalonia_linux }}.zip"
+          Compress-Archive -Path publish/avalonia-linux/* -DestinationPath $zipName
+
+      - name: Upload Avalonia Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name_avalonia_linux }}
+          path: ${{ steps.meta.outputs.artifact_name_avalonia_linux }}.zip
 
   release:
     needs: build
@@ -149,22 +150,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download WPF .NET 6 Artifact
+      - name: Download Standard Artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build.outputs.artifact-name-wpf-net6 }}
+          name: ${{ needs.build.outputs.artifact-name-standard }}
           path: ./artifact
 
-      - name: Download WPF .NET 8 Artifact
+      - name: Download Avalonia Windows Artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build.outputs.artifact-name-wpf-net8 }}
+          name: ${{ needs.build.outputs.artifact-name-avalonia-windows }}
           path: ./artifact
 
-      - name: Download Avalonia UI .NET 8 Artifact
+      - name: Download Avalonia Linux Artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build.outputs.artifact-name-avalonia-net8 }}
+          name: ${{ needs.build.outputs.artifact-name-avalonia-linux }}
           path: ./artifact
 
       - name: Create GitHub Release and upload assets
@@ -174,8 +175,8 @@ jobs:
           name: Release ${{ needs.build.outputs.tag }}
           body: ${{ needs.build.outputs.last-commit-msg }}
           files: |
-            ./artifact/${{ needs.build.outputs.artifact-name-wpf-net6 }}.zip
-            ./artifact/${{ needs.build.outputs.artifact-name-wpf-net8 }}.zip
-            ./artifact/${{ needs.build.outputs.artifact-name-avalonia-net8 }}.zip
+            ./artifact/${{ needs.build.outputs.artifact-name-standard }}.zip
+            ./artifact/${{ needs.build.outputs.artifact-name-avalonia-windows }}.zip
+            ./artifact/${{ needs.build.outputs.artifact-name-avalonia-linux }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
