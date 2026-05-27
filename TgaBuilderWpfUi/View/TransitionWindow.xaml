@@ -111,6 +111,14 @@
             </ui:TitleBar>
         </DockPanel>
 
+        <!-- Decorative card background for the bottom area -->
+            <ui:Card
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
+            Margin="-10,0,-10,-10"
+            VerticalAlignment="Stretch"
+            IsHitTestVisible="False" />
+
         <!-- Left pane: image workflow and optional label map -->
         <Grid
             x:Name="ImageAreaGrid"
@@ -467,12 +475,6 @@
         </Grid>
 
         <!-- Row 3: footer bar and action buttons -->
-        <ui:Card
-            Grid.Row="3"
-            Grid.ColumnSpan="3"
-            Margin="-10,0,-10,-10"
-            VerticalAlignment="Stretch"
-            IsHitTestVisible="False" />
 
         <StackPanel
             Grid.Row="3"

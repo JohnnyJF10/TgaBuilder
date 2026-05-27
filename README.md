@@ -1,7 +1,7 @@
 # TgaBuilder
 ### **Texture Panel Building Tool for TRLE**
 
-[Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [Github Page](https://johnnyjf10.github.io/TgaBuilder/)
+[Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [GitHub Page](https://johnnyjf10.github.io/TgaBuilder/)
 
 ![LatestReleaseBuildStatus](https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release.yml/badge.svg)
 ![Github All Releases](https://img.shields.io/github/downloads/JohnnyJF10/TgaBuilder/total.svg)
@@ -11,336 +11,67 @@
 
 ## Description
 
-
 ![Overview](Screenshots/Overview.png)
-TgaBuilder is a Texture Panel Building tool for TRLE, which is intended to facilitate the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF for Windows and Avalonia UI (cross-platform, experimental). 
 
-If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It should cover most of the features TBuilder also has and introduces a few things more, most prominently:
+TgaBuilder is a Texture Panel Building tool for TRLE, which facilitates the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF for Windows and Avalonia UI (cross-platform, experimental).
+
+![Overview](Screenshots/Overview_gif.gif)
+
+If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It covers most of the features TBuilder has and introduces several more, most prominently:
+
 - Texture Panel Panning and Zooming
 - Undo / Redo
 - Window Resizable
-- Extended dimensioning with panel hights up to 128 pages, panel widths up to 16 pages
-- Better support for 128x128 or 256x256 pix texture sets
+- Extended dimensioning with panel heights up to 128 pages, panel widths up to 16 pages
+- Better support for 128×128 or 256×256 px texture sets
 - Batch Loader to create texture panels from multiple single texture files at once
 - Imported texture repacking to remove TE compiled atlas padding
+- **Transition Helper Windows** (Smooth & Brick) for generating transition tiles
+- **Modifications Window** for non-destructive image adjustments
 - and others…
 
-### New in Version 2.2
-![SmoothTransitions](Screenshots/TransitionHelperButton.png)
+![Modifications](Screenshots/Modifications_gif.gif)
+![TransitionMode](Screenshots/TransitionMode_gif.gif)
+![SmoothTransition](Screenshots/SmoothTransition_gif.gif)
+![BrickTransitionAnalysis](Screenshots/BrickTransitionAnalysis_gif.gif)
+![BrickTransitionManual](Screenshots/BrickTransitionManual_gif.gif)
 
-- New **Transition Helper Windows** to generate transition tiles directly from texture tile available from either Source or Destination panels.
+---
 
-  - **Smooth Transition Helper** for soft directional transitions with adjustable **Pivot** for border line positioning and **Hardness**.
+## 📖 Documentation
 
-  ![SmoothTransitionWin](Screenshots/SmoothTransition_gif.gif)
+| Guide | Description |
+|-------|-------------|
+| [Installation](Manuals/Installation.md) | Download links, system requirements, platform setup |
+| [Main Controls](Manuals/MainControls.md) | All panels, tabs, mouse/keyboard controls, and shortcuts |
+| [Modifications & Transitions](Manuals/ModificationsAndTransition.md) | Modifications window, Smooth transitions, Brick transitions with all segmentation algorithms and filters |
+| [Third-Party Licenses](Manuals/ThirdPartyLicenses.md) | All third-party library licenses and attributions |
 
-  - **Brick Transition Helper** for marker-based brick/background transition–based segmentation algorithms. Adjust the **Marker Radius** value to control the number of initial seeds used by the segmentation algorithm. A larger value reduces the number of tiles detected later. After tile detection, tiles are drawn depending on whether their centroid falls within the shape defined by the **Pivot** value. This shape is the same as that used for smooth transitions. Toggle **Reverse Pivot** to invert the drawing logic. Toggle **Slice Corners** if needed to make placing adjacent background textures more accurate. More options will be added in the future.
-  - Specify the pre-algorithm input **Filter**: choose between **Box Blur**, **Bilateral**, **Median**, or no filter (**None**).
-  - Specify the **Segmentation** algorithm itself: **Watershed** or **XY Projection**. More options will be added in the future.
-    - Tip: For wall bricks with clear joints in either the horizontal or vertical direction, choose the **XY Projection** algorithm with no input filter and a large **Marker Radius**. For natural or temple-style old bricks, select the **Watershed** algorithm with a **Box Blur** filter and a small **Marker Radius**. To specify the color of the demolition edge, you can find a color picker and an eyedropper in the **Options** tab.
+---
 
-  ![BrickTransitionWin](Screenshots/BrickTransition_gif.gif)
+## Quick Start
 
+1. **Download** the latest release from [GitHub Releases](https://github.com/JohnnyJF10/TgaBuilder/releases)
+2. **Extract** and run `TgaBuilder.exe` (Windows) or `dotnet TgaBuilderAvaloniaUi.dll` (Linux)
+3. Open a source texture panel (`Ctrl + E`) and a destination panel (`Ctrl + D`)
+4. Pick tiles from source and place them on the destination
+5. Save your texture panel (`Ctrl + S`)
 
-## Installation
-Move over to [GitHub Releases](https://github.com/JohnnyJF10/TgaBuilder/releases). 
+For detailed instructions, see the [Installation Guide](Manuals/Installation.md).
 
-**Windows**: 
-
-For the latest releases there are two tool versions per release: The *.NET 6.0* version of the tool and the *.NET 8.0* version of the tool.
-- Download the ***.NET 6.0*** version of the tool (TgaBuilder-dotnet6), if you already have Tomb Editor Version 1.9 installed on your system and you do not wish to install another .NET runtime (as Tomb Editor Version 1.9 is using *.NET 6.0* runtime as well)
-
-- Download the ***.NET 8.0*** version of the tool (TgaBuilder-dotnet8), if you have the *.NET 8.0* runtime installed or do not mind to install it. This version has the slightly better performance.
-
-Extract the files and start *TgaBuilder.exe*.
-
-**Cross Platform, Windows and Linux**: 
-
-There is also a cross-platform version based on Avalonia UI instead of WPF. It has been tested on Ubuntu, Linux Mint, and Windows. Some features (mainly clipboard) are missing, but otherwise it is fully functional. This version requires *.NET 8.0*.
-
-
-To run the Avalonia UI version on Linux, move ober to the directory where you extracted the files and run:
-
-`dotnet TgaBuilderAvaloniaUi.dll`
-
-### Requirements
-- Windows 10/11
-- 64-bit architecture
-- *.NET 6* or *.NET 8* runtime installed (with Tomb Editor Version 1.9, you have the *.NET 6* runtime already installed)
-
-Please note that, as a .net WPF tool, TgaBuilder has significantly higher system resource requirements, particularly for RAM, than TBuilder, which was written in Delphi. If you are still satisfied using TBuilder, please continue using it. TgaBuilder is not intended as a substitute for it.
-
-For the experimental Avalonia UI version for Linux: 
-- *.NET 8* runtime on the target device.
-
-## Usage
-
-### Title Bar
-
-![TitleBar](Screenshots/TitleBar.png)
-
-#### Source Loading
-
-- Open image files as source texture panel  
-  _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG, PSD** (`Ctrl + E`)
-  - ... or simply **drop** a supported image file on source panel.
-- Reopen recently used source image files
-- Reload the current file in case of changes to load settings (Import Tab) or file changes
-- Open previous file in current folder
-- Open next file in current folder
-
-#### Undo / Redo
-
-- Undo: `Ctrl + Z`
-- Redo: `Ctrl + Y`
-
-#### Destination Loading / Saving
-
-- Create a new texture panel: `Ctrl + N`
-- Open image files as destination texture panel  
-  _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG, PSD** (`Ctrl + D`)
-  - ... or simply **drop** a supported image file on destination panel.
-- Reopen recently used destination image files
-- Save the destination texture  
-  _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG** (`Ctrl + S`)
-- Save to a specified file  
-  _Formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG** (`Ctrl + Shift + S`)
-
-### Source Panel (Left)
-
-- **Left click** a tile: copy into selection
-- **Left click + drag**: copy area into selection
-- **Right click** a tile: preview UV rotate (river rotate)
-- **Right click + drag**: preview range-based animation of `AnimRange`
-- **Left click + Alt + drag**: copy ignoring grid
-- **Left click + Ctrl + drag**: move panel
-- **Mouse wheel**: scroll vertically
-- **Mouse wheel + Ctrl**: zoom in/out
-
-### Destination Panel (Rigth)
-
-#### Picking Mode
-
-- **Left click**: copy into selection or apply transformation
-- **Left click + drag**: copy area into selection
-- **Right click**: preview UV rotate
-- **Right click + drag**: preview animation range
-- **Middle click**: move to Placing Mode directly
-
-#### Placing Mode
-
-- **Left click**: place selected tile and return to picking
-- **Right click**: return to picking without placing
-
-#### General Controls
-
-- **Left click + Ctrl + drag**: move panel
-- **Mouse wheel**: scroll vertically
-- **Mouse wheel + Ctrl**: zoom
-- **Mouse wheel + Shift**: change picker size
-
-### Selection Area
-
-![SelectionArea](Screenshots/Selection.png)
-- With a click on the **Preview Image** you can manually switch to the **Placing Mode** on the Destination Panel
-- Buttons to copy entire contents from Source to Destination panels or vice versa
-- Fill selection with chosen color 
-- Copy selection to clipboard (`Ctrl + C`)
-- Paste clipboard into selection (`Ctrl + V`)
-- Auto-copy new selections to clipboard
-- Auto-paste clipboard into selection when it has new image data
-- Open **Smooth Transition Helper** and **Brick Transition Helper** from the center action buttons to combine two selections and generate transition results quickly
-
-### Transition Helpers (New in 2.2.0)
-
-The transition helper tools open in separate windows and allow you to build transition textures from two input selections.
-
-#### Smooth Transition Helper
-
-- Load two source selections and preview the blended result in real time
-- Choose transition direction: **Top, Right, Bottom, Left, Diagonal Top-Left, Diagonal Top-Right**
-- Fine-tune blend behavior with:
-  - **Hardness** (blend sharpness)
-  - **Pivot** (transition center)
-- Press **OK** to apply the generated result
-
-#### Brick Transition Helper
-
-- Load two source selections as **Bricks** and **Background**
-- Generate structured transitions with the same transition-direction controls
-- Tune the result with:
-  - **Pivot** and **Reverse Pivot**
-  - **Marker Radius**
-  - **Slice Corners** toggle
-- Optional expandable **Label Map** preview for debugging marker regions
-- Press **OK** to apply the generated result
-
-### AnimationArea
-
-![Animation Area](Screenshots/Animation.png)
-- Set animation speed
-- Start / stop animation
-- Close animation preview
-
-### Import Tab (Source Panel)
-
-![Import Tab](Screenshots/TabImport.png)
-
-From left to rigth:
-- Import atlas from Classic TR levels  
-  _Supports:_ **TR1–TRC, TRLE, TRNG, TEN** (`Ctrl + Q`)
-- Enable remapping for imports (removes padding in TE-built atlases)
-![Repacking](Screenshots/Repacking.png)
-- Set horizontal page count (1, 2, 4, 8, 16 pages)
-![PageSizeImport](Screenshots/PageSizeImport.png)
-- Open Batch Loader (`Ctrl + W`)
-
-Please use Imports carefully and conscientiously when building own custom levels.
-Specifically, clarify with the creator whether you are authorised to use custom assets.
-If in doubt, use assets that are guaranteed to be acceptable for use in your own custom levels instead.
-Please also note that this tool is licensed under the MIT licence.
-
-### Batch File Loader
-
-![Batch Loader](Screenshots/BatchLoader.png)
-- Import multiple image files from folder  
-  _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG**
-- Select or reopen folder
-  - ... or simply **drop** a set of supported image files on preview panel.
-- Set Range:
-  - **First Texture Index**
-  - **Number of Textures**
-- Define square resize size for textures
-
-### Grid Tab (Source Panel)
-
-![Offset Tab](Screenshots/TabGrid.png)
-
-From left to rigth:
-- Set **X offset**
-- Set **Y offset**
-- Reset offset
-- Toggle grid on/off
-- Change layout
-
-### Format Tab (Source and Destination Panel)
-
-This tab allows you to modify the format of the destination texture panel. TgaBuilder now fully supports the opening, modification and writing of both **24-bit** and **32-bit** pixel formats.
-
-![Format Tab](Screenshots/TabFormat.png)
-
-From left to rigth:
-- BPP toggle
-- Eyedropper to set color to replace
-- Selected color to replace
-- Replace selected color with **magenta** or **transparency**
-- Auto-apply magenta or transparency replacement for new selections
-
-The BPP toggle will be set automatically depending on the input after loading. You can then set it manually if you wish. If you select **RGB 24 BPP**, magenta will be used for transparent parts. If you select **BGRA 32 BPP**, you will have a real alpha channel. Switching between the two settings will set the pixel values appropriately (e.g. alpha = 0 areas will be converted to magenta areas, and so on).
-
-![Format](Screenshots/Format.png)
-
-Switching from **BGRA 32 BPP** to **RGB 24 BPP** will set the magenta colour correctly, but since pixels with an alpha value other than **0** or **255** are not supported by **RGB 24 BPP**, information will be lost, possibly making the switching step irreversible.
-
-### View Tab (Source and Destination Panel)
-
-![View Tab](Screenshots/TabView.png)
-
-From left to rigth:
-- Fit panel **width** to viewport
-- Fit panel **height** to viewport
-- Set zoom to **100%**
-
-### Placing Tab (Destination Panel)
-
-From left to rigth:
-
-![Placing Tab](Screenshots/TabPlacing.png)
-
-From left to rigth:
-- Enable **Resize to Picker** mode (resize selection to destination picker size)
-- Enable **Continuously Placing** mode (does not switch back to Picking mode automatically after placing)
-- Enable **Swap and Place** mode (put replaced tile into selection)
-- Enable transparent overlay (do not draw magenta/alpha 0 to destination)
-![TransparentOverlay](Screenshots/OverlayTransparent.png)
-- Set **Opacity** for placed tile
-![Opacity](Screenshots/Opacity.png)
-
-
-### Size Tab (Destination Panel)
-
-From left to rigth:
-
-![Size Tab](Screenshots/TabSize.png)
-- Set destination panel **height** (in pages, max 128 pages)
-- Set destination panel **width** (in pages, possible values 1, 2, 4, 8 or 16 pages)
-- Enable texture **rearranging during width changes**
-![TextureRearanging](Screenshots/ResizeSorted.png)
-
-### Mode Tab (Destination Panel)
-
-Same functions as in TBuilder.
-From left to rigth:
-
-![Mode Tab](Screenshots/TabMode.png)
-- Standard tile placing
-- Rotate tile
-- Mirror tile **horizontally**
-- Mirror tile **vertically**
-- **Tile Rally mode**: move one tile and shift all tiles inbetween
-- **Swap Tile mode**: swap two tiles
-
-### Keyboard Shortcuts
-| Key Combination    | Description                                               |
-|--------------------|-----------------------------------------------------------|
-| Ctrl + A           | Create a new texture panel                                |
-| Ctrl + C           | Copy selection to clipboard                               |
-| Ctrl + V           | Paste from clipboard to selection                         |
-| Ctrl + Z           | Undo                                                      |
-| Ctrl + Y           | Redo                                                      |
-| Ctrl + S           | Save destination texture panel                            |
-| Ctrl + Shift + S   | Save destination texture panel to new / other file        |
-| Ctrl + E           | Open source texture panel                                 |
-| Ctrl + D           | Open destination texture panel                            |
-| Ctrl + Q           | Import from TR Level                                      |
-| Ctrl + W           | Open batch loader                                         |
-
-## Limitations
-
-- The height of any bitmap/texture panel handled by this tool is currently capped at **32,768 px** or **128 pages** (~256 px length per page). This limitation is required to avoid issues with the .NET WPF Bitmap containers.
-- The height is always a **multiple of 256 px**, the standard TR page width, to ensure divisibility by picker sizes.
-- Current supported destination texture panel widths: **256, 512, 1024, 2048, 4096 px** (corresponding to 1, 2, 4, 8, and 16 pages).
-- Current supported picker sizes: **8, 16, 32, 64, 128, 256 px**
-- Image files that do not meet these requirements will be **automatically expanded or cropped**. But you will always be able to open them.
+---
 
 ## License
-This project is licensed under the MIT License.
 
-### Third-Party Libraries
+This project is licensed under the MIT License. See [LICENSE.txt](LICENSE.txt).
 
-For WPFZoomPanel, bzPSD and ColorPicker, I did a significant amount of custom modifications, so it was not sufficient to just add them as NuGet packages. This modified project is included in this reporsitory as well. bzPSD has been modernized to .net core and is fully integrated into the TgaBuildeLib assembly. WPFZoomPanel and ColorPicker have own assemblies.
-
-| Package                          | Version  | Source      | License               | Project URL                                                          |
-|----------------------------------|----------|-------------|-----------------------|----------------------------------------------------------------------|
-| *WPF UI version:*                |          |             |                       |                                                                      |
-| WPF UI                           | 4.0.3    | NuGet       | MIT                   | [GitHub](https://github.com/lepoco/wpfui)                            |
-| WPFZoomPanel                     | -        | GitHub      | MIT                   | [GitHub](https://github.com/Moravuscz/WPFZoomPanel)                  |
-| ColorPicker                      | 1.0.11   | GitHub      | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
-| Microsoft Dependency Injection   | 9.0.9    | NuGet       | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
-| *Avalonia UI version:*           |          |             |                       |                                                                      |
-| Avalonia UI                      | 12.0.2   | Avalonia UI | MIT                   | [Avalonia UI](https://avaloniaui.net/)                               |
-| PanAndZoom                       | 12.0.0.1 | NuGet       | MIT                   | [GitHub](https://github.com/wieslawsoltes/PanAndZoom)                |
-| Microsoft Dependency Injection   | 9.0.9    | NuGet       | MIT                   | [Microsoft](https://dotnet.microsoft.com/en-us/)                     |
-| *Core Library:*                  |          |             |                       |                                                                      |
-| Pfim                             | 0.11.4   | NuGet       | MIT                   | [GitHub](https://github.com/nickbabcock/Pfim)                        |
-| bzPSD                            | -        | GitHub      | BSD-3-Clause license  | [GitHub](https://github.com/DsonKing/System.Drawing.PSD)             |
-| SharpZipLib                      | 1.4.2    | NuGet       | MIT                   | [GitHub](https://github.com/icsharpcode/SharpZipLib)                 |
-
-I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their imppressive public contributions immensely helped me understanding the TR level file format. 
+For third-party library licenses and attributions, see [Third-Party Licenses](Manuals/ThirdPartyLicenses.md).
 
 ## Contributing
+
 Contributions are welcome! If you find a bug or have a feature request, please open an [issue](https://github.com/JohnnyJF10/TgaBuilder/issues).  
 If you want to contribute code, feel free to fork the repository and create a pull request.
 
 ## Support
-If you have any issues, please open a [GitHub Issue](https://github.com/JohnnyJF10/TgaBuilder/issues).  
+
+If you have any issues, please open a [GitHub Issue](https://github.com/JohnnyJF10/TgaBuilder/issues).
