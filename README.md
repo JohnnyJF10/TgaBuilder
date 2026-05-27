@@ -3,7 +3,7 @@
 
 [Latest Releases](https://github.com/JohnnyJF10/TgaBuilder/releases) | [GitHub Page](https://johnnyjf10.github.io/TgaBuilder/)
 
-![LatestReleaseBuildStatus](https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release.yml/badge.svg)
+![LatestReleaseBuildStatus](https://github.com/JohnnyJF10/TgaBuilder/actions/workflows/dotnet-release-combined.yml/badge.svg)
 ![Github All Releases](https://img.shields.io/github/downloads/JohnnyJF10/TgaBuilder/total.svg)
 ![GitHub License](https://img.shields.io/github/license/JohnnyJF10/TgaBuilder)
 
@@ -13,7 +13,7 @@
 
 ![Overview](Screenshots/Overview.png)
 
-TgaBuilder is a Texture Panel Building tool for TRLE, which facilitates the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF for Windows and Avalonia UI (cross-platform, experimental).
+TgaBuilder is a Texture Panel Building tool for TRLE, which facilitates the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF for Windows and Avalonia UI (cross-platform, preview).
 
 ![Overview](Screenshots/Overview_gif.gif)
 
@@ -51,8 +51,10 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 
 ## Quick Start
 
+> If you have Windows 10/11 and either Tomb Editor version 1.9 or later or the .NET 6 runtime installed, use the standard version. Otherwise, use one of the Avalonia preview versions. 
+
 1. **Download** the latest release from [GitHub Releases](https://github.com/JohnnyJF10/TgaBuilder/releases)
-2. **Extract** and run `TgaBuilder.exe` (Windows) or `dotnet TgaBuilderAvaloniaUi.dll` (Linux)
+2. **Extract** and run `TgaBuilder.exe` (Windows) or `TgaBuilder` (Linux)
 3. Open a source texture panel (`Ctrl + E`) and a destination panel (`Ctrl + D`)
 4. Pick tiles from source and place them on the destination
 5. Save your texture panel (`Ctrl + S`)
