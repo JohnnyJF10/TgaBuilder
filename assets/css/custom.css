@@ -710,6 +710,34 @@ img {
     font-size: 1.6rem;
   }
 
+  /* --- Carousel: move caption below video on mobile --- */
+  .carousel-stage {
+    aspect-ratio: auto;
+    overflow: visible;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .carousel-video {
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .carousel-caption {
+    position: static;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 16px 20px;
+    color: var(--text-primary);
+  }
+
+  .carousel-caption-text {
+    opacity: 1;
+    color: var(--text-secondary);
+  }
+
   .carousel-selector {
     flex-wrap: wrap;
   }
