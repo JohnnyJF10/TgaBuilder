@@ -19,6 +19,10 @@ Extract the files and start **TgaBuilder.exe**.
 ## Cross-Platform — Windows & Linux (Preview Avalonia UI Version)
 
 There is also a preview cross-platform version based on Avalonia UI instead of WPF. It has been tested on Ubuntu, Linux Mint, and Windows. Some few features (mainly jpeg support) are missing, but otherwise it is fully functional. These versions, based on .NET 8, are compiled as standalone and do not require additionally installations.
+For Linux, it might be required to make the binary executable. In order to do this, run 
+```
+chmod +x TgaBuilderAvaloniaUi
+```
 
 ---
 
