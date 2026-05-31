@@ -170,7 +170,7 @@
                     Header="Basic"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch">
-                    <local:ModificationsWindowBasicUserControl />
+                    <local:ModificationsWindowBasicUserControl DataContext="{Binding BasicVM}" />
                 </Expander>
 
                 <!-- ================================================================= -->
@@ -180,7 +180,7 @@
                     Header="Color"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch">
-                    <local:ModificationsWindowColorUserControl />
+                    <local:ModificationsWindowColorUserControl DataContext="{Binding ColorVM}" />
                 </Expander>
 
                 <!-- ================================================================= -->
@@ -190,7 +190,7 @@
                     Header="Color Overlay"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch">
-                    <local:ModificationsWindowColorOverlayUserControl />
+                    <local:ModificationsWindowColorOverlayUserControl DataContext="{Binding ColorOverlayVM}" />
                 </Expander>
 
             </StackPanel>

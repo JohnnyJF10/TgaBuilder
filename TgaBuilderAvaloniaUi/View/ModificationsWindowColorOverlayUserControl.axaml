@@ -2,10 +2,10 @@
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Modifications;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters"
-             x:DataType="viewmodel:ModificationsViewModel"
+             x:DataType="viewmodel:ModificationsColorOverlayViewModel"
              x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>

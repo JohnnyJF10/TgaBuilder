@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -78,22 +78,22 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Image1_PointerEntered(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
                 this.Cursor = CursorProvider.EyedropperCursor;
         }
 
         private void Image1_PointerExited(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
                 this.Cursor = CursorProvider.DefaultCursor;
         }
 
         private void Image1_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
             {
-                vm.IsEyedropperMode = false;
-                vm.IsShadowEyedropperMode = false;
+                vm.Edge.IsEyedropperMode = false;
+                vm.Shadow.IsShadowEyedropperMode = false;
                 this.Cursor = CursorProvider.DefaultCursor;
             }
         }
@@ -105,29 +105,29 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Image2_PointerEntered(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
                 this.Cursor = CursorProvider.EyedropperCursor;
         }
 
         private void Image2_PointerExited(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
                 this.Cursor = CursorProvider.DefaultCursor;
         }
 
         private void Image2_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
             {
-                vm.IsEyedropperMode = false;
-                vm.IsShadowEyedropperMode = false;
+                vm.Edge.IsEyedropperMode = false;
+                vm.Shadow.IsShadowEyedropperMode = false;
                 this.Cursor = CursorProvider.DefaultCursor;
             }
         }
 
         private void DoEyedropperMouseMove(Image image, PointerEventArgs e, int imageNum)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
             {
                 var position = e.GetPosition(image);
                 vm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
@@ -139,7 +139,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            if (!vm.Manual.IsExplicitTileVisibilityDrawMode && !vm.Manual.IsExplicitTileVisibilityEraseMode)
                 return;
 
             if (vm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
@@ -161,7 +161,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            if (!vm.Manual.IsExplicitTileVisibilityDrawMode && !vm.Manual.IsExplicitTileVisibilityEraseMode)
                 return;
 
             vm.IsIndicatorMapVisible = true;
@@ -172,7 +172,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            if (!vm.Manual.IsExplicitTileVisibilityDrawMode && !vm.Manual.IsExplicitTileVisibilityEraseMode)
                 return;
 
             vm.IsIndicatorMapVisible = false;
@@ -183,7 +183,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            if (!vm.Manual.IsExplicitTileVisibilityDrawMode && !vm.Manual.IsExplicitTileVisibilityEraseMode)
                 return;
 
             if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed

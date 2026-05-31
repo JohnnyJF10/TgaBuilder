@@ -8,8 +8,8 @@
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionUnderfillingViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -30,7 +30,7 @@
                                     Icon="{ui:SymbolIcon CameraSwitch24}"
                                     MinHeight="36"
                                     MinWidth="36"
-                                    IsChecked="{Binding ReverseUnderfilling}" />
+                                    IsChecked="{Binding Underfilling.ReverseUnderfilling}" />
         </StackPanel>
 
         <!-- Underfilling Threshold Slider -->
@@ -52,7 +52,7 @@
                         Maximum="255"
                         Minimum="0"
                         SmallChange="1"
-                        Value="{Binding UnderfillingThreshold}" />
+                        Value="{Binding Underfilling.UnderfillingThreshold}" />
         </DockPanel>
 
         <!-- Pivot slider -->
@@ -116,7 +116,7 @@
                     Minimum="0"
                     SmallChange="0.01"
                     ap:MouseOverInfoAP.InfoText="Underfilling pivot: sets the position of the underfilling area (0 = left, 1 = right)"
-                    Value="{Binding UnderfillingPivot}" />
+                    Value="{Binding Underfilling.UnderfillingPivot}" />
         </DockPanel>
 
 

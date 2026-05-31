@@ -1,10 +1,10 @@
-<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowUnderfillingUserControl"
+﻿<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowUnderfillingUserControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             x:DataType="viewmodel:TransitionViewModel"
+             x:DataType="viewmodel:TransitionUnderfillingViewModel"
              x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -29,7 +29,7 @@
             MinWidth="36"
             Icon="{StaticResource camera_switch}"
             ap:MouseOverInfoAP.InfoText="Turn the underfilling into an overfilling by substituting brigth pixes instead, possible for sandy textures and bright backgrounds"
-            IsChecked="{Binding ReverseUnderfilling}" />
+            IsChecked="{Binding Underfilling.ReverseUnderfilling}" />
     </StackPanel>
 
     <!-- Row 2: Underfilling Threshold Slider & Icons -->
@@ -46,11 +46,11 @@
     <elements:MouseWheelSlider Grid.Row="1" Grid.Column="1"
                                Margin="5,0,5,8"
                                VerticalAlignment="Center"
-                               ToolTip.Tip="{Binding UnderfillingThreshold}"
+                               ToolTip.Tip="{Binding Underfilling.UnderfillingThreshold}"
                                Maximum="255"
                                Minimum="0"
                                SmallChange="1"
-                               Value="{Binding UnderfillingThreshold}"
+                               Value="{Binding Underfilling.UnderfillingThreshold}"
                                ap:MouseOverInfoAP.InfoText="Underfilling Threshold: 0 = no underfilling, 255 = maximum underfilling" />
     
     <Path Grid.Row="1" Grid.Column="2"
@@ -111,11 +111,11 @@
             <elements:MouseWheelSlider Grid.Row="2" Grid.Column="1"
                 Margin="5,0"
                 VerticalAlignment="Center"
-                ToolTip.Tip="{Binding UnderfillingPivot}"
+                ToolTip.Tip="{Binding Underfilling.UnderfillingPivot}"
                 Maximum="1"
                 Minimum="0"
                 SmallChange="0.01"
                 ap:MouseOverInfoAP.InfoText="Underfilling pivot: sets the position of the underfilling area (0 = left, 1 = right)"
-                Value="{Binding UnderfillingPivot}" />
+                Value="{Binding Underfilling.UnderfillingPivot}" />
     </Grid>
 </UserControl>

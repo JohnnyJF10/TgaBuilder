@@ -9,8 +9,8 @@
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionManualViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -47,7 +47,7 @@
                                     Margin="8,0,0,0"
                                     Icon="{ui:SymbolIcon Backspace24}"
                                     ap:MouseOverInfoAP.InfoText="Reset Explicit Visibility"
-                                    Command="{Binding ResetExplicitVisibilityCommand}" />
+                                    Command="{Binding DataContext.ResetExplicitVisibilityCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
 
 
         </StackPanel>

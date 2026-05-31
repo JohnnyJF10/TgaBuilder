@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
@@ -57,12 +55,18 @@ public class TransitionViewModel : ViewModelBase
         Shadow = shadow;
         Manual = manual;
 
-        _image1 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
-        _image2 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
-        _resultImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
-
         _pixels1 = new byte[64 * 64 * 4];
         _pixels2 = new byte[64 * 64 * 4];
+
+        Presenters.Pixels1 = _pixels1;
+        Presenters.Pixels2 = _pixels2;
+        Presenters.IsSmoothMode = IsSmoothMode;
+        Presenters.PropertyChanged += Presenters_PropertyChanged;
+
+        Edge.PropertyChanged += Edge_PropertyChanged;
+        Shadow.PropertyChanged += Shadow_PropertyChanged;
+
+        SyncSharedControlsFromActiveChild();
     }
 
     // =====================================================================
@@ -97,13 +101,9 @@ public class TransitionViewModel : ViewModelBase
     // Images and pixel buffers
     // =====================================================================
 
-    private IWriteableBitmap _image1;
-    private IWriteableBitmap _image2;
-    private IWriteableBitmap _resultImage;
     private byte[] _pixels1;
     private byte[] _pixels2;
-
-    private bool _initTextVisible = true;
+    private bool _isLabelMapExpanded;
 
     public IVisualInvalidator? VisualInvalidator { get; set; }
 
@@ -112,26 +112,78 @@ public class TransitionViewModel : ViewModelBase
 
     public IWriteableBitmap Image1
     {
-        get => _image1;
-        set => SetCallerProperty(ref _image1, value);
+        get => Presenters.Image1;
+        set
+        {
+            Presenters.Image1 = value;
+            OnPropertyChanged(nameof(Image1));
+        }
     }
 
     public IWriteableBitmap Image2
     {
-        get => _image2;
-        set => SetCallerProperty(ref _image2, value);
+        get => Presenters.Image2;
+        set
+        {
+            Presenters.Image2 = value;
+            OnPropertyChanged(nameof(Image2));
+        }
     }
 
     public IWriteableBitmap ResultImage
     {
-        get => _resultImage;
-        set => SetCallerProperty(ref _resultImage, value);
+        get => Presenters.ResultImage;
+        set
+        {
+            Presenters.ResultImage = value;
+            OnPropertyChanged(nameof(ResultImage));
+        }
     }
 
     public bool InitTextVisible
     {
-        get => _initTextVisible;
-        set => SetCallerProperty(ref _initTextVisible, value);
+        get => Presenters.InitTextVisible;
+        set
+        {
+            Presenters.InitTextVisible = value;
+            OnPropertyChanged(nameof(InitTextVisible));
+        }
+    }
+
+    public IWriteableBitmap? LabelMapImage
+    {
+        get => Presenters.LabelMapImage;
+        set
+        {
+            Presenters.LabelMapImage = value;
+            OnPropertyChanged(nameof(LabelMapImage));
+        }
+    }
+
+    public IWriteableBitmap? IndicatorMapImage
+    {
+        get => Presenters.IndicatorMapImage;
+        set
+        {
+            Presenters.IndicatorMapImage = value;
+            OnPropertyChanged(nameof(IndicatorMapImage));
+        }
+    }
+
+    public bool IsIndicatorMapVisible
+    {
+        get => Presenters.IsIndicatorMapVisible;
+        set
+        {
+            Presenters.IsIndicatorMapVisible = value;
+            OnPropertyChanged(nameof(IsIndicatorMapVisible));
+        }
+    }
+
+    public bool IsLabelMapExpanded
+    {
+        get => _isLabelMapExpanded;
+        set => SetCallerProperty(ref _isLabelMapExpanded, value);
     }
 
     // =====================================================================
@@ -146,7 +198,7 @@ public class TransitionViewModel : ViewModelBase
     private RelayCommand? _resetExplicitVisibilityCommand;
     private RelayCommand<(int, int)>? _requestLabelIndicatorCommand;
     private RelayCommand? _markFinishedCommand;
-    private RelayCommand? _applyCommand; 
+    private RelayCommand? _applyCommand;
     private RelayCommand<IView>? _cancelCommand;
     private RelayCommand<IView>? _oKCommand;
 
@@ -155,7 +207,7 @@ public class TransitionViewModel : ViewModelBase
     public ICommand LoadImage2Command => _loadImage2Command ??= new RelayCommand(LoadImage2);
     public ICommand SwapImagesCommand => _swapImagesCommand ??= new RelayCommand(SwapImages);
     public ICommand SetExplicitTileVisibilityCommand => _setExplicitTileVisibilityCommand
-        ??= new RelayCommand<(int, int)>(args => 
+        ??= new RelayCommand<(int, int)>(args =>
         SetExplicitTileVisibility(args.Item1, args.Item2));
     public ICommand ResetExplicitVisibilityCommand => _resetExplicitVisibilityCommand
         ??= new RelayCommand(ResetAllExplicitTileVisibility);
@@ -172,37 +224,43 @@ public class TransitionViewModel : ViewModelBase
 
     private TransitionMode _selectedTransitionMode = TransitionMode.Top;
     private float _pivotValue = 0.5f;
-    private float _wideningValue = 0f;
-    private float _shiftValue = 0f;
     private Color _colorSource = new(0, 0, 0, 0);
     private Color _colorTarget = new(0, 0, 0, 0);
 
     public TransitionMode SelectedTransitionMode
     {
         get => _selectedTransitionMode;
-        set => SetPropertyTriggerRecalculation(ref _selectedTransitionMode, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding);
+        set
+        {
+            if (_selectedTransitionMode == value)
+                return;
+
+            _selectedTransitionMode = value;
+            OnPropertyChanged(nameof(SelectedTransitionMode));
+
+            if (IsSmoothMode)
+                PivotSmooth.SelectedTransitionMode = value;
+            else
+                PivotBricks.SelectedTransitionMode = value;
+        }
     }
 
     public float PivotValue
     {
         get => _pivotValue;
-        set => SetPropertyTriggerRecalculation(ref _pivotValue, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding);
-    }
+        set
+        {
+            if (_pivotValue == value)
+                return;
 
-    public float WideningValue
-    {
-        get => _wideningValue;
-        set => SetPropertyTriggerRecalculation(ref _wideningValue, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding);
-    }
+            _pivotValue = value;
+            OnPropertyChanged(nameof(PivotValue));
 
-    public float ShiftValue
-    {
-        get => _shiftValue;
-        set => SetPropertyTriggerRecalculation(ref _shiftValue, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding);
+            if (IsSmoothMode)
+                PivotSmooth.PivotValue = value;
+            else
+                PivotBricks.PivotValue = value;
+        }
     }
 
     public Color ColorSource
@@ -228,27 +286,31 @@ public class TransitionViewModel : ViewModelBase
         get => _selectedTransitionType;
         set
         {
-            if (_selectedTransitionType != value)
+            if (_selectedTransitionType == value)
+                return;
+
+            _selectedTransitionType = value;
+            OnPropertyChanged(nameof(SelectedTransitionType));
+            OnPropertyChanged(nameof(IsSmoothMode));
+            OnPropertyChanged(nameof(IsBrickMode));
+
+            Presenters.IsSmoothMode = IsSmoothMode;
+            SyncSharedControlsFromActiveChild();
+
+            if (IsBrickMode)
+                _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
+
+            if (IsSmoothMode)
             {
-                _selectedTransitionType = value;
-                OnPropertyChanged(nameof(SelectedTransitionType));
-                OnPropertyChanged(nameof(IsSmoothMode));
-                OnPropertyChanged(nameof(IsBrickMode));
-
-                if (_selectedTransitionType == TransitionType.Bricks)
-                    _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
-
-                if (_selectedTransitionType == TransitionType.Smooth)
-                {
-                    IsLabelMapExpanded = false;
-                    IsExplicitTileVisibilityEraseMode = false;
-                    IsExplicitTileVisibilityDrawMode = false;
-                    IsEyedropperMode = false;
-                    IsShadowEyedropperMode = false;
-                }
-
-                _ = TriggerRecalculation();
+                IsLabelMapExpanded = false;
+                Manual.IsExplicitTileVisibilityEraseMode = false;
+                Manual.IsExplicitTileVisibilityDrawMode = false;
+                Edge.IsEyedropperMode = false;
+                Shadow.IsShadowEyedropperMode = false;
+                IsIndicatorMapVisible = false;
             }
+
+            _ = TriggerRecalculation();
         }
     }
 
@@ -256,399 +318,24 @@ public class TransitionViewModel : ViewModelBase
     public bool IsSmoothMode => _selectedTransitionType == TransitionType.Smooth;
     public bool IsBrickMode => _selectedTransitionType == TransitionType.Bricks;
 
-    // =====================================================================
-    // Smooth-mode properties
-    // =====================================================================
-
-    private float _blendHardnessValue = 0.5f;
-
-    public float BlendHardnessValue
-    {
-        get => _blendHardnessValue;
-        set => SetPropertyTriggerRecalculation(ref _blendHardnessValue, value);
-    }
-
-    // =====================================================================
-    // Brick-mode properties
-    // =====================================================================
-
-    private IWriteableBitmap? _labelMapImage;
-    private IWriteableBitmap? _indicatorMapImage;
-    private bool _isIndicatorMapVisible;
-    private bool _invertGrayscale;
-    private int _markerCount = 42;
-    private int _markerRadius = 5;
-    private float _gridFitAngle = 0f;
-    private bool _reversePivot;
-    private bool _sliceCornerTiles;
-    private bool _protectEdges = true;
-    private bool _isLabelMapExpanded;
-    private FilterType _selectedFilter = FilterType.Gaussian;
-    private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Felzenszwalb;
-    private int _felzenszwalbMinSize = 50;
-    private float _felzenszwalbScale = 100f;
-    private int _slicSegmentCount = 250;
-    private float _slicCompactness = 10f;
-    private int _quickshiftMaxDist = 10;
-    private float _quickshiftRatio = 1f;
-    private float _bilateralSigma = 30f;
-    private float _gaussianSigma = 1f;
-    private float _underfillingPivot = 0.5f;
-    private bool _reverseUnderfilling = false;
-    private int _underFillingThreshold = 0;
-    private Color _edgeColor = new Color(255, 255, 255, 128);
-    private Color _shadowColor = new Color(42, 42, 42, 42);
-    private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
-    private int _edgeWidth = 1;
-    private int _shadowSize = 3;
-    private int _shadowHardness = 50;
-    private bool _isEyedropperMode;
-    private bool _isShadowEyedropperMode;
-    private bool _isExplicitTileVisibilityDrawMode;
-    private bool _isExplicitTileVisibilityEraseMode;
-    private BricksPipelineRequirements _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
-
     private RelayCommand<(int X, int Y, int imageNum)>? _mouseOverCommand;
-
-    public IWriteableBitmap? LabelMapImage
-    {
-        get => _labelMapImage;
-        set => SetCallerProperty(ref _labelMapImage, value);
-    }
-
-    public IWriteableBitmap? IndicatorMapImage
-    {
-        get => _indicatorMapImage;
-        set => SetCallerProperty(ref _indicatorMapImage, value);
-    }
-
-    public bool IsIndicatorMapVisible
-    {
-        get => _isIndicatorMapVisible;
-        set => SetCallerProperty(ref _isIndicatorMapVisible, value);
-    }
-
-    public bool InvertGrayscale
-    {
-        get => _invertGrayscale;
-        set => SetPropertyTriggerRecalculation(ref _invertGrayscale, value,
-            BricksPipelineRequirements.RequiresAnalysis, null);
-    }
-
-    public int MarkerCount
-    {
-        get => _markerCount;
-        set => SetPropertyTriggerRecalculation(ref _markerCount, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public int MarkerRadius
-    {
-        get => _markerRadius;
-        set => SetPropertyTriggerRecalculation(ref _markerRadius, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public float GridFitAngle
-    {
-        get => _gridFitAngle;
-        set => SetPropertyTriggerRecalculation(ref _gridFitAngle, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public bool ReversePivot
-    {
-        get => _reversePivot;
-        set => SetPropertyTriggerRecalculation(ref _reversePivot, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding, null);
-    }
-
-    public bool SliceCornerTiles
-    {
-        get => _sliceCornerTiles;
-        set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding, null);
-    }
-
-    public bool ProtectEdges
-    {
-        get => _protectEdges;
-        set => SetPropertyTriggerRecalculation(ref _protectEdges, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding, null);
-    }
-
-    public bool IsLabelMapExpanded
-    {
-        get => _isLabelMapExpanded;
-        set => SetCallerProperty(ref _isLabelMapExpanded, value);
-    }
-
-    public FilterType SelectedFilter
-    {
-        get => _selectedFilter;
-        set
-        {
-            if (SetCallerPropertyReturn(ref _selectedFilter, value, nameof(SelectedFilter)))
-            {
-                OnPropertyChanged(nameof(ShowBilateralSigma));
-                OnPropertyChanged(nameof(ShowGaussianSigma));
-                OnPropertyChanged(nameof(SelectedFilterIndex));
-                _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
-                _ = TriggerRecalculation();
-            }
-        }
-    }
-
-    public int SelectedFilterIndex
-    {
-        get => (int)_selectedFilter;
-        set => SelectedFilter = (FilterType)value;
-    }
-
-    public SegmentationMethod SelectedSegmentationMethod
-    {
-        get => _selectedSegmentationMethod;
-        set
-        {
-            if (SetCallerPropertyReturn(ref _selectedSegmentationMethod, value, nameof(SelectedSegmentationMethod)))
-            {
-                OnPropertyChanged(nameof(ShowFelzenszwalbParameters));
-                OnPropertyChanged(nameof(ShowSlicParameters));
-                OnPropertyChanged(nameof(ShowQuickshiftParameters));
-                OnPropertyChanged(nameof(ShowWatershedBasedSegmentationInputs));
-                OnPropertyChanged(nameof(ShowGridFittingSegmentationInputs));
-                OnPropertyChanged(nameof(SelectedSegmentationMethodIndex));
-                OnPropertyChanged(nameof(ShowGrayBasedSegmentationInputs));
-                _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
-                _ = TriggerRecalculation();
-            }
-        }
-    }
-
-    public bool ShowFelzenszwalbParameters => SelectedSegmentationMethod == SegmentationMethod.Felzenszwalb;
-    public bool ShowSlicParameters => SelectedSegmentationMethod == SegmentationMethod.Slic;
-    public bool ShowQuickshiftParameters => SelectedSegmentationMethod == SegmentationMethod.Quickshift;
-    public bool ShowBilateralSigma => SelectedFilter == FilterType.Bilateral;
-    public bool ShowGaussianSigma => SelectedFilter == FilterType.Gaussian;
-    public bool ShowWatershedBasedSegmentationInputs => SelectedSegmentationMethod == SegmentationMethod.Watershed;
-
-    public bool ShowGridFittingSegmentationInputs => 
-        SelectedSegmentationMethod == SegmentationMethod.BrickFit || 
-        SelectedSegmentationMethod == SegmentationMethod.GridFit;
-
-    public bool ShowGrayBasedSegmentationInputs =>
-        ShowWatershedBasedSegmentationInputs || ShowGridFittingSegmentationInputs;
-
-    public int FelzenszwalbMinSize
-    {
-        get => _felzenszwalbMinSize;
-        set => SetPropertyTriggerRecalculation(ref _felzenszwalbMinSize, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public float FelzenszwalbScale
-    {
-        get => _felzenszwalbScale;
-        set => SetPropertyTriggerRecalculation(ref _felzenszwalbScale, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public int SlicSegmentCount
-    {
-        get => _slicSegmentCount;
-        set => SetPropertyTriggerRecalculation(ref _slicSegmentCount, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public float SlicCompactness
-    {
-        get => _slicCompactness;
-        set => SetPropertyTriggerRecalculation(ref _slicCompactness, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public int QuickshiftMaxDist
-    {
-        get => _quickshiftMaxDist;
-        set => SetPropertyTriggerRecalculation(ref _quickshiftMaxDist, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public float QuickshiftRatio
-    {
-        get => _quickshiftRatio;
-        set => SetPropertyTriggerRecalculation(ref _quickshiftRatio, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public float BilateralSigma
-    {
-        get => _bilateralSigma;
-        set => SetPropertyTriggerRecalculation(ref _bilateralSigma, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public float GaussianSigma
-    {
-        get => _gaussianSigma;
-        set => SetPropertyTriggerRecalculation(ref _gaussianSigma, value,
-            BricksPipelineRequirements.RequiresAnalysis);
-    }
-
-    public float UnderfillingPivot
-    {
-        get => _underfillingPivot;
-        set => SetPropertyTriggerRecalculation(ref _underfillingPivot, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding);
-    }
-
-    public bool ReverseUnderfilling
-    {
-        get => _reverseUnderfilling;
-        set => SetPropertyTriggerRecalculation(ref _reverseUnderfilling, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding);
-    }
-
-    public int UnderfillingThreshold
-    {
-        get => _underFillingThreshold;
-        set => SetPropertyTriggerRecalculation(ref _underFillingThreshold, value,
-            BricksPipelineRequirements.RequiresSelectionBuilding);
-    }
-
-    public Color EdgeColor
-    {
-        get => _edgeColor;
-        set => SetPropertyTriggerRecalculation(ref _edgeColor, value,
-            BricksPipelineRequirements.RequiresDrawing);
-    }
-
-    public EdgeBlendMode BlendMode
-    {
-        get => _blendMode;
-        set => SetPropertyTriggerRecalculation(ref _blendMode, value,
-            BricksPipelineRequirements.RequiresDrawing);
-    }
-
-    public Array EdgeBlendModes => Enum.GetValues(typeof(EdgeBlendMode));
-
-    public Color ShadowColor
-    {
-        get => _shadowColor;
-        set => SetPropertyTriggerRecalculation(ref _shadowColor, value,
-            BricksPipelineRequirements.RequiresDrawing);
-    }
-
-    public int EdgeWidth
-    {
-        get => _edgeWidth;
-        set => SetPropertyTriggerRecalculation(ref _edgeWidth, value,
-            BricksPipelineRequirements.RequiresDrawing);
-    }
-
-    public int ShadowSize
-    {
-        get => _shadowSize;
-        set => SetPropertyTriggerRecalculation(ref _shadowSize, value,
-            BricksPipelineRequirements.RequiresDrawing);
-    }
-
-    public int ShadowHardness
-    {
-        get => _shadowHardness;
-        set => SetPropertyTriggerRecalculation(ref _shadowHardness, value,
-            BricksPipelineRequirements.RequiresDrawing);
-    }
-
-    public bool IsEyedropperMode
-    {
-        get => _isEyedropperMode;
-        set
-        {
-            if (_isEyedropperMode == value)
-                return;
-
-            _isEyedropperMode = value;
-            OnPropertyChanged(nameof(IsEyedropperMode));
-
-            if (!value)
-                return;
-
-            _isShadowEyedropperMode = false;
-            OnPropertyChanged(nameof(IsShadowEyedropperMode));
-        }
-    }
-
-    public bool IsShadowEyedropperMode
-    {
-        get => _isShadowEyedropperMode;
-        set
-        {
-            if (_isShadowEyedropperMode == value)
-                return;
-
-            _isShadowEyedropperMode = value;
-            OnPropertyChanged(nameof(IsShadowEyedropperMode));
-
-            if (!value)
-                return;
-
-            _isEyedropperMode = false;
-            OnPropertyChanged(nameof(IsEyedropperMode));
-        }
-    }
-
-    public bool IsExplicitTileVisibilityDrawMode
-    {
-        get => _isExplicitTileVisibilityDrawMode;
-        set
-        {
-            SetProperty(ref _isExplicitTileVisibilityDrawMode, value, nameof(IsExplicitTileVisibilityDrawMode));
-
-            if (!value) 
-                return;
-
-            _isExplicitTileVisibilityEraseMode = false;
-            OnPropertyChanged(nameof(IsExplicitTileVisibilityEraseMode));
-        }
-    }
-
-    public bool IsExplicitTileVisibilityEraseMode
-    {
-        get => _isExplicitTileVisibilityEraseMode;
-        set
-        {
-            SetProperty(ref _isExplicitTileVisibilityEraseMode, value, nameof(IsExplicitTileVisibilityEraseMode));
-            if (!value) 
-                return;
-
-            _isExplicitTileVisibilityDrawMode = false;
-            OnPropertyChanged(nameof(IsExplicitTileVisibilityDrawMode));
-        }
-    }
-
-    public int SelectedSegmentationMethodIndex
-    {
-        get => (int)_selectedSegmentationMethod;
-        set => SelectedSegmentationMethod = (SegmentationMethod)value;
-    }
 
     public ICommand MouseOverCommand => _mouseOverCommand
         ??= new RelayCommand<(int X, int Y, int imageNum)>(MouseOverImages);
 
     private void MouseOverImages((int X, int Y, int imageNum) args)
     {
-        if (IsEyedropperMode || IsShadowEyedropperMode)
-            DoColorPicking(args.X, args.Y, args.imageNum, IsShadowEyedropperMode);
+        if (Edge.IsEyedropperMode || Shadow.IsShadowEyedropperMode)
+            DoColorPicking(args.X, args.Y, args.imageNum, Shadow.IsShadowEyedropperMode);
     }
 
     private void DoColorPicking(int x, int y, int imageNum, bool pickShadowColor)
     {
         var sampledColor = _bitmapOperations.GetPixelBrush(imageNum == 1 ? Image1 : Image2, x, y);
         if (pickShadowColor)
-            ShadowColor = sampledColor;
+            Shadow.ShadowColor = sampledColor;
         else
-            EdgeColor = sampledColor;
+            Edge.EdgeColor = sampledColor;
     }
 
     // =====================================================================
@@ -664,50 +351,43 @@ public class TransitionViewModel : ViewModelBase
     {
         if (IsSmoothMode)
         {
-            _transitionHelper.Hardness = _blendHardnessValue;
+            _transitionHelper.Hardness = PivotSmooth.BlendHardnessValue;
         }
         else
         {
-            _transitionHelper.CurrentBricksPipelineRequirements = _currentRequirements;
-            _transitionHelper.InvertGrayscale = InvertGrayscale;
-            _transitionHelper.ReversePivot = ReversePivot;
-            _transitionHelper.SliceCornerTiles = SliceCornerTiles;
-            _transitionHelper.ProtectEdges = ProtectEdges;
-            _transitionHelper.MarkerCount = MarkerCount;
-            _transitionHelper.MarkerRadius = MarkerRadius;
-            _transitionHelper.GridFitAngle = GridFitAngle;
-            _transitionHelper.SelectedFilter = SelectedFilter;
-            _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
-            _transitionHelper.FelzenszwalbMinSize = FelzenszwalbMinSize;
-            _transitionHelper.FelzenszwalbScale = FelzenszwalbScale;
-            _transitionHelper.SlicSegmentCount = SlicSegmentCount;
-            _transitionHelper.SlicCompactness = SlicCompactness;
-            _transitionHelper.QuickshiftMaxDist = QuickshiftMaxDist;
-            _transitionHelper.QuickshiftRatio = QuickshiftRatio;
-            _transitionHelper.BilateralSigma = BilateralSigma;
-            _transitionHelper.GaussianSigma = GaussianSigma;
-            _transitionHelper.UnderfillingPivot = UnderfillingPivot;
-            _transitionHelper.ReverseUnderfilling = ReverseUnderfilling;
-            _transitionHelper.UnderfillingThreshold = UnderfillingThreshold;
-            _transitionHelper.EdgeColor = EdgeColor;
-            _transitionHelper.BlendMode = BlendMode;
-            _transitionHelper.EdgeWidth = EdgeWidth;
-            _transitionHelper.ShadowColor = ShadowColor;
-            _transitionHelper.ShadowSize = ShadowSize;
-            _transitionHelper.ShadowHardness = ShadowHardness;
+            _transitionHelper.InvertGrayscale = Analysis.InvertGrayscale;
+            _transitionHelper.ReversePivot = PivotBricks.ReversePivot;
+            _transitionHelper.SliceCornerTiles = PivotBricks.SliceCornerTiles;
+            _transitionHelper.ProtectEdges = PivotBricks.ProtectEdges;
+            _transitionHelper.MarkerCount = Analysis.MarkerCount;
+            _transitionHelper.MarkerRadius = Analysis.MarkerRadius;
+            _transitionHelper.GridFitAngle = Analysis.GridFitAngle;
+            _transitionHelper.SelectedFilter = Analysis.SelectedFilter;
+            _transitionHelper.SegmentationMethod = Analysis.SelectedSegmentationMethod;
+            _transitionHelper.FelzenszwalbMinSize = Analysis.FelzenszwalbMinSize;
+            _transitionHelper.FelzenszwalbScale = Analysis.FelzenszwalbScale;
+            _transitionHelper.SlicSegmentCount = Analysis.SlicSegmentCount;
+            _transitionHelper.SlicCompactness = Analysis.SlicCompactness;
+            _transitionHelper.QuickshiftMaxDist = Analysis.QuickshiftMaxDist;
+            _transitionHelper.QuickshiftRatio = Analysis.QuickshiftRatio;
+            _transitionHelper.BilateralSigma = Analysis.BilateralSigma;
+            _transitionHelper.GaussianSigma = Analysis.GaussianSigma;
+            _transitionHelper.UnderfillingPivot = Underfilling.UnderfillingPivot;
+            _transitionHelper.ReverseUnderfilling = Underfilling.ReverseUnderfilling;
+            _transitionHelper.UnderfillingThreshold = Underfilling.UnderfillingThreshold;
+            _transitionHelper.EdgeColor = Edge.EdgeColor;
+            _transitionHelper.BlendMode = Edge.BlendMode;
+            _transitionHelper.EdgeWidth = Edge.EdgeWidth;
+            _transitionHelper.ShadowColor = Shadow.ShadowColor;
+            _transitionHelper.ShadowSize = Shadow.ShadowSize;
+            _transitionHelper.ShadowHardness = Shadow.ShadowHardness;
         }
-    }
-
-    private void OnResultUpdated()
-    {
-        if (IsBrickMode)
-            UpdateLabelMapImage();
     }
 
     private void SwapImages()
     {
         if (IsBrickMode)
-            _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+            _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
         var tempImage = Image1;
         Image1 = Image2;
@@ -716,6 +396,8 @@ public class TransitionViewModel : ViewModelBase
         var tempPixels = _pixels1;
         _pixels1 = _pixels2;
         _pixels2 = tempPixels;
+        Presenters.Pixels1 = _pixels1;
+        Presenters.Pixels2 = _pixels2;
 
         _ = TriggerRecalculation();
     }
@@ -723,22 +405,13 @@ public class TransitionViewModel : ViewModelBase
     private void Mix()
     {
         if (IsBrickMode)
-            _currentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+            _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
         if (!CompareInputSpecs())
             return;
 
         ConfigureTransitionHelper(Image1.PixelWidth, Image1.PixelHeight);
-
-        var resultPixels = CreateMixedPixels();
-
-        ResultImage = _mediaFactory.CreateEmptyBitmap(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha);
-        ResultImage.WritePixels(
-            new PixelRect(0, 0, ResultImage.PixelWidth, ResultImage.PixelHeight),
-            resultPixels,
-            ResultImage.PixelWidth * TRANSITIONS_BPP);
-
-        OnResultUpdated();
+        UpdateResultImages(Image1.PixelWidth, Image1.PixelHeight, CreateMixedPixels());
     }
 
     private void LoadImage1()
@@ -749,6 +422,7 @@ public class TransitionViewModel : ViewModelBase
 
         _pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
         Image1.CopyPixels(_pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
+        Presenters.Pixels1 = _pixels1;
         InitTextVisible = false;
 
         _transitionHelper.CleanUp();
@@ -762,6 +436,7 @@ public class TransitionViewModel : ViewModelBase
 
         _pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
         Image2.CopyPixels(_pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
+        Presenters.Pixels2 = _pixels2;
         InitTextVisible = false;
 
         _transitionHelper.CleanUp();
@@ -776,11 +451,10 @@ public class TransitionViewModel : ViewModelBase
     {
         _transitionHelper.Width = width;
         _transitionHelper.Height = height;
-
         _transitionHelper.Mode = SelectedTransitionMode;
         _transitionHelper.Pivot = PivotValue;
-        _transitionHelper.Widening = WideningValue;
-        _transitionHelper.Shift = ShiftValue;
+        _transitionHelper.Widening = IsSmoothMode ? PivotSmooth.WideningValue : PivotBricks.WideningValue;
+        _transitionHelper.Shift = IsSmoothMode ? PivotSmooth.ShiftValue : PivotBricks.ShiftValue;
 
         ConfigureTransitionHelperCore();
     }
@@ -811,22 +485,20 @@ public class TransitionViewModel : ViewModelBase
         view.CloseAsync();
     }
 
-    private void UpdateLabelMapImage()
+    private void UpdateResultImages(int width, int height, byte[] resultPixels)
     {
-        byte[] mapData = _transitionHelper.GetLabelMap();
+        var resultBitmap = _mediaFactory.CreateBitmapFromRaw(width, height, true, resultPixels, width * 4);
+        ResultImage = _mediaFactory.CloneBitmap(resultBitmap);
 
-        int mapW = ResultImage?.PixelWidth ?? 0;
-        int mapH = ResultImage?.PixelHeight ?? 0;
-
-        if (mapData.Length == 0 || mapW == 0 || mapH == 0)
+        if (IsSmoothMode)
             return;
 
-        var labelBmp = _mediaFactory.CreateEmptyBitmap(mapW, mapH, true);
-        labelBmp.WritePixels(
-            new PixelRect(0, 0, mapW, mapH),
-            mapData,
-            mapW * 4);
+        byte[] mapData = _transitionHelper.GetLabelMap();
+        if (mapData.Length == 0)
+            return;
 
+        var labelBmp = _mediaFactory.CreateEmptyBitmap(width, height, true);
+        labelBmp.WritePixels(new PixelRect(0, 0, width, height), mapData, width * 4);
         LabelMapImage = labelBmp;
     }
 
@@ -856,7 +528,7 @@ public class TransitionViewModel : ViewModelBase
 
     private void SetExplicitTileVisibility(int x, int y)
     {
-        if(!IsExplicitTileVisibilityEraseMode && !IsExplicitTileVisibilityDrawMode)
+        if (!Manual.IsExplicitTileVisibilityEraseMode && !Manual.IsExplicitTileVisibilityDrawMode)
             return;
 
         int label = _transitionHelper.GetLabelAtPixel(x, y);
@@ -864,20 +536,17 @@ public class TransitionViewModel : ViewModelBase
         if (label == 0)
             return;
 
-        bool visibikityChnaged = _transitionHelper.SetExplicitTileVisibility(label, IsExplicitTileVisibilityDrawMode);
+        bool visibilityChanged = _transitionHelper.SetExplicitTileVisibility(label, Manual.IsExplicitTileVisibilityDrawMode);
+        _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
 
-        _currentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
-
-        if (visibikityChnaged)
+        if (visibilityChanged)
             _ = TriggerRecalculation();
     }
 
     private void ResetAllExplicitTileVisibility()
     {
         _transitionHelper.ResetAllExplicitTileVisibility();
-
-        _currentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
-
+        _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
         _ = TriggerRecalculation();
     }
 
@@ -917,19 +586,8 @@ public class TransitionViewModel : ViewModelBase
 
                 ConfigureTransitionHelper(width, height);
 
-                byte[] resultPixels = await Task.Run(
-                    () => CreateMixedPixels());
-
-                var resImage = _mediaFactory.CreateBitmapFromRaw(
-                    width,
-                    height,
-                    hasAlpha: true,
-                    resultPixels,
-                    stride: width * 4);
-
-                ResultImage = _mediaFactory.CloneBitmap(resImage);
-
-                OnResultUpdated();
+                byte[] resultPixels = await Task.Run(CreateMixedPixels);
+                UpdateResultImages(width, height, resultPixels);
             }
             while (_pivotUpdatePending);
         }
@@ -942,46 +600,60 @@ public class TransitionViewModel : ViewModelBase
         }
     }
 
-    private void SetPropertyTriggerRecalculation<T>(
-        ref T field,
-        T value,
-        [CallerMemberName] string? propertyName = null)
+    private void SyncSharedControlsFromActiveChild()
     {
-        if (!EqualityComparer<T>.Default.Equals(field, value))
+        if (IsSmoothMode)
         {
-            field = value;
-            OnPropertyChanged(propertyName ?? string.Empty);
-            _ = TriggerRecalculation();
+            _selectedTransitionMode = PivotSmooth.SelectedTransitionMode;
+            _pivotValue = PivotSmooth.PivotValue;
+        }
+        else
+        {
+            _selectedTransitionMode = PivotBricks.SelectedTransitionMode;
+            _pivotValue = PivotBricks.PivotValue;
+        }
+
+        OnPropertyChanged(nameof(SelectedTransitionMode));
+        OnPropertyChanged(nameof(PivotValue));
+    }
+
+    private void Presenters_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(TransitionPresentersViewModel.Image1):
+                OnPropertyChanged(nameof(Image1));
+                break;
+            case nameof(TransitionPresentersViewModel.Image2):
+                OnPropertyChanged(nameof(Image2));
+                break;
+            case nameof(TransitionPresentersViewModel.ResultImage):
+                OnPropertyChanged(nameof(ResultImage));
+                break;
+            case nameof(TransitionPresentersViewModel.LabelMapImage):
+                OnPropertyChanged(nameof(LabelMapImage));
+                break;
+            case nameof(TransitionPresentersViewModel.IndicatorMapImage):
+                OnPropertyChanged(nameof(IndicatorMapImage));
+                break;
+            case nameof(TransitionPresentersViewModel.IsIndicatorMapVisible):
+                OnPropertyChanged(nameof(IsIndicatorMapVisible));
+                break;
+            case nameof(TransitionPresentersViewModel.InitTextVisible):
+                OnPropertyChanged(nameof(InitTextVisible));
+                break;
         }
     }
 
-    private void SetPropertyTriggerRecalculation<T>(
-        ref T field,
-        T value,
-        BricksPipelineRequirements requirements,
-        [CallerMemberName] string? propertyName = null)
+    private void Edge_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (!EqualityComparer<T>.Default.Equals(field, value))
-        {
-            field = value;
-            _currentRequirements = requirements;
-
-            if (!string.IsNullOrEmpty(propertyName))
-                OnPropertyChanged(propertyName);
-
-            _ = TriggerRecalculation();
-        }
+        if (e.PropertyName == nameof(TransitionEdgeViewModel.IsEyedropperMode) && Edge.IsEyedropperMode)
+            Shadow.IsShadowEyedropperMode = false;
     }
 
-    private bool SetCallerPropertyReturn<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private void Shadow_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (!EqualityComparer<T>.Default.Equals(field, value))
-        {
-            field = value;
-            OnPropertyChanged(propertyName ?? string.Empty);
-            return true;
-        }
-
-        return false;
+        if (e.PropertyName == nameof(TransitionShadowViewModel.IsShadowEyedropperMode) && Shadow.IsShadowEyedropperMode)
+            Edge.IsEyedropperMode = false;
     }
 }

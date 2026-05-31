@@ -38,7 +38,7 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void InputImage_PointerMoved(object? sender, PointerEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode && sender is Image image)
+            if (DataContext is ModificationsViewModel vm && vm.ColorOverlayVM.IsColorOverlayEyedropperMode && sender is Image image)
             {
                 var position = e.GetPosition(image);
                 vm.MouseOverInputCommand.Execute((X: (int)position.X, Y: (int)position.Y));
@@ -47,21 +47,21 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void InputImage_PointerEntered(object? sender, PointerEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+            if (DataContext is ModificationsViewModel vm && vm.ColorOverlayVM.IsColorOverlayEyedropperMode)
                 this.Cursor = CursorProvider.EyedropperCursor;
         }
 
         private void InputImage_PointerExited(object? sender, PointerEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+            if (DataContext is ModificationsViewModel vm && vm.ColorOverlayVM.IsColorOverlayEyedropperMode)
                 this.Cursor = CursorProvider.DefaultCursor;
         }
 
         private void InputImage_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+            if (DataContext is ModificationsViewModel vm && vm.ColorOverlayVM.IsColorOverlayEyedropperMode)
             {
-                vm.IsColorOverlayEyedropperMode = false;
+                vm.ColorOverlayVM.IsColorOverlayEyedropperMode = false;
                 this.Cursor = CursorProvider.DefaultCursor;
             }
         }

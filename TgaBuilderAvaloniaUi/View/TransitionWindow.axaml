@@ -287,7 +287,8 @@
             <!-- Smooth mode: Hardness / Widening / Shift sliders -->
             <local:TransitionWindowSmoothUserControl
                 Grid.Row="0"
-                IsVisible="{Binding IsSmoothMode}" />
+                DataContext="{Binding PivotSmooth}"
+                IsVisible="{Binding $parent[Window].DataContext.IsSmoothMode}" />
 
             <!-- Brick mode: scrollable expanders -->
             <ScrollViewer
@@ -325,7 +326,7 @@
                                     Height="26" />
                             </StackPanel>
                         </Expander.Header>
-                        <local:TransitionWindowAnalysisUserControl />
+                        <local:TransitionWindowAnalysisUserControl DataContext="{Binding Analysis}" />
                     </Expander>
 
                     <!-- Parameter Section: Pivot Boundaries -->
@@ -333,7 +334,7 @@
                         Header="Pivot"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">
-                        <local:TransitionWindowPivotUserControl />
+                        <local:TransitionWindowPivotUserControl DataContext="{Binding PivotBricks}" />
                     </Expander>
 
                     <!-- Parameter Section: Edge Blending -->
@@ -341,7 +342,7 @@
                          Header="Edge"
                          IsExpanded="True"
                          HorizontalAlignment="Stretch">
-                         <local:TransitionWindowEdgeUserControl />
+                         <local:TransitionWindowEdgeUserControl DataContext="{Binding Edge}" />
                      </Expander>
 
                      <!-- Parameter Section: Shadow -->
@@ -349,7 +350,7 @@
                          Header="Shadow"
                          IsExpanded="True"
                          HorizontalAlignment="Stretch">
-                         <local:TransitionWindowShadowUserControl />
+                         <local:TransitionWindowShadowUserControl DataContext="{Binding Shadow}" />
                      </Expander>
 
                       <!-- Parameter Section: Underfilling -->
@@ -357,7 +358,7 @@
                           Header="Underfilling"
                           IsExpanded="True"
                           HorizontalAlignment="Stretch">
-                         <local:TransitionWindowUnderfillingUserControl />
+                         <local:TransitionWindowUnderfillingUserControl DataContext="{Binding Underfilling}" />
                      </Expander>
 
                      <!-- Parameter Section: Manual -->
@@ -365,7 +366,7 @@
                          Header="Manual"
                          IsExpanded="True"
                          HorizontalAlignment="Stretch">
-                         <local:TransitionWindowManualUserControl />
+                         <local:TransitionWindowManualUserControl DataContext="{Binding Manual}" />
                      </Expander>
                  </StackPanel>
              </ScrollViewer>

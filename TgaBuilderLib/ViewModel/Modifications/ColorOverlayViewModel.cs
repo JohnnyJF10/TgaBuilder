@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.Modifications;
-using TgaBuilderLib.ViewModel.Modifications;
 
 namespace TgaBuilderLib.ViewModel.Modifications;
 
@@ -13,19 +12,18 @@ namespace TgaBuilderLib.ViewModel.Modifications;
 public class ModificationsColorOverlayViewModel : ThrottledViewModelBase
 {
     public ModificationsColorOverlayViewModel(
+        IMediaFactory mediaFactory,
         IModificationsHelper modificationsHelper,
         ModificationsPresentersViewModel presenters)
     {
+        _mediaFactory = mediaFactory;
         _modificationsHelper = modificationsHelper;
         Presenters = presenters;
     }
 
+    private readonly IMediaFactory _mediaFactory;
     private readonly IModificationsHelper _modificationsHelper;
     public ModificationsPresentersViewModel Presenters { get; }
-
-    // =====================================================================
-    // Fields
-    // =====================================================================
 
     private Color _colorOverlay = new(0, 0, 0, 0);
     private float _colorOverlayAmount;
@@ -34,10 +32,6 @@ public class ModificationsColorOverlayViewModel : ThrottledViewModelBase
     private float _colorOverlayLumaPreservation = 1f;
     private float _colorOverlayChromaBoost = 1f;
     private bool _isColorOverlayEyedropperMode;
-
-    // =====================================================================
-    // Properties
-    // =====================================================================
 
     public Color ColorOverlay
     {
@@ -113,10 +107,6 @@ public class ModificationsColorOverlayViewModel : ThrottledViewModelBase
         set => SetCallerProperty(ref _isColorOverlayEyedropperMode, value);
     }
 
-    // =====================================================================
-    // ThrottledViewModelBase overrides
-    // =====================================================================
-
     protected override bool DoPreProcessing()
     {
         _modificationsHelper.ColorOverlay = _colorOverlay;
@@ -133,6 +123,22 @@ public class ModificationsColorOverlayViewModel : ThrottledViewModelBase
 
     protected override void Recalculate()
     {
-        // Recalculation is driven by the parent ModificationsViewModel
+        var pixels = Presenters.InputPixels;
+        if (pixels == null || pixels.Length == 0) return;
+
+        int w = Presenters.InputImage.PixelWidth;
+        int h = Presenters.InputImage.PixelHeight;
+        if (w == 0 || h == 0) return;
+
+        _modificationsHelper.Width = w;
+        _modificationsHelper.Height = h;
+
+        byte[] inputCopy = new byte[pixels.Length];
+        System.Array.Copy(pixels, inputCopy, pixels.Length);
+
+        byte[] result = _modificationsHelper.Apply(inputCopy);
+
+        var resultBmp = _mediaFactory.CreateBitmapFromRaw(w, h, true, result, w * 4);
+        Presenters.ResultImage = _mediaFactory.CloneBitmap(resultBmp);
     }
 }

@@ -29,6 +29,7 @@ public class TransitionPresentersViewModel : ViewModelBase
     private byte[] _pixels2;
     private bool _initTextVisible = true;
     private bool _isIndicatorMapVisible;
+    private bool _isSmoothMode;
 
     public IWriteableBitmap Image1
     {
@@ -70,6 +71,12 @@ public class TransitionPresentersViewModel : ViewModelBase
     {
         get => _initTextVisible;
         set => SetCallerProperty(ref _initTextVisible, value);
+    }
+
+    public bool IsSmoothMode
+    {
+        get => _isSmoothMode;
+        set => SetCallerProperty(ref _isSmoothMode, value);
     }
 
     public byte[] Pixels1

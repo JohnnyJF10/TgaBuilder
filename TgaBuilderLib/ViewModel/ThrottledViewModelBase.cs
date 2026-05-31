@@ -1,15 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace TgaBuilderLib.ViewModel;
 
 public abstract class ThrottledViewModelBase : ViewModelBase
 {
-
     private const int RECALC_DELAY_MS = 50;
 
     private readonly object _recalcLock = new();
@@ -19,6 +16,8 @@ public abstract class ThrottledViewModelBase : ViewModelBase
     protected abstract bool DoPreProcessing();
 
     protected abstract void Recalculate();
+
+    public void RequestRecalculation() => _ = TriggerRecalculation();
 
     protected async Task TriggerRecalculation()
     {

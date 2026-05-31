@@ -1,11 +1,11 @@
-<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowPivotUserControl"
+﻿<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowPivotUserControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             x:DataType="viewmodel:TransitionViewModel"
+             x:DataType="viewmodel:TransitionPivotBricksViewModel"
              x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -29,7 +29,7 @@
             MinWidth="36"
             Icon="{StaticResource flip_horizontal}"
             ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
-            IsChecked="{Binding ReversePivot}" />
+            IsChecked="{Binding PivotBricks.ReversePivot}" />
         <elements:IconToggleButton
             x:Name="ProtectEdgesToggleButton"
             Classes="outlined"
@@ -38,7 +38,7 @@
             MinWidth="36"
             Icon="{StaticResource shield}"
             ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
-            IsChecked="{Binding ProtectEdges}" />
+            IsChecked="{Binding PivotBricks.ProtectEdges}" />
         <elements:IconToggleButton
             x:Name="SliceCornersToggleButton"
             Classes="outlined"
@@ -46,7 +46,7 @@
             ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
             Icon="{StaticResource cut}"
             IsEnabled="{Binding #ProtectEdgesToggleButton.IsChecked}"
-            IsChecked="{Binding SliceCornerTiles}" />
+            IsChecked="{Binding PivotBricks.SliceCornerTiles}" />
     </StackPanel>
 
     <!-- Row 2: Widening Value Slider -->
@@ -75,11 +75,11 @@
     <elements:MouseWheelSlider Grid.Row="1" Grid.Column="1"
                                Margin="5,0"
                                VerticalAlignment="Center"
-                               ToolTip.Tip="{Binding WideningValue}"
+                               ToolTip.Tip="{Binding PivotBricks.WideningValue}"
                                Maximum="1"
                                Minimum="0"
                                SmallChange="0.01"
-                               Value="{Binding WideningValue}"
+                               Value="{Binding PivotBricks.WideningValue}"
                                ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1." />
     <Grid Grid.Row="1" Grid.Column="2"
           VerticalAlignment="Top"
@@ -130,11 +130,11 @@
     <elements:MouseWheelSlider Grid.Row="2" Grid.Column="1"
                                Margin="5,0"
                                VerticalAlignment="Center"
-                               ToolTip.Tip="{Binding ShiftValue}"
+                               ToolTip.Tip="{Binding PivotBricks.ShiftValue}"
                                Maximum="1"
                                Minimum="-1"
                                SmallChange="0.01"
-                               Value="{Binding ShiftValue}"
+                               Value="{Binding PivotBricks.ShiftValue}"
                                ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)" />
     <Grid Grid.Row="2" Grid.Column="2"
           VerticalAlignment="Top"

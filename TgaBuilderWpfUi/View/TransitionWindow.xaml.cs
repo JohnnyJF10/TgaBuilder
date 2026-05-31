@@ -39,7 +39,7 @@ namespace TgaBuilderWpfUi.View
 
         private void DoEyedropperMouseMove(Image image, MouseEventArgs e, int imageNum)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
             {
                 var position = e.GetPosition(image);
                 vm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
@@ -48,44 +48,44 @@ namespace TgaBuilderWpfUi.View
 
         private void Image1_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
                 Mouse.OverrideCursor = EyedropperCursor;
         }
 
         private void Image1_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
                 Mouse.OverrideCursor = null;
         }
 
         private void Image1_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
             {
-                vm.IsEyedropperMode = false;
-                vm.IsShadowEyedropperMode = false;
+                vm.Edge.IsEyedropperMode = false;
+                vm.Shadow.IsShadowEyedropperMode = false;
                 Mouse.OverrideCursor = null;
             }
         }
 
         private void Image2_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
                 Mouse.OverrideCursor = EyedropperCursor;
         }
 
         private void Image2_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
                 Mouse.OverrideCursor = null;
         }
 
         private void Image2_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm && (vm.Edge.IsEyedropperMode || vm.Shadow.IsShadowEyedropperMode))
             {
-                vm.IsEyedropperMode = false;
-                vm.IsShadowEyedropperMode = false;
+                vm.Edge.IsEyedropperMode = false;
+                vm.Shadow.IsShadowEyedropperMode = false;
                 Mouse.OverrideCursor = null;
             }
         }
@@ -95,7 +95,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            if (!vm.Manual.IsExplicitTileVisibilityDrawMode && !vm.Manual.IsExplicitTileVisibilityEraseMode)
                 return;
 
             if (vm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
@@ -110,7 +110,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            if (!vm.Manual.IsExplicitTileVisibilityDrawMode && !vm.Manual.IsExplicitTileVisibilityEraseMode)
                 return;
 
             vm.IsIndicatorMapVisible = true;
@@ -121,7 +121,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            if (!vm.Manual.IsExplicitTileVisibilityDrawMode && !vm.Manual.IsExplicitTileVisibilityEraseMode)
                 return;
 
             vm.IsIndicatorMapVisible = false;
@@ -132,7 +132,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            if (!vm.Manual.IsExplicitTileVisibilityDrawMode && !vm.Manual.IsExplicitTileVisibilityEraseMode)
                 return;
 
             if (e.LeftButton == MouseButtonState.Pressed && vm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)

@@ -1,10 +1,10 @@
-<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowShadowUserControl"
+﻿<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowShadowUserControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             x:DataType="viewmodel:TransitionViewModel"
+             x:DataType="viewmodel:TransitionShadowViewModel"
              x:CompileBindings="False"
              xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters">
     <UserControl.Resources>
@@ -25,7 +25,7 @@
                 Width="36"
                 Height="36"
                 Padding="-6,0,15,0"
-                IsChecked="{Binding IsShadowEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsChecked="{Binding Shadow.IsShadowEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                 ap:MouseOverInfoAP.InfoText="Pick shadow color from image">
                 <ToggleButton.Content>
                     <Path
@@ -42,7 +42,7 @@
             <ColorPicker
                 x:Name="ShadowColorPicker"
                 ap:MouseOverInfoAP.InfoText="Choose shadow color drawn over background behind tile borders"
-                Color="{Binding ShadowColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
+                Color="{Binding Shadow.ShadowColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
         </StackPanel>
 
         <DockPanel
@@ -66,13 +66,13 @@
             <elements:MouseWheelSlider
                 Margin="5,0"
                 VerticalAlignment="Center"
-                ToolTip.Tip="{Binding ShadowSize}"
+                ToolTip.Tip="{Binding Shadow.ShadowSize}"
                 IsSnapToTickEnabled="True"
                 TickFrequency="1"
                 Maximum="32"
                 Minimum="0"
                 SmallChange="1"
-                Value="{Binding ShadowSize}" />
+                Value="{Binding Shadow.ShadowSize}" />
         </DockPanel>
 
         <DockPanel
@@ -96,13 +96,13 @@
             <elements:MouseWheelSlider
                 Margin="5,0"
                 VerticalAlignment="Center"
-                ToolTip.Tip="{Binding ShadowHardness}"
+                ToolTip.Tip="{Binding Shadow.ShadowHardness}"
                 IsSnapToTickEnabled="True"
                 TickFrequency="1"
                 Maximum="100"
                 Minimum="0"
                 SmallChange="1"
-                Value="{Binding ShadowHardness}" />
+                Value="{Binding Shadow.ShadowHardness}" />
         </DockPanel>
     </StackPanel>
 </UserControl>

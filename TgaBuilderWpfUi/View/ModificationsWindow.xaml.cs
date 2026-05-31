@@ -32,7 +32,7 @@ namespace TgaBuilderWpfUi.View
 
         private void InputImage_MouseMove(object sender, MouseEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+            if (DataContext is ModificationsViewModel vm && vm.ColorOverlayVM.IsColorOverlayEyedropperMode)
             {
                 var position = e.GetPosition((Image)sender);
                 vm.MouseOverInputCommand.Execute((X: (int)position.X, Y: (int)position.Y));
@@ -41,21 +41,21 @@ namespace TgaBuilderWpfUi.View
 
         private void InputImage_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+            if (DataContext is ModificationsViewModel vm && vm.ColorOverlayVM.IsColorOverlayEyedropperMode)
                 Mouse.OverrideCursor = _eyedropperCursor;
         }
 
         private void InputImage_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+            if (DataContext is ModificationsViewModel vm && vm.ColorOverlayVM.IsColorOverlayEyedropperMode)
                 Mouse.OverrideCursor = null;
         }
 
         private void InputImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
+            if (DataContext is ModificationsViewModel vm && vm.ColorOverlayVM.IsColorOverlayEyedropperMode)
             {
-                vm.IsColorOverlayEyedropperMode = false;
+                vm.ColorOverlayVM.IsColorOverlayEyedropperMode = false;
                 Mouse.OverrideCursor = null;
             }
         }

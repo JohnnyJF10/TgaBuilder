@@ -1,4 +1,4 @@
-<UserControl x:Class="TgaBuilderWpfUi.View.TransitionWindowAnalysisUserControl"
+﻿<UserControl x:Class="TgaBuilderWpfUi.View.TransitionWindowAnalysisUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,8 +8,8 @@
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionAnalysisViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -39,7 +39,7 @@
                                     VerticalAlignment="Center"
                                     Background="Transparent"
                                     BorderThickness="0"
-                                    SelectedIndex="{Binding SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
+                                    SelectedIndex="{Binding Analysis.SelectedSegmentationMethodIndex, UpdateSourceTrigger=PropertyChanged}">
                                     <ComboBoxItem Content="Felzenszwalb" />
                                     <ComboBoxItem Content="SLIC" />
                                     <ComboBoxItem Content="Quickshift" />
@@ -56,9 +56,9 @@
                                 <elements:ToggleButtonEx
                                     Width="36"
                                     Height="36"
-                                    Visibility="{Binding ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Visibility="{Binding Analysis.ShowGrayBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Icon="{ui:SymbolIcon Table24}"
-                                    IsChecked="{Binding InvertGrayscale}"
+                                    IsChecked="{Binding Analysis.InvertGrayscale}"
                                     ap:MouseOverInfoAP.InfoText="Invert Grayscale: Recommended for textures in which the joints are brighter than the tiles (e.g. sand, snow in the joints)" />
                                  <Path
                                     VerticalAlignment="Center"
@@ -75,7 +75,7 @@
                                     Background="Transparent"
                                     Height="36"
                                     BorderThickness="0"
-                                    SelectedIndex="{Binding SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
+                                    SelectedIndex="{Binding Analysis.SelectedFilterIndex, UpdateSourceTrigger=PropertyChanged}">
                                     <ComboBoxItem Content="None" />
                                     <ComboBoxItem Content="Box Blur" />
                                     <ComboBoxItem Content="Median" />
@@ -86,7 +86,7 @@
 
                             <DockPanel
                                 Margin="0,8,8,0"
-                                Visibility="{Binding ShowBilateralSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowBilateralSigma, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength">
                                 <TextBlock
                                     VerticalAlignment="Center"
@@ -113,12 +113,12 @@
                                     Maximum="100"
                                     Minimum="0.1"
                                     SmallChange="0.1"
-                                    Value="{Binding BilateralSigma}" />
+                                    Value="{Binding Analysis.BilateralSigma}" />
                             </DockPanel>
 
                             <DockPanel
                                 Margin="0,8,8,0"
-                                Visibility="{Binding ShowGaussianSigma, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowGaussianSigma, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Bilateral sigma: color similarity weighting strength">
             <TextBlock
                                     VerticalAlignment="Center"
@@ -145,12 +145,12 @@
                                     Maximum="20"
                                     Minimum="0.1"
                                     SmallChange="0.1"
-                                    Value="{Binding GaussianSigma}" />
+                                    Value="{Binding Analysis.GaussianSigma}" />
                             </DockPanel>
 
                             <DockPanel
                                 Margin="0,8,8,0"
-                                Visibility="{Binding ShowWatershedBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowWatershedBasedSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Marker Count: count of the seed markers for segmentation (1 - 255)">
             <TextBlock
                                     VerticalAlignment="Center"
@@ -180,12 +180,12 @@
                                     Maximum="255"
                                     Minimum="1"
                                     SmallChange="1"
-                                    Value="{Binding MarkerCount}" />
+                                    Value="{Binding Analysis.MarkerCount}" />
                             </DockPanel>
 
                             <DockPanel
                                 Margin="0,8,8,0"
-                                Visibility="{Binding ShowGridFittingSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowGridFittingSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Marker Radius: size of the seed markers for segmentation (1 = small, 20 = large)">
                                 <Path
                                     VerticalAlignment="Center"
@@ -215,13 +215,13 @@
                                     Maximum="20"
                                     Minimum="1"
                                     SmallChange="1"
-                                    Value="{Binding MarkerRadius}" />
+                                    Value="{Binding Analysis.MarkerRadius}" />
                             </DockPanel>
 
         <!-- Hue -->
         <DockPanel
                             Margin="0,8,8,0"
-            Visibility="{Binding ShowGridFittingSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
+            Visibility="{Binding Analysis.ShowGridFittingSegmentationInputs, Converter={StaticResource BoolToVisibilityConverter}}"
                             ap:MouseOverInfoAP.InfoText="Grid Fit Angle: angle for fitting segmentations (0° = horizontal, 90° = vertical)">
             <Path
                                 VerticalAlignment="Center"
@@ -249,12 +249,12 @@
                                 Maximum="90"
                                 Minimum="-90"
                                 SmallChange="1"
-                                Value="{Binding GridFitAngle}" />
+                                Value="{Binding Analysis.GridFitAngle}" />
         </DockPanel>
 
         <DockPanel
                                 Margin="0,8,8,0"
-                                Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Felzenszwalb min size: minimum component size before region merging">
                                 <Path
                                     VerticalAlignment="Center"
@@ -284,12 +284,12 @@
                                     Maximum="500"
                                     Minimum="1"
                                     SmallChange="1"
-                                    Value="{Binding FelzenszwalbMinSize}" />
+                                    Value="{Binding Analysis.FelzenszwalbMinSize}" />
                             </DockPanel>
 
                             <DockPanel
                                 Margin="0,8,8,0"
-                                Visibility="{Binding ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowFelzenszwalbParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Felzenszwalb scale: merge tolerance scale factor">
                                 <Path
                                     VerticalAlignment="Center"
@@ -317,12 +317,12 @@
                                     Maximum="500"
                                     Minimum="1"
                                     SmallChange="1"
-                                    Value="{Binding FelzenszwalbScale}" />
+                                    Value="{Binding Analysis.FelzenszwalbScale}" />
                             </DockPanel>
 
                             <DockPanel
                                 Margin="0,8,8,0"
-                                Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="SLIC segment count: target number of superpixels">
                                 <Path
                                     VerticalAlignment="Center"
@@ -352,12 +352,12 @@
                                     Maximum="2000"
                                     Minimum="1"
                                     SmallChange="1"
-                                    Value="{Binding SlicSegmentCount}" />
+                                    Value="{Binding Analysis.SlicSegmentCount}" />
                             </DockPanel>
 
                             <DockPanel
                                 Margin="0,8,8,0"
-                                Visibility="{Binding ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowSlicParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="SLIC compactness: trade-off between color similarity and spatial regularity">
                                 <Path
                                     VerticalAlignment="Center"
@@ -385,12 +385,12 @@
                                     Maximum="50"
                                     Minimum="0.1"
                                     SmallChange="0.1"
-                                    Value="{Binding SlicCompactness}" />
+                                    Value="{Binding Analysis.SlicCompactness}" />
                             </DockPanel>
 
                             <DockPanel
                                 Margin="0,8,8,0"
-                                Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Quickshift max distance: maximum local growth distance from seed">
                                 <Path
                                     VerticalAlignment="Center"
@@ -420,12 +420,12 @@
                                     Maximum="50"
                                     Minimum="1"
                                     SmallChange="1"
-                                    Value="{Binding QuickshiftMaxDist}" />
+                                    Value="{Binding Analysis.QuickshiftMaxDist}" />
                             </DockPanel>
 
                             <DockPanel
                                 Margin="0,3,8,0"
-                                Visibility="{Binding ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding Analysis.ShowQuickshiftParameters, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ap:MouseOverInfoAP.InfoText="Quickshift ratio: color similarity threshold scaling">
             <TextBlock
                                     VerticalAlignment="Center"
@@ -450,7 +450,7 @@
                                     Maximum="5"
                                     Minimum="0.1"
                                     SmallChange="0.1"
-                                    Value="{Binding QuickshiftRatio}" />
+                                    Value="{Binding Analysis.QuickshiftRatio}" />
                             </DockPanel>
                         </StackPanel>
                     

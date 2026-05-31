@@ -1,4 +1,4 @@
-<UserControl x:Class="TgaBuilderWpfUi.View.TransitionWindowPivotUserControl"
+﻿<UserControl x:Class="TgaBuilderWpfUi.View.TransitionWindowPivotUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,8 +8,8 @@
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionPivotBricksViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -31,7 +31,7 @@
                                     Icon="{ui:SymbolIcon FlipHorizontal24}"
                                     MinHeight="36"
                                     MinWidth="36"
-                                    IsChecked="{Binding ReversePivot}" />
+                                    IsChecked="{Binding PivotBricks.ReversePivot}" />
                                 <elements:ToggleButtonEx
                                     Margin="8,0,0,0"
                                     x:Name="ProtectEdgesToggleButton"
@@ -40,7 +40,7 @@
                                     MinWidth="36"
                                     Icon="{ui:SymbolIcon Shield24}"
                                     ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
-                                    IsChecked="{Binding ProtectEdges}" />
+                                    IsChecked="{Binding PivotBricks.ProtectEdges}" />
                                 <elements:ToggleButtonEx
                                     VerticalAlignment="Center"
                                     MinHeight="36"
@@ -49,7 +49,7 @@
                                     Icon="{ui:SymbolIcon Cut24}"
                                     ap:MouseOverInfoAP.InfoText="Slice Corners: enable/disable slicing of corner tiles"
                                     IsEnabled="{Binding IsChecked, ElementName=ProtectEdgesToggleButton}"
-                                    IsChecked="{Binding SliceCornerTiles}" />
+                                    IsChecked="{Binding PivotBricks.SliceCornerTiles}" />
                             </StackPanel>
 
                             <DockPanel
@@ -109,7 +109,7 @@
                                     Maximum="1"
                                     Minimum="0"
                                     SmallChange="0.01"
-                                    Value="{Binding WideningValue}" />
+                                    Value="{Binding PivotBricks.WideningValue}" />
                             </DockPanel>
 
                             <DockPanel
@@ -170,7 +170,7 @@
                                     Maximum="1"
                                     Minimum="-1"
                                     SmallChange="0.01"
-                                    Value="{Binding ShiftValue}" />
+                                    Value="{Binding PivotBricks.ShiftValue}" />
                             </DockPanel>
                         </StackPanel>
                     

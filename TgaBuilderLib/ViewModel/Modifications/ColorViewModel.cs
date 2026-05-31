@@ -1,5 +1,5 @@
-﻿using TgaBuilderLib.Modifications;
-using TgaBuilderLib.ViewModel.Modifications;
+using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.Modifications;
 
 namespace TgaBuilderLib.ViewModel.Modifications;
 
@@ -10,29 +10,24 @@ namespace TgaBuilderLib.ViewModel.Modifications;
 public class ModificationsColorViewModel : ThrottledViewModelBase
 {
     public ModificationsColorViewModel(
+        IMediaFactory mediaFactory,
         IModificationsHelper modificationsHelper,
         ModificationsPresentersViewModel presenters)
     {
+        _mediaFactory = mediaFactory;
         _modificationsHelper = modificationsHelper;
         Presenters = presenters;
     }
 
+    private readonly IMediaFactory _mediaFactory;
     private readonly IModificationsHelper _modificationsHelper;
     public ModificationsPresentersViewModel Presenters { get; }
-
-    // =====================================================================
-    // Fields
-    // =====================================================================
 
     private float _saturation;
     private float _vibrance;
     private float _hue;
     private float _temperature;
     private float _tint;
-
-    // =====================================================================
-    // Properties
-    // =====================================================================
 
     public float Saturation
     {
@@ -64,10 +59,6 @@ public class ModificationsColorViewModel : ThrottledViewModelBase
         set => SetPropertyTriggerRecalculation(ref _tint, value);
     }
 
-    // =====================================================================
-    // ThrottledViewModelBase overrides
-    // =====================================================================
-
     protected override bool DoPreProcessing()
     {
         _modificationsHelper.Saturation = _saturation;
@@ -80,6 +71,22 @@ public class ModificationsColorViewModel : ThrottledViewModelBase
 
     protected override void Recalculate()
     {
-        // Recalculation is driven by the parent ModificationsViewModel
+        var pixels = Presenters.InputPixels;
+        if (pixels == null || pixels.Length == 0) return;
+
+        int w = Presenters.InputImage.PixelWidth;
+        int h = Presenters.InputImage.PixelHeight;
+        if (w == 0 || h == 0) return;
+
+        _modificationsHelper.Width = w;
+        _modificationsHelper.Height = h;
+
+        byte[] inputCopy = new byte[pixels.Length];
+        System.Array.Copy(pixels, inputCopy, pixels.Length);
+
+        byte[] result = _modificationsHelper.Apply(inputCopy);
+
+        var resultBmp = _mediaFactory.CreateBitmapFromRaw(w, h, true, result, w * 4);
+        Presenters.ResultImage = _mediaFactory.CloneBitmap(resultBmp);
     }
 }

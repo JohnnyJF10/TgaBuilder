@@ -1,10 +1,10 @@
-<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowManualUserControl"
+﻿<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowManualUserControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             x:DataType="viewmodel:TransitionViewModel"
+             x:DataType="viewmodel:TransitionManualViewModel"
              x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -43,7 +43,7 @@
                 MinWidth="36"
                 Icon="{StaticResource backspace}"
                 ap:MouseOverInfoAP.InfoText="Reset Explicit Visibility"
-                Command="{Binding ResetExplicitVisibilityCommand}" />
+                Command="{Binding $parent[Window].DataContext.ResetExplicitVisibilityCommand}" />
         </StackPanel>
     </StackPanel>
 </UserControl>

@@ -390,7 +390,8 @@
 
             <!-- Smooth mode: Hardness / Widening / Shift sliders -->
             <local:TransitionWindowSmoothUserControl
-                Visibility="{Binding IsSmoothMode, Converter={StaticResource BoolToVisibilityConverter}}" />
+                DataContext="{Binding PivotSmooth}"
+                Visibility="{Binding DataContext.IsSmoothMode, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             <!-- Brick mode: scrollable expanders -->
             <ScrollViewer
@@ -423,7 +424,7 @@
                                     Padding="0"/>
                             </StackPanel>
                         </Expander.Header>
-                        <local:TransitionWindowAnalysisUserControl />
+                        <local:TransitionWindowAnalysisUserControl DataContext="{Binding Analysis}" />
                     </Expander>
 
                     <!-- Parameter Section: Pivot Boundaries -->
@@ -432,7 +433,7 @@
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
                         Margin="0,8,0,0">
-                        <local:TransitionWindowPivotUserControl />
+                        <local:TransitionWindowPivotUserControl DataContext="{Binding PivotBricks}" />
                     </Expander>
 
                     <!-- Parameter Section: Edge Blending -->
@@ -441,7 +442,7 @@
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
                         Margin="0,8,0,0">
-                        <local:TransitionWindowEdgeUserControl />
+                        <local:TransitionWindowEdgeUserControl DataContext="{Binding Edge}" />
                     </Expander>
 
                     <!-- Parameter Section: Shadow -->
@@ -450,7 +451,7 @@
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
                         Margin="0,8,0,0">
-                        <local:TransitionWindowShadowUserControl />
+                        <local:TransitionWindowShadowUserControl DataContext="{Binding Shadow}" />
                     </Expander>
 
                     <!-- Parameter Section: Underfilling -->
@@ -459,7 +460,7 @@
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
                         Margin="0,8,0,0">
-                        <local:TransitionWindowUnderfillingUserControl />
+                        <local:TransitionWindowUnderfillingUserControl DataContext="{Binding Underfilling}" />
                     </Expander>
 
                     <!-- Parameter Section: Manual -->
@@ -468,7 +469,7 @@
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
                         Margin="0,8,0,0">
-                        <local:TransitionWindowManualUserControl />
+                        <local:TransitionWindowManualUserControl DataContext="{Binding Manual}" />
                     </Expander>
                 </StackPanel>
             </ScrollViewer>

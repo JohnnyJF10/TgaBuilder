@@ -1,11 +1,11 @@
-<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowEdgeUserControl"
+﻿<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowEdgeUserControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
-             x:DataType="viewmodel:TransitionViewModel"
+             x:DataType="viewmodel:TransitionEdgeViewModel"
              x:CompileBindings="False"
              xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters">
     <UserControl.Resources>
@@ -26,7 +26,7 @@
                                     Width="36"
                                     Height="36"
                                     Padding="-6,0,15,0"
-                                    IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                    IsChecked="{Binding Edge.IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                     ap:MouseOverInfoAP.InfoText="Pick edge color from image">
                                     <ToggleButton.Content>
                                         <Path
@@ -43,7 +43,7 @@
                                 <ColorPicker
                                     x:Name="SourceColorPicker"
                                     ap:MouseOverInfoAP.InfoText="Choose edge color used for edge blending"
-                                    Color="{Binding EdgeColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
+                                    Color="{Binding Edge.EdgeColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
                             </StackPanel>
 
                             <DockPanel
@@ -62,8 +62,8 @@
                                     Background="Transparent"
                                     VerticalAlignment="Center"
                                     TextBlock.TextTrimming="CharacterEllipsis"
-                                    ItemsSource="{Binding EdgeBlendModes}"
-                                    SelectedItem="{Binding BlendMode, Mode=TwoWay}" />
+                                    ItemsSource="{Binding Edge.EdgeBlendModes}"
+                                    SelectedItem="{Binding Edge.BlendMode, Mode=TwoWay}" />
                             </DockPanel>
 
                             <DockPanel
@@ -86,13 +86,13 @@
                                 <elements:MouseWheelSlider
                                     Margin="5,0"
                                     VerticalAlignment="Center"
-                                    ToolTip.Tip="{Binding EdgeWidth}"
+                                    ToolTip.Tip="{Binding Edge.EdgeWidth}"
                                     IsSnapToTickEnabled="True"
                                     TickFrequency="1"
                                     Maximum="12"
                                     Minimum="0"
                                     SmallChange="1"
-                                    Value="{Binding EdgeWidth}" />
+                                    Value="{Binding Edge.EdgeWidth}" />
                             </DockPanel>
                         </StackPanel>
                     

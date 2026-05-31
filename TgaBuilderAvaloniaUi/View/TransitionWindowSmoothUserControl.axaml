@@ -1,15 +1,14 @@
-<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowSmoothUserControl"
+﻿<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowSmoothUserControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             x:DataType="viewmodel:TransitionViewModel"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel.Transitions;assembly=TgaBuilderLib"
+             x:DataType="viewmodel:TransitionPivotSmoothViewModel"
              x:CompileBindings="False"
              >
             <StackPanel
-                Grid.Row="0"
-                IsVisible="{Binding IsSmoothMode}">
+                Grid.Row="0">
 
                 <!-- Hardness Slider -->
                 <DockPanel
@@ -34,11 +33,11 @@
                     <elements:MouseWheelSlider
                         Margin="5,0"
                         VerticalAlignment="Center"
-                        ToolTip.Tip="{Binding BlendHardnessValue}"
+                        ToolTip.Tip="{Binding PivotSmooth.BlendHardnessValue}"
                         Maximum="1"
                         Minimum="0"
                         SmallChange="0.01"
-                        Value="{Binding BlendHardnessValue}" />
+                        Value="{Binding PivotSmooth.BlendHardnessValue}" />
                 </DockPanel>
 
                 <!-- Widening Slider -->
@@ -91,11 +90,11 @@
                     <elements:MouseWheelSlider
                         Margin="5,0"
                         VerticalAlignment="Center"
-                        ToolTip.Tip="{Binding WideningValue}"
+                        ToolTip.Tip="{Binding PivotSmooth.WideningValue}"
                         Maximum="1"
                         Minimum="0"
                         SmallChange="0.01"
-                        Value="{Binding WideningValue}" />
+                        Value="{Binding PivotSmooth.WideningValue}" />
                 </DockPanel>
 
                 <!-- Shift Slider -->
@@ -148,11 +147,11 @@
                     <elements:MouseWheelSlider
                         Margin="5,0"
                         VerticalAlignment="Center"
-                        ToolTip.Tip="{Binding ShiftValue}"
+                        ToolTip.Tip="{Binding PivotSmooth.ShiftValue}"
                         Maximum="1"
                         Minimum="-1"
                         SmallChange="0.01"
-                        Value="{Binding ShiftValue}" />
+                        Value="{Binding PivotSmooth.ShiftValue}" />
                 </DockPanel>
             </StackPanel>
 </UserControl>

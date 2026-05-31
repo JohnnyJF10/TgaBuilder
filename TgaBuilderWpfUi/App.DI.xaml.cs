@@ -285,30 +285,37 @@ namespace TgaBuilderWpfUi
                 mediaFactory: sp.GetRequiredService<IMediaFactory>()));
 
             services.AddTransient(sp => new TransitionAnalysisViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
 
             services.AddTransient(sp => new TransitionPivotSmoothViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
 
             services.AddTransient(sp => new TransitionPivotBricksViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
 
             services.AddTransient(sp => new TransitionUnderfillingViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
 
             services.AddTransient(sp => new TransitionEdgeViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
 
             services.AddTransient(sp => new TransitionShadowViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
 
             services.AddTransient(sp => new TransitionManualViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
 
@@ -331,14 +338,17 @@ namespace TgaBuilderWpfUi
                 mediaFactory: sp.GetRequiredService<IMediaFactory>()));
 
             services.AddTransient(sp => new ModificationsBasicViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
                 presenters: sp.GetRequiredService<ModificationsPresentersViewModel>()));
 
             services.AddTransient(sp => new ModificationsColorViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
                 presenters: sp.GetRequiredService<ModificationsPresentersViewModel>()));
 
             services.AddTransient(sp => new ModificationsColorOverlayViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
                 presenters: sp.GetRequiredService<ModificationsPresentersViewModel>()));
 
