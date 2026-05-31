@@ -1,11 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TgaBuilderLib.Transitions;
+using TgaBuilderLib.ViewModel.Transitions;
 
-namespace TgaBuilderLib.ViewModel;
+namespace TgaBuilderLib.ViewModel.Transitions;
 
-internal class UnderfillingViewModel
+/// <summary>
+/// Child VM for the Brick transition underfilling section.
+/// Controls underfilling pivot, reverse, and threshold.
+/// </summary>
+public class TransitionUnderfillingViewModel : ThrottledViewModelBase
 {
+    public TransitionUnderfillingViewModel(
+        ITransitionHelper transitionHelper,
+        TransitionPresentersViewModel presenters)
+    {
+        _transitionHelper = transitionHelper;
+        Presenters = presenters;
+    }
+
+    private readonly ITransitionHelper _transitionHelper;
+    public TransitionPresentersViewModel Presenters { get; }
+
+    // =====================================================================
+    // Fields
+    // =====================================================================
+
+    private float _underfillingPivot = 0.5f;
+    private bool _reverseUnderfilling;
+    private int _underfillingThreshold;
+
+    // =====================================================================
+    // Properties
+    // =====================================================================
+
+    public float UnderfillingPivot
+    {
+        get => _underfillingPivot;
+        set => SetPropertyTriggerRecalculation(ref _underfillingPivot, value);
+    }
+
+    public bool ReverseUnderfilling
+    {
+        get => _reverseUnderfilling;
+        set => SetPropertyTriggerRecalculation(ref _reverseUnderfilling, value);
+    }
+
+    public int UnderfillingThreshold
+    {
+        get => _underfillingThreshold;
+        set => SetPropertyTriggerRecalculation(ref _underfillingThreshold, value);
+    }
+
+    // =====================================================================
+    // ThrottledViewModelBase overrides
+    // =====================================================================
+
+    protected override bool DoPreProcessing()
+    {
+        _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
+        _transitionHelper.UnderfillingPivot = _underfillingPivot;
+        _transitionHelper.ReverseUnderfilling = _reverseUnderfilling;
+        _transitionHelper.UnderfillingThreshold = _underfillingThreshold;
+        return true;
+    }
+
+    protected override void Recalculate()
+    {
+        // Recalculation is driven by the parent TransitionViewModel
+    }
 }

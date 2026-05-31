@@ -17,6 +17,8 @@ using TgaBuilderLib.Transitions;
 using TgaBuilderLib.Modifications;
 using TgaBuilderLib.ViewModel;
 using TgaBuilderLib.ViewModel.Elements;
+using TgaBuilderLib.ViewModel.Modifications;
+using TgaBuilderLib.ViewModel.Transitions;
 using TgaBuilderLib.ViewModel.Views;
 using Avalonia;
 using Avalonia.Controls;
@@ -294,17 +296,77 @@ namespace TgaBuilderAvaloniaUi
 
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
+            // Transition child VMs
+            services.AddTransient(sp => new TransitionPresentersViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>()));
+
+            services.AddTransient(sp => new TransitionAnalysisViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
+
+            services.AddTransient(sp => new TransitionPivotSmoothViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
+
+            services.AddTransient(sp => new TransitionPivotBricksViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
+
+            services.AddTransient(sp => new TransitionUnderfillingViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
+
+            services.AddTransient(sp => new TransitionEdgeViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
+
+            services.AddTransient(sp => new TransitionShadowViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
+
+            services.AddTransient(sp => new TransitionManualViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                presenters: sp.GetRequiredService<TransitionPresentersViewModel>()));
+
             services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
-                mainViewModel: sp.GetRequiredService<MainViewModel>()));
+                mainViewModel: sp.GetRequiredService<MainViewModel>(),
+                presenters: sp.GetRequiredService<TransitionPresentersViewModel>(),
+                analysis: sp.GetRequiredService<TransitionAnalysisViewModel>(),
+                pivotSmooth: sp.GetRequiredService<TransitionPivotSmoothViewModel>(),
+                pivotBricks: sp.GetRequiredService<TransitionPivotBricksViewModel>(),
+                underfilling: sp.GetRequiredService<TransitionUnderfillingViewModel>(),
+                edge: sp.GetRequiredService<TransitionEdgeViewModel>(),
+                shadow: sp.GetRequiredService<TransitionShadowViewModel>(),
+                manual: sp.GetRequiredService<TransitionManualViewModel>()));
+
+            // Modification child VMs
+            services.AddTransient(sp => new ModificationsPresentersViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>()));
+
+            services.AddTransient(sp => new ModificationsBasicViewModel(
+                modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
+                presenters: sp.GetRequiredService<ModificationsPresentersViewModel>()));
+
+            services.AddTransient(sp => new ModificationsColorViewModel(
+                modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
+                presenters: sp.GetRequiredService<ModificationsPresentersViewModel>()));
+
+            services.AddTransient(sp => new ModificationsColorOverlayViewModel(
+                modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
+                presenters: sp.GetRequiredService<ModificationsPresentersViewModel>()));
 
             services.AddTransient(sp => new ModificationsViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
-                mainViewModel: sp.GetRequiredService<MainViewModel>()));
+                mainViewModel: sp.GetRequiredService<MainViewModel>(),
+                presenters: sp.GetRequiredService<ModificationsPresentersViewModel>(),
+                basic: sp.GetRequiredService<ModificationsBasicViewModel>(),
+                color: sp.GetRequiredService<ModificationsColorViewModel>(),
+                colorOverlay: sp.GetRequiredService<ModificationsColorOverlayViewModel>()));
 
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),

@@ -46,5 +46,10 @@ namespace TgaBuilderLib.Modifications
         // =====================================================================
 
         byte[] Apply(byte[] inputPixels);
+
+        /// <summary>
+        /// Resets all helper state to defaults.
+        /// </summary>
+        void CleanUp();
     }
 }

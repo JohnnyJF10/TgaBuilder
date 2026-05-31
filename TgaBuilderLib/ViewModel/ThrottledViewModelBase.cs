@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TgaBuilderLib.ViewModel;
 
-internal abstract class ThrottledViewModelBase : ViewModelBase
+public abstract class ThrottledViewModelBase : ViewModelBase
 {
 
     private const int RECALC_DELAY_MS = 50;
@@ -60,7 +60,7 @@ internal abstract class ThrottledViewModelBase : ViewModelBase
         }
     }
 
-    private void SetPropertyTriggerRecalculation<T>(
+    protected void SetPropertyTriggerRecalculation<T>(
         ref T field,
         T value,
         [CallerMemberName] string? propertyName = null)
@@ -73,7 +73,7 @@ internal abstract class ThrottledViewModelBase : ViewModelBase
         }
     }
 
-    private bool SetCallerPropertyReturn<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    protected bool SetCallerPropertyReturn<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (!EqualityComparer<T>.Default.Equals(field, value))
         {

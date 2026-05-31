@@ -8,6 +8,7 @@ using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.Modifications;
+using TgaBuilderLib.ViewModel.Modifications;
 
 namespace TgaBuilderLib.ViewModel;
 
@@ -21,12 +22,21 @@ public class ModificationsViewModel : ViewModelBase
         IMediaFactory mediaFactory,
         IModificationsHelper modificationsHelper,
         IBitmapOperations bitmapOperations,
-        MainViewModel mainViewModel)
+        MainViewModel mainViewModel,
+        ModificationsPresentersViewModel presenters,
+        ModificationsBasicViewModel basic,
+        ModificationsColorViewModel color,
+        ModificationsColorOverlayViewModel colorOverlay)
     {
         _mediaFactory = mediaFactory;
         _modificationsHelper = modificationsHelper;
         _bitmapOperations = bitmapOperations;
         _mainViewModel = mainViewModel;
+
+        Presenters = presenters;
+        BasicVM = basic;
+        ColorVM = color;
+        ColorOverlayVM = colorOverlay;
 
         _inputImage = _mediaFactory.CreateEmptyBitmap(42, 42, true);
         _resultImage = _mediaFactory.CreateEmptyBitmap(42, 42, true);
@@ -43,6 +53,15 @@ public class ModificationsViewModel : ViewModelBase
     private readonly IModificationsHelper _modificationsHelper;
     private readonly IBitmapOperations _bitmapOperations;
     private readonly MainViewModel _mainViewModel;
+
+    // =====================================================================
+    // Child View Models
+    // =====================================================================
+
+    public ModificationsPresentersViewModel Presenters { get; }
+    public ModificationsBasicViewModel BasicVM { get; }
+    public ModificationsColorViewModel ColorVM { get; }
+    public ModificationsColorOverlayViewModel ColorOverlayVM { get; }
 
     private const int BPP = 4;
 
@@ -328,6 +347,7 @@ public class ModificationsViewModel : ViewModelBase
 
     public void MarkFinished()
     {
+        _modificationsHelper.CleanUp();
         _mainViewModel.IsModificationsViewOpen = false;
     }
 

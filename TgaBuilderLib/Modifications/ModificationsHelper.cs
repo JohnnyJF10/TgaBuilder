@@ -519,5 +519,36 @@ namespace TgaBuilderLib.Modifications
 
         private static byte Clamp01(float v)
             => (byte)Math.Clamp((int)(v * 255f + 0.5f), 0, 255);
+
+        // =====================================================================
+        // CleanUp — resets all parameters to defaults
+        // =====================================================================
+
+        public void CleanUp()
+        {
+            Width = 0;
+            Height = 0;
+
+            Exposure = 0f;
+            Brightness = 0f;
+            Contrast = 0f;
+            Highlights = 0f;
+            Shadows = 0f;
+            Whites = 0f;
+            Blacks = 0f;
+
+            Saturation = 0f;
+            Vibrance = 0f;
+            Hue = 0f;
+            Temperature = 0f;
+            Tint = 0f;
+
+            ColorOverlay = new Color(0, 0, 0, 0);
+            ColorOverlayAmount = 0f;
+            ColorOverlayMixMode = ColorOverlayMixMode.Linear;
+            ColorOverlaySoftLightStrength = 1f;
+            ColorOverlayLumaPreservation = 1f;
+            ColorOverlayChromaBoost = 1f;
+        }
     }
 }

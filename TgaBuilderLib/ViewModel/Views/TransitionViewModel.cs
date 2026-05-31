@@ -8,6 +8,7 @@ using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
+using TgaBuilderLib.ViewModel.Transitions;
 using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.ViewModel;
@@ -32,12 +33,29 @@ public class TransitionViewModel : ViewModelBase
         IMediaFactory mediaFactory,
         ITransitionHelper transitionHelper,
         IBitmapOperations bitmapOperations,
-        MainViewModel mainViewModel)
+        MainViewModel mainViewModel,
+        TransitionPresentersViewModel presenters,
+        TransitionAnalysisViewModel analysis,
+        TransitionPivotSmoothViewModel pivotSmooth,
+        TransitionPivotBricksViewModel pivotBricks,
+        TransitionUnderfillingViewModel underfilling,
+        TransitionEdgeViewModel edge,
+        TransitionShadowViewModel shadow,
+        TransitionManualViewModel manual)
     {
         _mediaFactory = mediaFactory;
         _transitionHelper = transitionHelper;
         _bitmapOperations = bitmapOperations;
         _mainViewModel = mainViewModel;
+
+        Presenters = presenters;
+        Analysis = analysis;
+        PivotSmooth = pivotSmooth;
+        PivotBricks = pivotBricks;
+        Underfilling = underfilling;
+        Edge = edge;
+        Shadow = shadow;
+        Manual = manual;
 
         _image1 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
         _image2 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
@@ -55,6 +73,19 @@ public class TransitionViewModel : ViewModelBase
     private readonly ITransitionHelper _transitionHelper;
     private readonly MainViewModel _mainViewModel;
     private readonly IBitmapOperations _bitmapOperations;
+
+    // =====================================================================
+    // Child View Models
+    // =====================================================================
+
+    public TransitionPresentersViewModel Presenters { get; }
+    public TransitionAnalysisViewModel Analysis { get; }
+    public TransitionPivotSmoothViewModel PivotSmooth { get; }
+    public TransitionPivotBricksViewModel PivotBricks { get; }
+    public TransitionUnderfillingViewModel Underfilling { get; }
+    public TransitionEdgeViewModel Edge { get; }
+    public TransitionShadowViewModel Shadow { get; }
+    public TransitionManualViewModel Manual { get; }
 
     private const int TRANSITIONS_BPP = 4;
 
