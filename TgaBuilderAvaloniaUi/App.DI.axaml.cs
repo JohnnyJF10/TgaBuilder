@@ -294,10 +294,16 @@ namespace TgaBuilderAvaloniaUi
 
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
+            services.AddTransient(sp => new TransitionsPresentersViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                bitmapOperations: sp.GetRequiredService<IBitmapOperations>()));
+
             services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
+                transitionsPresentersViewModel: sp.GetRequiredService<TransitionsPresentersViewModel>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
             services.AddTransient(sp => new ModificationsViewModel(

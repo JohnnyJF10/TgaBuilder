@@ -93,14 +93,14 @@
                         Margin="10"
                         RenderOptions.BitmapInterpolationMode="None">
                         <Grid
-                            Width="{Binding Image1.PixelWidth, FallbackValue=128}"
-                            Height="{Binding Image1.PixelHeight, FallbackValue=128}">
+                            Width="{Binding TransitionsPresentersVM.Image1.PixelWidth, FallbackValue=128}"
+                            Height="{Binding TransitionsPresentersVM.Image1.PixelHeight, FallbackValue=128}">
                             <elements:CheckerRectangle
                                 TileDensity="1" />
                             <Image
                                 x:Name="Image1"
                                 RenderOptions.BitmapInterpolationMode="None"
-                                Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                                Source="{Binding TransitionsPresentersVM.Image1, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Fill"
                                 PointerMoved="Image1_PointerMoved"
                                 PointerEntered="Image1_PointerEntered"
@@ -114,7 +114,7 @@
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         FontSize="24"
-                        IsVisible="{Binding InitTextVisible}"
+                        IsVisible="{Binding TransitionsPresentersVM.InitTextVisible}"
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
@@ -132,7 +132,7 @@
                     Classes="outlined"
                     Margin="0,9,0,0"
                     Padding="4,0,0,0"
-                    Command="{Binding SwapImagesCommand}"
+                    Command="{Binding TransitionsPresentersVM.SwapImagesCommand}"
                     ap:MouseOverInfoAP.InfoText="Swap Texture 1 and Texture 2"
                     ToolTip.Tip="Swap images"
                     Icon="{StaticResource arrow_swap}" />
@@ -150,14 +150,14 @@
                         Stretch="Uniform"
                         RenderOptions.BitmapInterpolationMode="None">
                         <Grid
-                            Width="{Binding Image2.PixelWidth, FallbackValue=128}"
-                            Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            Width="{Binding TransitionsPresentersVM.Image2.PixelWidth, FallbackValue=128}"
+                            Height="{Binding TransitionsPresentersVM.Image2.PixelHeight, FallbackValue=128}">
                             <elements:CheckerRectangle
                                 TileDensity="1" />
                             <Image
                                 x:Name="Image2"
                                 RenderOptions.BitmapInterpolationMode="None"
-                                Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                                Source="{Binding TransitionsPresentersVM.Image2, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Fill"
                                 PointerMoved="Image2_PointerMoved"
                                 PointerEntered="Image2_PointerEntered"
@@ -171,7 +171,7 @@
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         FontSize="24"
-                        IsVisible="{Binding InitTextVisible}"
+                        IsVisible="{Binding TransitionsPresentersVM.InitTextVisible}"
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
@@ -200,12 +200,12 @@
                         Stretch="Uniform"
                         RenderOptions.BitmapInterpolationMode="None">
                         <Grid
-                            Width="{Binding Image2.PixelWidth, FallbackValue=128}"
-                            Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            Width="{Binding TransitionsPresentersVM.Image2.PixelWidth, FallbackValue=128}"
+                            Height="{Binding TransitionsPresentersVM.Image2.PixelHeight, FallbackValue=128}">
                             <Image
                                 x:Name="ResultImage"
                                 RenderOptions.BitmapInterpolationMode="None"
-                                Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Source="{Binding TransitionsPresentersVM.ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Uniform"
                                 PointerMoved="ResultImage_PointerMoved"
                                 PointerEntered="ResultImage_PointerEntered"
@@ -215,8 +215,8 @@
                                 x:Name="IndicatorImage"
                                 RenderOptions.BitmapInterpolationMode="None"
                                 IsHitTestVisible="False"
-                                IsVisible="{Binding IsIndicatorMapVisible}"
-                                Source="{Binding IndicatorMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                IsVisible="{Binding TransitionsPresentersVM.IsIndicatorMapVisible}"
+                                Source="{Binding TransitionsPresentersVM.IndicatorMapImage, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Uniform" />
                         </Grid>
                     </Viewbox>
@@ -229,12 +229,12 @@
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                IsVisible="{Binding IsLabelMapExpanded}"
+                IsVisible="{Binding TransitionsPresentersVM.IsLabelMapExpanded}"
                 Background="Transparent">
                 <Image
                     Margin="0,4,0,0"
                     RenderOptions.BitmapInterpolationMode="None"
-                    Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                    Source="{Binding TransitionsPresentersVM.LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform" />
             </Border>
 
@@ -287,12 +287,12 @@
             <!-- Smooth mode: Hardness / Widening / Shift sliders -->
             <local:TransitionWindowSmoothUserControl
                 Grid.Row="0"
-                IsVisible="{Binding IsSmoothMode}" />
+                IsVisible="{Binding TransitionsPresentersVM.IsSmoothMode}" />
 
             <!-- Brick mode: scrollable expanders -->
             <ScrollViewer
                 Grid.Row="0"
-                IsVisible="{Binding IsBrickMode}"
+                IsVisible="{Binding TransitionsPresentersVM.IsBrickMode}"
                 VerticalScrollBarVisibility="Auto"
                 HorizontalScrollBarVisibility="Disabled">
                 <StackPanel
@@ -317,9 +317,9 @@
                                     Classes="outlined"
                                     Icon="{StaticResource map}"
                                     VerticalAlignment="Center"
-                                    IsVisible="{Binding IsBrickMode}"
+                                    IsVisible="{Binding TransitionsPresentersVM.IsBrickMode}"
                                     ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
-                                    IsChecked="{Binding IsLabelMapExpanded}"
+                                    IsChecked="{Binding TransitionsPresentersVM.IsLabelMapExpanded}"
                                     Margin="15,0,0,0"
                                     Width="26"
                                     Height="26" />

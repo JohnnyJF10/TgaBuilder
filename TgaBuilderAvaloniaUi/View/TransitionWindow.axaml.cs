@@ -38,16 +38,17 @@ namespace TgaBuilderAvaloniaUi.View
         private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel)
         {
             if (viewModel is TransitionViewModel vm)
-                vm.VisualInvalidator = new VisualInvalidator(ResultImage);
+                vm.TransitionsPresentersVM.VisualInvalidator = new VisualInvalidator(ResultImage);
         }
 
         private void SubscribeToLabelMapExpanded(INotifyPropertyChanged viewModel)
         {
-            viewModel.PropertyChanged += (_, e) =>
-            {
-                if (e.PropertyName == nameof(TransitionViewModel.IsLabelMapExpanded))
-                    UpdateLabelMapColumnWidth();
-            };
+            if (viewModel is TransitionViewModel vm)
+                vm.TransitionsPresentersVM.PropertyChanged += (_, e) =>
+                {
+                    if (e.PropertyName == nameof(TransitionsPresentersViewModel.IsLabelMapExpanded))
+                        UpdateLabelMapColumnWidth();
+                };
         }
 
         private void UpdateLabelMapColumnWidth()
@@ -60,7 +61,7 @@ namespace TgaBuilderAvaloniaUi.View
             }
 
             if (_labelMapColumn is not null && DataContext is TransitionViewModel vm)
-                _labelMapColumn.Width = vm.IsLabelMapExpanded ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+                _labelMapColumn.Width = vm.TransitionsPresentersVM.IsLabelMapExpanded ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
         }
 
         protected override void OnClosing(WindowClosingEventArgs e)
@@ -78,23 +79,35 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Image1_PointerEntered(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-                this.Cursor = CursorProvider.EyedropperCursor;
+            if (DataContext is TransitionViewModel vm)
+            {
+                var tpvm = vm.TransitionsPresentersVM;
+                if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
+                    this.Cursor = CursorProvider.EyedropperCursor;
+            }
         }
 
         private void Image1_PointerExited(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-                this.Cursor = CursorProvider.DefaultCursor;
+            if (DataContext is TransitionViewModel vm)
+            {
+                var tpvm = vm.TransitionsPresentersVM;
+                if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
+                    this.Cursor = CursorProvider.DefaultCursor;
+            }
         }
 
         private void Image1_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm)
             {
-                vm.IsEyedropperMode = false;
-                vm.IsShadowEyedropperMode = false;
-                this.Cursor = CursorProvider.DefaultCursor;
+                var tpvm = vm.TransitionsPresentersVM;
+                if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
+                {
+                    tpvm.IsEyedropperMode = false;
+                    tpvm.IsShadowEyedropperMode = false;
+                    this.Cursor = CursorProvider.DefaultCursor;
+                }
             }
         }
 
@@ -105,32 +118,48 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void Image2_PointerEntered(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-                this.Cursor = CursorProvider.EyedropperCursor;
+            if (DataContext is TransitionViewModel vm)
+            {
+                var tpvm = vm.TransitionsPresentersVM;
+                if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
+                    this.Cursor = CursorProvider.EyedropperCursor;
+            }
         }
 
         private void Image2_PointerExited(object? sender, PointerEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-                this.Cursor = CursorProvider.DefaultCursor;
+            if (DataContext is TransitionViewModel vm)
+            {
+                var tpvm = vm.TransitionsPresentersVM;
+                if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
+                    this.Cursor = CursorProvider.DefaultCursor;
+            }
         }
 
         private void Image2_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm)
             {
-                vm.IsEyedropperMode = false;
-                vm.IsShadowEyedropperMode = false;
-                this.Cursor = CursorProvider.DefaultCursor;
+                var tpvm = vm.TransitionsPresentersVM;
+                if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
+                {
+                    tpvm.IsEyedropperMode = false;
+                    tpvm.IsShadowEyedropperMode = false;
+                    this.Cursor = CursorProvider.DefaultCursor;
+                }
             }
         }
 
         private void DoEyedropperMouseMove(Image image, PointerEventArgs e, int imageNum)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
+            if (DataContext is TransitionViewModel vm)
             {
-                var position = e.GetPosition(image);
-                vm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
+                var tpvm = vm.TransitionsPresentersVM;
+                if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
+                {
+                    var position = e.GetPosition(image);
+                    tpvm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
+                }
             }
         }
 
@@ -139,17 +168,19 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            var tpvm = vm.TransitionsPresentersVM;
+
+            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
 
-            if (vm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
+            if (tpvm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
             {
                 var currentPosition = e.GetPosition(ResultImage);
                 requestLabelIndicatorCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
             }
 
             if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed
-                && vm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
+                && tpvm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
             {
                 var currentPosition = e.GetPosition(ResultImage);
                 setExplicitTileVisibilityCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
@@ -161,10 +192,12 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            var tpvm = vm.TransitionsPresentersVM;
+
+            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
 
-            vm.IsIndicatorMapVisible = true;
+            tpvm.IsIndicatorMapVisible = true;
         }
 
         private void ResultImage_PointerExited(object? sender, PointerEventArgs e)
@@ -172,10 +205,12 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            var tpvm = vm.TransitionsPresentersVM;
+
+            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
 
-            vm.IsIndicatorMapVisible = false;
+            tpvm.IsIndicatorMapVisible = false;
         }
 
         private void ResultImage_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -183,11 +218,13 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            var tpvm = vm.TransitionsPresentersVM;
+
+            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
 
             if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed
-                && vm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
+                && tpvm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
             {
                 var currentPosition = e.GetPosition(ResultImage);
                 setExplicitTileVisibilityCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));

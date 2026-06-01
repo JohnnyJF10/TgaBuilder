@@ -9,7 +9,7 @@
              >
             <StackPanel
                 Grid.Row="0"
-                IsVisible="{Binding IsSmoothMode}">
+                IsVisible="{Binding TransitionsPresentersVM.IsSmoothMode}">
 
                 <!-- Hardness Slider -->
                 <DockPanel
