@@ -26,6 +26,7 @@
 
             <!-- Mode Selector: Smooth / Brick radio icon buttons -->
             <StackPanel
+                DataContext="{Binding TransitionsPresentersVM}"
                 DockPanel.Dock="Left"
                 Orientation="Horizontal"
                 Margin="7,0,6,0"

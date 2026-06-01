@@ -25,6 +25,7 @@
                         <StackPanel
                             Margin="8,6,8,8">
                             <StackPanel
+                                DataContext="{Binding TransitionsPresentersVM}"
                                 Orientation="Horizontal"
                                 VerticalAlignment="Center">
                                 <elements:ToggleButtonEx

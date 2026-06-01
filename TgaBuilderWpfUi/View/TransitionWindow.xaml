@@ -172,6 +172,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 AllowDrop="True"
+                DataContext="{Binding TransitionsPresentersVM}"
                 Background="Transparent">
                 <Grid>
                     <Viewbox
@@ -211,6 +212,7 @@
                 Grid.Row="0"
                 Grid.Column="1"
                 VerticalAlignment="Center"
+                DataContext="{Binding TransitionsPresentersVM}"
                 Margin="0,38,0,0">
                 <ui:SymbolIcon
                     Symbol="Add24"
@@ -234,6 +236,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 AllowDrop="True"
+                DataContext="{Binding TransitionsPresentersVM}"
                 Background="Transparent">
                 <Grid>
                     <Viewbox
@@ -291,6 +294,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 AllowDrop="True"
+                DataContext="{Binding TransitionsPresentersVM}"
                 Background="Transparent">
                 <Grid>
                     <Viewbox
@@ -328,6 +332,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Visibility="{Binding IsLabelMapExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                DataContext="{Binding TransitionsPresentersVM}"
                 Background="Transparent">
                 <Image
                     Margin="0,4,0,0"
@@ -390,13 +395,13 @@
 
             <!-- Smooth mode: Hardness / Widening / Shift sliders -->
             <local:TransitionWindowSmoothUserControl
-                Visibility="{Binding IsSmoothMode, Converter={StaticResource BoolToVisibilityConverter}}" />
+                Visibility="{Binding TransitionsPresentersVM.IsSmoothMode, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             <!-- Brick mode: scrollable expanders -->
             <ScrollViewer
                 VerticalScrollBarVisibility="Auto"
                 HorizontalScrollBarVisibility="Disabled"
-                Visibility="{Binding IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding TransitionsPresentersVM.IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}">
                 <StackPanel
                     Margin="0,0,12,0">
 
@@ -406,6 +411,7 @@
                         HorizontalAlignment="Stretch">
 <Expander.Header>
                             <StackPanel
+                                DataContext="{Binding TransitionsPresentersVM}"
                                 Orientation="Horizontal">
                                 <TextBlock
                                     Text="Analysis"

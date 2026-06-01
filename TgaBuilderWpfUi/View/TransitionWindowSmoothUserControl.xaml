@@ -17,7 +17,7 @@
     </UserControl.Resources>
             <StackPanel
                 Margin="0,8,15,0"
-                Visibility="{Binding IsSmoothMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding TransitionsPresentersVM.IsSmoothMode, Converter={StaticResource BoolToVisibilityConverter}}">
 
                 <!-- Hardness Slider -->
                 <DockPanel
