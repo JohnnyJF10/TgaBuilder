@@ -9,7 +9,7 @@
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             d:DataContext="{d:DesignInstance Type=viewmodel:AnalysisViewModel, IsDesignTimeCreatable=False}"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

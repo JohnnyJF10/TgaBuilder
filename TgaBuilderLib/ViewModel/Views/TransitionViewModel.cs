@@ -69,10 +69,6 @@ public class TransitionViewModel : ThrottledViewModelBase
         PivotVM = pivotViewModel;
 
         TransitionsPresentersVM = PivotVM.TransitionsPresentersVM;
-        AnalysisVM = new AnalysisViewModel(this);
-        EdgeVM = new EdgeViewModel(this);
-        ShadowVM = new ShadowViewModel(this);
-        UnderfillingVM = new UnderfillingViewModel(this);
     }
 
     // =====================================================================
@@ -88,10 +84,6 @@ public class TransitionViewModel : ThrottledViewModelBase
 
     public TransitionsPresentersViewModel TransitionsPresentersVM { get; set; }
     public PivotViewModel PivotVM { get; set; }
-    public AnalysisViewModel AnalysisVM { get; set; }
-    public EdgeViewModel EdgeVM { get; set; }
-    public ShadowViewModel ShadowVM { get; set; }
-    public UnderfillingViewModel UnderfillingVM { get; set; }
 
     // =====================================================================
     // Commands

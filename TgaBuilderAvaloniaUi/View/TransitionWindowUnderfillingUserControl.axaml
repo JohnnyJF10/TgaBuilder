@@ -4,7 +4,7 @@
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             x:DataType="viewmodel:UnderfillingViewModel"
+             x:DataType="viewmodel:TransitionViewModel"
              x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>

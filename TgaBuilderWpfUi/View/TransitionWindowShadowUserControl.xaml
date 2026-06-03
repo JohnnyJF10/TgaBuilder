@@ -8,7 +8,7 @@
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             d:DataContext="{d:DesignInstance Type=viewmodel:ShadowViewModel, IsDesignTimeCreatable=False}"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d"
              xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters">
     <UserControl.Resources>
