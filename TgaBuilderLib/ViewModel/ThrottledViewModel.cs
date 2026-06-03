@@ -18,7 +18,7 @@ public abstract class ThrottledViewModelBase : ViewModelBase
 
     protected abstract bool PreProcess();
 
-    protected abstract void Recalculate();
+    protected abstract Task Recalculate();
 
     protected async Task TriggerRecalculation()
     {

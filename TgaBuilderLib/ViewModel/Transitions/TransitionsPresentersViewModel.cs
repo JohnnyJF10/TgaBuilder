@@ -416,11 +416,11 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
         if (label == 0)
             return;
 
-        bool visibilityChnaged = _transitionHelper.SetExplicitTileVisibility(label, IsExplicitTileVisibilityDrawMode);
+        bool visibilityChanged = _transitionHelper.SetExplicitTileVisibility(label, IsExplicitTileVisibilityDrawMode);
 
         CurrentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
 
-        if (!visibilityChnaged)
+        if (!visibilityChanged)
             return;
 
         _ = TriggerRecalculation();
@@ -442,8 +442,8 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
         if (!CompareInputSpecs())
             return false;
 
-        int width = Image1.PixelWidth;
-        int height = Image1.PixelHeight;
+        _transitionHelper.Width = Image1.PixelWidth;
+        _transitionHelper.Height = Image1.PixelHeight;
 
         _transitionHelper.EdgeColor = EdgeColor;
         _transitionHelper.ShadowColor = ShadowColor;
@@ -471,5 +471,5 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
 
     protected override bool PreProcess() => DoPreProcessing();
 
-    protected override void Recalculate() => _ = DoRecalculation();
+    protected override async Task Recalculate() => await DoRecalculation();
 }

@@ -486,11 +486,11 @@ public class TransitionViewModel : ThrottledViewModelBase
         return TransitionsPresentersVM.DoPreProcessing();
     }
 
-    protected override void Recalculate()
+    protected override async Task Recalculate()
     {
         ConfigureTransitionHelper();
 
-        _ = TransitionsPresentersVM.DoRecalculation();
+        await TransitionsPresentersVM.DoRecalculation();
 
     }
 
@@ -503,7 +503,8 @@ public class TransitionViewModel : ThrottledViewModelBase
         {
             field = value;
 
-            TransitionsPresentersVM.CurrentRequirements = _requirementsDict[propertyName ?? string.Empty];
+            if (_requirementsDict.TryGetValue(propertyName ?? string.Empty, out var requirements))
+                TransitionsPresentersVM.CurrentRequirements = requirements;
 
             OnPropertyChanged(propertyName ?? string.Empty);
             _ = TriggerRecalculation();
