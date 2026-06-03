@@ -327,7 +327,8 @@
                                     Height="26" />
                             </StackPanel>
                         </Expander.Header>
-                        <local:TransitionWindowAnalysisUserControl />
+                        <local:TransitionWindowAnalysisUserControl
+                            DataContext="{Binding AnalysisVM}" />
                     </Expander>
 
                     <!-- Parameter Section: Pivot Boundaries -->
@@ -344,7 +345,8 @@
                          Header="Edge"
                          IsExpanded="True"
                          HorizontalAlignment="Stretch">
-                         <local:TransitionWindowEdgeUserControl />
+                         <local:TransitionWindowEdgeUserControl
+                             DataContext="{Binding EdgeVM}" />
                      </Expander>
 
                      <!-- Parameter Section: Shadow -->
@@ -352,7 +354,8 @@
                          Header="Shadow"
                          IsExpanded="True"
                          HorizontalAlignment="Stretch">
-                         <local:TransitionWindowShadowUserControl />
+                         <local:TransitionWindowShadowUserControl
+                             DataContext="{Binding ShadowVM}" />
                      </Expander>
 
                       <!-- Parameter Section: Underfilling -->
@@ -360,7 +363,8 @@
                           Header="Underfilling"
                           IsExpanded="True"
                           HorizontalAlignment="Stretch">
-                         <local:TransitionWindowUnderfillingUserControl />
+                         <local:TransitionWindowUnderfillingUserControl
+                             DataContext="{Binding UnderfillingVM}" />
                      </Expander>
 
                      <!-- Parameter Section: Manual -->
