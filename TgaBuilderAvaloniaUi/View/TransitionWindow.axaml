@@ -67,6 +67,7 @@
         <!-- TOP ROW: MODE SELECTOR + TRANSITION MODES + PIVOT                        -->
         <!-- ========================================================================= -->
         <local:TransitionWindowControlsUserControl
+            DataContext="{Binding PivotVM}"
             Grid.Row="0"
             Grid.Column="0"
             Margin="7,0,10,0" />
@@ -286,6 +287,7 @@
 
             <!-- Smooth mode: Hardness / Widening / Shift sliders -->
             <local:TransitionWindowSmoothUserControl
+                DataContext="{Binding PivotVM}"
                 Grid.Row="0"
                 IsVisible="{Binding TransitionsPresentersVM.IsSmoothMode}" />
 
@@ -330,6 +332,7 @@
 
                     <!-- Parameter Section: Pivot Boundaries -->
                     <Expander
+                        DataContext="{Binding PivotVM}"
                         Header="Pivot"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">

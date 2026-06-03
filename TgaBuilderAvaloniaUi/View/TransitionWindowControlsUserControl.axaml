@@ -6,7 +6,7 @@
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
-             x:DataType="viewmodel:TransitionViewModel"
+             x:DataType="viewmodel:PivotViewModel"
              x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>

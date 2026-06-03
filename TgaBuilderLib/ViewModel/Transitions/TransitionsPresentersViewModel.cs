@@ -108,9 +108,6 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
     }
 
 
-    public BricksPipelineRequirements CurrentRequirements { get; set; } 
-        = BricksPipelineRequirements.RequiresAnalysis;
-
     // =====================================================================
     // Mode selection (TransitionType enum)
     // =====================================================================
@@ -130,7 +127,7 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
                 OnPropertyChanged(nameof(IsBrickMode));
 
                 if (_selectedTransitionType == TransitionType.Bricks)
-                    CurrentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+                    _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
                 if (_selectedTransitionType == TransitionType.Smooth)
                 {
@@ -292,7 +289,7 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
     private void SwapImages()
     {
         if (IsBrickMode)
-            CurrentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+            _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
         var tempImage = Image1;
         Image1 = Image2;
@@ -339,7 +336,7 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
     public void Mix()
     {
         if (IsBrickMode)
-            CurrentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+            _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
         if (!CompareInputSpecs())
             return;
@@ -418,7 +415,8 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
 
         bool visibilityChanged = _transitionHelper.SetExplicitTileVisibility(label, IsExplicitTileVisibilityDrawMode);
 
-        CurrentRequirements = BricksPipelineRequirements.RequiresSelectionBuilding;
+        _transitionHelper.CurrentBricksPipelineRequirements 
+        = BricksPipelineRequirements.RequiresSelectionBuilding;
 
         if (!visibilityChanged)
             return;
@@ -431,7 +429,7 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
     {
         _transitionHelper.ResetAllExplicitTileVisibility();
 
-        CurrentRequirements
+        _transitionHelper.CurrentBricksPipelineRequirements
             = BricksPipelineRequirements.RequiresSelectionBuilding;
 
         _ = TriggerRecalculation();
@@ -447,7 +445,6 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
 
         _transitionHelper.EdgeColor = EdgeColor;
         _transitionHelper.ShadowColor = ShadowColor;
-        _transitionHelper.CurrentBricksPipelineRequirements = CurrentRequirements;
 
         return true;
     }

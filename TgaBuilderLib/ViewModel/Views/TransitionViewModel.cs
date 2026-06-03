@@ -31,17 +31,10 @@ public class TransitionViewModel : ThrottledViewModelBase
 
     private readonly Dictionary<string, BricksPipelineRequirements> _requirementsDict = new()
     {
-        { nameof(SelectedTransitionMode), BricksPipelineRequirements.RequiresSelectionBuilding },
-        { nameof(PivotValue), BricksPipelineRequirements.RequiresSelectionBuilding },
-        { nameof(WideningValue), BricksPipelineRequirements.RequiresSelectionBuilding },
-        { nameof(ShiftValue), BricksPipelineRequirements.RequiresSelectionBuilding },
         { nameof(InvertGrayscale), BricksPipelineRequirements.RequiresAnalysis },
         { nameof(MarkerCount), BricksPipelineRequirements.RequiresAnalysis },
         { nameof(MarkerRadius), BricksPipelineRequirements.RequiresAnalysis },
         { nameof(GridFitAngle), BricksPipelineRequirements.RequiresAnalysis },
-        { nameof(ReversePivot), BricksPipelineRequirements.RequiresSelectionBuilding },
-        { nameof(SliceCornerTiles), BricksPipelineRequirements.RequiresSelectionBuilding },
-        { nameof(ProtectEdges), BricksPipelineRequirements.RequiresSelectionBuilding },
         { nameof(SelectedFilter), BricksPipelineRequirements.RequiresAnalysis },
         { nameof(SelectedSegmentationMethod), BricksPipelineRequirements.RequiresAnalysis },
         { nameof(FelzenszwalbMinSize), BricksPipelineRequirements.RequiresAnalysis },
@@ -65,14 +58,17 @@ public class TransitionViewModel : ThrottledViewModelBase
         IMediaFactory mediaFactory,
         ITransitionHelper transitionHelper,
         IBitmapOperations bitmapOperations,
-        TransitionsPresentersViewModel transitionsPresentersViewModel,
+        PivotViewModel pivotViewModel,
         MainViewModel mainViewModel)
     {
         _mediaFactory = mediaFactory;
         _transitionHelper = transitionHelper;
         _bitmapOperations = bitmapOperations;
         _mainViewModel = mainViewModel;
-        TransitionsPresentersVM = transitionsPresentersViewModel;
+    
+        PivotVM = pivotViewModel;
+
+        TransitionsPresentersVM = PivotVM.TransitionsPresentersVM;
     }
 
     // =====================================================================
@@ -87,6 +83,7 @@ public class TransitionViewModel : ThrottledViewModelBase
     private const int TRANSITIONS_BPP = 4;
 
     public TransitionsPresentersViewModel TransitionsPresentersVM { get; set; }
+    public PivotViewModel PivotVM { get; set; }
 
     // =====================================================================
     // Commands
@@ -114,52 +111,6 @@ public class TransitionViewModel : ThrottledViewModelBase
     public ICommand CancelCommand => _cancelCommand ??= new RelayCommand<IView>(Cancel);
     public ICommand OKCommand => _oKCommand ??= new RelayCommand<IView>(OK);
 
-    // =====================================================================
-    // Shared pivot / transition-mode properties
-    // =====================================================================
-
-    private TransitionMode _selectedTransitionMode = TransitionMode.Top;
-    private float _pivotValue = 0.5f;
-    private float _wideningValue = 0f;
-    private float _shiftValue = 0f;
-
-    public TransitionMode SelectedTransitionMode
-    {
-        get => _selectedTransitionMode;
-        set => SetPropertyTriggerRecalculation(ref _selectedTransitionMode, value);
-    }
-
-    public float PivotValue
-    {
-        get => _pivotValue;
-        set => SetPropertyTriggerRecalculation(ref _pivotValue, value);
-    }
-
-    public float WideningValue
-    {
-        get => _wideningValue;
-        set => SetPropertyTriggerRecalculation(ref _wideningValue, value);
-    }
-
-    public float ShiftValue
-    {
-        get => _shiftValue;
-        set => SetPropertyTriggerRecalculation(ref _shiftValue, value);
-    }
-
-
-
-    // =====================================================================
-    // Smooth-mode properties
-    // =====================================================================
-
-    private float _blendHardnessValue = 0.5f;
-
-    public float BlendHardnessValue
-    {
-        get => _blendHardnessValue;
-        set => SetPropertyTriggerRecalculation(ref _blendHardnessValue, value);
-    }
 
     // =====================================================================
     // Brick-mode properties
@@ -169,9 +120,7 @@ public class TransitionViewModel : ThrottledViewModelBase
     private int _markerCount = 42;
     private int _markerRadius = 5;
     private float _gridFitAngle = 0f;
-    private bool _reversePivot;
-    private bool _sliceCornerTiles;
-    private bool _protectEdges = true;
+
     private FilterType _selectedFilter = FilterType.Gaussian;
     private SegmentationMethod _selectedSegmentationMethod = SegmentationMethod.Felzenszwalb;
     private int _felzenszwalbMinSize = 50;
@@ -214,23 +163,7 @@ public class TransitionViewModel : ThrottledViewModelBase
         set => SetPropertyTriggerRecalculation(ref _gridFitAngle, value);
     }
 
-    public bool ReversePivot
-    {
-        get => _reversePivot;
-        set => SetPropertyTriggerRecalculation(ref _reversePivot, value);
-    }
 
-    public bool SliceCornerTiles
-    {
-        get => _sliceCornerTiles;
-        set => SetPropertyTriggerRecalculation(ref _sliceCornerTiles, value);
-    }
-
-    public bool ProtectEdges
-    {
-        get => _protectEdges;
-        set => SetPropertyTriggerRecalculation(ref _protectEdges, value);
-    }
 
     public FilterType SelectedFilter
     {
@@ -242,7 +175,7 @@ public class TransitionViewModel : ThrottledViewModelBase
                 OnPropertyChanged(nameof(ShowBilateralSigma));
                 OnPropertyChanged(nameof(ShowGaussianSigma));
                 OnPropertyChanged(nameof(SelectedFilterIndex));
-                TransitionsPresentersVM.CurrentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+                _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
                 _ = TriggerRecalculation();
             }
         }
@@ -268,7 +201,7 @@ public class TransitionViewModel : ThrottledViewModelBase
                 OnPropertyChanged(nameof(ShowGridFittingSegmentationInputs));
                 OnPropertyChanged(nameof(SelectedSegmentationMethodIndex));
                 OnPropertyChanged(nameof(ShowGrayBasedSegmentationInputs));
-                TransitionsPresentersVM.CurrentRequirements = BricksPipelineRequirements.RequiresAnalysis;
+                _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
                 _ = TriggerRecalculation();
             }
         }
@@ -396,43 +329,31 @@ public class TransitionViewModel : ThrottledViewModelBase
 
 
 
-    private void ConfigureTransitionHelperCore()
+    private void ConfigureTransitionHelper()
     {
-        if (TransitionsPresentersVM.IsSmoothMode)
-        {
-            _transitionHelper.Hardness = _blendHardnessValue;
-        }
-        else
-        {
-            _transitionHelper.CurrentBricksPipelineRequirements
-                = TransitionsPresentersVM.CurrentRequirements;
-            _transitionHelper.InvertGrayscale = InvertGrayscale;
-            _transitionHelper.ReversePivot = ReversePivot;
-            _transitionHelper.SliceCornerTiles = SliceCornerTiles;
-            _transitionHelper.ProtectEdges = ProtectEdges;
-            _transitionHelper.MarkerCount = MarkerCount;
-            _transitionHelper.MarkerRadius = MarkerRadius;
-            _transitionHelper.GridFitAngle = GridFitAngle;
-            _transitionHelper.SelectedFilter = SelectedFilter;
-            _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
-            _transitionHelper.FelzenszwalbMinSize = FelzenszwalbMinSize;
-            _transitionHelper.FelzenszwalbScale = FelzenszwalbScale;
-            _transitionHelper.SlicSegmentCount = SlicSegmentCount;
-            _transitionHelper.SlicCompactness = SlicCompactness;
-            _transitionHelper.QuickshiftMaxDist = QuickshiftMaxDist;
-            _transitionHelper.QuickshiftRatio = QuickshiftRatio;
-            _transitionHelper.BilateralSigma = BilateralSigma;
-            _transitionHelper.GaussianSigma = GaussianSigma;
-            _transitionHelper.UnderfillingPivot = UnderfillingPivot;
-            _transitionHelper.ReverseUnderfilling = ReverseUnderfilling;
-            _transitionHelper.UnderfillingThreshold = UnderfillingThreshold;
-            _transitionHelper.EdgeColor = TransitionsPresentersVM.EdgeColor;
-            _transitionHelper.BlendMode = BlendMode;
-            _transitionHelper.EdgeWidth = EdgeWidth;
-            _transitionHelper.ShadowColor = TransitionsPresentersVM.ShadowColor;
-            _transitionHelper.ShadowSize = ShadowSize;
-            _transitionHelper.ShadowHardness = ShadowHardness;
-        }
+        _transitionHelper.InvertGrayscale = InvertGrayscale;
+        _transitionHelper.MarkerCount = MarkerCount;
+        _transitionHelper.MarkerRadius = MarkerRadius;
+        _transitionHelper.GridFitAngle = GridFitAngle;
+        _transitionHelper.SelectedFilter = SelectedFilter;
+        _transitionHelper.SegmentationMethod = SelectedSegmentationMethod;
+        _transitionHelper.FelzenszwalbMinSize = FelzenszwalbMinSize;
+        _transitionHelper.FelzenszwalbScale = FelzenszwalbScale;
+        _transitionHelper.SlicSegmentCount = SlicSegmentCount;
+        _transitionHelper.SlicCompactness = SlicCompactness;
+        _transitionHelper.QuickshiftMaxDist = QuickshiftMaxDist;
+        _transitionHelper.QuickshiftRatio = QuickshiftRatio;
+        _transitionHelper.BilateralSigma = BilateralSigma;
+        _transitionHelper.GaussianSigma = GaussianSigma;
+        _transitionHelper.UnderfillingPivot = UnderfillingPivot;
+        _transitionHelper.ReverseUnderfilling = ReverseUnderfilling;
+        _transitionHelper.UnderfillingThreshold = UnderfillingThreshold;
+        _transitionHelper.EdgeColor = TransitionsPresentersVM.EdgeColor;
+        _transitionHelper.BlendMode = BlendMode;
+        _transitionHelper.EdgeWidth = EdgeWidth;
+        _transitionHelper.ShadowColor = TransitionsPresentersVM.ShadowColor;
+        _transitionHelper.ShadowSize = ShadowSize;
+        _transitionHelper.ShadowHardness = ShadowHardness;
     }
 
     private void Mix()
@@ -442,17 +363,6 @@ public class TransitionViewModel : ThrottledViewModelBase
     }
 
 
-
-    private void ConfigureTransitionHelper()
-    {
-
-        _transitionHelper.Mode = SelectedTransitionMode;
-        _transitionHelper.Pivot = PivotValue;
-        _transitionHelper.Widening = WideningValue;
-        _transitionHelper.Shift = ShiftValue;
-
-        ConfigureTransitionHelperCore();
-    }
 
     private void MarkFinished()
     {
@@ -504,7 +414,7 @@ public class TransitionViewModel : ThrottledViewModelBase
             field = value;
 
             if (_requirementsDict.TryGetValue(propertyName ?? string.Empty, out var requirements))
-                TransitionsPresentersVM.CurrentRequirements = requirements;
+                _transitionHelper.CurrentBricksPipelineRequirements = requirements;
 
             OnPropertyChanged(propertyName ?? string.Empty);
             _ = TriggerRecalculation();
