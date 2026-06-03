@@ -435,6 +435,16 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
         _ = TriggerRecalculation();
     }
 
+    public void CleanUp()
+    {
+        _image1 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
+        _image2 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
+        _resultImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
+
+        _pixels1 = new byte[64 * 64 * 4];
+        _pixels2 = new byte[64 * 64 * 4];
+    }
+
     public bool DoPreProcessing()
     {
         if (!CompareInputSpecs())

@@ -303,9 +303,10 @@
 
                     <!-- Parameter Section: Image Analysis -->
                     <Expander
+                    DataContext="{Binding AnalysisVM}"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">
-<Expander.Header>
+                        <Expander.Header>
                             <StackPanel
                                 Orientation="Horizontal">
 
@@ -341,6 +342,7 @@
 
                     <!-- Parameter Section: Edge Blending -->
                      <Expander
+                        DataContext="{Binding EdgeVM}"
                          Header="Edge"
                          IsExpanded="True"
                          HorizontalAlignment="Stretch">
@@ -349,6 +351,7 @@
 
                      <!-- Parameter Section: Shadow -->
                      <Expander
+                        DataContext="{Binding ShadowVM}"
                          Header="Shadow"
                          IsExpanded="True"
                          HorizontalAlignment="Stretch">
@@ -357,6 +360,7 @@
 
                       <!-- Parameter Section: Underfilling -->
                       <Expander
+                          DataContext="{Binding UnderfillingVM}"
                           Header="Underfilling"
                           IsExpanded="True"
                           HorizontalAlignment="Stretch">

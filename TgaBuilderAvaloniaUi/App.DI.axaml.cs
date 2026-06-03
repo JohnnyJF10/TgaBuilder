@@ -294,12 +294,28 @@ namespace TgaBuilderAvaloniaUi
 
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
-            services.AddTransient(sp => new TransitionsPresentersViewModel(
+            services.AddSingleton(sp => new TransitionsPresentersViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>()));
 
+            services.AddTransient(sp => new AnalysisViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
+
             services.AddTransient(sp => new PivotViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
+
+            services.AddTransient(sp => new EdgeViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
+
+            services.AddTransient(sp => new ShadowViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
+
+            services.AddTransient(sp => new UnderfillingViewModel(
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
 
@@ -307,7 +323,11 @@ namespace TgaBuilderAvaloniaUi
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
+                analysisViewModel: sp.GetRequiredService<AnalysisViewModel>(),
                 pivotViewModel: sp.GetRequiredService<PivotViewModel>(),
+                edgeViewModel: sp.GetRequiredService<EdgeViewModel>(),
+                shadowViewModel: sp.GetRequiredService<ShadowViewModel>(),
+                underfillingViewModel: sp.GetRequiredService<UnderfillingViewModel>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
             services.AddTransient(sp => new ModificationsViewModel(

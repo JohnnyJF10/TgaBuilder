@@ -1,0 +1,56 @@
+using TgaBuilderLib.Transitions;
+using static TgaBuilderLib.Transitions.TransitionHelper;
+
+namespace TgaBuilderLib.ViewModel;
+
+public class EdgeViewModel : ThrottledViewModelBase
+{
+    public EdgeViewModel(
+        ITransitionHelper transitionHelper,
+        TransitionsPresentersViewModel transitionsPresentersVM)
+    {
+        _transitionHelper = transitionHelper;
+        TransitionsPresentersVM = transitionsPresentersVM;
+    }
+
+    public TransitionsPresentersViewModel TransitionsPresentersVM { get; }
+
+    private ITransitionHelper _transitionHelper;
+
+    private EdgeBlendMode _blendMode = EdgeBlendMode.Multiply;
+    private int _edgeWidth = 1;
+
+    public EdgeBlendMode BlendMode
+    {
+        get => _blendMode;
+        set => SetPropertyTriggerRecalculation(ref _blendMode, value);
+    }
+
+    public int EdgeWidth
+    {
+        get => _edgeWidth;
+        set => SetPropertyTriggerRecalculation(ref _edgeWidth, value);
+    }
+
+    private void ConfigureTransitionHelper()
+    {
+        _transitionHelper.CurrentBricksPipelineRequirements 
+        = BricksPipelineRequirements.RequiresDrawing;
+
+        _transitionHelper.BlendMode = BlendMode;
+        _transitionHelper.EdgeWidth = EdgeWidth;
+    }
+
+    protected override bool PreProcess()
+    {
+        return TransitionsPresentersVM.DoPreProcessing();
+    }
+
+    protected override async Task Recalculate()
+    {
+        ConfigureTransitionHelper();
+ 
+        await TransitionsPresentersVM.DoRecalculation();
+    }
+}
+
