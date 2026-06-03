@@ -47,7 +47,7 @@ public abstract class ThrottledViewModelBase : ViewModelBase
 
                 await Task.Delay(RECALC_DELAY_MS);
 
-                Recalculate();
+                await Recalculate();
             }
             while (_recalcUpdatePending);
         }

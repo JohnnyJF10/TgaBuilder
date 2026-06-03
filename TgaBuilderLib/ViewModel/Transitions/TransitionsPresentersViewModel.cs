@@ -422,7 +422,6 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
             return;
 
         _ = TriggerRecalculation();
-        Debug.WriteLine("Explicit tile visibility changed for label " + label);
     }
 
     private void ResetAllExplicitTileVisibility()
@@ -440,6 +439,14 @@ public class TransitionsPresentersViewModel : ThrottledViewModelBase
         _image1 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
         _image2 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
         _resultImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
+        _labelMapImage = null;
+
+        InitTextVisible = true;
+        IsLabelMapExpanded = false;
+        IsExplicitTileVisibilityDrawMode = false;
+        IsExplicitTileVisibilityEraseMode = false;
+        IsEyedropperMode = false;
+        IsShadowEyedropperMode = false;
 
         _pixels1 = new byte[64 * 64 * 4];
         _pixels2 = new byte[64 * 64 * 4];
