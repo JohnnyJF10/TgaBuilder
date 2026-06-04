@@ -6,7 +6,7 @@
              xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
+             d:DataContext="{d:DesignInstance Type=viewmodel:PivotViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -16,8 +16,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
             <StackPanel
-                Margin="0,8,15,0"
-                Visibility="{Binding TransitionsPresentersVM.IsSmoothMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                Margin="0,8,15,0">
 
                 <!-- Hardness Slider -->
                 <DockPanel

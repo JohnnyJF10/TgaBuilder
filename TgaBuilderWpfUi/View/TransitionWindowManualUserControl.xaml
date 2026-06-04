@@ -10,7 +10,7 @@
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionOutViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -22,7 +22,7 @@
     <StackPanel
                             Margin="8,6,8,8">
         <StackPanel
-            DataContext="{Binding TransitionsPresentersVM}"
+            DataContext="{Binding TransitionOutVM}"
                                 Orientation="Horizontal"
                                 Margin="0,0,0,8">
             <elements:ToggleButtonEx

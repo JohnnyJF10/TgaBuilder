@@ -42,7 +42,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionInVM;
 
             if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
                 return;
@@ -56,7 +56,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionInVM;
 
             if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
                 return;
@@ -69,7 +69,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionInVM;
 
             if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
                 return;
@@ -82,7 +82,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionInVM;
 
             if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
                 return;
@@ -97,7 +97,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionInVM;
 
             if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
                 return;
@@ -110,7 +110,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionInVM;
 
             if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
                 return;
@@ -123,7 +123,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionInVM;
 
             if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
                 return;
@@ -138,7 +138,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionOutVM;
 
             if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
@@ -155,7 +155,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionOutVM;
 
             if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
@@ -168,7 +168,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionOutVM;
 
             if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
@@ -181,7 +181,7 @@ namespace TgaBuilderWpfUi.View
             if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            var tpvm = tvm.TransitionsPresentersVM;
+            var tpvm = tvm.TransitionOutVM;
 
             if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;

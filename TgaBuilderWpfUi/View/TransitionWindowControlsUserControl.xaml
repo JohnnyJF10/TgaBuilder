@@ -8,7 +8,6 @@
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
              xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
              xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
-             xmlns:converters="clr-namespace:TgaBuilderWpfUi.Converters"
              d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <UserControl.Resources>
@@ -17,7 +16,6 @@
                 <ResourceDictionary Source="/Styles/IconRadioButtonStyle.xaml" />
                 <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
         <!-- Row 1: Mode selector + transition mode + pivot -->
@@ -26,14 +24,13 @@
 
             <!-- Mode Selector: Smooth / Brick radio icon buttons -->
             <StackPanel
-                DataContext="{Binding TransitionsPresentersVM}"
                 DockPanel.Dock="Left"
                 Orientation="Horizontal"
                 Margin="7,0,6,0"
                 VerticalAlignment="Center">
                 <elements:IconRadioButton
                     GroupName="TransitionTypeSelector"
-                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Smooth}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    IsChecked="{Binding IsSmoothMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     ap:MouseOverInfoAP.InfoText="Smooth transition mode"
                     Width="36"
                     Height="36"
@@ -42,7 +39,7 @@
                 <elements:IconRadioButton
                     Margin="5,0"
                     GroupName="TransitionTypeSelector"
-                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Bricks}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    IsChecked="{Binding IsBrickMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     ap:MouseOverInfoAP.InfoText="Brick transition mode"
                     Width="36"
                     Height="36"
@@ -52,10 +49,12 @@
 
             <!-- Transition mode buttons panel -->
             <local:TransitionModeUserControl
+                DataContext="{Binding PivotVM}"
                 Margin="0,0,0,0" />
 
             <!-- Pivot slider -->
             <DockPanel
+                DataContext="{Binding PivotVM}"
                 Margin="10,0,10,0"
                 ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
                 <Grid
