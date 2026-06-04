@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
@@ -19,6 +20,8 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         _bitmapOperations = bitmapOperations;
 
         _resultImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
+
+        _transitionHelper.RecalculationCompleted += OnRecalculationCompleted;
     }
 
     private const int TRANSITIONS_BPP = 4;
@@ -235,13 +238,15 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
     private void OnRecalculationCompleted(object? sender, EventArgs e)
     {
-        var resImage = _mediaFactory.CreateBitmapFromRaw(
-            _transitionHelper.Width,
-            _transitionHelper.Height,
-            hasAlpha: true,
-            _transitionHelper.PixelsResult,
-            stride: _transitionHelper.Width * 4);
-        ResultImage = _mediaFactory.CloneBitmap(resImage);
+        using var ResLockedFrameBuffer = ResultImage.GetLocker();
+
+        Marshal.Copy(
+            source: _transitionHelper.PixelsResult, 
+            startIndex: 0, 
+            destination: ResLockedFrameBuffer.BackBuffer, 
+            length: _transitionHelper.PixelsResult.Length);
+
+        VisualInvalidator?.InvalidateVisual();
 
         if (_transitionHelper.TypeOfTransition == TransitionType.Bricks)
             UpdateLabelMapImage();
@@ -250,15 +255,5 @@ public class TransitionOutViewModel : ThrottledViewModelBase
     protected override async Task TriggerRecalculation()
     {
         await _transitionHelper.QueueRecalc();
-    }
-
-    internal void SubscribeToRecalc()
-    {
-        _transitionHelper.RecalculationCompleted += OnRecalculationCompleted;
-    }
-
-    internal void UnsubscribeFromRecalc()
-    {
-        _transitionHelper.RecalculationCompleted -= OnRecalculationCompleted;
     }
 }

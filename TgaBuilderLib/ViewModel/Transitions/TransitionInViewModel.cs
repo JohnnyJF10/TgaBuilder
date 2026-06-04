@@ -46,8 +46,6 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
     private bool _initTextVisible = true;
 
-    public IVisualInvalidator? VisualInvalidator { get; set; }
-
 
     public IWriteableBitmap Image1
     {
@@ -183,71 +181,75 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
     public void LoadImage1(IWriteableBitmap bitmap)
     {
-        var ImageIn = bitmap.HasAlpha
-            ? _mediaFactory.CloneBitmap(bitmap)
-            : _bitmapOperations.ConvertRGB24ToBGRA32(bitmap);
-
-        Image1 = ImageInResize(ImageIn);
-
-        _transitionHelper.Pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
-        Image1.CopyPixels(_transitionHelper.Pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
-
+        Image1 = PrepareAndResizeImage(bitmap);
+        _transitionHelper.Pixels1 = ExtractPixels(Image1);
+    
         InitTextVisible = false;
-
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
-
-        _transitionHelper.Width = Image1.PixelWidth;
-        _transitionHelper.Height = Image1.PixelHeight;
-
-        if (Image1.PixelWidth == Image2.PixelWidth && Image1.PixelHeight == Image2.PixelHeight)
+    
+        UpdateHelperDimensionsAndResult(Image1);
+    
+        if (AreDimensionsDifferent(Image1, Image2))
         {
-            _ = TriggerRecalculation();
-            return;
+            Image2 = ImageInResize(Image2, Image1.PixelWidth, Image1.PixelHeight);
+           _transitionHelper.Pixels2 = ExtractPixels(Image2);
         }
-
-        Image2 = ImageInResize(Image2, Image1.PixelWidth, Image1.PixelHeight);
-        _transitionHelper.Pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
-        Image2.CopyPixels(_transitionHelper.Pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
-
+    
         _ = TriggerRecalculation();
-
-        //Todo: Let helper prepare buffers instead of copying pixels here
     }
-
+    
     public void LoadImage2(IWriteableBitmap bitmap)
     {
-        var ImageIn = bitmap.HasAlpha
-            ? _mediaFactory.CloneBitmap(bitmap)
-            : _bitmapOperations.ConvertRGB24ToBGRA32(bitmap);
-
-        Image2 = ImageInResize(ImageIn);
-
-        _transitionHelper.Pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
-        Image2.CopyPixels(_transitionHelper.Pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
-
+        Image2 = PrepareAndResizeImage(bitmap);
+        _transitionHelper.Pixels2 = ExtractPixels(Image2);
+    
         InitTextVisible = false;
-
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresDrawing;
-
-        _transitionHelper.Width = Image2.PixelWidth;
-        _transitionHelper.Height = Image2.PixelHeight;
-
-        if (Image1.PixelWidth == Image2.PixelWidth && Image1.PixelHeight == Image2.PixelHeight)
+    
+        UpdateHelperDimensionsAndResult(Image2);
+    
+        if (AreDimensionsDifferent(Image1, Image2))
         {
-            _ = TriggerRecalculation();
-            return;
+            Image1 = ImageInResize(Image1, Image2.PixelWidth, Image2.PixelHeight);
+            _transitionHelper.Pixels1 = ExtractPixels(Image1);
+            _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
         }
 
-        Image1 = ImageInResize(Image1, Image2.PixelWidth, Image2.PixelHeight);
-
-        _transitionHelper.Pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
-        Image1.CopyPixels(_transitionHelper.Pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
-
-        _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
-
         _ = TriggerRecalculation();
-
-        //Todo: Let helper prepare buffers instead of copying pixels here
+    }
+    
+    private IWriteableBitmap PrepareAndResizeImage(IWriteableBitmap bitmap)
+    {
+        var imageIn = bitmap.HasAlpha
+            ? _mediaFactory.CloneBitmap(bitmap)
+            : _bitmapOperations.ConvertRGB24ToBGRA32(bitmap);
+    
+        return ImageInResize(imageIn);
+    }
+    
+    private byte[] ExtractPixels(IWriteableBitmap image)
+    {
+        // Todo: Let helper prepare buffers instead of copying pixels here
+        var pixels = new byte[image.PixelWidth * image.PixelHeight * TRANSITIONS_BPP];
+        image.CopyPixels(pixels, image.PixelWidth * TRANSITIONS_BPP, 0);
+        return pixels;
+    }
+    
+    private void UpdateHelperDimensionsAndResult(IWriteableBitmap referenceImage)
+    {
+        _transitionHelper.Width = referenceImage.PixelWidth;
+        _transitionHelper.Height = referenceImage.PixelHeight;
+    
+        TransitionOutVM.ResultImage = _mediaFactory.CreateEmptyBitmap(
+            referenceImage.PixelWidth, 
+            referenceImage.PixelHeight, 
+            true);
+    }
+    
+    private bool AreDimensionsDifferent(IWriteableBitmap img1, IWriteableBitmap img2)
+    {        
+        return img1.PixelWidth != img2.PixelWidth || 
+               img1.PixelHeight != img2.PixelHeight;
     }
 
     public IWriteableBitmap ImageInResize(IWriteableBitmap imIn, int newWidth = -1, int newHeight = -1)
@@ -276,6 +278,9 @@ public class TransitionInViewModel : ThrottledViewModelBase
         InitTextVisible = true;
         _image1 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
         _image2 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
+
+        EdgeColor = new Color(255, 255, 255, 128);
+        ShadowColor = new Color(42, 42, 42, 42);
     }
 
     public void EndMouseInteractivity()

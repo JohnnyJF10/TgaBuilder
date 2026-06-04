@@ -39,8 +39,6 @@ public class TransitionViewModel : ThrottledViewModelBase
 
         TransitionInVM = PivotVM.TransitionInVM;
         TransitionOutVM = TransitionInVM.TransitionOutVM;
-
-        TransitionOutVM.SubscribeToRecalc();
     }
 
     // =====================================================================
@@ -147,7 +145,6 @@ public class TransitionViewModel : ThrottledViewModelBase
 
         TransitionOutVM.ResetImages();
         TransitionOutVM.EndMouseInteraction();
-        TransitionOutVM.UnsubscribeFromRecalc();
 
         _transitionHelper.CleanUp();
         _mainViewModel.IsTransitionViewOpen = false;

@@ -125,6 +125,9 @@ namespace TgaBuilderLib.Transitions
             ShadowColor = new Color(42, 42, 42, 42);
             ShadowSize = 3;
             ShadowHardness = 50;
+            UnderfillingPivot = 0.5f;
+            ReverseUnderfilling = false;
+            UnderfillingThreshold = 0;
         }
     }
 }
