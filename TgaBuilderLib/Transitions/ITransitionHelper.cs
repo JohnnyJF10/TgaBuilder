@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using TgaBuilderLib.Abstraction;
+using TgaBuilderLib.ViewModel;
+using Transitions;
 using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.Transitions
@@ -10,8 +12,14 @@ namespace TgaBuilderLib.Transitions
         int Width { get; set; }
         int Height { get; set; }
 
+        byte[] pixels1 { get; set; }
+        byte[] pixels2 { get; set; }
+        
+
+        TransitionType TypeOfTransition { get; set; }
+
         // Shared Transition Parameters
-        TransitionMode Mode { get; set; }
+        TransitionDirection Direction { get; set; }
         float Pivot { get; set; }
 
         // Smooth Transition Parameters
@@ -50,8 +58,7 @@ namespace TgaBuilderLib.Transitions
         int UnderfillingThreshold { get; set; }
 
         // Methods
-        byte[] MixSmooth(byte[] pixels1, byte[] pixels2);
-        byte[] MixBricks(byte[] tilePixels, byte[] bgPixels);
+        byte[] Mix();
         byte[] GetLabelMap();
         int GetLabelAtPixel(int x, int y);
         byte[] GetTileIndicator(int tileIndex);

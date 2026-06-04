@@ -7,13 +7,13 @@ public class UnderfillingViewModel : ThrottledViewModelBase
 {
     public UnderfillingViewModel(
         ITransitionHelper transitionHelper,
-        TransitionsPresentersViewModel transitionsPresentersVM)
+        TransitionInViewModel transitionInVM)
     {
         _transitionHelper = transitionHelper;
-        TransitionsPresentersVM = transitionsPresentersVM;
+        TransitionInVM = transitionInVM;
     }
 
-    public TransitionsPresentersViewModel TransitionsPresentersVM { get; }
+    public TransitionInViewModel TransitionInVM { get; }
 
     private ITransitionHelper _transitionHelper;
 
@@ -46,7 +46,7 @@ public class UnderfillingViewModel : ThrottledViewModelBase
     private void ConfigureTransitionHelper()
     {
         _transitionHelper.CurrentBricksPipelineRequirements 
-        = BricksPipelineRequirements.RequiresDrawing;
+        = BricksPipelineRequirements.RequiresSelectionBuilding;
 
         _transitionHelper.UnderfillingPivot = UnderfillingPivot;
         _transitionHelper.ReverseUnderfilling = ReverseUnderfilling;
@@ -55,14 +55,14 @@ public class UnderfillingViewModel : ThrottledViewModelBase
 
     protected override bool PreProcess()
     {
-        return TransitionsPresentersVM.DoPreProcessing();
+        return TransitionInVM.DoPreProcessing();
     }
 
     protected override async Task Recalculate()
     {
         ConfigureTransitionHelper();
  
-        await TransitionsPresentersVM.DoRecalculation();
+        await TransitionInVM.DoRecalculation();
     }
 }
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TgaBuilderLib.Transitions
 {
-    public enum TransitionMode
+    public enum TransitionDirection
     {
         Top,
         Right,

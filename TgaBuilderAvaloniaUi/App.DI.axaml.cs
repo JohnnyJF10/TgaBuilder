@@ -294,30 +294,36 @@ namespace TgaBuilderAvaloniaUi
 
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
-            services.AddSingleton(sp => new TransitionsPresentersViewModel(
+            services.AddSingleton(sp => new TransitionOutViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>()));
 
+            services.AddSingleton(sp => new TransitionInViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
+                transitionOutViewModel: sp.GetRequiredService<TransitionOutViewModel>()));
+
             services.AddTransient(sp => new AnalysisViewModel(
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
-                transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
+                transitionInVM: sp.GetRequiredService<TransitionInViewModel>()));
 
             services.AddTransient(sp => new PivotViewModel(
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
-                transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
+                transitionInVM: sp.GetRequiredService<TransitionInViewModel>()));
 
             services.AddTransient(sp => new EdgeViewModel(
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
-                transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
+                transitionInVM: sp.GetRequiredService<TransitionInViewModel>()));
 
             services.AddTransient(sp => new ShadowViewModel(
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
-                transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
+                transitionInVM: sp.GetRequiredService<TransitionInViewModel>()));
 
             services.AddTransient(sp => new UnderfillingViewModel(
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
-                transitionsPresentersVM: sp.GetRequiredService<TransitionsPresentersViewModel>()));
+                transitionInVM: sp.GetRequiredService<TransitionInViewModel>()));
 
             services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),

@@ -3,18 +3,11 @@ using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
+using Transitions;
 
 namespace TgaBuilderLib.ViewModel;
 
-// =========================================================================
-// Enum: identifies which transition pipeline the window is operating in
-// =========================================================================
 
-public enum TransitionType
-{
-    Smooth,
-    Bricks,
-}
 
 // =========================================================================
 // Unified TransitionViewModel — no base class
@@ -44,7 +37,8 @@ public class TransitionViewModel : ThrottledViewModelBase
         ShadowVM = shadowViewModel;
         UnderfillingVM = underfillingViewModel;
 
-        TransitionsPresentersVM = PivotVM.TransitionsPresentersVM;
+        TransitionInVM = PivotVM.TransitionInVM;
+        TransitionOutVM = TransitionInVM.TransitionOutVM;
     }
 
     // =====================================================================
@@ -58,7 +52,9 @@ public class TransitionViewModel : ThrottledViewModelBase
 
     private const int TRANSITIONS_BPP = 4;
 
-    public TransitionsPresentersViewModel TransitionsPresentersVM { get; set; }
+    public TransitionInViewModel TransitionInVM { get; set; }
+
+    public TransitionOutViewModel TransitionOutVM { get; set; }
     public AnalysisViewModel AnalysisVM { get; set; }
     public PivotViewModel PivotVM { get; set; }
     public EdgeViewModel EdgeVM { get; set; }
@@ -82,9 +78,9 @@ public class TransitionViewModel : ThrottledViewModelBase
     public ICommand MixCommand => _mixCommand ??= new RelayCommand(Mix);
 
     public ICommand LoadImage1Command => _loadImage1Command 
-        ??= new RelayCommand(() => TransitionsPresentersVM.LoadImage1(_mainViewModel.Selection.Presenter));
+        ??= new RelayCommand(() => TransitionInVM.LoadImage1(_mainViewModel.Selection.Presenter));
     public ICommand LoadImage2Command => _loadImage2Command 
-        ??= new RelayCommand(() => TransitionsPresentersVM.LoadImage2(_mainViewModel.Selection.Presenter));
+        ??= new RelayCommand(() => TransitionInVM.LoadImage2(_mainViewModel.Selection.Presenter));
 
     public ICommand MarkFinishedCommand => _markFinishedCommand ??= new RelayCommand(MarkFinished);
     public ICommand ApplyCommand => _applyCommand ??= new RelayCommand(Apply);
@@ -93,32 +89,76 @@ public class TransitionViewModel : ThrottledViewModelBase
 
 
     // =====================================================================
+    // Transition type selection
+    // =====================================================================
+
+    public bool IsSmoothMode
+    {
+         get =>_transitionHelper.TypeOfTransition == TransitionType.Smooth;
+         set
+         {
+             if (value)
+             {
+                 _transitionHelper.TypeOfTransition = TransitionType.Smooth;
+                 OnTransitionTypeChanged();
+             }
+         }
+    }
+    public bool IsBrickMode 
+    { 
+        get => _transitionHelper.TypeOfTransition == TransitionType.Bricks;
+        set
+        {
+            if (value)
+            {
+                _transitionHelper.TypeOfTransition = TransitionType.Bricks;
+                OnTransitionTypeChanged();
+            }
+        }
+    }
+
+    public void OnTransitionTypeChanged()
+    {
+        _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
+        TransitionOutVM.ResetBools();
+        TransitionInVM.ResetBools();
+        OnPropertyChanged(nameof(IsSmoothMode));
+        OnPropertyChanged(nameof(IsBrickMode));
+
+        _ = TriggerRecalculation();
+    }
+
+    // =====================================================================
     // Pipeline logic
     // =====================================================================
 
     private void Mix()
     {
-        TransitionsPresentersVM.Mix();
+        TransitionInVM.Mix();
     }
-
 
 
     private void MarkFinished()
     {
-        TransitionsPresentersVM.CleanUp();
+        TransitionInVM.ResetImages();
+        TransitionInVM.ResetBools();
+
+        TransitionOutVM.ResetImages();
+        TransitionOutVM.ResetBools();
+
         _transitionHelper.CleanUp();
         _mainViewModel.IsTransitionViewOpen = false;
     }
 
     private void Apply()
     {
-        _mainViewModel.Selection.Presenter = _mediaFactory.CloneBitmap(TransitionsPresentersVM.ResultImage);
+        _mainViewModel.Selection.Presenter = _mediaFactory.CloneBitmap(TransitionOutVM.ResultImage);
         _mainViewModel.SwitchToDestinationPlacingModeCommand.Execute(null);
     }
 
     private void OK(IView view)
     {
-        _mainViewModel.Selection.Presenter = _mediaFactory.CloneBitmap(TransitionsPresentersVM.ResultImage);
+        _mainViewModel.Selection.Presenter = _mediaFactory.CloneBitmap(TransitionOutVM.ResultImage);
         _mainViewModel.SwitchToDestinationPlacingModeCommand.Execute(null);
         MarkFinished();
         view.CloseAsync();
@@ -133,11 +173,11 @@ public class TransitionViewModel : ThrottledViewModelBase
 
     protected override bool PreProcess()
     {
-        return TransitionsPresentersVM.DoPreProcessing();
+        return TransitionInVM.DoPreProcessing();
     }
 
     protected override async Task Recalculate()
     {
-        await TransitionsPresentersVM.DoRecalculation();
+        await TransitionInVM.DoRecalculation();
     }
 }

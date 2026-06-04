@@ -38,15 +38,15 @@ namespace TgaBuilderAvaloniaUi.View
         private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel)
         {
             if (viewModel is TransitionViewModel vm)
-                vm.TransitionsPresentersVM.VisualInvalidator = new VisualInvalidator(ResultImage);
+                vm.TransitionInVM.VisualInvalidator = new VisualInvalidator(ResultImage);
         }
 
         private void SubscribeToLabelMapExpanded(INotifyPropertyChanged viewModel)
         {
             if (viewModel is TransitionViewModel vm)
-                vm.TransitionsPresentersVM.PropertyChanged += (_, e) =>
+                vm.TransitionOutVM.PropertyChanged += (_, e) =>
                 {
-                    if (e.PropertyName == nameof(TransitionsPresentersViewModel.IsLabelMapExpanded))
+                    if (e.PropertyName == nameof(vm.TransitionOutVM.IsLabelMapExpanded))
                         UpdateLabelMapColumnWidth();
                 };
         }
@@ -61,7 +61,7 @@ namespace TgaBuilderAvaloniaUi.View
             }
 
             if (_labelMapColumn is not null && DataContext is TransitionViewModel vm)
-                _labelMapColumn.Width = vm.TransitionsPresentersVM.IsLabelMapExpanded ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+                _labelMapColumn.Width = vm.TransitionOutVM.IsLabelMapExpanded ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
         }
 
         protected override void OnClosing(WindowClosingEventArgs e)
@@ -81,7 +81,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is TransitionViewModel vm)
             {
-                var tpvm = vm.TransitionsPresentersVM;
+                var tpvm = vm.TransitionInVM;
                 if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
                     this.Cursor = CursorProvider.EyedropperCursor;
             }
@@ -91,7 +91,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is TransitionViewModel vm)
             {
-                var tpvm = vm.TransitionsPresentersVM;
+                var tpvm = vm.TransitionInVM;
                 if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
                     this.Cursor = CursorProvider.DefaultCursor;
             }
@@ -101,7 +101,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is TransitionViewModel vm)
             {
-                var tpvm = vm.TransitionsPresentersVM;
+                var tpvm = vm.TransitionInVM;
                 if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
                 {
                     tpvm.IsEyedropperMode = false;
@@ -120,7 +120,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is TransitionViewModel vm)
             {
-                var tpvm = vm.TransitionsPresentersVM;
+                var tpvm = vm.TransitionInVM;
                 if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
                     this.Cursor = CursorProvider.EyedropperCursor;
             }
@@ -130,7 +130,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is TransitionViewModel vm)
             {
-                var tpvm = vm.TransitionsPresentersVM;
+                var tpvm = vm.TransitionInVM;
                 if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
                     this.Cursor = CursorProvider.DefaultCursor;
             }
@@ -140,7 +140,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is TransitionViewModel vm)
             {
-                var tpvm = vm.TransitionsPresentersVM;
+                var tpvm = vm.TransitionInVM;
                 if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
                 {
                     tpvm.IsEyedropperMode = false;
@@ -154,7 +154,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             if (DataContext is TransitionViewModel vm)
             {
-                var tpvm = vm.TransitionsPresentersVM;
+                var tpvm = vm.TransitionInVM;
                 if (tpvm.IsEyedropperMode || tpvm.IsShadowEyedropperMode)
                 {
                     var position = e.GetPosition(image);
@@ -168,7 +168,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            var tpvm = vm.TransitionsPresentersVM;
+            var tpvm = vm.TransitionOutVM;
 
             if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
@@ -192,7 +192,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            var tpvm = vm.TransitionsPresentersVM;
+            var tpvm = vm.TransitionOutVM;
 
             if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
@@ -205,7 +205,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            var tpvm = vm.TransitionsPresentersVM;
+            var tpvm = vm.TransitionOutVM;
 
             if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
@@ -218,7 +218,7 @@ namespace TgaBuilderAvaloniaUi.View
             if (DataContext is not TransitionViewModel vm)
                 return;
 
-            var tpvm = vm.TransitionsPresentersVM;
+            var tpvm = vm.TransitionOutVM;
 
             if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;

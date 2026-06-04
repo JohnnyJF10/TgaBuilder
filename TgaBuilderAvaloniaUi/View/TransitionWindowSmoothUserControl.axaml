@@ -4,15 +4,16 @@
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             x:DataType="viewmodel:PivotViewModel"
+             x:DataType="viewmodel:TransitionViewModel"
              x:CompileBindings="False"
              >
             <StackPanel
                 Grid.Row="0"
-                IsVisible="{Binding TransitionsPresentersVM.IsSmoothMode}">
+                IsVisible="{Binding IsSmoothMode}">
 
                 <!-- Hardness Slider -->
                 <DockPanel
+                    DataContext="{Binding PivotVM}"
                     ap:MouseOverInfoAP.InfoText="Hardness: 0 = soft gradient blend, 1 = hard sharp edge">
                     <Path
                         VerticalAlignment="Center"
@@ -43,6 +44,7 @@
 
                 <!-- Widening Slider -->
                 <DockPanel
+                    DataContext="{Binding PivotVM}"
                     ap:MouseOverInfoAP.InfoText="Widening: At 0, the transition starts as a point and becomes a wider plateau as values approach 1.">
                     <Grid
                         VerticalAlignment="Top"
@@ -100,6 +102,7 @@
 
                 <!-- Shift Slider -->
                 <DockPanel
+                    DataContext="{Binding PivotVM}"
                     ap:MouseOverInfoAP.InfoText="Shift: moves the transition front point or plateau left (negative) or right (positive)">
                     <Grid
                         VerticalAlignment="Top"

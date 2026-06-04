@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using TgaBuilderLib.Abstraction;
+using Transitions;
 
 namespace TgaBuilderLib.Transitions
 {
@@ -12,10 +13,13 @@ namespace TgaBuilderLib.Transitions
         { 
             _systemAccentColor = AccentColor ?? new Color(128, 128, 128, 128);
         }
-
         private readonly Color _systemAccentColor;
-
         private const int TRANSITIONS_BPP = 4; // Always BGRA32
+
+
+        public byte[] pixels1 { get; set; } = Array.Empty<byte>();
+        public byte[] pixels2 { get; set; } = Array.Empty<byte>();
+
 
         private int[] _labels = Array.Empty<int>();
         private List<TileSegment> _tileSegmentList = new();
@@ -24,7 +28,9 @@ namespace TgaBuilderLib.Transitions
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public TransitionMode Mode { get; set; }
+        public TransitionType TypeOfTransition { get; set; }
+
+        public TransitionDirection Direction { get; set; }
         public float Pivot { get; set; } = 0.5f;
 
         public float Hardness { get; set; } = 0.5f;
@@ -63,6 +69,14 @@ namespace TgaBuilderLib.Transitions
         public int ShadowSize { get; set; } = 3;
         public int ShadowHardness { get; set; } = 50;
 
+        public byte[] Mix()
+        {
+            if (TypeOfTransition == TransitionType.Smooth)
+                return MixSmooth(pixels1, pixels2);
+            else
+                return MixBricks(pixels1, pixels2);
+        }
+
         public void CleanUp()
         {
             _labels = Array.Empty<int>();
@@ -72,7 +86,10 @@ namespace TgaBuilderLib.Transitions
             Width = 0;
             Height = 0;
 
-            Mode = TransitionMode.Top;
+            pixels1 = Array.Empty<byte>();
+            pixels2 = Array.Empty<byte>();
+
+            Direction = TransitionDirection.Top;
             Pivot = 0.5f;
 
             Hardness = 0.5f;

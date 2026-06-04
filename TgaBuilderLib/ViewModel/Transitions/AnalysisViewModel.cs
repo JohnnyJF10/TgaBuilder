@@ -6,13 +6,13 @@ public class AnalysisViewModel : ThrottledViewModelBase
 {
     public AnalysisViewModel(
         ITransitionHelper transitionHelper,
-        TransitionsPresentersViewModel transitionsPresentersVM)
+        TransitionInViewModel transitionInVM)
     {
         _transitionHelper = transitionHelper;
-        TransitionsPresentersVM = transitionsPresentersVM;
+        TransitionInVM = transitionInVM;
     }
 
-    public TransitionsPresentersViewModel TransitionsPresentersVM { get; }
+    public TransitionInViewModel TransitionInVM { get; }
 
     private ITransitionHelper _transitionHelper;
 
@@ -196,14 +196,14 @@ public class AnalysisViewModel : ThrottledViewModelBase
 
     protected override bool PreProcess()
     {
-        return TransitionsPresentersVM.DoPreProcessing();
+        return TransitionInVM.DoPreProcessing();
     }
 
     protected override async Task Recalculate()
     {
         ConfigureTransitionHelper();
  
-        await TransitionsPresentersVM.DoRecalculation();
+        await TransitionInVM.DoRecalculation();
     }
 
 }

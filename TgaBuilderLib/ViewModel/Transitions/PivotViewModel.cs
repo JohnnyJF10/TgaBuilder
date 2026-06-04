@@ -6,18 +6,18 @@ public class PivotViewModel : ThrottledViewModelBase
 {
     public PivotViewModel(
         ITransitionHelper transitionHelper,
-        TransitionsPresentersViewModel transitionsPresentersVM)
+        TransitionInViewModel transitionInVM)
     {
         _transitionHelper = transitionHelper;
-        TransitionsPresentersVM = transitionsPresentersVM;
+        TransitionInVM = transitionInVM;
     }
 
-    public TransitionsPresentersViewModel TransitionsPresentersVM { get; }
+    public TransitionInViewModel TransitionInVM { get; }
 
     private ITransitionHelper _transitionHelper;
 
 
-    private TransitionMode _selectedTransitionMode = TransitionMode.Top;
+    private TransitionDirection _selectedTransitionMode = TransitionDirection.Top;
     private float _pivotValue = 0.5f;
 
     private float _blendHardnessValue = 0.5f;
@@ -32,7 +32,7 @@ public class PivotViewModel : ThrottledViewModelBase
 
 
 
-    public TransitionMode SelectedTransitionMode
+    public TransitionDirection SelectedTransitionMode
     {
         get => _selectedTransitionMode;
         set => SetPropertyTriggerRecalculation(ref _selectedTransitionMode, value);
@@ -86,7 +86,7 @@ public class PivotViewModel : ThrottledViewModelBase
         _transitionHelper.CurrentBricksPipelineRequirements 
         = BricksPipelineRequirements.RequiresSelectionBuilding;
 
-        _transitionHelper.Mode = SelectedTransitionMode;
+        _transitionHelper.Direction = SelectedTransitionMode;
         _transitionHelper.Pivot = PivotValue;
         _transitionHelper.Hardness = BlendHardnessValue;
         _transitionHelper.Widening = WideningValue;
@@ -98,14 +98,14 @@ public class PivotViewModel : ThrottledViewModelBase
 
     protected override bool PreProcess()
     {
-        return TransitionsPresentersVM.DoPreProcessing();
+        return TransitionInVM.DoPreProcessing();
     }
 
     protected override async Task Recalculate()
     {
         ConfigureTransitionHelper();
  
-        await TransitionsPresentersVM.DoRecalculation();
+        await TransitionInVM.DoRecalculation();
     }
 
 }

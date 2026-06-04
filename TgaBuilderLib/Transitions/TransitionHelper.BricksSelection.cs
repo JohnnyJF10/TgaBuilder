@@ -22,7 +22,7 @@ public partial class TransitionHelper
         bool[] selection = new bool[Width * Height];
         int labelCount = tileSegments.Count;
 
-        TransitionMode mode = Mode;
+        TransitionDirection mode = Direction;
         bool reversePivot = ReversePivot;
 
         // --- Preprocessing ---
@@ -53,7 +53,7 @@ public partial class TransitionHelper
             var pixelOffsets = segment.PixelOffsets;
             if (pixelOffsets.Count == 0) continue;
 
-            float v = ComputeFocus(Mode, segment.CentroidX, segment.CentroidY, Widening, Shift);
+            float v = ComputeFocus(Direction, segment.CentroidX, segment.CentroidY, Widening, Shift);
             bool shouldDraw = segment.ShouldDrawExplicitly ?? (ReversePivot ? (v <= Pivot) : (v >= Pivot));
 
             ReadOnlySpan<int> tileOffsets = CollectionsMarshal.AsSpan(pixelOffsets);
@@ -84,7 +84,7 @@ public partial class TransitionHelper
                     float nx = px * wInv;
                     float ny = py * hInv;
 
-                    float pv = ComputeFocus(Mode, nx, ny, Widening, Shift);
+                    float pv = ComputeFocus(Direction, nx, ny, Widening, Shift);
                     bool include = ReversePivot ? (pv <= Pivot) : (pv >= Pivot);
                     if (include) selection[pixelIdx] = true;
                 }
@@ -122,7 +122,7 @@ public partial class TransitionHelper
                     {
                         float nx = (float)x / (Width - 1);
 
-                        float v = ComputeFocus(Mode, nx, ny, Widening, Shift);
+                        float v = ComputeFocus(Direction, nx, ny, Widening, Shift);
 
                         byte* pxValley = rowValley + x * TRANSITIONS_BPP;
 
@@ -198,22 +198,22 @@ public partial class TransitionHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     // Returns which outer edges are required for drawing in the current transition direction.
     private (bool checkTop, bool checkBottom, bool checkLeft, bool checkRight) GetDrawnEdgeTilesBools(
-        TransitionMode mode,
+        TransitionDirection mode,
         bool reversePivot)
         => (mode, reversePivot) switch
         {
-            (TransitionMode.Top, false) => (true, false, false, false),
-            (TransitionMode.Top, true) => (false, true, true, true),
-            (TransitionMode.Bottom, false) => (false, true, false, false),
-            (TransitionMode.Bottom, true) => (true, false, true, true),
-            (TransitionMode.Left, false) => (false, false, true, false),
-            (TransitionMode.Left, true) => (true, true, false, true),
-            (TransitionMode.Right, false) => (false, false, false, true),
-            (TransitionMode.Right, true) => (true, true, true, false),
-            (TransitionMode.DiagonalTopLeft, false) => (true, false, true, false),
-            (TransitionMode.DiagonalTopLeft, true) => (false, true, false, true),
-            (TransitionMode.DiagonalTopRight, false) => (true, false, false, true),
-            (TransitionMode.DiagonalTopRight, true) => (false, true, true, false),
+            (TransitionDirection.Top, false) => (true, false, false, false),
+            (TransitionDirection.Top, true) => (false, true, true, true),
+            (TransitionDirection.Bottom, false) => (false, true, false, false),
+            (TransitionDirection.Bottom, true) => (true, false, true, true),
+            (TransitionDirection.Left, false) => (false, false, true, false),
+            (TransitionDirection.Left, true) => (true, true, false, true),
+            (TransitionDirection.Right, false) => (false, false, false, true),
+            (TransitionDirection.Right, true) => (true, true, true, false),
+            (TransitionDirection.DiagonalTopLeft, false) => (true, false, true, false),
+            (TransitionDirection.DiagonalTopLeft, true) => (false, true, false, true),
+            (TransitionDirection.DiagonalTopRight, false) => (true, false, false, true),
+            (TransitionDirection.DiagonalTopRight, true) => (false, true, true, false),
             _ => throw new ArgumentException("Invalid mode.")
         };
 
