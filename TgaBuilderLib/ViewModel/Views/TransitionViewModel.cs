@@ -120,8 +120,8 @@ public class TransitionViewModel : ThrottledViewModelBase
     public void OnTransitionTypeChanged()
     {
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
-        TransitionOutVM.ResetBools();
-        TransitionInVM.ResetBools();
+        TransitionOutVM.EndMouseInteraction();
+        TransitionInVM.EndMouseInteractivity();
         OnPropertyChanged(nameof(IsSmoothMode));
         OnPropertyChanged(nameof(IsBrickMode));
 
@@ -141,10 +141,10 @@ public class TransitionViewModel : ThrottledViewModelBase
     private void MarkFinished()
     {
         TransitionInVM.ResetImages();
-        TransitionInVM.ResetBools();
+        TransitionInVM.EndMouseInteractivity();
 
         TransitionOutVM.ResetImages();
-        TransitionOutVM.ResetBools();
+        TransitionOutVM.EndMouseInteraction();
 
         _transitionHelper.CleanUp();
         _mainViewModel.IsTransitionViewOpen = false;

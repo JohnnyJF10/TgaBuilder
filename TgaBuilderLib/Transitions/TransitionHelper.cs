@@ -12,13 +12,15 @@ namespace TgaBuilderLib.Transitions
         public TransitionHelper(Color? AccentColor = null) 
         { 
             _systemAccentColor = AccentColor ?? new Color(128, 128, 128, 128);
+            pixels1 = new byte[64 * 64 * TRANSITIONS_BPP];
+            pixels2 = new byte[64 * 64 * TRANSITIONS_BPP];
         }
         private readonly Color _systemAccentColor;
         private const int TRANSITIONS_BPP = 4; // Always BGRA32
 
 
-        public byte[] pixels1 { get; set; } = Array.Empty<byte>();
-        public byte[] pixels2 { get; set; } = Array.Empty<byte>();
+        public byte[] pixels1 { get; set; }
+        public byte[] pixels2 { get; set; }
 
 
         private int[] _labels = Array.Empty<int>();
@@ -86,8 +88,8 @@ namespace TgaBuilderLib.Transitions
             Width = 0;
             Height = 0;
 
-            pixels1 = Array.Empty<byte>();
-            pixels2 = Array.Empty<byte>();
+            pixels1 = new byte[64 * 64 * TRANSITIONS_BPP];
+            pixels2 = new byte[64 * 64 * TRANSITIONS_BPP];
 
             Direction = TransitionDirection.Top;
             Pivot = 0.5f;

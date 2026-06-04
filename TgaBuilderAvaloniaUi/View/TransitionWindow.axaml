@@ -397,19 +397,19 @@
         <!-- Form Submission Control Actions -->
         <StackPanel
             Grid.Row="2"
-            Grid.Column="1"
+            Grid.ColumnSpan="2"
             Orientation="Horizontal"
             HorizontalAlignment="Right"
             Spacing="8"
             Margin="8">
-            <Button
+            <Button Width="80" Height="32" HorizontalContentAlignment="Center"
                 Content="Apply"
                 Command="{Binding ApplyCommand}" />
-            <Button
+            <Button Width="80" Height="32" HorizontalContentAlignment="Center"
                 Content="Cancel"
                 Command="{Binding CancelCommand}"
                 CommandParameter="{Binding $parent[Window]}" />
-            <Button
+            <Button Width="80" Height="32" HorizontalContentAlignment="Center"
                 Classes="accent"
                 Content="OK"
                 Command="{Binding OKCommand}"

@@ -225,13 +225,13 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
     public void ResetImages()
     {
+        InitTextVisible = true;
         _resultImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
         _labelMapImage = null;
     }
 
-    public void ResetBools()
+    public void EndMouseInteraction()
     {
-        InitTextVisible = true;
         IsLabelMapExpanded = false;
         IsExplicitTileVisibilityDrawMode = false;
         IsExplicitTileVisibilityEraseMode = false;

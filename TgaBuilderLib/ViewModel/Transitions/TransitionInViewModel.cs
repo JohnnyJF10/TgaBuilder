@@ -27,6 +27,9 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
     private const int TRANSITIONS_BPP = 4;
 
+    private const int MAX_SIZE = 512;
+    private const int MIN_SIZE = 8;
+
     private readonly IMediaFactory _mediaFactory;
     private readonly ITransitionHelper _transitionHelper;
     private readonly IBitmapOperations _bitmapOperations;
@@ -173,29 +176,83 @@ public class TransitionInViewModel : ThrottledViewModelBase
          _transitionHelper.pixels1 = _transitionHelper.pixels2;
          _transitionHelper.pixels2 = tempPixels;
 
+        _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
+
         _ = TriggerRecalculation();
     }
 
     public void LoadImage1(IWriteableBitmap bitmap)
     {
-        Image1 = bitmap.HasAlpha
+        var ImageIn = bitmap.HasAlpha
             ? _mediaFactory.CloneBitmap(bitmap)
             : _bitmapOperations.ConvertRGB24ToBGRA32(bitmap);
 
+        Image1 = ImageInResize(ImageIn);
+
         _transitionHelper.pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
         Image1.CopyPixels(_transitionHelper.pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
+
         InitTextVisible = false;
+
+        _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
+
+        if (Image1.PixelWidth == Image2.PixelWidth && Image1.PixelHeight == Image2.PixelHeight)
+        {
+            _ = TriggerRecalculation();
+            return;
+        }
+
+        Image2 = ImageInResize(Image2, Image1.PixelWidth, Image1.PixelHeight);
+        _transitionHelper.pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
+        Image2.CopyPixels(_transitionHelper.pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
+
+        _ = TriggerRecalculation();
+
+        //Todo: Let helper prepare buffers instead of copying pixels here
     }
 
     public void LoadImage2(IWriteableBitmap bitmap)
     {
-        Image2 = bitmap.HasAlpha
+        var ImageIn = bitmap.HasAlpha
             ? _mediaFactory.CloneBitmap(bitmap)
             : _bitmapOperations.ConvertRGB24ToBGRA32(bitmap);
 
+        Image2 = ImageInResize(ImageIn);
+
         _transitionHelper.pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
         Image2.CopyPixels(_transitionHelper.pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
+
         InitTextVisible = false;
+
+        _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresDrawing;
+
+        if (Image1.PixelWidth == Image2.PixelWidth && Image1.PixelHeight == Image2.PixelHeight)
+        {
+            _ = TriggerRecalculation();
+            return;
+        }
+
+        Image1 = ImageInResize(Image1, Image2.PixelWidth, Image2.PixelHeight);
+
+        _transitionHelper.pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
+        Image1.CopyPixels(_transitionHelper.pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
+
+        _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
+
+        _ = TriggerRecalculation();
+
+        //Todo: Let helper prepare buffers instead of copying pixels here
+    }
+
+    public IWriteableBitmap ImageInResize(IWriteableBitmap imIn, int newWidth = -1, int newHeight = -1)
+    {
+        int acceptedWidth = newWidth > 0 ? newWidth : Math.Clamp(imIn.PixelWidth, MIN_SIZE, MAX_SIZE);
+        int acceptedHeight = newHeight > 0 ? newHeight : Math.Clamp(imIn.PixelHeight, MIN_SIZE, MAX_SIZE);
+
+        if (acceptedWidth == imIn.PixelWidth && acceptedHeight == imIn.PixelHeight)
+            return imIn;
+
+        return _bitmapOperations.ResizeScaled(imIn, acceptedWidth, acceptedHeight);
     }
 
     private bool CompareInputSpecs()
@@ -229,13 +286,13 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
     public void ResetImages()
     {
+        InitTextVisible = true;
         _image1 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
         _image2 = _mediaFactory.CreateEmptyBitmap(64, 64, true);
     }
 
-    public void ResetBools()
+    public void EndMouseInteractivity()
     {
-        InitTextVisible = true;
         IsEyedropperMode = false;
         IsShadowEyedropperMode = false;
     }
