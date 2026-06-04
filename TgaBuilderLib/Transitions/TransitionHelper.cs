@@ -12,15 +12,18 @@ namespace TgaBuilderLib.Transitions
         public TransitionHelper(Color? AccentColor = null) 
         { 
             _systemAccentColor = AccentColor ?? new Color(128, 128, 128, 128);
-            pixels1 = new byte[64 * 64 * TRANSITIONS_BPP];
-            pixels2 = new byte[64 * 64 * TRANSITIONS_BPP];
+            Pixels1 = new byte[64 * 64 * TRANSITIONS_BPP];
+            Pixels2 = new byte[64 * 64 * TRANSITIONS_BPP];
+            PixelsResult = new byte[64 * 64 * TRANSITIONS_BPP];
         }
         private readonly Color _systemAccentColor;
         private const int TRANSITIONS_BPP = 4; // Always BGRA32
 
 
-        public byte[] pixels1 { get; set; }
-        public byte[] pixels2 { get; set; }
+        public byte[] Pixels1 { get; set; }
+        public byte[] Pixels2 { get; set; }
+
+        public byte[] PixelsResult { get; set; }
 
 
         private int[] _labels = Array.Empty<int>();
@@ -71,12 +74,14 @@ namespace TgaBuilderLib.Transitions
         public int ShadowSize { get; set; } = 3;
         public int ShadowHardness { get; set; } = 50;
 
-        public byte[] Mix()
+        public event EventHandler? RecalculationCompleted;
+
+        public void Mix()
         {
             if (TypeOfTransition == TransitionType.Smooth)
-                return MixSmooth(pixels1, pixels2);
+                PixelsResult = MixSmooth(Pixels1, Pixels2);
             else
-                return MixBricks(pixels1, pixels2);
+                PixelsResult = MixBricks(Pixels1, Pixels2);
         }
 
         public void CleanUp()
@@ -88,8 +93,9 @@ namespace TgaBuilderLib.Transitions
             Width = 0;
             Height = 0;
 
-            pixels1 = new byte[64 * 64 * TRANSITIONS_BPP];
-            pixels2 = new byte[64 * 64 * TRANSITIONS_BPP];
+            Pixels1 = new byte[64 * 64 * TRANSITIONS_BPP];
+            Pixels2 = new byte[64 * 64 * TRANSITIONS_BPP];
+            PixelsResult = new byte[64 * 64 * TRANSITIONS_BPP];
 
             Direction = TransitionDirection.Top;
             Pivot = 0.5f;

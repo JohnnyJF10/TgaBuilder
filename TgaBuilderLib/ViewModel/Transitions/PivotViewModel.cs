@@ -96,16 +96,8 @@ public class PivotViewModel : ThrottledViewModelBase
         _transitionHelper.ProtectEdges = ProtectEdges;
     }
 
-    protected override bool PreProcess()
+    protected override async Task TriggerRecalculation()
     {
-        return TransitionInVM.DoPreProcessing();
+        await _transitionHelper.QueueRecalc(ConfigureTransitionHelper);
     }
-
-    protected override async Task Recalculate()
-    {
-        ConfigureTransitionHelper();
- 
-        await TransitionInVM.DoRecalculation();
-    }
-
 }

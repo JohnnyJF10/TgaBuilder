@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
@@ -237,37 +231,34 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         IsExplicitTileVisibilityEraseMode = false;
     }
 
-    public bool DoPreProcessing()
+
+
+    private void OnRecalculationCompleted(object? sender, EventArgs e)
     {
-
-
-        return true;
-    }
-
-    public async Task DoRecalculation()
-    {
-
-        byte[] resultPixels = await Task.Run(
-            () => _transitionHelper.Mix());
-
         var resImage = _mediaFactory.CreateBitmapFromRaw(
             _transitionHelper.Width,
             _transitionHelper.Height,
             hasAlpha: true,
-            resultPixels,
+            _transitionHelper.PixelsResult,
             stride: _transitionHelper.Width * 4);
         ResultImage = _mediaFactory.CloneBitmap(resImage);
 
-        OnResultUpdated();
-    }
-
-    public void OnResultUpdated()
-    {
         if (_transitionHelper.TypeOfTransition == TransitionType.Bricks)
             UpdateLabelMapImage();
     }
 
-    protected override bool PreProcess() => DoPreProcessing();
+    protected override async Task TriggerRecalculation()
+    {
+        await _transitionHelper.QueueRecalc();
+    }
 
-    protected override async Task Recalculate() => await DoRecalculation();
+    internal void SubscribeToRecalc()
+    {
+        _transitionHelper.RecalculationCompleted += OnRecalculationCompleted;
+    }
+
+    internal void UnsubscribeFromRecalc()
+    {
+        _transitionHelper.RecalculationCompleted -= OnRecalculationCompleted;
+    }
 }

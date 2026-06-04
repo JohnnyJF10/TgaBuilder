@@ -43,16 +43,9 @@ public class EdgeViewModel : ThrottledViewModelBase
         _transitionHelper.EdgeWidth = EdgeWidth;
     }
 
-    protected override bool PreProcess()
+    protected override async Task TriggerRecalculation()
     {
-        return TransitionInVM.DoPreProcessing();
-    }
-
-    protected override async Task Recalculate()
-    {
-        ConfigureTransitionHelper();
- 
-        await TransitionInVM.DoRecalculation();
+        await _transitionHelper.QueueRecalc(ConfigureTransitionHelper);
     }
 }
 

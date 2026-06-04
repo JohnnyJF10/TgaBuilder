@@ -9,56 +9,7 @@ namespace TgaBuilderLib.ViewModel;
 
 public abstract class ThrottledViewModelBase : ViewModelBase
 {
-
-    private const int RECALC_DELAY_MS = 50;
-
-    private readonly object _recalcLock = new();
-    private bool _recalcUpdateRunning;
-    private bool _recalcUpdatePending;
-
-    protected abstract bool PreProcess();
-
-    protected abstract Task Recalculate();
-
-    protected async Task TriggerRecalculation()
-    {
-        lock (_recalcLock)
-        {
-            if (_recalcUpdateRunning)
-            {
-                _recalcUpdatePending = true;
-                return;
-            }
-
-            _recalcUpdateRunning = true;
-        }
-
-        try
-        {
-            do
-            {
-                lock (_recalcLock)
-                {
-                    _recalcUpdatePending = false;
-                }
-
-                if (!PreProcess())
-                    return;
-
-                await Task.Delay(RECALC_DELAY_MS);
-
-                await Recalculate();
-            }
-            while (_recalcUpdatePending);
-        }
-        finally
-        {
-            lock (_recalcLock)
-            {
-                _recalcUpdateRunning = false;
-            }
-        }
-    }
+    protected abstract Task TriggerRecalculation();
 
     protected virtual void SetPropertyTriggerRecalculation<T>(
         ref T field,

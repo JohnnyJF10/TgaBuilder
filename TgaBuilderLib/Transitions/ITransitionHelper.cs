@@ -12,9 +12,10 @@ namespace TgaBuilderLib.Transitions
         int Width { get; set; }
         int Height { get; set; }
 
-        byte[] pixels1 { get; set; }
-        byte[] pixels2 { get; set; }
+        byte[] Pixels1 { get; set; }
+        byte[] Pixels2 { get; set; }
         
+        byte[] PixelsResult { get; set; }
 
         TransitionType TypeOfTransition { get; set; }
 
@@ -58,7 +59,7 @@ namespace TgaBuilderLib.Transitions
         int UnderfillingThreshold { get; set; }
 
         // Methods
-        byte[] Mix();
+        void Mix();
         byte[] GetLabelMap();
         int GetLabelAtPixel(int x, int y);
         byte[] GetTileIndicator(int tileIndex);
@@ -66,5 +67,9 @@ namespace TgaBuilderLib.Transitions
 
         void ResetAllExplicitTileVisibility();
         void CleanUp();
+
+        Task QueueRecalc(Action? Configure = null);
+
+        event EventHandler? RecalculationCompleted;
     }
 }

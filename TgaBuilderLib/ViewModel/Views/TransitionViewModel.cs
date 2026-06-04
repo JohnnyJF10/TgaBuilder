@@ -39,6 +39,8 @@ public class TransitionViewModel : ThrottledViewModelBase
 
         TransitionInVM = PivotVM.TransitionInVM;
         TransitionOutVM = TransitionInVM.TransitionOutVM;
+
+        TransitionOutVM.SubscribeToRecalc();
     }
 
     // =====================================================================
@@ -145,6 +147,7 @@ public class TransitionViewModel : ThrottledViewModelBase
 
         TransitionOutVM.ResetImages();
         TransitionOutVM.EndMouseInteraction();
+        TransitionOutVM.UnsubscribeFromRecalc();
 
         _transitionHelper.CleanUp();
         _mainViewModel.IsTransitionViewOpen = false;
@@ -170,14 +173,8 @@ public class TransitionViewModel : ThrottledViewModelBase
         view.CloseAsync();
     }
 
-
-    protected override bool PreProcess()
+    protected override async Task TriggerRecalculation()
     {
-        return TransitionInVM.DoPreProcessing();
-    }
-
-    protected override async Task Recalculate()
-    {
-        await TransitionInVM.DoRecalculation();
+        await _transitionHelper.QueueRecalc();
     }
 }

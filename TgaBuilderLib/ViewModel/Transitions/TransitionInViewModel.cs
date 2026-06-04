@@ -172,9 +172,9 @@ public class TransitionInViewModel : ThrottledViewModelBase
         Image1 = Image2;
         Image2 = tempImage;
 
-        var tempPixels = _transitionHelper.pixels1;
-         _transitionHelper.pixels1 = _transitionHelper.pixels2;
-         _transitionHelper.pixels2 = tempPixels;
+        var tempPixels = _transitionHelper.Pixels1;
+         _transitionHelper.Pixels1 = _transitionHelper.Pixels2;
+         _transitionHelper.Pixels2 = tempPixels;
 
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
@@ -189,12 +189,15 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
         Image1 = ImageInResize(ImageIn);
 
-        _transitionHelper.pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
-        Image1.CopyPixels(_transitionHelper.pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
+        _transitionHelper.Pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
+        Image1.CopyPixels(_transitionHelper.Pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
 
         InitTextVisible = false;
 
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
+
+        _transitionHelper.Width = Image1.PixelWidth;
+        _transitionHelper.Height = Image1.PixelHeight;
 
         if (Image1.PixelWidth == Image2.PixelWidth && Image1.PixelHeight == Image2.PixelHeight)
         {
@@ -203,8 +206,8 @@ public class TransitionInViewModel : ThrottledViewModelBase
         }
 
         Image2 = ImageInResize(Image2, Image1.PixelWidth, Image1.PixelHeight);
-        _transitionHelper.pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
-        Image2.CopyPixels(_transitionHelper.pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
+        _transitionHelper.Pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
+        Image2.CopyPixels(_transitionHelper.Pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
 
         _ = TriggerRecalculation();
 
@@ -219,12 +222,15 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
         Image2 = ImageInResize(ImageIn);
 
-        _transitionHelper.pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
-        Image2.CopyPixels(_transitionHelper.pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
+        _transitionHelper.Pixels2 = new byte[Image2.PixelWidth * Image2.PixelHeight * TRANSITIONS_BPP];
+        Image2.CopyPixels(_transitionHelper.Pixels2, Image2.PixelWidth * TRANSITIONS_BPP, 0);
 
         InitTextVisible = false;
 
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresDrawing;
+
+        _transitionHelper.Width = Image2.PixelWidth;
+        _transitionHelper.Height = Image2.PixelHeight;
 
         if (Image1.PixelWidth == Image2.PixelWidth && Image1.PixelHeight == Image2.PixelHeight)
         {
@@ -234,8 +240,8 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
         Image1 = ImageInResize(Image1, Image2.PixelWidth, Image2.PixelHeight);
 
-        _transitionHelper.pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
-        Image1.CopyPixels(_transitionHelper.pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
+        _transitionHelper.Pixels1 = new byte[Image1.PixelWidth * Image1.PixelHeight * TRANSITIONS_BPP];
+        Image1.CopyPixels(_transitionHelper.Pixels1, Image1.PixelWidth * TRANSITIONS_BPP, 0);
 
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
@@ -255,31 +261,12 @@ public class TransitionInViewModel : ThrottledViewModelBase
         return _bitmapOperations.ResizeScaled(imIn, acceptedWidth, acceptedHeight);
     }
 
-    private bool CompareInputSpecs()
-        => Image1.PixelWidth == Image2.PixelWidth &&
-           Image1.PixelHeight == Image2.PixelHeight &&
-           Image1.HasAlpha == Image2.HasAlpha;
-
     public void Mix()
     {
         if (_transitionHelper.TypeOfTransition == TransitionType.Bricks)
             _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
-        if (!CompareInputSpecs())
-            return;
-
-        _transitionHelper.Width = Image1.PixelWidth;
-        _transitionHelper.Height = Image1.PixelHeight;
-
-        var resultPixels = _transitionHelper.Mix();
-
-        TransitionOutVM.ResultImage = _mediaFactory.CreateEmptyBitmap(Image1.PixelWidth, Image1.PixelHeight, Image1.HasAlpha);
-        TransitionOutVM.ResultImage.WritePixels(
-            new PixelRect(0, 0, TransitionOutVM.ResultImage.PixelWidth, TransitionOutVM.ResultImage.PixelHeight),
-            resultPixels,
-            TransitionOutVM.ResultImage.PixelWidth * TRANSITIONS_BPP);
-
-        TransitionOutVM.OnResultUpdated();
+        _transitionHelper.Mix();
     }
 
 
@@ -297,38 +284,14 @@ public class TransitionInViewModel : ThrottledViewModelBase
         IsShadowEyedropperMode = false;
     }
 
-    public bool DoPreProcessing()
+    private void ConfigureTransitionHelper()
     {
-        if (!CompareInputSpecs())
-            return false;
-
-        _transitionHelper.Width = Image1.PixelWidth;
-        _transitionHelper.Height = Image1.PixelHeight;
-
         _transitionHelper.EdgeColor = EdgeColor;
-        _transitionHelper.ShadowColor = ShadowColor;
-
-        return true;
+        _transitionHelper.ShadowColor = ShadowColor;        
     }
 
-    public async Task DoRecalculation()
+    protected override async Task TriggerRecalculation()
     {
-
-        byte[] resultPixels = await Task.Run(
-            () => _transitionHelper.Mix());
-
-        var resImage = _mediaFactory.CreateBitmapFromRaw(
-            Image1.PixelWidth,
-            Image1.PixelHeight,
-            hasAlpha: true,
-            resultPixels,
-            stride: Image1.PixelWidth * 4);
-        TransitionOutVM.ResultImage = _mediaFactory.CloneBitmap(resImage);
-
-        TransitionOutVM.OnResultUpdated();
+        await _transitionHelper.QueueRecalc(ConfigureTransitionHelper);
     }
-
-    protected override bool PreProcess() => DoPreProcessing();
-
-    protected override async Task Recalculate() => await DoRecalculation();
 }
