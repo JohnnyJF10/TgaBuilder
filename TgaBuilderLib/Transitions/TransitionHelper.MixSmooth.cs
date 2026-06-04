@@ -43,7 +43,7 @@ public partial class TransitionHelper
                     {
                         float nx = (float)x / (Width - 1);
 
-                        float weight = ComputeWeight(Mode, Pivot, Widening, Shift, lower, upper, isHardCut, nx, ny);
+                        float weight = ComputeWeight(Direction, Pivot, Widening, Shift, lower, upper, isHardCut, nx, ny);
 
                         byte* px1 = row1 + x * TRANSITIONS_BPP;
                         byte* px2 = row2 + x * TRANSITIONS_BPP;
@@ -63,7 +63,7 @@ public partial class TransitionHelper
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     // Computes the blend weight for one normalized pixel position.
-    private float ComputeWeight(TransitionMode mode, float pivot, float widening, float shift, float lower, float upper, bool isHardCut, float nx, float ny)
+    private float ComputeWeight(TransitionDirection mode, float pivot, float widening, float shift, float lower, float upper, bool isHardCut, float nx, float ny)
     {
         // 1. Compute the base V field (native 0.0 to 1.0 field)
         float focus = ComputeFocus(mode, nx, ny, widening, shift);

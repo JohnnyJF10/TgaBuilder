@@ -19,7 +19,7 @@ namespace TgaBuilderAvaloniaUi.Elements
     {
         // Instance-level fade-out transition (style-level Transitions setter is not readable
         // from code, so we own the Transitions object here to enable the save/restore pattern).
-        private static readonly Transitions _fadeTransitions = new Transitions
+        private static readonly Avalonia.Animation.Transitions _fadeTransitions = new Avalonia.Animation.Transitions
         {
             new DoubleTransition
             {

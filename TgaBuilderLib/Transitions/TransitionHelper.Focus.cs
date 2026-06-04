@@ -17,7 +17,7 @@ public partial class TransitionHelper
     /// is from the transition's center or edges, effectively shaping the "profile" of the transition.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private float ComputeFocus(TransitionMode mode, float normalizedX, float normalizedY, float widening = 0f, float shift = 0f)
+    private float ComputeFocus(TransitionDirection mode, float normalizedX, float normalizedY, float widening = 0f, float shift = 0f)
     {
         float distToT1 = 0, distToT2 = 0;
         const float epsilon = 0.000001f;
@@ -25,14 +25,14 @@ public partial class TransitionHelper
         // Clamping for safety
         shift = Math.Clamp(shift, -1.0f, 1.0f);
 
-        if (mode <= TransitionMode.Left)
+        if (mode <= TransitionDirection.Left)
         {
             // ==========================================
             // ORTHOGONAL CASES
             // ==========================================
             float wideningInverse = widening >= 1.0f ? 1e6f : 1.0f / (1.0f - widening);
 
-            if (mode == TransitionMode.Top || mode == TransitionMode.Bottom)
+            if (mode == TransitionDirection.Top || mode == TransitionDirection.Bottom)
             {
                 // Calculate side distance with explicit edge handling for shift
                 float sideDistance;
@@ -45,7 +45,7 @@ public partial class TransitionHelper
 
                 float distanceX = widening >= 1.0f ? 0.5f : Math.Min(sideDistance * wideningInverse, 0.5f);
 
-                (distToT1, distToT2) = mode == TransitionMode.Top
+                (distToT1, distToT2) = mode == TransitionDirection.Top
                     ? (Math.Min(distanceX, 1.0f - normalizedY), normalizedY)
                     : (Math.Min(distanceX, normalizedY), 1.0f - normalizedY);
             }
@@ -61,7 +61,7 @@ public partial class TransitionHelper
 
                 float distanceY = widening >= 1.0f ? 0.5f : Math.Min(sideDistance * wideningInverse, 0.5f);
 
-                (distToT1, distToT2) = mode == TransitionMode.Left
+                (distToT1, distToT2) = mode == TransitionDirection.Left
                     ? (Math.Min(distanceY, 1.0f - normalizedX), normalizedX)
                     : (Math.Min(distanceY, normalizedX), 1.0f - normalizedX);
             }
@@ -72,7 +72,7 @@ public partial class TransitionHelper
             // DIAGONAL CASES
             // ==========================================
             float coordA = normalizedX;
-            float coordB = mode == TransitionMode.DiagonalTopLeft ? normalizedY : 1.0f - normalizedY;
+            float coordB = mode == TransitionDirection.DiagonalTopLeft ? normalizedY : 1.0f - normalizedY;
             float averageCoord = (coordA + coordB) * 0.5f;
             float crossSectionWidth = (coordA + coordB) <= 1.0f ? (coordA + coordB) : (2.0f - (coordA + coordB));
 
@@ -118,7 +118,7 @@ public partial class TransitionHelper
                 coordBNew = averageCoord - offsetFromAverage;
             }
 
-            (distToT1, distToT2) = mode == TransitionMode.DiagonalTopLeft
+            (distToT1, distToT2) = mode == TransitionDirection.DiagonalTopLeft
                 ? (Math.Min(1.0f - coordANew, 1.0f - coordBNew), Math.Min(coordANew, coordBNew))
                 : (Math.Min(coordANew, coordBNew), Math.Min(1.0f - coordANew, 1.0f - coordBNew));
         }

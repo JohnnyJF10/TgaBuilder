@@ -11,20 +11,30 @@ namespace TgaBuilderLib.Transitions
         public TransitionHelper(Color? AccentColor = null) 
         { 
             _systemAccentColor = AccentColor ?? new Color(128, 128, 128, 128);
+            Pixels1 = new byte[64 * 64 * TRANSITIONS_BPP];
+            Pixels2 = new byte[64 * 64 * TRANSITIONS_BPP];
+            PixelsResult = new byte[64 * 64 * TRANSITIONS_BPP];
         }
-
         private readonly Color _systemAccentColor;
-
         private const int TRANSITIONS_BPP = 4; // Always BGRA32
+
+
+        public byte[] Pixels1 { get; set; }
+        public byte[] Pixels2 { get; set; }
+
+        public byte[] PixelsResult { get; set; }
+
 
         private int[] _labels = Array.Empty<int>();
         private List<TileSegment> _tileSegmentList = new();
         private bool[] _selection = Array.Empty<bool>();
 
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Width { get; set; } = 64;
+        public int Height { get; set; } = 64;
 
-        public TransitionMode Mode { get; set; }
+        public TransitionType TypeOfTransition { get; set; }
+
+        public TransitionDirection Direction { get; set; }
         public float Pivot { get; set; } = 0.5f;
 
         public float Hardness { get; set; } = 0.5f;
@@ -63,16 +73,30 @@ namespace TgaBuilderLib.Transitions
         public int ShadowSize { get; set; } = 3;
         public int ShadowHardness { get; set; } = 50;
 
+        public event EventHandler? RecalculationCompleted;
+
+        public void Mix()
+        {
+            if (TypeOfTransition == TransitionType.Smooth)
+                PixelsResult = MixSmooth(Pixels1, Pixels2);
+            else
+                PixelsResult = MixBricks(Pixels1, Pixels2);
+        }
+
         public void CleanUp()
         {
             _labels = Array.Empty<int>();
             _tileSegmentList = new List<TileSegment>();
             _selection = Array.Empty<bool>();
 
-            Width = 0;
-            Height = 0;
+            Width = 64;
+            Height = 64;
 
-            Mode = TransitionMode.Top;
+            Pixels1 = new byte[64 * 64 * TRANSITIONS_BPP];
+            Pixels2 = new byte[64 * 64 * TRANSITIONS_BPP];
+            PixelsResult = new byte[64 * 64 * TRANSITIONS_BPP];
+
+            Direction = TransitionDirection.Top;
             Pivot = 0.5f;
 
             Hardness = 0.5f;
@@ -100,6 +124,9 @@ namespace TgaBuilderLib.Transitions
             ShadowColor = new Color(42, 42, 42, 42);
             ShadowSize = 3;
             ShadowHardness = 50;
+            UnderfillingPivot = 0.5f;
+            ReverseUnderfilling = false;
+            UnderfillingThreshold = 0;
         }
     }
 }

@@ -30,11 +30,11 @@
                 <elements:IconRadioButton
                     Icon="{StaticResource tab_in_private}"
                     Classes="outlined"
-                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Smooth}}"
+                    IsChecked="{Binding IsSmoothMode}"
                     ap:MouseOverInfoAP.InfoText="Smooth transition mode"/>
 
                 <elements:IconRadioButton
-                    IsChecked="{Binding SelectedTransitionType, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static viewmodel:TransitionType.Bricks}}"
+                    IsChecked="{Binding IsBrickMode}"
                     Classes="outlined"
                     Margin="5,0,5,0"
                     Icon="{StaticResource table_freeze_regular}"
@@ -43,10 +43,13 @@
             </StackPanel>
 
             <!-- Transition mode buttons panel -->
-            <local:TransitionModeUserControl />
+            <local:TransitionModeUserControl 
+            DataContext="{Binding PivotVM}"
+            />
 
             <!-- Pivot slider -->
             <DockPanel
+                DataContext="{Binding PivotVM}"
                 Margin="5,2,0,0"
                 ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
                 <Grid

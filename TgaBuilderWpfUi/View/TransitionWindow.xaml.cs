@@ -39,103 +39,154 @@ namespace TgaBuilderWpfUi.View
 
         private void DoEyedropperMouseMove(Image image, MouseEventArgs e, int imageNum)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-            {
-                var position = e.GetPosition(image);
-                vm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
-            }
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionInVM;
+
+            if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
+                return;
+
+            var position = e.GetPosition(image);
+            tpvm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y, imageNum));
         }
 
         private void Image1_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-                Mouse.OverrideCursor = EyedropperCursor;
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionInVM;
+
+            if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
+                return;
+
+            Mouse.OverrideCursor = EyedropperCursor;
         }
 
         private void Image1_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-                Mouse.OverrideCursor = null;
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionInVM;
+
+            if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
+                return;
+
+            Mouse.OverrideCursor = null;
         }
 
         private void Image1_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-            {
-                vm.IsEyedropperMode = false;
-                vm.IsShadowEyedropperMode = false;
-                Mouse.OverrideCursor = null;
-            }
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionInVM;
+
+            if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
+                return;
+
+            tpvm.IsEyedropperMode = false;
+            tpvm.IsShadowEyedropperMode = false;
+            Mouse.OverrideCursor = null;
         }
 
         private void Image2_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-                Mouse.OverrideCursor = EyedropperCursor;
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionInVM;
+
+            if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
+                return;
+
+            Mouse.OverrideCursor = EyedropperCursor;
         }
 
         private void Image2_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-                Mouse.OverrideCursor = null;
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionInVM;
+
+            if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
+                return;
+
+            Mouse.OverrideCursor = null;
         }
 
         private void Image2_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is TransitionViewModel vm && (vm.IsEyedropperMode || vm.IsShadowEyedropperMode))
-            {
-                vm.IsEyedropperMode = false;
-                vm.IsShadowEyedropperMode = false;
-                Mouse.OverrideCursor = null;
-            }
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionInVM;
+
+            if (!tpvm.IsEyedropperMode && !tpvm.IsShadowEyedropperMode)
+                return;
+
+            tpvm.IsEyedropperMode = false;
+            tpvm.IsShadowEyedropperMode = false;
+            Mouse.OverrideCursor = null;
         }
 
         private void ResultImage_MouseMove(object sender, MouseEventArgs e)
         {
-            if (DataContext is not TransitionViewModel vm)
+            if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            var tpvm = tvm.TransitionOutVM;
+
+            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
 
-            if (vm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
+            if (tpvm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
                 requestLabelIndicatorCommand.Execute((X: (int)e.GetPosition(ResultImage).X, Y: (int)e.GetPosition(ResultImage).Y));
 
-            if (e.LeftButton == MouseButtonState.Pressed && vm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
+            if (e.LeftButton == MouseButtonState.Pressed && tpvm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
                 setExplicitTileVisibilityCommand.Execute((X: (int)e.GetPosition(ResultImage).X, Y: (int)e.GetPosition(ResultImage).Y));
         }
 
         private void ResultImage_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (DataContext is not TransitionViewModel vm)
+            if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            var tpvm = tvm.TransitionOutVM;
+
+            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
 
-            vm.IsIndicatorMapVisible = true;
+            tpvm.IsIndicatorMapVisible = true;
         }
 
         private void ResultImage_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (DataContext is not TransitionViewModel vm)
+            if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            var tpvm = tvm.TransitionOutVM;
+
+            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
 
-            vm.IsIndicatorMapVisible = false;
+            tpvm.IsIndicatorMapVisible = false;
         }
 
         private void ResultImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is not TransitionViewModel vm)
+            if (DataContext is not TransitionViewModel tvm)
                 return;
 
-            if (!vm.IsExplicitTileVisibilityDrawMode && !vm.IsExplicitTileVisibilityEraseMode)
+            var tpvm = tvm.TransitionOutVM;
+
+            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
                 return;
 
-            if (e.LeftButton == MouseButtonState.Pressed && vm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
+            if (e.LeftButton == MouseButtonState.Pressed && tpvm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
                 setExplicitTileVisibilityCommand.Execute((X: (int)e.GetPosition(ResultImage).X, Y: (int)e.GetPosition(ResultImage).Y));
         }
     }

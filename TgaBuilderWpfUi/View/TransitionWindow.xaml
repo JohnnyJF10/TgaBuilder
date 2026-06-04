@@ -172,6 +172,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 AllowDrop="True"
+                DataContext="{Binding TransitionInVM}"
                 Background="Transparent">
                 <Grid>
                     <Viewbox
@@ -211,6 +212,7 @@
                 Grid.Row="0"
                 Grid.Column="1"
                 VerticalAlignment="Center"
+                DataContext="{Binding TransitionInVM}"
                 Margin="0,38,0,0">
                 <ui:SymbolIcon
                     Symbol="Add24"
@@ -234,6 +236,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 AllowDrop="True"
+                DataContext="{Binding TransitionInVM}"
                 Background="Transparent">
                 <Grid>
                     <Viewbox
@@ -297,12 +300,12 @@
                         Stretch="Uniform"
                         RenderOptions.BitmapScalingMode="NearestNeighbor">
                         <Grid
-                            Width="{Binding Image2.PixelWidth, FallbackValue=128}"
-                            Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            Width="{Binding TransitionInVM.Image2.PixelWidth, FallbackValue=128}"
+                            Height="{Binding TransitionInVM.Image2.PixelHeight, FallbackValue=128}">
                             <Image
                                 x:Name="ResultImage"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                            Source="{Binding TransitionOutVM.ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Uniform" 
                                 MouseMove="ResultImage_MouseMove"
                                 MouseEnter="ResultImage_MouseEnter"
@@ -312,8 +315,8 @@
                                 x:Name="IndicatorImage"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 IsHitTestVisible="False"
-                                Visibility="{Binding IsIndicatorMapVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                                Source="{Binding IndicatorMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                            Visibility="{Binding TransitionOutVM.IsIndicatorMapVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Source="{Binding TransitionOutVM.IndicatorMapImage, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Uniform" />
                         </Grid>
                     </Viewbox>
@@ -328,6 +331,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Visibility="{Binding IsLabelMapExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                DataContext="{Binding TransitionOutVM}"
                 Background="Transparent">
                 <Image
                     Margin="0,4,0,0"
@@ -390,6 +394,7 @@
 
             <!-- Smooth mode: Hardness / Widening / Shift sliders -->
             <local:TransitionWindowSmoothUserControl
+                DataContext="{Binding PivotVM}"
                 Visibility="{Binding IsSmoothMode, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             <!-- Brick mode: scrollable expanders -->
@@ -406,6 +411,7 @@
                         HorizontalAlignment="Stretch">
 <Expander.Header>
                             <StackPanel
+                                DataContext="{Binding TransitionOutVM}"
                                 Orientation="Horizontal">
                                 <TextBlock
                                     Text="Analysis"
@@ -423,11 +429,13 @@
                                     Padding="0"/>
                             </StackPanel>
                         </Expander.Header>
-                        <local:TransitionWindowAnalysisUserControl />
+                        <local:TransitionWindowAnalysisUserControl
+                            DataContext="{Binding AnalysisVM}" />
                     </Expander>
 
                     <!-- Parameter Section: Pivot Boundaries -->
                     <Expander
+                        DataContext="{Binding PivotVM}"
                         Header="Pivot"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
@@ -437,6 +445,7 @@
 
                     <!-- Parameter Section: Edge Blending -->
                     <Expander
+                        DataContext="{Binding EdgeVM}"
                         Header="Edge"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
@@ -446,6 +455,7 @@
 
                     <!-- Parameter Section: Shadow -->
                     <Expander
+                        DataContext="{Binding ShadowVM}"
                         Header="Shadow"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
@@ -455,6 +465,7 @@
 
                     <!-- Parameter Section: Underfilling -->
                     <Expander
+                        DataContext="{Binding UnderfillingVM}"
                         Header="Underfilling"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"

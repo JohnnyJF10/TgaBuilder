@@ -16,7 +16,9 @@
     </UserControl.Resources>
 
     <StackPanel Margin="8,6,8,8">
-        <StackPanel Orientation="Horizontal"
+        <StackPanel
+            DataContext="{Binding TransitionOutVM}"
+            Orientation="Horizontal"
                     Spacing="8"
                     Margin="0,0,0,8">
             <elements:IconToggleButton

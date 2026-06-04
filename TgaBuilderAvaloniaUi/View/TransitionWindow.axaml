@@ -93,14 +93,14 @@
                         Margin="10"
                         RenderOptions.BitmapInterpolationMode="None">
                         <Grid
-                            Width="{Binding Image1.PixelWidth, FallbackValue=128}"
-                            Height="{Binding Image1.PixelHeight, FallbackValue=128}">
+                            Width="{Binding TransitionInVM.Image1.PixelWidth, FallbackValue=128}"
+                            Height="{Binding TransitionInVM.Image1.PixelHeight, FallbackValue=128}">
                             <elements:CheckerRectangle
                                 TileDensity="1" />
                             <Image
                                 x:Name="Image1"
                                 RenderOptions.BitmapInterpolationMode="None"
-                                Source="{Binding Image1, Converter={StaticResource WriteableBitmapConverter}}"
+                                Source="{Binding TransitionInVM.Image1, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Fill"
                                 PointerMoved="Image1_PointerMoved"
                                 PointerEntered="Image1_PointerEntered"
@@ -114,7 +114,7 @@
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         FontSize="24"
-                        IsVisible="{Binding InitTextVisible}"
+                        IsVisible="{Binding TransitionInVM.InitTextVisible}"
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
@@ -132,7 +132,7 @@
                     Classes="outlined"
                     Margin="0,9,0,0"
                     Padding="4,0,0,0"
-                    Command="{Binding SwapImagesCommand}"
+                    Command="{Binding TransitionInVM.SwapImagesCommand}"
                     ap:MouseOverInfoAP.InfoText="Swap Texture 1 and Texture 2"
                     ToolTip.Tip="Swap images"
                     Icon="{StaticResource arrow_swap}" />
@@ -150,14 +150,14 @@
                         Stretch="Uniform"
                         RenderOptions.BitmapInterpolationMode="None">
                         <Grid
-                            Width="{Binding Image2.PixelWidth, FallbackValue=128}"
-                            Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            Width="{Binding TransitionInVM.Image2.PixelWidth, FallbackValue=128}"
+                            Height="{Binding TransitionInVM.Image2.PixelHeight, FallbackValue=128}">
                             <elements:CheckerRectangle
                                 TileDensity="1" />
                             <Image
                                 x:Name="Image2"
                                 RenderOptions.BitmapInterpolationMode="None"
-                                Source="{Binding Image2, Converter={StaticResource WriteableBitmapConverter}}"
+                                Source="{Binding TransitionInVM.Image2, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Fill"
                                 PointerMoved="Image2_PointerMoved"
                                 PointerEntered="Image2_PointerEntered"
@@ -171,7 +171,7 @@
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         FontSize="24"
-                        IsVisible="{Binding InitTextVisible}"
+                        IsVisible="{Binding TransitionInVM.InitTextVisible}"
                         IsHitTestVisible="False" />
                 </Grid>
             </Border>
@@ -200,12 +200,12 @@
                         Stretch="Uniform"
                         RenderOptions.BitmapInterpolationMode="None">
                         <Grid
-                            Width="{Binding Image2.PixelWidth, FallbackValue=128}"
-                            Height="{Binding Image2.PixelHeight, FallbackValue=128}">
+                            Width="{Binding TransitionInVM.Image2.PixelWidth, FallbackValue=128}"
+                            Height="{Binding TransitionInVM.Image2.PixelHeight, FallbackValue=128}">
                             <Image
                                 x:Name="ResultImage"
                                 RenderOptions.BitmapInterpolationMode="None"
-                                Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Source="{Binding TransitionOutVM.ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Uniform"
                                 PointerMoved="ResultImage_PointerMoved"
                                 PointerEntered="ResultImage_PointerEntered"
@@ -215,8 +215,8 @@
                                 x:Name="IndicatorImage"
                                 RenderOptions.BitmapInterpolationMode="None"
                                 IsHitTestVisible="False"
-                                IsVisible="{Binding IsIndicatorMapVisible}"
-                                Source="{Binding IndicatorMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                IsVisible="{Binding TransitionOutVM.IsIndicatorMapVisible}"
+                                Source="{Binding TransitionOutVM.IndicatorMapImage, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Uniform" />
                         </Grid>
                     </Viewbox>
@@ -229,12 +229,12 @@
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                IsVisible="{Binding IsLabelMapExpanded}"
+                IsVisible="{Binding TransitionOutVM.IsLabelMapExpanded}"
                 Background="Transparent">
                 <Image
                     Margin="0,4,0,0"
                     RenderOptions.BitmapInterpolationMode="None"
-                    Source="{Binding LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
+                    Source="{Binding TransitionOutVM.LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform" />
             </Border>
 
@@ -286,8 +286,9 @@
 
             <!-- Smooth mode: Hardness / Widening / Shift sliders -->
             <local:TransitionWindowSmoothUserControl
+                DataContext="{Binding PivotVM}"
                 Grid.Row="0"
-                IsVisible="{Binding IsSmoothMode}" />
+                IsVisible="{Binding $parent[Window].DataContext.IsSmoothMode}" />
 
             <!-- Brick mode: scrollable expanders -->
             <ScrollViewer
@@ -303,7 +304,7 @@
                     <Expander
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">
-<Expander.Header>
+                        <Expander.Header>
                             <StackPanel
                                 Orientation="Horizontal">
 
@@ -314,22 +315,26 @@
                                 <!-- Label Map Toggle (brick mode only) -->
                                 <elements:IconToggleButton
                                     x:Name="LabelMapToggle"
+                                    DataContext="{Binding $parent[Window].DataContext}"
                                     Classes="outlined"
                                     Icon="{StaticResource map}"
                                     VerticalAlignment="Center"
                                     IsVisible="{Binding IsBrickMode}"
                                     ap:MouseOverInfoAP.InfoText="Show/hide the segmentation label map"
-                                    IsChecked="{Binding IsLabelMapExpanded}"
+                                    IsChecked="{Binding TransitionOutVM.IsLabelMapExpanded}"
                                     Margin="15,0,0,0"
                                     Width="26"
                                     Height="26" />
                             </StackPanel>
                         </Expander.Header>
-                        <local:TransitionWindowAnalysisUserControl />
+                        <local:TransitionWindowAnalysisUserControl 
+                        DataContext="{Binding AnalysisVM}"
+                        />
                     </Expander>
 
                     <!-- Parameter Section: Pivot Boundaries -->
                     <Expander
+                        DataContext="{Binding PivotVM}"
                         Header="Pivot"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch">
@@ -338,6 +343,7 @@
 
                     <!-- Parameter Section: Edge Blending -->
                      <Expander
+                        DataContext="{Binding EdgeVM}"
                          Header="Edge"
                          IsExpanded="True"
                          HorizontalAlignment="Stretch">
@@ -346,6 +352,7 @@
 
                      <!-- Parameter Section: Shadow -->
                      <Expander
+                        DataContext="{Binding ShadowVM}"
                          Header="Shadow"
                          IsExpanded="True"
                          HorizontalAlignment="Stretch">
@@ -354,6 +361,7 @@
 
                       <!-- Parameter Section: Underfilling -->
                       <Expander
+                          DataContext="{Binding UnderfillingVM}"
                           Header="Underfilling"
                           IsExpanded="True"
                           HorizontalAlignment="Stretch">
@@ -389,19 +397,19 @@
         <!-- Form Submission Control Actions -->
         <StackPanel
             Grid.Row="2"
-            Grid.Column="1"
+            Grid.ColumnSpan="2"
             Orientation="Horizontal"
             HorizontalAlignment="Right"
             Spacing="8"
             Margin="8">
-            <Button
+            <Button Width="80" Height="32" HorizontalContentAlignment="Center"
                 Content="Apply"
                 Command="{Binding ApplyCommand}" />
-            <Button
+            <Button Width="80" Height="32" HorizontalContentAlignment="Center"
                 Content="Cancel"
                 Command="{Binding CancelCommand}"
                 CommandParameter="{Binding $parent[Window]}" />
-            <Button
+            <Button Width="80" Height="32" HorizontalContentAlignment="Center"
                 Classes="accent"
                 Content="OK"
                 Command="{Binding OKCommand}"

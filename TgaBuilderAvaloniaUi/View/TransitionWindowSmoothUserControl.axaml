@@ -4,12 +4,11 @@
              xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             x:DataType="viewmodel:TransitionViewModel"
+             x:DataType="viewmodel:PivotViewModel"
              x:CompileBindings="False"
              >
             <StackPanel
-                Grid.Row="0"
-                IsVisible="{Binding IsSmoothMode}">
+                Grid.Row="0">
 
                 <!-- Hardness Slider -->
                 <DockPanel
