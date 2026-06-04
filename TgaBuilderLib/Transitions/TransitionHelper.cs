@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using TgaBuilderLib.Abstraction;
-using Transitions;
 
 namespace TgaBuilderLib.Transitions
 {
@@ -30,8 +29,8 @@ namespace TgaBuilderLib.Transitions
         private List<TileSegment> _tileSegmentList = new();
         private bool[] _selection = Array.Empty<bool>();
 
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Width { get; set; } = 64;
+        public int Height { get; set; } = 64;
 
         public TransitionType TypeOfTransition { get; set; }
 
@@ -90,8 +89,8 @@ namespace TgaBuilderLib.Transitions
             _tileSegmentList = new List<TileSegment>();
             _selection = Array.Empty<bool>();
 
-            Width = 0;
-            Height = 0;
+            Width = 64;
+            Height = 64;
 
             Pixels1 = new byte[64 * 64 * TRANSITIONS_BPP];
             Pixels2 = new byte[64 * 64 * TRANSITIONS_BPP];

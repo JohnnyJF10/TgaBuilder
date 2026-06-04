@@ -1,4 +1,4 @@
-namespace Transitions;
+namespace TgaBuilderLib.Transitions;
 
 public enum TransitionType
 {

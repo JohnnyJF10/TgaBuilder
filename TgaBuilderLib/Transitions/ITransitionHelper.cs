@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.ViewModel;
-using Transitions;
 using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.Transitions

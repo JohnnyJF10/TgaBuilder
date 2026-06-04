@@ -4,7 +4,6 @@ using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
-using Transitions;
 
 namespace TgaBuilderLib.ViewModel;
 

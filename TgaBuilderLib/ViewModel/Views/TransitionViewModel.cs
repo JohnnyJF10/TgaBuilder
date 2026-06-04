@@ -3,7 +3,6 @@ using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Transitions;
-using Transitions;
 
 namespace TgaBuilderLib.ViewModel;
 
@@ -39,6 +38,8 @@ public class TransitionViewModel : ThrottledViewModelBase
 
         TransitionInVM = PivotVM.TransitionInVM;
         TransitionOutVM = TransitionInVM.TransitionOutVM;
+
+        IsBrickMode = true;
     }
 
     // =====================================================================
@@ -104,7 +105,7 @@ public class TransitionViewModel : ThrottledViewModelBase
              }
          }
     }
-    public bool IsBrickMode 
+    public bool IsBrickMode
     { 
         get => _transitionHelper.TypeOfTransition == TransitionType.Bricks;
         set
