@@ -104,8 +104,7 @@ namespace TgaBuilderLib.Modifications
         {
             int count = PixelsInput.Length;
 
-            if (PixelsOutput.Length != count)
-                throw new InvalidOperationException("Input and output buffers must be the same size.");
+            PixelsOutput = new byte[count];
 
             Array.Copy(PixelsInput, PixelsOutput, count);
 
@@ -119,6 +118,12 @@ namespace TgaBuilderLib.Modifications
 
         public void CleanUp()
         {
+            Width = 64;
+            Height = 64;
+
+            PixelsInput = new byte[64 * 64 * BPP];
+            PixelsOutput = new byte[64 * 64 * BPP];
+
             Exposure = EXPOSURE_INIT;
             Brightness = BRIGHTNESS_INIT;
             Contrast = CONTRAST_INIT;

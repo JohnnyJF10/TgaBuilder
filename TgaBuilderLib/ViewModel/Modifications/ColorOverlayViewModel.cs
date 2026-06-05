@@ -20,7 +20,7 @@ public class ColorOverlayViewModel : ThrottledViewModelBase
 
     // =====================================================================
     // Color overlay adjustments
-    // Color:        RGBA(0..255)
+    // [Color:        RGBA(0..255)      In the ModificationInVm, needs to be in the same class as the bitmap]
     // Amount:       0 .. 1
     // Mix Mode:     Linear, Soft Light, Oklab Chroma
     // Soft Light Strength: 0 .. 2 (only for Soft Light mode)
@@ -28,21 +28,12 @@ public class ColorOverlayViewModel : ThrottledViewModelBase
     // Chroma Boost: 0 .. 2 (only for Oklab Chroma mode)
     // =====================================================================
 
-    private Color _colorOverlay = new(0, 0, 0, 0);
     private float _colorOverlayAmount = 0f;
     private int _selectedColorOverlayMixModeIndex = (int)ColorOverlayMixMode.OklabChroma;
     private float _colorOverlaySoftLightStrength = 1f;
     private float _colorOverlayLumaPreservation = 1f;
     private float _colorOverlayChromaBoost = 1f;
-    private bool _isColorOverlayEyedropperMode;
 
-
-
-    public Color ColorOverlay
-    {
-        get => _colorOverlay;
-        set => SetPropertyTriggerRecalculation(ref _colorOverlay, value);
-    }
 
     public float ColorOverlayAmount
     {
@@ -106,17 +97,10 @@ public class ColorOverlayViewModel : ThrottledViewModelBase
     public bool IsColorOverlayOklabMode
         => SelectedColorOverlayMixModeIndex == (int)ColorOverlayMixMode.OklabChroma;
 
-    public bool IsColorOverlayEyedropperMode
-    {
-        get => _isColorOverlayEyedropperMode;
-        set => SetCallerProperty(ref _isColorOverlayEyedropperMode, value);
-    }
-
     
 
     private void ConfigureTransitionHelper()
     {
-        _modificationHelper.ColorOverlay = _colorOverlay;
         _modificationHelper.ColorOverlayAmount = _colorOverlayAmount;
         _modificationHelper.ColorOverlayMixMode = (ColorOverlayMixMode)Math.Clamp(
             _selectedColorOverlayMixModeIndex,

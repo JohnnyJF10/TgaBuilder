@@ -31,6 +31,8 @@ public class ModificationsViewModel : ViewModelBase
 
         ModificationInVM = BasicVM.ModificationInVM;
         ModificationOutVM = ModificationInVM.ModificationOutVM;
+
+        ModificationInVM.LoadImageIn(_mainViewModel.Selection.Presenter);
     }
 
     // =====================================================================
@@ -59,10 +61,13 @@ public class ModificationsViewModel : ViewModelBase
     // Commands
     // =====================================================================
 
+    private RelayCommand? _loadImageInCommand;
     private RelayCommand? _applyCommand;
     private RelayCommand<IView>? _cancelCommand;
     private RelayCommand<IView>? _oKCommand;
 
+    public ICommand LoadImageInCommand => _loadImageInCommand 
+        ??= new RelayCommand(() => ModificationInVM.LoadImageIn(_mainViewModel.Selection.Presenter));
 
     public ICommand ApplyCommand => _applyCommand ??= new RelayCommand(Apply);
     public ICommand CancelCommand => _cancelCommand ??= new RelayCommand<IView>(Cancel);
@@ -100,6 +105,11 @@ public class ModificationsViewModel : ViewModelBase
 
     public void MarkFinished()
     {
+        _modificationsHelper.CleanUp();
+
+        ModificationInVM.ResetImages();
+        ModificationOutVM.ResetImages();
+
         _mainViewModel.IsModificationsViewOpen = false;
     }
 }

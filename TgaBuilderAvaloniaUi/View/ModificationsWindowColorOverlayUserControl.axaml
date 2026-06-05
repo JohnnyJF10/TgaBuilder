@@ -5,7 +5,7 @@
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters"
-             x:DataType="viewmodel:ModificationsViewModel"
+             x:DataType="viewmodel:ColorOverlayViewModel"
              x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -21,6 +21,7 @@
         Margin="4,4,4,6">
 
         <StackPanel
+            DataContext="{Binding ModificationInVM}"
             Orientation="Horizontal"
             Spacing="8">
             <elements:IconToggleButton
@@ -28,7 +29,7 @@
                 Width="36"
                 Height="36"
                 Padding="-6,0,15,0"
-                IsChecked="{Binding IsColorOverlayEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsChecked="{Binding IsEyedropperMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                 ap:MouseOverInfoAP.InfoText="Pick overlay color from input image">
                 <ToggleButton.Content>
                     <Path
@@ -44,7 +45,7 @@
             </elements:IconToggleButton>
             <ColorPicker
                 ap:MouseOverInfoAP.InfoText="Overlay color: single color blended with the texture."
-                Color="{Binding ColorOverlay, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
+                Color="{Binding OverlayColor, Converter={StaticResource ColorStructToMediaColor}, Mode=TwoWay}" />
         </StackPanel>
 
         <DockPanel
