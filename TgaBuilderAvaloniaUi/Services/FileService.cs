@@ -219,6 +219,7 @@ namespace TgaBuilderAvaloniaUi.Services
             if (types.HasFlag(FileTypes.JPG)) AddPattern("jpg", result);
             if (types.HasFlag(FileTypes.JPEG)) AddPattern("jpeg", result);
             if (types.HasFlag(FileTypes.PSD)) AddPattern("psd", result);
+            if (types.HasFlag(FileTypes.KRA)) AddPattern("kra", result);
             if (types.HasFlag(FileTypes.DDS)) AddPattern("dds", result);
             if (types.HasFlag(FileTypes.PHD)) AddPattern("phd", result);
             if (types.HasFlag(FileTypes.TR2)) AddPattern("tr2", result);
@@ -239,6 +240,7 @@ namespace TgaBuilderAvaloniaUi.Services
             if (types.HasFlag(FileTypes.JPG)) result += "*.jpg, ";
             if (types.HasFlag(FileTypes.JPEG)) result += "*.jpeg, ";
             if (types.HasFlag(FileTypes.PSD)) result += "*.psd, ";
+            if (types.HasFlag(FileTypes.KRA)) result += "*.kra, ";
             if (types.HasFlag(FileTypes.DDS)) result += "*.dds, ";
             if (types.HasFlag(FileTypes.PHD)) result += "*.phd, ";
             if (types.HasFlag(FileTypes.TR2)) result += "*.tr2, ";

@@ -36,6 +36,11 @@ namespace TgaBuilderLib.BitmapBytesIO
             ResizeMode mode = ResizeMode.SourceResize,
             CancellationToken? cancellationToken = null);
 
+        void FromKrita(
+            string kraFilePath,
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
+
         IWriteableBitmap GetLoadedBitmap();
 
         void ToUsual(
