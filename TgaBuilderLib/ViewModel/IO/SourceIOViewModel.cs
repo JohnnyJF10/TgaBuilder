@@ -21,7 +21,7 @@ namespace TgaBuilderLib.ViewModel
 
         private const FileTypes DEF_FILE_TYPES =
             FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
-            | FileTypes.JPEG | FileTypes.PSD | FileTypes.DDS;
+            | FileTypes.JPEG | FileTypes.PSD | FileTypes.KRA | FileTypes.DDS;
 
         private const FileTypes TR_FILE_TYPES = FileTypes.PHD | FileTypes.TR2
             | FileTypes.TR4 | FileTypes.TRC | FileTypes.TEN;

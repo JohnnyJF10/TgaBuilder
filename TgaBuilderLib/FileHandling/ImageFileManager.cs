@@ -58,6 +58,10 @@ namespace TgaBuilderLib.FileHandling
                     _bitmapIO.FromPsd(fileName, mode, cancellationToken);
                     return;
 
+                case FileTypes.KRA:
+                     _bitmapIO.FromKrita(fileName, mode, cancellationToken);
+                    return;
+
                 case FileTypes.PHD:
                 case FileTypes.TR2:
                 case FileTypes.TR4:
