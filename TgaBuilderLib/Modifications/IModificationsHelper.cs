@@ -13,6 +13,14 @@ namespace TgaBuilderLib.Modifications
         int Height { get; set; }
 
         // =====================================================================
+        // Buffers
+        // =====================================================================
+
+        byte[] PixelsInput { get; set; }
+
+        byte[] PixelsOutput { get; set; }
+
+        // =====================================================================
         // Basic adjustments
         // =====================================================================
 
@@ -42,9 +50,15 @@ namespace TgaBuilderLib.Modifications
         float ColorOverlayChromaBoost { get; set; }
 
         // =====================================================================
-        // Pipeline
+        // Methods
         // =====================================================================
 
-        byte[] Apply(byte[] inputPixels);
+        void Apply();
+
+        void CleanUp();
+
+        Task QueueRecalc(Action? Configure = null);
+
+        event EventHandler? RecalculationCompleted;
     }
 }

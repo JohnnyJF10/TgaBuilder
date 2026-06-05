@@ -68,6 +68,7 @@
 
             <!-- Input Image -->
             <Border
+                DataContext="{Binding ModificationInVM}"
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -78,14 +79,14 @@
                         Margin="10"
                         RenderOptions.BitmapInterpolationMode="None">
                         <Grid
-                            Width="{Binding InputImage.PixelWidth, FallbackValue=128}"
-                            Height="{Binding InputImage.PixelHeight, FallbackValue=128}">
+                            Width="{Binding ImageIn.PixelWidth, FallbackValue=128}"
+                            Height="{Binding ImageIn.PixelHeight, FallbackValue=128}">
                             <elements:CheckerRectangle
                                 TileDensity="1" />
                             <Image
                                 x:Name="InputImage"
                                 RenderOptions.BitmapInterpolationMode="None"
-                                Source="{Binding InputImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Source="{Binding ImageIn, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Fill"
                                 PointerMoved="InputImage_PointerMoved"
                                 PointerEntered="InputImage_PointerEntered"
@@ -93,14 +94,6 @@
                                 PointerPressed="InputImage_PointerPressed" />
                         </Grid>
                     </Viewbox>
-                    <TextBlock
-                        Text="Input Image"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                        FontSize="20"
-                        IsVisible="{Binding InitTextVisible}"
-                        IsHitTestVisible="False" />
                 </Grid>
             </Border>
 
@@ -115,14 +108,16 @@
 
             <!-- Result Image -->
             <Border
+                DataContext="{Binding ModificationOutVM}"
                 Grid.Column="2"
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Background="Transparent">
                 <Image
+                    x:Name="ResultImage"
                     RenderOptions.BitmapInterpolationMode="None"
-                    Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                    Source="{Binding ImageOut, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform" />
             </Border>
 
@@ -135,7 +130,7 @@
                 VerticalAlignment="Center"
                 ap:MouseOverInfoAP.InfoText="Copy input image from the current selection"
                 Icon="{StaticResource image_copy}"
-                Command="{Binding LoadInputImageCommand}" />
+                Command="{Binding LoadImageInCommand}" />
 
         </Grid>
 
@@ -167,6 +162,7 @@
                 <!-- Expander: Basic                                                    -->
                 <!-- ================================================================= -->
                 <Expander
+                    DataContext="{Binding BasicVM}"
                     Header="Basic"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch">
@@ -177,6 +173,7 @@
                 <!-- Expander: Color                                                    -->
                 <!-- ================================================================= -->
                 <Expander
+                    DataContext="{Binding ColorVM}"
                     Header="Color"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch">
@@ -187,6 +184,7 @@
                 <!-- Expander: Color Overlay                                            -->
                 <!-- ================================================================= -->
                 <Expander
+                    DataContext="{Binding ColorOverlayVM}"
                     Header="Color Overlay"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch">

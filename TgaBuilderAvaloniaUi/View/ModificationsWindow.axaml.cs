@@ -15,6 +15,7 @@ namespace TgaBuilderAvaloniaUi.View
         {
             InitializeComponent();
             base.DataContext = viewModel;
+            InitializeVisualInvalidator(viewModel);
         }
 
         [Obsolete("For designer use only")]
@@ -28,6 +29,14 @@ namespace TgaBuilderAvaloniaUi.View
             base.DataContext = vm;
         }
 
+        private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel)
+        {
+            if (viewModel is not ModificationsViewModel vm)
+            return;
+
+            vm.ModificationOutVM.VisualInvalidator = new VisualInvalidator(ResultImage);
+        }
+
         protected override void OnClosing(Avalonia.Controls.WindowClosingEventArgs e)
         {
             base.OnClosing(e);
@@ -38,32 +47,57 @@ namespace TgaBuilderAvaloniaUi.View
 
         private void InputImage_PointerMoved(object? sender, PointerEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode && sender is Image image)
-            {
-                var position = e.GetPosition(image);
-                vm.MouseOverInputCommand.Execute((X: (int)position.X, Y: (int)position.Y));
-            }
+            if (DataContext is not ModificationsViewModel mvm || sender is not Image image)
+                return;
+
+            var mivm = mvm.ModificationInVM;
+
+            if (!mivm.IsEyedropperMode)
+                return;
+
+            var position = e.GetPosition(image);
+            mivm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y));
         }
 
         private void InputImage_PointerEntered(object? sender, PointerEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
-                this.Cursor = CursorProvider.EyedropperCursor;
+            if (DataContext is not ModificationsViewModel mvm || sender is not Image image)
+                return;
+
+            var mivm = mvm.ModificationInVM;
+
+            if (!mivm.IsEyedropperMode)
+                return;
+
+            this.Cursor = CursorProvider.EyedropperCursor;
         }
 
         private void InputImage_PointerExited(object? sender, PointerEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
-                this.Cursor = CursorProvider.DefaultCursor;
+            if (DataContext is not ModificationsViewModel mvm || sender is not Image image)
+                return;
+
+            var mivm = mvm.ModificationInVM;
+
+            if (!mivm.IsEyedropperMode)
+                return;
+
+            this.Cursor = CursorProvider.DefaultCursor;
         }
 
         private void InputImage_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
-            {
-                vm.IsColorOverlayEyedropperMode = false;
-                this.Cursor = CursorProvider.DefaultCursor;
-            }
+            if (DataContext is not ModificationsViewModel mvm || sender is not Image image)
+                return;
+
+            var mivm = mvm.ModificationInVM;
+
+            if (!mivm.IsEyedropperMode)
+                return;
+
+            mivm.IsEyedropperMode = false;
+            this.Cursor = CursorProvider.DefaultCursor;
+            
         }
     }
 }

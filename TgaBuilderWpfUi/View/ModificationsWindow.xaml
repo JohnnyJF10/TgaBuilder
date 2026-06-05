@@ -128,6 +128,7 @@
 
             <!-- Input Image -->
             <Border
+                DataContext="{Binding ModificationInVM}"
                 Grid.Row="0"
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
@@ -139,14 +140,14 @@
                         Margin="10"
                         RenderOptions.BitmapScalingMode="NearestNeighbor">
                         <Grid
-                            Width="{Binding InputImage.PixelWidth, FallbackValue=128}"
-                            Height="{Binding InputImage.PixelHeight, FallbackValue=128}">
+                            Width="{Binding ImageIn.PixelWidth, FallbackValue=128}"
+                            Height="{Binding ImageIn.PixelHeight, FallbackValue=128}">
                             <Rectangle
                                 Fill="{StaticResource CheckerBrush}" />
                             <Image
                                 x:Name="InputImage"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                Source="{Binding InputImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Source="{Binding ImageIn, Converter={StaticResource WriteableBitmapConverter}}"
                                 Stretch="Fill"
                                 MouseMove="InputImage_MouseMove"
                                 MouseEnter="InputImage_MouseEnter"
@@ -176,6 +177,7 @@
 
             <!-- Result Image -->
             <Border
+                DataContext="{Binding ModificationOutVM}"
                 Grid.Row="0"
                 Grid.Column="2"
                 Margin="10"
@@ -184,7 +186,7 @@
                 Background="Transparent">
                 <Image
                     RenderOptions.BitmapScalingMode="NearestNeighbor"
-                    Source="{Binding ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
+                    Source="{Binding ImageOut, Converter={StaticResource WriteableBitmapConverter}}"
                     Stretch="Uniform" />
             </Border>
 
@@ -199,7 +201,7 @@
                 VerticalAlignment="Center"
                 Margin="10,5"
                 ap:MouseOverInfoAP.InfoText="Copy input image from the current selection"
-                Command="{Binding LoadInputImageCommand}" />
+                Command="{Binding LoadImageInCommand}" />
 
         </Grid>
 
@@ -230,6 +232,7 @@
                 <!-- Expander: Basic                                                -->
                 <!-- ============================================================= -->
                 <Expander
+                    DataContext="{Binding BasicVM}"
                     Header="Basic"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch">
@@ -240,6 +243,7 @@
                 <!-- Expander: Color                                                -->
                 <!-- ============================================================= -->
                 <Expander
+                    DataContext="{Binding ColorVM}"
                     Header="Color"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch"
@@ -251,6 +255,7 @@
                 <!-- Expander: Color Overlay                                        -->
                 <!-- ============================================================= -->
                 <Expander
+                    DataContext="{Binding ColorOverlayVM}"
                     Header="Color Overlay"
                     IsExpanded="True"
                     HorizontalAlignment="Stretch"

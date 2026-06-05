@@ -321,11 +321,36 @@ namespace TgaBuilderWpfUi
                 underfillingViewModel: sp.GetRequiredService<UnderfillingViewModel>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
+            services.AddSingleton(sp => new ModificationOutViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
+                bitmapOperations: sp.GetRequiredService<IBitmapOperations>()));
+
+            services.AddSingleton(sp => new ModificationInViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
+                bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
+                modificationOutViewModel: sp.GetRequiredService<ModificationOutViewModel>()));
+
+            services.AddTransient(sp => new BasicViewModel(
+                modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
+                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+
+            services.AddTransient(sp => new ColorViewModel(
+                modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
+                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+
+            services.AddTransient(sp => new ColorOverlayViewModel(
+                modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
+                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+
             services.AddTransient(sp => new ModificationsViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
-                bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
-                mainViewModel: sp.GetRequiredService<MainViewModel>()));
+                mainViewModel: sp.GetRequiredService<MainViewModel>(),
+                basicVM: sp.GetRequiredService<BasicViewModel>(),
+                colorVM: sp.GetRequiredService<ColorViewModel>(),
+                colorOverlayVM: sp.GetRequiredService<ColorOverlayViewModel>()));
 
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),

@@ -32,32 +32,52 @@ namespace TgaBuilderWpfUi.View
 
         private void InputImage_MouseMove(object sender, MouseEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
-            {
-                var position = e.GetPosition((Image)sender);
-                vm.MouseOverInputCommand.Execute((X: (int)position.X, Y: (int)position.Y));
-            }
+            if (DataContext is not ModificationsViewModel mvm || sender is not Image image)
+                return;
+
+            var mivm = mvm.ModificationInVM;
+
+            if (!mivm.IsEyedropperMode)
+                return;
+
+            var position = e.GetPosition(image);
+            mivm.MouseOverCommand.Execute((X: (int)position.X, Y: (int)position.Y));
         }
 
         private void InputImage_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
-                Mouse.OverrideCursor = _eyedropperCursor;
+            if (DataContext is not ModificationsViewModel mvm || sender is not Image)
+                return;
+
+            if (!mvm.ModificationInVM.IsEyedropperMode)
+                return;
+
+            Mouse.OverrideCursor = _eyedropperCursor;
         }
 
         private void InputImage_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
-                Mouse.OverrideCursor = null;
+            if (DataContext is not ModificationsViewModel mvm || sender is not Image)
+                return;
+
+            if (!mvm.ModificationInVM.IsEyedropperMode)
+                return;
+
+            Mouse.OverrideCursor = null;
         }
 
         private void InputImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is ModificationsViewModel vm && vm.IsColorOverlayEyedropperMode)
-            {
-                vm.IsColorOverlayEyedropperMode = false;
-                Mouse.OverrideCursor = null;
-            }
+            if (DataContext is not ModificationsViewModel mvm || sender is not Image)
+                return;
+
+            var mivm = mvm.ModificationInVM;
+
+            if (!mivm.IsEyedropperMode)
+                return;
+
+            mivm.IsEyedropperMode = false;
+            Mouse.OverrideCursor = null;
         }
     }
 }

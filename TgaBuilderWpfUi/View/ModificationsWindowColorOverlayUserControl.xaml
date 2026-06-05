@@ -9,7 +9,7 @@
              xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
              xmlns:converter="clr-namespace:TgaBuilderWpfUi.Converters"
-             d:DataContext="{d:DesignInstance Type=viewmodel:ModificationsViewModel, IsDesignTimeCreatable=False}"
+             d:DataContext="{d:DesignInstance Type=viewmodel:ColorOverlayViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -25,6 +25,7 @@
     <StackPanel Margin="8,4,8,8">
 
         <StackPanel
+            DataContext="{Binding ModificationInVM}"
             Margin="0,4,0,0"
             Orientation="Horizontal">
             <elements:ToggleButtonEx
@@ -32,13 +33,13 @@
                 Width="36"
                 Height="36"
                 Margin="0,0,5,0"
-                IsChecked="{Binding IsColorOverlayEyedropperMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                IsChecked="{Binding IsEyedropperMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 ap:MouseOverInfoAP.InfoText="Pick overlay color from input image" />
             <cp:PortableColorPicker
                 Width="34"
                 Height="30"
                 Margin="0,0,8,0"
-                SelectedColor="{Binding ColorOverlay, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                SelectedColor="{Binding OverlayColor, Converter={StaticResource ColorStructToMediaColorConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 ap:MouseOverInfoAP.InfoText="Overlay color: single color blended with the texture." />
         </StackPanel>
 
