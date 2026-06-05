@@ -41,7 +41,6 @@ public class ModificationInViewModel : ThrottledViewModelBase
     private IWriteableBitmap _imageIn;
 
 
-    private bool _initTextVisible = true;
 
 
     public IWriteableBitmap ImageIn
