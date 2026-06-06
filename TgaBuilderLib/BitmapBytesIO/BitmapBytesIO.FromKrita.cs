@@ -18,13 +18,6 @@ public partial class BitmapBytesIO
 
         IReadableBitmap sourceBitmap;
 
-        byte[] LoadedPngData;
-
-        // 1. Generate a unique temporary file path in the application directory
-        string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        string tempFileName = $"temp_merged_{Guid.NewGuid()}.png";
-        string tempFilePath = Path.Combine(appDirectory, tempFileName);
-
         // 2. Open the .kra file as a ZIP archive
         using (ZipArchive archive = ZipFile.OpenRead(kraFilePath))
         {
@@ -38,7 +31,7 @@ public partial class BitmapBytesIO
             // 4. Extract the file to a byte array
             using var entryStream = mergedImageEntry.Open();
             using var ms = new MemoryStream();
-            
+
             entryStream.CopyTo(ms);
 
             ms.Position = 0;
