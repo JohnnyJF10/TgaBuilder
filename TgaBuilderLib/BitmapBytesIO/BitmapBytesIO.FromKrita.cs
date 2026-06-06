@@ -6,10 +6,10 @@ namespace TgaBuilderLib.BitmapBytesIO;
 
 public partial class BitmapBytesIO
 {
-    public void FromKrita(string kraFilePath,             
+    public void FromKrita(string kraFilePath,
                           ResizeMode mode = ResizeMode.SourceResize,
                           CancellationToken? cancellationToken = null)
-{
+    {
         if (string.IsNullOrWhiteSpace(kraFilePath))
             throw new ArgumentException("File path cannot be null or empty.", nameof(kraFilePath));
 
@@ -18,37 +18,32 @@ public partial class BitmapBytesIO
 
         IReadableBitmap sourceBitmap;
 
+        byte[] LoadedPngData;
+
         // 1. Generate a unique temporary file path in the application directory
         string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
         string tempFileName = $"temp_merged_{Guid.NewGuid()}.png";
         string tempFilePath = Path.Combine(appDirectory, tempFileName);
 
-        try
+        // 2. Open the .kra file as a ZIP archive
+        using (ZipArchive archive = ZipFile.OpenRead(kraFilePath))
         {
-            // 2. Open the .kra file as a ZIP archive
-            using (ZipArchive archive = ZipFile.OpenRead(kraFilePath))
-            {
-                // 3. Locate Krita's pre-flattened layer cache
-                ZipArchiveEntry? mergedImageEntry = archive.GetEntry("mergedimage.png");
+            // 3. Locate Krita's pre-flattened layer cache
+            ZipArchiveEntry? mergedImageEntry = archive.GetEntry("mergedimage.png");
 
-                if (mergedImageEntry is null)
-                    throw new FileNotFoundException(
-                        "The 'mergedimage.png' file was not found inside the .kra archive.");
+            if (mergedImageEntry is null)
+                throw new FileNotFoundException(
+                    "The 'mergedimage.png' file was not found inside the .kra archive.");
 
-                // 4. Extract the file to the app directory
-                mergedImageEntry.ExtractToFile(tempFilePath, overwrite: true);
-            }
+            // 4. Extract the file to a byte array
+            using var entryStream = mergedImageEntry.Open();
+            using var ms = new MemoryStream();
+            
+            entryStream.CopyTo(ms);
 
-            // 5. Load the bitmap from the extracted file path
-            sourceBitmap = _mediaFactory.LoadReadableBitmap(tempFilePath);
-        }
-        finally
-        {
-            // 6. Clean up: Delete the file if it exists, regardless of success or failure
-            if (File.Exists(tempFilePath))
-            {
-                File.Delete(tempFilePath);
-            }
+            ms.Position = 0;
+
+            sourceBitmap = _mediaFactory.LoadReadableBitmap(ms);
         }
 
         LoadedHasAlpha = sourceBitmap.HasAlpha;
