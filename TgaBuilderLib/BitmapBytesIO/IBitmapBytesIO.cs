@@ -43,20 +43,19 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         IWriteableBitmap GetLoadedBitmap();
 
-        void ToUsual(
-            IReadableBitmap bitmap,
-            string extension);
+        void ToUsual(IReadableBitmap bitmap, string extension);
 
         void WriteUsual(
             string filePath,
             CancellationToken? cancellationToken = null);
 
-        void ToTga(
-            IReadableBitmap bitmap);
+        void ToTga(IReadableBitmap bitmap);
 
-        void WriteTga(
-            string filePath,
-            CancellationToken? cancellationToken = null);
+        void ToKrita(IReadableBitmap bitmap);
+
+        void WriteKrita(string filePath, CancellationToken? cancellationToken = null);
+
+        void WriteTga(string filePath, CancellationToken? cancellationToken = null);
 
         void ClearLoadedData();
     }

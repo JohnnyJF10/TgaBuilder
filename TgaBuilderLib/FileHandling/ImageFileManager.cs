@@ -115,6 +115,9 @@ namespace TgaBuilderLib.FileHandling
             if (IsTga(extension))
                 _bitmapIO.ToTga(bitmap);
 
+            else if (IsKrita(extension))
+                _bitmapIO.ToKrita(bitmap);
+
             else if (IsUsual(extension))
                 _bitmapIO.ToUsual(bitmap, extension);
 
@@ -137,6 +140,9 @@ namespace TgaBuilderLib.FileHandling
 
             else if (IsUsual(extension))
                 _bitmapIO.WriteUsual(fileName, cancellationToken);
+
+            else if (IsKrita(extension))
+                _bitmapIO.WriteKrita(fileName, cancellationToken);
 
             else
                 throw new NotSupportedException($"Unsupported file format: {extension}");
@@ -202,6 +208,9 @@ namespace TgaBuilderLib.FileHandling
 
         private bool IsTga(string extension)
             => extension == "tga";
+
+        private bool IsKrita(string extension)
+            => extension == "kra";
 
         private bool IsUsual(string extension)
             => extension is "png" or "jpg" or "jpeg" or "bmp";

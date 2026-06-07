@@ -62,11 +62,11 @@ internal class KraWriter
         {
             var layerData = new LayerData(layer);
             byte[] tiles = layerData.Build();
-            WriteDeflate(zip, $"{imageName}/layers/{layer.FileName}", tiles);
+            WriteDeflate(zip, $"{imageName}/layers/{layer.Name}", tiles);
             // transparent default pixel (4 zero bytes -> order irrelevant)
-            WriteDeflate(zip, $"{imageName}/layers/{layer.FileName}.defaultpixel", new byte[PixelSize]);
+            WriteDeflate(zip, $"{imageName}/layers/{layer.Name}.defaultpixel", new byte[PixelSize]);
             // icc per layer
-            WriteDeflate(zip, $"{imageName}/layers/{layer.FileName}.icc", iccProfile ?? Convert.FromBase64String(sRgbBuildInIccStr));
+            WriteDeflate(zip, $"{imageName}/layers/{layer.Name}.icc", iccProfile ?? Convert.FromBase64String(sRgbBuildInIccStr));
         }
 
         // 4. image colour profile annotation (Krita's built-in sRGB)

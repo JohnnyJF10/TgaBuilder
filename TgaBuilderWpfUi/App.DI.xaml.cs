@@ -19,6 +19,7 @@ using TgaBuilderWpfUi.View;
 using TgaBuilderWpfUi.Wrappers;
 using Application = System.Windows.Application;
 using Wpf.Ui.Appearance;
+using TgaBuilderLib.Krita;
 
 namespace TgaBuilderWpfUi
 {
@@ -73,6 +74,7 @@ namespace TgaBuilderWpfUi
 
         private void AddCoreServicesToProvider(IServiceCollection services)
         {
+            services.AddSingleton<IKraFileService, KraFileService>();
             services.AddSingleton<ITrngDecrypter, TrngDecrypter>();
             services.AddSingleton<IBitmapBytesIO, BitmapBytesIO>();
 
