@@ -395,7 +395,7 @@
             <!-- Smooth mode: Hardness / Widening / Shift sliders -->
             <local:TransitionWindowSmoothUserControl
                 DataContext="{Binding PivotVM}"
-                Visibility="{Binding IsSmoothMode, Converter={StaticResource BoolToVisibilityConverter}}" />
+                Visibility="{Binding DataContext.IsSmoothMode, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             <!-- Brick mode: scrollable expanders -->
             <ScrollViewer

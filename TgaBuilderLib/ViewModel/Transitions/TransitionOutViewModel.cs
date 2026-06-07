@@ -237,7 +237,7 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
     private void OnRecalculationCompleted(object? sender, EventArgs e)
     {
-        using var ResLockedFrameBuffer = ResultImage.GetLocker();
+        using var ResLockedFrameBuffer = ResultImage.GetLocker(requiresRefresh: true);
 
         Marshal.Copy(
             source: _transitionHelper.PixelsResult, 

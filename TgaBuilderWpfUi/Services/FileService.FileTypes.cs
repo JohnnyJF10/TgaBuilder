@@ -70,6 +70,15 @@ namespace TgaBuilderWpfUi.Services
                 }
             },
             {
+                FileTypes.KRA,
+                new FileTypeInfo
+                {
+                    Extension = ".kra",
+                    Description = "Krita Project Files (*.kra)|*.kra",
+                    Title = "Open Krita Projec File"
+                }
+            },
+            {   
                 FileTypes.PHD,
                 new FileTypeInfo
                 {

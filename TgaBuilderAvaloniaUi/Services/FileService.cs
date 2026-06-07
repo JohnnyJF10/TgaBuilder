@@ -147,7 +147,8 @@ namespace TgaBuilderAvaloniaUi.Services
             var fileTypeChoices = new List<FilePickerFileType>
                 {
                     new("Png Files (*.png)") { Patterns = new[] { "*.png" }},
-                    new("Tga Files (*.tga)") { Patterns = new[] { "*.tga" }}
+                    new("Tga Files (*.tga)") { Patterns = new[] { "*.tga" }},
+                    new("Krita Files (*.kra)") { Patterns = new[] { "*.kra" }}
                 };
 
             var fileResult = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions

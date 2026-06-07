@@ -56,7 +56,7 @@ public class ModificationOutViewModel : ThrottledViewModelBase
 
     private void OnRecalculationCompleted(object? sender, EventArgs e)
     {
-        using var ResLockedFrameBuffer = ImageOut.GetLocker();
+        using var ResLockedFrameBuffer = ImageOut.GetLocker(requiresRefresh: true);
 
         Marshal.Copy(
             source: _modificationHelper.PixelsOutput, 

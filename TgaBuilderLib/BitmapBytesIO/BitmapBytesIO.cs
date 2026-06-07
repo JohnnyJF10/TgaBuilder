@@ -2,15 +2,18 @@
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
+using TgaBuilderLib.Krita;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {
     public partial class BitmapBytesIO : IBitmapBytesIO
     {
         public BitmapBytesIO(
-            IMediaFactory mediaFactory)
+            IMediaFactory mediaFactory,
+            IKraFileService kraFileService)
         {
             _mediaFactory = mediaFactory ?? throw new ArgumentNullException(nameof(mediaFactory));
+            _kritaFileService = kraFileService ?? throw new ArgumentNullException(nameof(kraFileService));
         }
 
         private const int MAX_SIZE = 32768;
@@ -19,6 +22,8 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         private readonly ArrayPool<byte> _bytesPool = ArrayPool<byte>.Shared;
         private readonly IMediaFactory _mediaFactory;
+
+        private readonly IKraFileService _kritaFileService;
 
         public ResultStatus ResultInfo { get; private set; } = ResultStatus.Success;
 
