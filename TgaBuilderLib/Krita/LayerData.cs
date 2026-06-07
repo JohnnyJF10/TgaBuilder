@@ -6,7 +6,7 @@ internal class LayerData
 {
     private const int TileW = 64;
     private const int TileH = 64;
-    private const int PixelSize = 4; // RGBA8 -> 4 bytes, stored as B,G,R,A (Krita's native order)
+    private const int KritaPixelSize = 4; // RGBA8 -> 4 bytes, stored as B,G,R,A (Krita's native order)
 
     internal LayerSource Layer { get; set; }
 
@@ -26,12 +26,16 @@ internal class LayerData
         int tilesX = (Layer.Width + TileW - 1) / TileW;
         int tilesY = (Layer.Height + TileH - 1) / TileH;
 
-        const int tileBytes = TileW * TileH * PixelSize; // Assumes PixelSize is 4 for BGRA
+        const int tileBytes = TileW * TileH * KritaPixelSize; // Assumes KritaPixelSize is 4 for BGRA
         var compressBuf = new byte[tileBytes + tileBytes / 16 + 64];
         var tile = new byte[tileBytes];
 
         var bodies = new List<byte[]>();
         int channelSize = TileW * TileH; // Size of a single channel plane within the tile
+
+        int pixelSize = Layer.HasAlpha ? 4 : 3; // Source pixel size (BGRA or RGB)
+
+        byte b, g, r, a;
 
         for (int ty = 0; ty < tilesY; ty++)
         {
@@ -46,24 +50,34 @@ internal class LayerData
                     if (srcY >= Layer.Height) break;
 
                     int maxCol = Math.Min(TileW, Layer.Width - tx * TileW);
-                    int srcBase = (srcY * Layer.Width + tx * TileW) * PixelSize;
+                    int srcBase = (srcY * Layer.Width + tx * TileW) * pixelSize;
 
                     for (int col = 0; col < maxCol; col++)
                     {
-                        int srcIdx = srcBase + col * PixelSize;
+                        int srcIdx = srcBase + col * pixelSize;
                         int pixelIndex = row * TileW + col;
 
-                        // Read interleaved BGRA from source
-                        byte b = Layer.Bgra[srcIdx + 2];
-                        byte g = Layer.Bgra[srcIdx + 1];
-                        byte r = Layer.Bgra[srcIdx + 0];
-                        byte a = Layer.Bgra[srcIdx + 3];
+                        // Read interleaved from source
+                        if (Layer.HasAlpha) // BGRA32 source
+                        {
+                            b = Layer.PixelBytes[srcIdx + 0]; //B
+                            g = Layer.PixelBytes[srcIdx + 1]; //G
+                            r = Layer.PixelBytes[srcIdx + 2]; //R
+                            a = Layer.PixelBytes[srcIdx + 3]; //A
+                        }
+                        else // RGB24 source
+                        {
+                            r = Layer.PixelBytes[srcIdx + 0]; //R
+                            g = Layer.PixelBytes[srcIdx + 1]; //G
+                            b = Layer.PixelBytes[srcIdx + 2]; //B
+                            a = 255; // Opaque if no alpha channel
+                        }
 
-                        // Write into planar RRRR...GGGG...BBBB...AAAA... destination
-                        tile[pixelIndex] = r;
-                        tile[channelSize + pixelIndex] = g;
-                        tile[2 * channelSize + pixelIndex] = b;
-                        tile[3 * channelSize + pixelIndex] = a;
+                        // Write into planar BBB...GGG...RRR...AAA... destination
+                        tile[/* 0 *    channelSize + */ pixelIndex] = b;
+                        tile[/* 1 *  */channelSize +    pixelIndex] = g;
+                        tile[   2 *    channelSize +    pixelIndex] = r;
+                        tile[   3 *    channelSize +    pixelIndex] = a;
 
                         if (!anyContent && (r != 0 || g != 0 || b != 0 || a != 0))
                         {
@@ -111,10 +125,10 @@ internal class LayerData
         int pos = 0;
         Buffer.BlockCopy(headerBytes, 0, result, pos, headerBytes.Length);
         pos += headerBytes.Length;
-        foreach (var b in bodies)
+        foreach (var body in bodies)
         {
-            Buffer.BlockCopy(b, 0, result, pos, b.Length);
-            pos += b.Length;
+            Buffer.BlockCopy(body, 0, result, pos, body.Length);
+            pos += body.Length;
         }
         return result;
     }
@@ -125,7 +139,7 @@ internal class LayerData
         head.Append("VERSION 2\n");
         head.Append($"TILEWIDTH {TileW}\n");
         head.Append($"TILEHEIGHT {TileH}\n");
-        head.Append($"PIXELSIZE {PixelSize}\n");
+        head.Append($"PIXELSIZE {KritaPixelSize}\n");
         head.Append($"DATA {bodiesCount}\n");
         byte[] headerBytes = Encoding.ASCII.GetBytes(head.ToString());
         return headerBytes;

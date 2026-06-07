@@ -35,23 +35,6 @@ namespace TgaBuilderLib.Krita
             if (!string.IsNullOrEmpty(dir))
                 Directory.CreateDirectory(dir);
 
-            // Decode every PNG into straight-alpha BGRA via Avalonia.
-            //var layers = new List<LayerSource>();
-            //int n = 0;
-            //foreach (var layerBitmap in LayerSources)
-            //{
-            //    byte[] bgra = layerBitmap.ToMemoryStream().ToArray();
-            //    n++;
-            //    layers.Add(new LayerSource
-            //    {
-            //        Name = $"Layer {n}",
-            //        FileName = $"layer{n}",
-            //        Bgra = bgra,
-            //        Width = layerBitmap.PixelWidth,
-            //        Height = layerBitmap.PixelHeight,
-            //    });
-            //}
-
             if (LayerSources.Count == 0)
             {
                 throw new InvalidOperationException("No PNG files could be decoded.");
@@ -60,7 +43,6 @@ namespace TgaBuilderLib.Krita
             int canvasW = LayerSources.Max(l => l.Width);
             int canvasH = LayerSources.Max(l => l.Height);
 
-            // Optional preview/merged image. Failure here must not abort the .kra itself.
             byte[]? mergedPng = null;
             byte[]? previewPng = null;
 

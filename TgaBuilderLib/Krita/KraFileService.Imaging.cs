@@ -1,13 +1,10 @@
-using System.Runtime.InteropServices;
-using TgaBuilderLib.Abstraction;
-
 namespace TgaBuilderLib.Krita;
 
 public partial class KraFileService
 {
 
 
-    /// <summary>Encodes straight-alpha BGRA8888 pixels to a PNG byte array via Avalonia.</summary>
+    /// <summary>Encodes straight-alpha BGRA8888 pixels to a PNG byte array.</summary>
     public byte[] EncodePng(byte[] bgra, int width, int height)
     {
         var bitmap = _mediaFactory.CreateBitmapFromRaw(width, height, hasAlpha: true, bgra, stride: width * 4);
@@ -18,35 +15,53 @@ public partial class KraFileService
     /// Composites layers (index 0 = bottom) onto a transparent WxH canvas using the
     /// straight-alpha "source over" operator. Smaller layers are placed at the top-left.
     /// </summary>
-    private byte[] Composite(IReadOnlyList<LayerSource> layers, int w, int h)
+    private byte[] Composite(IReadOnlyList<LayerSource> layers, int width, int height)
     {
-        var canvas = new byte[w * h * 4]; // BGRA, fully transparent
+        var canvas = new byte[width * height * 4]; // BGRA, fully transparent
 
-        foreach (var l in layers)
+        foreach (var layer in layers)
         {
-            for (int y = 0; y < l.Height && y < h; y++)
-            {
-                int sRow = y * l.Width * 4;
-                int dRow = y * w * 4;
-                for (int x = 0; x < l.Width && x < w; x++)
-                {
-                    int s = sRow + x * 4;
-                    int d = dRow + x * 4;
+            int layerBpp = layer.HasAlpha ? 4 : 3;
 
-                    float sa = l.Bgra[s + 3] / 255f;
-                    if (sa <= 0f) continue;
-                    float da = canvas[d + 3] / 255f;
-                    float oa = sa + da * (1f - sa);
-                    if (oa <= 0f) continue;
+            for (int y = 0; y < layer.Height && y < height; y++)
+            {
+                int sRow = y * layer.Width * layerBpp;
+                int dRow = y * width * 4;
+                for (int x = 0; x < layer.Width && x < width; x++)
+                {
+                    int sPix = sRow + x * layerBpp;
+                    int dPix = dRow + x * 4;
+
+                    float sourceAlpha = layer.HasAlpha
+                        ? layer.PixelBytes[sPix + 3] / 255f
+                        : 1f;
+
+                    if (sourceAlpha <= 0f)
+                        continue;
+
+                    float destinationAlpha = canvas[dPix + 3] / 255f;
+
+                    float oa = sourceAlpha + destinationAlpha * (1f - sourceAlpha);
+
+                    if (oa <= 0f)
+                        continue;
 
                     for (int c = 0; c < 3; c++)
                     {
-                        float sc = l.Bgra[s + c];
-                        float dc = canvas[d + c];
-                        float oc = (sc * sa + dc * da * (1f - sa)) / oa;
-                        canvas[d + c] = (byte)Math.Clamp(oc + 0.5f, 0f, 255f);
+                        float sc = layer.PixelBytes[sPix + c];
+                        float dc = canvas[dPix + c];
+                        float oc = (sc * sourceAlpha + dc * destinationAlpha * (1f - sourceAlpha)) / oa;
+                        canvas[dPix + c] = (byte)Math.Clamp(oc + 0.5f, 0f, 255f);
                     }
-                    canvas[d + 3] = (byte)Math.Clamp(oa * 255f + 0.5f, 0f, 255f);
+
+                    if (!layer.HasAlpha) // RGA: Swap R and B if no alpha, since source is probably RGB and canvas is BGRA
+                    {
+                        byte temp = canvas[dPix];
+                        canvas[dPix] = canvas[dPix + 2];
+                        canvas[dPix + 2] = temp;
+                    }
+
+                    canvas[dPix + 3] = (byte)Math.Clamp(oa * 255f + 0.5f, 0f, 255f);
                 }
             }
         }

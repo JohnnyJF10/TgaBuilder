@@ -25,7 +25,7 @@ public class MainDoc
             var l = Layers[i];
             sb.Append("   <layer ")
               .Append($"name=\"{Xml.Escape(l.Name)}\" ")
-              .Append($"filename=\"{l.Name}\" ")
+              .Append($"filename=\"{Xml.Escape(l.Name)}\" ")
               .Append($"uuid=\"{l.Uuid}\" ")
               .Append("nodetype=\"paintlayer\" colorspacename=\"RGBA\" compositeop=\"normal\" ")
               .Append("opacity=\"255\" visible=\"1\" locked=\"0\" collapsed=\"0\" ")
