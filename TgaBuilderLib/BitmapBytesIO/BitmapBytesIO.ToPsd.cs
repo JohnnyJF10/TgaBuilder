@@ -33,7 +33,13 @@ public partial class BitmapBytesIO
             LoadedWidth, LoadedHeight, hasAlpha: true, LoadedBytes, LoadedWidth * 4);
 
         var psd = new PsdFile();
-        psd.Save(filePath, bitmap, Enumerable.Empty<PsdLayerInfo>());
+
+        var layerInfo = new PsdLayerInfo(
+            bitmap: bitmap,
+            rect: new PixelRect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight),
+            name: "Background");
+
+        psd.Save(filePath, bitmap, Enumerable.Empty<PsdLayerInfo>().Append(layerInfo));
     }
 
     public IWriteableBitmap ConvertRGB24ToBGRA32(IWriteableBitmap sourceBitmap)

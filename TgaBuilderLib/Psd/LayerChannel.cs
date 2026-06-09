@@ -91,7 +91,6 @@ namespace TgaBuilderLib.Psd
 
             internal void LoadPixelData(BinaryReverseReader reverseReader)
             {
-
                 Data = reverseReader.ReadBytes(Length);
 
                 using (BinaryReverseReader imageReader = DataReader!)
@@ -99,11 +98,10 @@ namespace TgaBuilderLib.Psd
                     ImageCompression = (ImageCompression)imageReader.ReadInt16();
 
                     int bytesPerRow = 0;
-
                     switch (Layer.PsdFile.Depth)
                     {
                         case 1:
-                            bytesPerRow = Layer.Rect.Width;//NOT sure
+                            bytesPerRow = Layer.Rect.Width; // NOT sure
                             break;
                         case 8:
                             bytesPerRow = Layer.Rect.Width;
@@ -120,6 +118,7 @@ namespace TgaBuilderLib.Psd
                         case ImageCompression.Raw:
                             imageReader.Read(ImageData, 0, ImageData.Length);
                             break;
+
                         case ImageCompression.Rle:
                             {
                                 var rowLengthList = new int[Layer.Rect.Height];
@@ -131,9 +130,11 @@ namespace TgaBuilderLib.Psd
 
                                 for (int i = 0; i < Layer.Rect.Height; i++)
                                 {
-                                    int rowIndex = i * Layer.Rect.Width;
+                                    int rowIndex = i * bytesPerRow;
 
-                                    RleHelper.DecodedRow(imageReader.BaseStream, ImageData, rowIndex, bytesPerRow);
+                                    // Here we optionally check the list and the current index
+                                    int compressedLength = rowLengthList[i];
+                                    RleHelper.DecodedRow(imageReader.BaseStream, ImageData, rowIndex, bytesPerRow, compressedLength);
                                 }
                             }
                             break;

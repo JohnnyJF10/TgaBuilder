@@ -136,47 +136,78 @@ namespace TgaBuilderLib.Psd
             return (int)(stream.Position - startPosition);
         }
 
-        public static void DecodedRow(Stream stream, byte[] imgData, int startIdx, int columns)
+        public static void DecodedRow(Stream stream, byte[] imgData, int startIdx, int columns, int compressedLength = -1)
         {
-            int count = 0;
-            while (count < columns)
+            Stream targetStream = stream;
+            MemoryStream? memStream = null;
+
+            // If compressedLength >= 0, we have a hint that this row is compressed and how many bytes belong to it.
+            if (compressedLength > 0)
             {
-                byte byteValue = (byte)stream.ReadByte();
+                byte[] compressedBuffer = new byte[compressedLength];
 
-                int len = byteValue;
-                if (len < 128)
+                // Read exactly compressedLength bytes from the stream into the buffer,
+                // handling cases where Read might return less than requested
+                int bytesRead = 0;
+                while (bytesRead < compressedLength)
                 {
-                    len++;
-                    while (len != 0 && startIdx + count < imgData.Length)
-                    {
-                        byteValue = (byte)stream.ReadByte();
+                    int read = stream.Read(compressedBuffer, bytesRead, compressedLength - bytesRead);
+                    if (read == 0) break; // Security: Avoid infinite loop if stream ends unexpectedly
+                    bytesRead += read;
+                }
 
-                        imgData[startIdx + count] = byteValue;
-                        count++;
-                        len--;
-                    }
-                }
-                else if (len > 128)
-                {
-                    // Next -len+1 bytes in the dest are replicated from next source byte.
-                    // (Interpret len as a negative 8-bit int.)
-                    len ^= 0x0FF;
-                    len += 2;
-                    byteValue = (byte)stream.ReadByte();
-
-                    while (len != 0 && startIdx + count < imgData.Length)
-                    {
-                        imgData[startIdx + count] = byteValue;
-                        count++;
-                        len--;
-                    }
-                }
-                else if (128 == len)
-                {
-                    // Do nothing
-                }
+                // Wie feed the compressed data into a MemoryStream, so that we can read it as if it were a normal stream.
+                memStream = new MemoryStream(compressedBuffer);
+                targetStream = memStream;
             }
 
+            try
+            {
+                int count = 0;
+                while (count < columns)
+                {
+                    byte byteValue = (byte)targetStream.ReadByte();
+
+                    int len = byteValue;
+                    if (len < 128)
+                    {
+                        len++;
+                        while (len != 0 && startIdx + count < imgData.Length)
+                        {
+                            byteValue = (byte)targetStream.ReadByte();
+
+                            imgData[startIdx + count] = byteValue;
+                            count++;
+                            len--;
+                        }
+                    }
+                    else if (len > 128)
+                    {
+                        // Next -len+1 bytes in the dest are replicated from next source byte.
+                        // (Interpret len as a negative 8-bit int.)
+                        len ^= 0x0FF;
+                        len += 2;
+                        byteValue = (byte)targetStream.ReadByte();
+
+                        while (len != 0 && startIdx + count < imgData.Length)
+                        {
+                            imgData[startIdx + count] = byteValue;
+                            count++;
+                            len--;
+                        }
+                    }
+                    else if (128 == len)
+                    {
+                        // Do nothing
+                    }
+                }
+            }
+            finally
+            {
+                // Important: If we created a MemoryStream, we need to dispose it to free resources.
+                // If we didn't create one, this will just be a no-op.
+                memStream?.Dispose();
+            }
         }
     }
 }

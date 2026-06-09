@@ -277,6 +277,13 @@ namespace TgaBuilderLib.Psd
                 writer.Write((uint)0);
             }
 
+            // ── Patterns block ───────────────────────────────────────────────────
+
+            // Krita adds a patterns block here, even if no patterns are included. 
+            // Might be mandaory for a valid PSD.
+            string patterns = "8BIMPatt\0\0\0\0";
+            writer.Write(patterns.ToCharArray());
+
             // ── Merged Image Data (Raw / uncompressed) ───────────────────────────
             writer.Write((short)0);   // compression = Raw
 
@@ -441,7 +448,9 @@ namespace TgaBuilderLib.Psd
 
                 // make sure we are not on a wrong offset, so set the stream position 
                 // manually
-                var patt = reader.ReadBytes((int)(startPosition + layersAndMaskLength - reader.BaseStream.Position));
+
+                // Krita is adding the patterns block here. If now patterns are included, it has a lengsth of 12 bytes.
+                reader.BaseStream.Position = startPosition + layersAndMaskLength;
             }
             #endregion //End Layer and Mask info
 
@@ -458,13 +467,24 @@ namespace TgaBuilderLib.Psd
 
             ImageData = new byte[_channels][];
 
+            var rowLengthTable = new int[_channels][];
+
             //---------------------------------------------------------------
 
             if (ImageCompression == ImageCompression.Rle)
             {
                 // The RLE-compressed data is proceeded by a 2-byte data count for each row in the data,
                 // which we're going to just skip.
-                reader.BaseStream.Position += _rows * _channels * 2;
+                //reader.BaseStream.Position += _rows * _channels * 2;
+
+                for (int ch = 0; ch < _channels; ch++)
+                {
+                    rowLengthTable[ch] = new int[_rows];
+                    for (int i = 0; i < _rows; i++)
+                    {
+                        rowLengthTable[ch][i] = reader.ReadInt16();
+                    }
+                }
             }
 
             //---------------------------------------------------------------
@@ -495,12 +515,16 @@ namespace TgaBuilderLib.Psd
                     case ImageCompression.Raw:
                         reader.Read(ImageData[ch], 0, ImageData[ch].Length);
                         break;
+
                     case ImageCompression.Rle:
                         {
                             for (int i = 0; i < _rows; i++)
                             {
                                 int rowIndex = i * _columns;
-                                RleHelper.DecodedRow(reader.BaseStream, ImageData[ch], rowIndex, bytesPerRow);
+
+                                int compressedLength = rowLengthTable[ch][i];
+
+                                RleHelper.DecodedRow(reader.BaseStream, ImageData[ch], rowIndex, bytesPerRow, compressedLength);
                             }
                         }
                         break;
