@@ -498,8 +498,6 @@ namespace TgaBuilderLib.Psd
             //in the picture.
 
 
-            SkipOptionalImageDataBlocks(reader);
-
             ImageCompression = (ImageCompression)reader.ReadInt16();
 
             ImageData = new byte[_channels][];
@@ -571,36 +569,6 @@ namespace TgaBuilderLib.Psd
             #endregion //End LoadingFinalImage
 
             return this;
-        }
-
-        private static void SkipOptionalImageDataBlocks(BinaryReverseReader reader)
-        {
-            while (reader.BaseStream.Position + 12 <= reader.BaseStream.Length)
-            {
-                long blockStart = reader.BaseStream.Position;
-                string signature = new string(reader.ReadChars(4));
-
-                if (signature != "8BIM")
-                {
-                    reader.BaseStream.Position = blockStart;
-                    return;
-                }
-
-                _ = new string(reader.ReadChars(4)); // key
-                uint dataLength = reader.ReadUInt32();
-
-                long nextPosition = reader.BaseStream.Position + dataLength;
-                if ((dataLength & 1) == 1)
-                    nextPosition++;
-
-                if (nextPosition > reader.BaseStream.Length)
-                {
-                    reader.BaseStream.Position = blockStart;
-                    return;
-                }
-
-                reader.BaseStream.Position = nextPosition;
-            }
         }
 
         /// <summary>
