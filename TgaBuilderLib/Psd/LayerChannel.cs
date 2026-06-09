@@ -180,7 +180,7 @@ namespace TgaBuilderLib.Psd
 
                     for (int row = 0; row < Layer.Rect.Height; row++)
                     {
-                        int rowIndex = row * Layer.Rect.Width;
+                        int rowIndex = row * bytesPerRow;
                         rleRowLengths[row] = RleHelper.EncodedRow(reverseWriter.BaseStream, ImageData, rowIndex, bytesPerRow);
                     }
 
@@ -212,7 +212,18 @@ namespace TgaBuilderLib.Psd
             {
 
                 writer.Write((short)ImageCompression);
-                writer.Write(ImageData);
+                if (ImageCompression == ImageCompression.Rle)
+                {
+                    if (Data == null || Data.Length == 0)
+                        CompressImageData();
+                    if (Data == null)
+                        throw new InvalidDataException("RLE channel data is missing.");
+                    writer.Write(Data);
+                }
+                else
+                {
+                    writer.Write(ImageData);
+                }
             }
 
             public BinaryReverseReader? DataReader

@@ -287,8 +287,8 @@ namespace TgaBuilderLib.Psd
             string patterns = "8BIMPatt\0\0\0\0";
             writer.Write(patterns.ToCharArray());
 
-            // ── Merged Image Data (Raw / uncompressed) ───────────────────────────
-            writer.Write((short)0);   // compression = Raw
+            // ── Merged Image Data (RLE compressed) ───────────────────────────────
+            writer.Write((short)ImageCompression.Rle);
 
             int   pixelCount = width * height;
             var   bgra       = new byte[pixelCount * 4];
@@ -309,10 +309,42 @@ namespace TgaBuilderLib.Psd
                 aPlane[i] = bgra[i * 4 + 3];
             }
 
-            writer.Write(rPlane);
-            writer.Write(gPlane);
-            writer.Write(bPlane);
-            writer.Write(aPlane);
+            var channelPlanes = new[] { rPlane, gPlane, bPlane, aPlane };
+            var rowLengthTable = new short[channelCount][];
+            var compressedChannelData = new byte[channelCount][];
+
+            for (int ch = 0; ch < channelCount; ch++)
+            {
+                rowLengthTable[ch] = new short[height];
+
+                using var channelStream = new MemoryStream();
+
+                for (int row = 0; row < height; row++)
+                {
+                    int rowIndex = row * width;
+                    int encodedLength = RleHelper.EncodedRow(channelStream, channelPlanes[ch], rowIndex, width);
+
+                    if (encodedLength > short.MaxValue)
+                        throw new InvalidDataException("RLE row length exceeds PSD 16-bit row length limit.");
+
+                    rowLengthTable[ch][row] = (short)encodedLength;
+                }
+
+                compressedChannelData[ch] = channelStream.ToArray();
+            }
+
+            for (int ch = 0; ch < channelCount; ch++)
+            {
+                for (int row = 0; row < height; row++)
+                {
+                    writer.Write(rowLengthTable[ch][row]);
+                }
+            }
+
+            for (int ch = 0; ch < channelCount; ch++)
+            {
+                writer.Write(compressedChannelData[ch]);
+            }
         }
 
         /// <summary>
@@ -345,10 +377,10 @@ namespace TgaBuilderLib.Psd
 
             // Channel ID -1 = alpha/transparency; 0 = red; 1 = green; 2 = blue.
             // Insertion order determines the write order for both the header and the pixel data.
-            _ = new Layer.Channel(-1, layer) { ImageData = aData, ImageCompression = ImageCompression.Raw };
-            _ = new Layer.Channel(0,  layer) { ImageData = rData, ImageCompression = ImageCompression.Raw };
-            _ = new Layer.Channel(1,  layer) { ImageData = gData, ImageCompression = ImageCompression.Raw };
-            _ = new Layer.Channel(2,  layer) { ImageData = bData, ImageCompression = ImageCompression.Raw };
+            _ = new Layer.Channel(-1, layer) { ImageData = aData, ImageCompression = ImageCompression.Rle };
+            _ = new Layer.Channel(0,  layer) { ImageData = rData, ImageCompression = ImageCompression.Rle };
+            _ = new Layer.Channel(1,  layer) { ImageData = gData, ImageCompression = ImageCompression.Rle };
+            _ = new Layer.Channel(2,  layer) { ImageData = bData, ImageCompression = ImageCompression.Rle };
 
             return layer;
         }
