@@ -510,7 +510,6 @@ namespace TgaBuilderLib.Psd
             {
                 // The RLE-compressed data is proceeded by a 2-byte data count for each row in the data,
                 // which we're going to just skip.
-                //reader.BaseStream.Position += _rows * _channels * 2;
 
                 for (int ch = 0; ch < _channels; ch++)
                 {
