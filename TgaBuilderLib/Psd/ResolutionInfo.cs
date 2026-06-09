@@ -81,6 +81,25 @@ namespace TgaBuilderLib.Psd
             ID = (short)ResourceIDs.ResolutionInfo;
         }
 
+        /// <summary>
+        /// Creates a ResolutionInfo resource for writing into a PSD file.
+        /// </summary>
+        public ResolutionInfo(
+            short hRes, short vRes,
+            ResUnit hResUnit = ResUnit.PxPerInch,
+            ResUnit vResUnit = ResUnit.PxPerInch,
+            Unit widthUnit = Unit.In,
+            Unit heightUnit = Unit.In)
+        {
+            ID = (short)ResourceIDs.ResolutionInfo;
+            HRes = hRes;
+            VRes = vRes;
+            HResUnit = hResUnit;
+            VResUnit = vResUnit;
+            WidthUnit = widthUnit;
+            HeightUnit = heightUnit;
+        }
+
         public ResolutionInfo(ImageResource imgRes)
             : base(imgRes)
         {

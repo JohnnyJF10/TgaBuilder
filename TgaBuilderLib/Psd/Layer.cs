@@ -51,6 +51,29 @@ namespace TgaBuilderLib.Psd
             Name = string.Empty;
         }
 
+        /// <summary>
+        /// Creates a new Layer for programmatic construction when saving a PSD file.
+        /// </summary>
+        public Layer(PsdFile psdFile, PixelRect rect, string name,
+                     byte opacity = 255, bool visible = true,
+                     bool clipping = false, string blendModeKey = "norm")
+        {
+            if (blendModeKey.Length != 4)
+                throw new ArgumentException("Blend mode key must be exactly 4 characters.", nameof(blendModeKey));
+
+            SortedChannels = new SortedList<short, Channel>();
+            AdjustmentInfo = new List<AdjustmentLayerInfo>();
+            Channels = new List<Channel>();
+            PsdFile = psdFile;
+            Rect = rect;
+            Name = name;
+            Opacity = opacity;
+            Clipping = clipping;
+            _blendModeKeyStr = blendModeKey;
+            _flags = new BitVector32(0);
+            Visible = visible;
+        }
+
         public Layer(BinaryReverseReader reverseReader, PsdFile psdFile)
         {
             SortedChannels = new SortedList<short, Channel>();
