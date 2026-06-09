@@ -217,6 +217,9 @@ namespace TgaBuilderLib.Psd
             var writer    = new BinaryReverseWriter(stream);
             var layerList = layerInfos.Select(CreateLayerFromInfo).ToList();
 
+            if (!layerList.Any())
+                throw new ArgumentException("Error, list of Layer Infos cannot be empty");
+
             // ── Header ──────────────────────────────────────────────────────────
             writer.Write("8BPS".ToCharArray());       // PSD signature
             writer.Write((short)1);                   // version (always 1)
