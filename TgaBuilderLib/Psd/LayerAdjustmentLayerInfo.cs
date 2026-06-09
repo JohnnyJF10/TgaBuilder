@@ -30,6 +30,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
+using static TgaBuilderLib.Psd.ResolutionInfo;
 
 namespace TgaBuilderLib.Psd
 {
@@ -68,9 +70,9 @@ namespace TgaBuilderLib.Psd
             /// </summary>
             private Layer Layer { get; set; }
 
-            public string Key { get; }
+            public string Key { get; protected set; }
 
-            public byte[] Data { get; } = Array.Empty<byte>();
+            public byte[] Data { get; protected set; } = Array.Empty<byte>();
 
             public void Save(BinaryReverseWriter writer)
             {
@@ -86,6 +88,45 @@ namespace TgaBuilderLib.Psd
             public BinaryReverseReader DataReader
             {
                 get => new BinaryReverseReader(new MemoryStream(Data));
+            }
+        }
+
+        /// <summary>
+        /// The Luni layer cantains the layer name in unicode
+        /// </summary>
+        public class UnicodeNameLayerInfo : AdjustmentLayerInfo
+        {
+            public UnicodeNameLayerInfo(Layer layer, string layerNameUnicode) 
+                : base("luni", layer)
+            {
+
+                int len = layerNameUnicode.Length;
+
+                using (var memoryStream = new MemoryStream())
+                using (var writer = new BinaryReverseWriter(memoryStream))
+                {
+                    writer.Write(len + 1);
+
+                    writer.Write((byte)0);
+
+                    writer.Write(Encoding.Unicode.GetBytes(layerNameUnicode));
+
+                    writer.Write((byte)0);
+
+                    Data = memoryStream.ToArray();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Color setting of the layer name text
+        /// </summary>
+        public class SheetColorLayerInfo : AdjustmentLayerInfo
+        {
+            public SheetColorLayerInfo(Layer layer)
+                : base("lclr", layer)
+            {
+                Data = new byte[8];
             }
         }
 

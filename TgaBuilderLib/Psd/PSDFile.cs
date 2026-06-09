@@ -209,10 +209,13 @@ namespace TgaBuilderLib.Psd
         /// </param>
         public void Save(Stream stream, IReadableBitmap background, IEnumerable<PsdLayerInfo> layerInfos)
         {
-            int width  = background.PixelWidth;
-            int height = background.PixelHeight;
-            const short depth        = 8;
-            const short channelCount = 4;  // RGBA
+            Version = 1;
+
+            Columns = background.PixelWidth;
+            Rows = background.PixelHeight;
+
+            Depth = 8;
+            Channels = 4; // RGBA
 
             var writer    = new BinaryReverseWriter(stream);
             var layerList = layerInfos.Select(CreateLayerFromInfo).ToList();
@@ -222,12 +225,12 @@ namespace TgaBuilderLib.Psd
 
             // ── Header ──────────────────────────────────────────────────────────
             writer.Write("8BPS".ToCharArray());       // PSD signature
-            writer.Write((short)1);                   // version (always 1)
+            writer.Write(Version);                   // version (always 1)
             writer.Write(new byte[6]);                // reserved (6 zero bytes)
-            writer.Write(channelCount);               // number of channels (RGBA = 4)
-            writer.Write(height);                     // rows
-            writer.Write(width);                      // columns
-            writer.Write(depth);                      // bits per channel (8)
+            writer.Write(Channels);               // number of channels (RGBA = 4)
+            writer.Write(Rows);                     // rows
+            writer.Write(Columns);                      // columns
+            writer.Write((short)Depth);                      // bits per channel (8)
             writer.Write((short)ColorMode.RGB);       // colour mode
 
             // ── Colour Mode Data (empty for RGB) ────────────────────────────────
@@ -278,21 +281,21 @@ namespace TgaBuilderLib.Psd
 
                 // ── Global Layer Mask (none) ──
                 writer.Write((uint)0);
+
+                // ── Patterns block ──
+
+                // Krita adds a patterns block here, even if no patterns are included. 
+                // Might be mandaory for a valid PSD.
+                string patterns = "8BIMPatt\0\0\0\0";
+                writer.Write(patterns.ToCharArray());
             }
-
-            // ── Patterns block ───────────────────────────────────────────────────
-
-            // Krita adds a patterns block here, even if no patterns are included. 
-            // Might be mandaory for a valid PSD.
-            string patterns = "8BIMPatt\0\0\0\0";
-            writer.Write(patterns.ToCharArray());
 
             // ── Merged Image Data (RLE compressed) ───────────────────────────────
             writer.Write((short)ImageCompression.Rle);
 
-            int   pixelCount = width * height;
+            int   pixelCount = Columns * Rows;
             var   bgra       = new byte[pixelCount * 4];
-            background.CopyPixels(new PixelRect(0, 0, width, height), bgra, width * 4, 0);
+            background.CopyPixels(new PixelRect(0, 0, Columns, Rows), bgra, Columns * 4, 0);
 
             // PSD stores channels as separate planar arrays: R, G, B, A
             // BGRA layout: [0]=B  [1]=G  [2]=R  [3]=A
@@ -310,19 +313,19 @@ namespace TgaBuilderLib.Psd
             }
 
             var channelPlanes = new[] { rPlane, gPlane, bPlane, aPlane };
-            var rowLengthTable = new short[channelCount][];
-            var compressedChannelData = new byte[channelCount][];
+            var rowLengthTable = new short[Channels][];
+            var compressedChannelData = new byte[Channels][];
 
-            for (int ch = 0; ch < channelCount; ch++)
+            for (int ch = 0; ch < Channels; ch++)
             {
-                rowLengthTable[ch] = new short[height];
+                rowLengthTable[ch] = new short[Rows];
 
                 using var channelStream = new MemoryStream();
 
-                for (int row = 0; row < height; row++)
+                for (int row = 0; row < Rows; row++)
                 {
-                    int rowIndex = row * width;
-                    int encodedLength = RleHelper.EncodedRow(channelStream, channelPlanes[ch], rowIndex, width);
+                    int rowIndex = row * Columns;
+                    int encodedLength = RleHelper.EncodedRow(channelStream, channelPlanes[ch], rowIndex, Columns);
 
                     if (encodedLength > short.MaxValue)
                         throw new InvalidDataException("RLE row length exceeds PSD 16-bit row length limit.");
@@ -333,15 +336,15 @@ namespace TgaBuilderLib.Psd
                 compressedChannelData[ch] = channelStream.ToArray();
             }
 
-            for (int ch = 0; ch < channelCount; ch++)
+            for (int ch = 0; ch < Channels; ch++)
             {
-                for (int row = 0; row < height; row++)
+                for (int row = 0; row < Rows; row++)
                 {
                     writer.Write(rowLengthTable[ch][row]);
                 }
             }
 
-            for (int ch = 0; ch < channelCount; ch++)
+            for (int ch = 0; ch < Channels; ch++)
             {
                 writer.Write(compressedChannelData[ch]);
             }
@@ -353,7 +356,8 @@ namespace TgaBuilderLib.Psd
         private Layer CreateLayerFromInfo(PsdLayerInfo info)
         {
             var layer = new Layer(this, info.Rect, info.Name, info.Opacity,
-                                  info.Visible, clipping: false, info.BlendModeKey);
+                                  info.Visible, clipping: false, info.BlendModeKey,
+                                  isModernPsdLayer: true);
 
             int pixelCount = info.Rect.Width * info.Rect.Height;
             var bgra       = new byte[pixelCount * 4];

@@ -32,108 +32,67 @@ namespace TgaBuilderLib.Psd
 {
     class RleHelper
     {
-        private class RlePacketStateMachine
+        public static int EncodedRow(
+            Stream stream,
+            byte[] imgData,
+            int startIdx,
+            int columns)
         {
-            private bool _rlePacket;
-            private readonly byte[] _packetValues = new byte[128];
-            private int _packetLength;
-            private readonly Stream _stream;
+            int remaining = columns;
+            int src = startIdx;
 
-            internal void Flush()
+            long startPos = stream.Position;
+
+            while (remaining > 0)
             {
-                byte header;
-                if (_rlePacket)
+                int i = 0;
+
+                while (i < 128 
+                       && (remaining - i > 0) 
+                       && imgData[src] == imgData[src + i])
                 {
-                    header = (byte)-(_packetLength - 1);
+                    i++;
+                }
+
+                if (i > 1)
+                {
+                    // Run found
+                    stream.WriteByte((byte)(-(i - 1)));
+                    stream.WriteByte(imgData[src]);
+
+                    src += i;
+                    remaining -= i;
                 }
                 else
                 {
-                    header = (byte)(_packetLength - 1);
-                }
+                    // Search literal block
+                    i = 0;
 
-                _stream.WriteByte(header);
+                    while (i < 128 && (remaining - (i + 1) > 0)
+                          && (imgData[src + i] != imgData[src + i + 1]
+                          || remaining - (i + 2) <= 0 
+                          || imgData[src + i] != imgData[src + i + 2]))
+                    {
+                        i++;
+                    }
 
-                int length = _rlePacket ? 1 : _packetLength;
+                    if (remaining == 1)
+                        i = 1;
 
-                _stream.Write(_packetValues, 0, length);
+                    if (i > 0)
+                    {
+                        stream.WriteByte((byte)(i - 1));
 
-                _packetLength = 0;
-            }
+                        for (int j = 0; j < i; j++)
+                            stream.WriteByte(imgData[src + j]);
 
-            internal void Push(byte color)
-            {
-                switch (_packetLength)
-                {
-                    case 0:
-                        _rlePacket = false;
-                        _packetValues[0] = color;
-                        _packetLength = 1;
-                        break;
-                    case 1:
-                        _rlePacket = color == _packetValues[0];
-                        _packetValues[1] = color;
-                        _packetLength = 2;
-                        break;
-                    default:
-                        if (_packetLength == _packetValues.Length)
-                        {
-                            // Packet is full. Start a new one.
-                            Flush();
-                            Push(color);
-                        }
-                        else if (_packetLength >= 2 && _rlePacket && color != _packetValues[_packetLength - 1])
-                        {
-                            // We were filling in an RLE packet, and we got a non-repeated color.
-                            // Emit the current packet and start a new one.
-                            Flush();
-                            Push(color);
-                        }
-                        else if (_packetLength >= 2 && _rlePacket && color == _packetValues[_packetLength - 1])
-                        {
-                            // We are filling in an RLE packet, and we got another repeated color.
-                            // Add the new color to the current packet.
-                            ++_packetLength;
-                            _packetValues[_packetLength - 1] = color;
-                        }
-                        else if (_packetLength >= 2 && !_rlePacket && color != _packetValues[_packetLength - 1])
-                        {
-                            // We are filling in a raw packet, and we got another random color.
-                            // Add the new color to the current packet.
-                            ++_packetLength;
-                            _packetValues[_packetLength - 1] = color;
-                        }
-                        else if (_packetLength >= 2 && !_rlePacket && color == _packetValues[_packetLength - 1])
-                        {
-                            // We were filling in a raw packet, but we got a repeated color.
-                            // Emit the current packet without its last color, and start a
-                            // new RLE packet that starts with a length of 2.
-                            --_packetLength;
-                            Flush();
-                            Push(color);
-                            Push(color);
-                        }
-                        break;
+                        src += i;
+                        remaining -= i;
+                    }
                 }
             }
 
-            internal RlePacketStateMachine(Stream stream)
-            {
-                _stream = stream;
-            }
-        }
-
-        public static int EncodedRow(Stream stream, byte[] imgData, int startIdx, int columns)
-        {
-            long startPosition = stream.Position;
-
-            RlePacketStateMachine machine = new RlePacketStateMachine(stream);
-
-            for (int x = 0; x < columns; ++x)
-                machine.Push(imgData[x + startIdx]);
-
-            machine.Flush();
-
-            return (int)(stream.Position - startPosition);
+            return (int)(stream.Position - startPos);
         }
 
         public static void DecodedRow(Stream stream, byte[] imgData, int startIdx, int columns, int compressedLength = -1)

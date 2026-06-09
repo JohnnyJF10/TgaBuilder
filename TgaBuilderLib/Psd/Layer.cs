@@ -54,15 +54,24 @@ namespace TgaBuilderLib.Psd
         /// <summary>
         /// Creates a new Layer for programmatic construction when saving a PSD file.
         /// </summary>
-        public Layer(PsdFile psdFile, PixelRect rect, string name,
-                     byte opacity = 255, bool visible = true,
-                     bool clipping = false, string blendModeKey = "norm")
+        public Layer(PsdFile psdFile, 
+                     PixelRect rect, 
+                     string name,
+                     byte opacity = 255, 
+                     bool visible = true,
+                     bool clipping = false, 
+                     string blendModeKey = "norm",
+                     bool isModernPsdLayer = false)
         {
             if (blendModeKey.Length != 4)
                 throw new ArgumentException("Blend mode key must be exactly 4 characters.", nameof(blendModeKey));
 
             SortedChannels = new SortedList<short, Channel>();
             AdjustmentInfo = new List<AdjustmentLayerInfo>();
+
+            _ = new UnicodeNameLayerInfo(this, name);
+            _ = new SheetColorLayerInfo(this);
+
             Channels = new List<Channel>();
             PsdFile = psdFile;
             Rect = rect;
@@ -70,7 +79,7 @@ namespace TgaBuilderLib.Psd
             Opacity = opacity;
             Clipping = clipping;
             _blendModeKeyStr = blendModeKey;
-            _flags = new BitVector32(0);
+            _flags = new BitVector32(isModernPsdLayer ? 8 : 0);
             Visible = visible;
         }
 
@@ -287,13 +296,14 @@ namespace TgaBuilderLib.Psd
 
                 int paddingBytes = (int)((reverseWriter.BaseStream.Position - namePosition) % 4);
                 Debug.Print("Layer {0} write padding bytes after name", paddingBytes);
-
+                
                 for (int i = 0; i < paddingBytes; i++)
                 {
                     reverseWriter.Write((byte)0);
                 }
 
-                foreach (AdjustmentLayerInfo info in AdjustmentInfo) info.Save(reverseWriter);
+                foreach (AdjustmentLayerInfo info in AdjustmentInfo) 
+                    info.Save(reverseWriter);
             }
         }
 

@@ -149,18 +149,13 @@ namespace TgaBuilderLib.Psd
                     var memoryStream = new MemoryStream();
                     var reverseWriter = new BinaryReverseWriter(memoryStream);
 
-                    // we will write the correct lengths later, so remember 
-                    // the position
                     long lengthPosition = reverseWriter.BaseStream.Position;
 
                     var rleRowLengths = new int[Layer.Rect.Height];
 
-                    if (ImageCompression == ImageCompression.Rle)
+                    for (int i = 0; i < rleRowLengths.Length; i++)
                     {
-                        for (int i = 0; i < rleRowLengths.Length; i++)
-                        {
-                            reverseWriter.Write((short)0x1234);
-                        }
+                        reverseWriter.Write((short)0x1234);
                     }
 
                     int bytesPerRow = 0;
@@ -168,8 +163,6 @@ namespace TgaBuilderLib.Psd
                     switch (Layer.PsdFile.Depth)
                     {
                         case 1:
-                            bytesPerRow = Layer.Rect.Width;//NOT Sure
-                            break;
                         case 8:
                             bytesPerRow = Layer.Rect.Width;
                             break;
@@ -195,12 +188,10 @@ namespace TgaBuilderLib.Psd
 
                     reverseWriter.BaseStream.Position = endPosition;
 
-                    memoryStream.Close();
-
                     Data = memoryStream.ToArray();
 
+                    reverseWriter.Dispose();
                     memoryStream.Dispose();
-
                 }
                 else
                 {
