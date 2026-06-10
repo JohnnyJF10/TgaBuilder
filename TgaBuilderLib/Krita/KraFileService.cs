@@ -1,5 +1,7 @@
+using System.Runtime.InteropServices;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
+using TgaBuilderLib.Icc;
 
 namespace TgaBuilderLib.Krita
 {
@@ -46,6 +48,12 @@ namespace TgaBuilderLib.Krita
             byte[]? mergedPng = null;
             byte[]? previewPng = null;
 
+            var sRgbBuildInIccProfile = new IccProfile();
+
+            sRgbBuildInIccProfile.PrimaryPlatformVal = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? PrimaryPlatform.Microsoft
+                : PrimaryPlatform.Apple;
+
             byte[] merged = Composite(LayerSources, canvasW, canvasH);
             mergedPng = EncodePng(merged, canvasW, canvasH);
 
@@ -61,7 +69,7 @@ namespace TgaBuilderLib.Krita
                             canvasW: canvasW,
                             canvasH: canvasH,
                             layers: LayerSources,
-                            iccProfile: null,
+                            iccProfile: sRgbBuildInIccProfile.Build(),
                             mergedPng: mergedPng,
                             previewPng: previewPng);
 

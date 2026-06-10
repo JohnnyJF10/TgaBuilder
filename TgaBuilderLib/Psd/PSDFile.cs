@@ -17,7 +17,7 @@ modification, are permitted provided that the following conditions are met:
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BEHelpers LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -27,614 +27,130 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using TgaBuilderLib.Abstraction;
+namespace TgaBuilderLib.Psd;
 
-namespace TgaBuilderLib.Psd
+public partial class PsdFile
 {
-    public class PsdFile
+    private List<Layer> _layers;
+    private byte[] _globalLayerMaskData = Array.Empty<byte>(); // Masking data for the PSD
+    private short _channels;
+    private int _rows;
+    private int _depth;
+    private int _columns;
+
+    public PsdFile()
     {
-        private List<Layer> _layers;
-        private byte[] _globalLayerMaskData = Array.Empty<byte>(); // Masking data for the PSD
-        private short _channels;
-        private int _rows;
-        private int _depth;
-        private int _columns;
+        _layers = new List<Layer>();
+        Version = 1;
+        _imageResources = new List<ImageResource>();
+    }
 
-        public PsdFile()
+    /// <summary>
+    /// If ColorMode is ColorModes.Indexed, the following 768 bytes will contain 
+    /// a 256-color palette. If the ColorMode is ColorModes.Duotone, the data 
+    /// following presumably consists of screen parameters and other related information. 
+    /// Unfortunately, it is intentionally not documented by Adobe, and non-Photoshop 
+    /// readers are advised to treat duotone images as gray-scale images.
+    /// </summary>
+    public byte[] ColorModeData = Array.Empty<byte>();
+
+    public short Version { get; private set; }
+
+
+    /// <summary>
+    /// The number of channels in the image, including any alpha channels.
+    /// Supported range is 1 to 24.
+    /// </summary>
+    public short Channels
+    {
+        get { return _channels; }
+        private set
         {
-            _layers = new List<Layer>();
-            Version = 1;
-            _imageResources = new List<ImageResource>();
+            if (value < 1 || value > 24) throw new ArgumentException("Supported range is 1 to 24");
+            _channels = value;
         }
+    }
 
-        /// <summary>
-        /// If ColorMode is ColorModes.Indexed, the following 768 bytes will contain 
-        /// a 256-color palette. If the ColorMode is ColorModes.Duotone, the data 
-        /// following presumably consists of screen parameters and other related information. 
-        /// Unfortunately, it is intentionally not documented by Adobe, and non-Photoshop 
-        /// readers are advised to treat duotone images as gray-scale images.
-        /// </summary>
-        public byte[] ColorModeData = Array.Empty<byte>();
-
-        public short Version { get; private set; }
-
-
-        /// <summary>
-        /// The number of channels in the image, including any alpha channels.
-        /// Supported range is 1 to 24.
-        /// </summary>
-        public short Channels
+    /// <summary>
+    /// The height of the image in pixels.
+    /// </summary>
+    public int Rows
+    {
+        get => _rows;
+        private set
         {
-            get { return _channels; }
-            private set
+            if (value < 0 || value > 30000) throw new ArgumentException("Supported range is 1 to 30000.");
+            _rows = value;
+        }
+    }
+
+    /// <summary>
+    /// The width of the image in pixels. 
+    /// </summary>
+    public int Columns
+    {
+        get => _columns;
+        private set
+        {
+            if (value < 0 || value > 30000)
+                throw new ArgumentException("Supported range is 1 to 30000.");
+            _columns = value;
+        }
+    }
+
+    /// <summary>
+    /// The number of bits per channel. Supported values are 1, 8, and 16.
+    /// </summary>
+    public int Depth
+    {
+        get => _depth;
+        private set
+        {
+            if (value == 1 || value == 8 || value == 16)
             {
-                if (value < 1 || value > 24) throw new ArgumentException("Supported range is 1 to 24");
-                _channels = value;
+                _depth = value;
             }
-        }
-
-        /// <summary>
-        /// The height of the image in pixels.
-        /// </summary>
-        public int Rows
-        {
-            get => _rows;
-            private set
+            else
             {
-                if (value < 0 || value > 30000) throw new ArgumentException("Supported range is 1 to 30000.");
-                _rows = value;
-            }
-        }
-
-        /// <summary>
-        /// The width of the image in pixels. 
-        /// </summary>
-        public int Columns
-        {
-            get => _columns;
-            private set
-            {
-                if (value < 0 || value > 30000)
-                    throw new ArgumentException("Supported range is 1 to 30000.");
-                _columns = value;
-            }
-        }
-
-        /// <summary>
-        /// The number of bits per channel. Supported values are 1, 8, and 16.
-        /// </summary>
-        public int Depth
-        {
-            get => _depth;
-            private set
-            {
-                if (value == 1 || value == 8 || value == 16)
-                {
-                    _depth = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Supported values are 1, 8, and 16.");
-                }
+                throw new ArgumentException("Supported values are 1, 8, and 16.");
             }
         }
+    }
 
-        /// <summary>
-        /// The color mode of the file.
-        /// </summary>
-        public ColorMode ColorMode { get; private set; }
+    /// <summary>
+    /// The color mode of the file.
+    /// </summary>
+    public ColorMode ColorMode { get; private set; }
 
-        public IEnumerable<Layer> Layers => _layers;
+    public IEnumerable<Layer> Layers => _layers;
 
-        public bool AbsoluteAlpha { get; private set; }
+    public bool AbsoluteAlpha { get; private set; }
 
-        public byte[][]? ImageData { get; private set; }
+    public byte[][]? ImageData { get; private set; }
 
-        public ImageCompression ImageCompression { get; private set; }
+    public ImageCompression ImageCompression { get; private set; }
 
-        private List<ImageResource> _imageResources;
+    private List<ImageResource> _imageResources;
 
-        /// <summary>
-        /// The Image resource blocks for the file
-        /// </summary>
-        public IEnumerable<ImageResource> ImageResources => _imageResources;
+    /// <summary>
+    /// The Image resource blocks for the file
+    /// </summary>
+    public IEnumerable<ImageResource> ImageResources => _imageResources;
 
-        public ResolutionInfo? Resolution
+    public ResolutionInfo? Resolution
+    {
+        get => (ResolutionInfo?)_imageResources.Find(x => x.ID == (int)ResourceIDs.ResolutionInfo);
+
+        private set
         {
-            get => (ResolutionInfo?)_imageResources.Find(x => x.ID == (int)ResourceIDs.ResolutionInfo);
-
-            private set
+            ImageResource? oldValue = _imageResources.Find(x => x.ID == (int)ResourceIDs.ResolutionInfo);
+            if (oldValue != null)
             {
-                ImageResource? oldValue = _imageResources.Find(x => x.ID == (int)ResourceIDs.ResolutionInfo);
-                if (oldValue != null)
-                {
-                    _imageResources.Remove(oldValue);
-                }
-
-                if (value != null)
-                    _imageResources.Add(value);
-            }
-        }
-
-        public PsdFile? Load(string filename, IMediaFactory? mediaFactory = null)
-        {
-            using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
-            {
-                return Load(stream, mediaFactory);
-            }
-        }
-
-        public PsdFile? Load(byte[] data, IMediaFactory? mediaFactory = null)
-        {
-            var stream = new MemoryStream(data);
-
-            return Load(stream, mediaFactory);
-        }
-
-        /// <summary>
-        /// Saves a 32-bit RGBA PSD file containing a merged background image and a set of layers.
-        /// </summary>
-        /// <param name="filename">Destination file path.</param>
-        /// <param name="background">
-        /// Merged/composite background bitmap in BGRA 32-bit format.
-        /// Its dimensions define the PSD canvas size.
-        /// </param>
-        /// <param name="layerInfos">
-        /// Layers to include in the PSD, listed from bottom to top.
-        /// Each layer bitmap must be in BGRA 32-bit format.
-        /// </param>
-        public void Save(string filename, IReadableBitmap background, IEnumerable<PsdLayerInfo> layerInfos)
-        {
-            using var stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
-            Save(stream, background, layerInfos);
-        }
-
-        /// <summary>
-        /// Writes a 32-bit RGBA PSD file to the given stream.
-        /// </summary>
-        /// <param name="stream">Output stream (must be writable and seekable).</param>
-        /// <param name="background">
-        /// Merged/composite background bitmap in BGRA 32-bit format.
-        /// Its dimensions define the PSD canvas size.
-        /// </param>
-        /// <param name="layerInfos">
-        /// Layers to include in the PSD, listed from bottom to top.
-        /// Each layer bitmap must be in BGRA 32-bit format.
-        /// </param>
-        public void Save(Stream stream, IReadableBitmap background, IEnumerable<PsdLayerInfo> layerInfos)
-        {
-            Version = 1;
-
-            Columns = background.PixelWidth;
-            Rows = background.PixelHeight;
-
-            Depth = 8;
-            Channels = 4; // RGBA
-
-            var writer    = new BinaryReverseWriter(stream);
-            var layerList = layerInfos.Select(CreateLayerFromInfo).ToList();
-
-            if (!layerList.Any())
-                throw new ArgumentException("Error, list of Layer Infos cannot be empty");
-
-            // ── Header ──────────────────────────────────────────────────────────
-            writer.Write("8BPS".ToCharArray());       // PSD signature
-            writer.Write(Version);                   // version (always 1)
-            writer.Write(new byte[6]);                // reserved (6 zero bytes)
-            writer.Write(Channels);               // number of channels (RGBA = 4)
-            writer.Write(Rows);                     // rows
-            writer.Write(Columns);                      // columns
-            writer.Write((short)Depth);                      // bits per channel (8)
-            writer.Write((short)ColorMode.RGB);       // colour mode
-
-            // ── Colour Mode Data (empty for RGB) ────────────────────────────────
-            writer.Write((uint)0);
-
-            // ── Image Resources (ResolutionInfo: 100 DPI) ────────────────────────
-            using (var imgResStream = new MemoryStream())
-            {
-                var imgResWriter = new BinaryReverseWriter(imgResStream);
-
-                new ResolutionInfo(100, 100).Save(imgResWriter);
-
-                new GridGuidesInfo().Save(imgResWriter);
-
-                new IccProfile().Save(imgResWriter);
-
-                imgResWriter.Flush();
-
-                byte[] imgResBytes = imgResStream.ToArray();
-
-                writer.Write((uint)imgResBytes.Length);
-                writer.Write(imgResBytes);
+                _imageResources.Remove(oldValue);
             }
 
-            // ── Layer and Mask Info ──────────────────────────────────────────────
-            using (new LengthWriter(writer))
-            {
-                // ── Layer Info ──
-                using (new LengthWriter(writer))
-                {
-                    // Negative count: signals that the merged image's first alpha
-                    // channel carries the transparency of the flattened result.
-                    writer.Write((short)-layerList.Count);
-
-                    // Layer record headers (rect, channel list, blend info, name …)
-                    foreach (var layer in layerList)
-                        layer.Save(writer);
-
-                    // Channel pixel data for every layer
-                    foreach (var layer in layerList)
-                        foreach (var channel in layer.Channels)
-                            channel.SavePixelData(writer);
-
-                    // Pad the layer info to an even byte boundary
-                    if (writer.BaseStream.Position % 2 == 1)
-                        writer.Write((byte)0);
-                }
-
-                // ── Global Layer Mask (none) ──
-                writer.Write((uint)0);
-
-                // ── Patterns block ──
-
-                // Krita adds a patterns block here, even if no patterns are included. 
-                // Might be mandaory for a valid PSD.
-                string patterns = "8BIMPatt\0\0\0\0";
-                writer.Write(patterns.ToCharArray());
-            }
-
-            // ── Merged Image Data (RLE compressed) ───────────────────────────────
-            writer.Write((short)ImageCompression.Rle);
-
-            int   pixelCount = Columns * Rows;
-            var   bgra       = new byte[pixelCount * 4];
-            background.CopyPixels(new PixelRect(0, 0, Columns, Rows), bgra, Columns * 4, 0);
-
-            // PSD stores channels as separate planar arrays: R, G, B, A
-            // BGRA layout: [0]=B  [1]=G  [2]=R  [3]=A
-            var rPlane = new byte[pixelCount];
-            var gPlane = new byte[pixelCount];
-            var bPlane = new byte[pixelCount];
-            var aPlane = new byte[pixelCount];
-
-            for (int i = 0; i < pixelCount; i++)
-            {
-                bPlane[i] = bgra[i * 4];
-                gPlane[i] = bgra[i * 4 + 1];
-                rPlane[i] = bgra[i * 4 + 2];
-                aPlane[i] = bgra[i * 4 + 3];
-            }
-
-            var channelPlanes = new[] { rPlane, gPlane, bPlane, aPlane };
-            var rowLengthTable = new short[Channels][];
-            var compressedChannelData = new byte[Channels][];
-
-            for (int ch = 0; ch < Channels; ch++)
-            {
-                rowLengthTable[ch] = new short[Rows];
-
-                using var channelStream = new MemoryStream();
-
-                for (int row = 0; row < Rows; row++)
-                {
-                    int rowIndex = row * Columns;
-                    int encodedLength = RleHelper.EncodedRow(channelStream, channelPlanes[ch], rowIndex, Columns);
-
-                    if (encodedLength > short.MaxValue)
-                        throw new InvalidDataException("RLE row length exceeds PSD 16-bit row length limit.");
-
-                    rowLengthTable[ch][row] = (short)encodedLength;
-                }
-
-                compressedChannelData[ch] = channelStream.ToArray();
-            }
-
-            for (int ch = 0; ch < Channels; ch++)
-            {
-                for (int row = 0; row < Rows; row++)
-                {
-                    writer.Write(rowLengthTable[ch][row]);
-                }
-            }
-
-            for (int ch = 0; ch < Channels; ch++)
-            {
-                writer.Write(compressedChannelData[ch]);
-            }
-        }
-
-        /// <summary>
-        /// Creates a <see cref="Layer"/> with four RGBA channels from a <see cref="PsdLayerInfo"/>.
-        /// </summary>
-        private Layer CreateLayerFromInfo(PsdLayerInfo info)
-        {
-            var layer = new Layer(this, info.Rect, info.Name, info.Opacity,
-                                  info.Visible, clipping: false, info.BlendModeKey,
-                                  isModernPsdLayer: true);
-
-            int pixelCount = info.Rect.Width * info.Rect.Height;
-            var bgra       = new byte[pixelCount * 4];
-            info.Bitmap.CopyPixels(
-                new PixelRect(0, 0, info.Rect.Width, info.Rect.Height),
-                bgra, info.Rect.Width * 4, 0);
-
-            // Separate BGRA interleaved pixels into planar channel arrays
-            var rData = new byte[pixelCount];
-            var gData = new byte[pixelCount];
-            var bData = new byte[pixelCount];
-            var aData = new byte[pixelCount];
-
-            for (int i = 0; i < pixelCount; i++)
-            {
-                bData[i] = bgra[i * 4];
-                gData[i] = bgra[i * 4 + 1];
-                rData[i] = bgra[i * 4 + 2];
-                aData[i] = bgra[i * 4 + 3];
-            }
-
-            // Channel ID -1 = alpha/transparency; 0 = red; 1 = green; 2 = blue.
-            // Insertion order determines the write order for both the header and the pixel data.
-            _ = new Layer.Channel(-1, layer) { ImageData = aData, ImageCompression = ImageCompression.Rle };
-            _ = new Layer.Channel(0,  layer) { ImageData = rData, ImageCompression = ImageCompression.Rle };
-            _ = new Layer.Channel(1,  layer) { ImageData = gData, ImageCompression = ImageCompression.Rle };
-            _ = new Layer.Channel(2,  layer) { ImageData = bData, ImageCompression = ImageCompression.Rle };
-
-            return layer;
-        }
-
-        public PsdFile? Load(Stream stream, IMediaFactory? mediaFactory = null)
-        {
-            //binary reverse reader reads data types in big-endian format.
-            BinaryReverseReader reader = new BinaryReverseReader(stream);
-
-            #region "Headers"
-            //The headers area is used to check for a valid PSD file
-
-            string signature = new string(reader.ReadChars(4));
-
-            if (signature != "8BPS") throw new IOException("Bad or invalid file stream supplied");
-
-            //get the version number, should be 1 always
-            if ((Version = reader.ReadInt16()) != 1) throw new IOException("Invalid version number supplied");
-
-            //get rid of the 6 bytes reserved in PSD format
-            reader.BaseStream.Position += 6;
-
-            //get the rest of the information from the PSD file.
-            //Every time ReadInt16() is called, it reads 2 bytes.
-            //Every time ReadInt32() is called, it reads 4 bytes.
-            _channels = reader.ReadInt16();
-            _rows = reader.ReadInt32();
-            _columns = reader.ReadInt32();
-            _depth = reader.ReadInt16();
-            ColorMode = (ColorMode)reader.ReadInt16();
-
-            //by end of headers, the reader has read 26 bytes into the file.
-            #endregion //End Headers
-
-            #region "ColorModeData"
-
-            uint paletteLength = reader.ReadUInt32(); //readUint32() advances the reader 4 bytes.
-            if (paletteLength > 0)
-            {
-                ColorModeData = reader.ReadBytes((int)paletteLength);
-            }
-            #endregion //End ColorModeData
-
-            #region "Loading Image Resources"
-            //This part takes extensive use of classes that I didn't write therefore
-            //I can't document much on what they do.
-
-
-            _imageResources.Clear();
-
-            uint imgResLength = reader.ReadUInt32();
-            if (imgResLength > 0)
-            {
-                long startPosition = reader.BaseStream.Position;
-
-                while (reader.BaseStream.Position - startPosition < imgResLength)
-                {
-                    ImageResource imgRes = new ImageResource(reader);
-
-                    ResourceIDs resID = (ResourceIDs)imgRes.ID;
-                    switch (resID)
-                    {
-                        case ResourceIDs.ResolutionInfo:
-                            imgRes = new ResolutionInfo(imgRes);
-                            break;
-                        case ResourceIDs.GridGuidesInfo:
-                            imgRes = new GridGuidesInfo(imgRes);
-                            break;
-                        case ResourceIDs.Thumbnail1:
-                        case ResourceIDs.Thumbnail2:
-                            imgRes = new Thumbnail(imgRes, mediaFactory);
-                            break;
-                        case ResourceIDs.AlphaChannelNames:
-                            imgRes = new AlphaChannels(imgRes);
-                            break;
-                    }
-
-                    _imageResources.Add(imgRes);
-                }
-                // make sure we are not on a wrong offset, so set the stream position 
-                // manually
-                reader.BaseStream.Position = startPosition + imgResLength;
-            }
-
-            #endregion //End LoadingImageResources
-
-            #region "Layer and Mask Info"
-            //We are gonna load up all the layers and masking of the PSD now.
-            uint layersAndMaskLength = reader.ReadUInt32();
-
-            if (layersAndMaskLength > 0)
-            {
-                //new start position
-                long startPosition = reader.BaseStream.Position;
-
-                //Lets start by loading up all the layers
-                LoadLayers(reader);
-                //we are done the layers, load up the masks
-                LoadGlobalLayerMask(reader);
-
-                // make sure we are not on a wrong offset, so set the stream position 
-                // manually
-
-                // Krita is adding the patterns block here. If now patterns are included, it has a lengsth of 12 bytes.
-                reader.BaseStream.Position = startPosition + layersAndMaskLength;
-            }
-            #endregion //End Layer and Mask info
-
-            #region "Loading Final Image"
-
-            //we have loaded up all the information from the PSD file
-            //into variables we can use later on.
-
-            //lets finish loading the raw data that defines the image 
-            //in the picture.
-
-
-            ImageCompression = (ImageCompression)reader.ReadInt16();
-
-            ImageData = new byte[_channels][];
-
-            var rowLengthTable = new int[_channels][];
-
-            //---------------------------------------------------------------
-
-            if (ImageCompression == ImageCompression.Rle)
-            {
-                // The RLE-compressed data is proceeded by a 2-byte data count for each row in the data,
-                // which we're going to just skip.
-
-                for (int ch = 0; ch < _channels; ch++)
-                {
-                    rowLengthTable[ch] = new int[_rows];
-                    for (int i = 0; i < _rows; i++)
-                    {
-                        rowLengthTable[ch][i] = reader.ReadInt16();
-                    }
-                }
-            }
-
-            //---------------------------------------------------------------
-
-            int bytesPerRow = 0;
-
-            switch (_depth)
-            {
-                case 1:
-                    bytesPerRow = _columns;//NOT Sure
-                    break;
-                case 8:
-                    bytesPerRow = _columns;
-                    break;
-                case 16:
-                    bytesPerRow = _columns * 2;
-                    break;
-            }
-
-            //---------------------------------------------------------------
-
-            for (int ch = 0; ch < _channels; ch++)
-            {
-                ImageData[ch] = new byte[_rows * bytesPerRow];
-
-                switch (ImageCompression)
-                {
-                    case ImageCompression.Raw:
-                        reader.Read(ImageData[ch], 0, ImageData[ch].Length);
-                        break;
-
-                    case ImageCompression.Rle:
-                        {
-                            for (int i = 0; i < _rows; i++)
-                            {
-                                int rowIndex = i * _columns;
-
-                                int compressedLength = rowLengthTable[ch][i];
-
-                                RleHelper.DecodedRow(reader.BaseStream, ImageData[ch], rowIndex, bytesPerRow, compressedLength);
-                            }
-                        }
-                        break;
-                }
-            }
-
-            #endregion //End LoadingFinalImage
-
-            return this;
-        }
-
-        /// <summary>
-        /// Loads up the Layers of the supplied PSD file.
-        /// </summary>      
-        private void LoadLayers(BinaryReverseReader reader)
-        {
-
-            uint layersInfoSectionLength = reader.ReadUInt32();
-
-            if (layersInfoSectionLength <= 0)
-                return;
-
-            long startPosition = reader.BaseStream.Position;
-
-            short numberOfLayers = reader.ReadInt16();
-
-            // If <0, then number of layers is absolute value,
-            // and the first alpha channel contains the transparency data for
-            // the merged result.
-            if (numberOfLayers < 0)
-            {
-                AbsoluteAlpha = true;
-                numberOfLayers = Math.Abs(numberOfLayers);
-            }
-
-            _layers.Clear();
-
-            if (numberOfLayers == 0) return;
-
-            for (int i = 0; i < numberOfLayers; i++)
-            {
-                _layers.Add(new Layer(reader, this));
-            }
-
-            foreach (Layer layer in Layers)
-            {
-                foreach (Layer.Channel channel in layer.Channels.Where(c => c.ID != -2))
-                {
-                    channel.LoadPixelData(reader);
-                }
-                layer.MaskData?.LoadPixelData(reader);
-            }
-
-
-            if (reader.BaseStream.Position % 2 == 1) reader.ReadByte();
-
-            // make sure we are not on a wrong offset, so set the stream position 
-            // manually
-            reader.BaseStream.Position = startPosition + layersInfoSectionLength;
-        }
-
-        /// <summary>
-        /// Load up the masking information of the supplied PSD
-        /// </summary>        
-        private void LoadGlobalLayerMask(BinaryReverseReader reader)
-        {
-
-            uint maskLength = reader.ReadUInt32();
-
-            if (maskLength <= 0) return;
-
-            _globalLayerMaskData = reader.ReadBytes((int)maskLength);
+            if (value != null)
+                _imageResources.Add(value);
         }
     }
 }

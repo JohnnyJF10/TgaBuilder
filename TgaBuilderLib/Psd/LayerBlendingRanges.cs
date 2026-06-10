@@ -17,7 +17,7 @@ modification, are permitted provided that the following conditions are met:
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BEHelpers LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -26,43 +26,40 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using System.Diagnostics;
-using System.Globalization;
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+public partial class Layer
 {
-    public partial class Layer
+    public sealed class BlendingRanges
     {
-        public sealed class BlendingRanges
+        public BlendingRanges(Layer layer)
         {
-            public BlendingRanges(Layer layer)
-            {
-                Data = new byte[0];
-                Layer = layer;
-                Layer.BlendingRangesData = this;
-            }
-
-            public BlendingRanges(BinaryReverseReader reader, Layer layer)
-            {
-                Data = new byte[0];
-
-                Layer = layer;
-                int dataLength = reader.ReadInt32();
-                if (dataLength <= 0) return;
-
-                Data = reader.ReadBytes(dataLength);
-            }
-
-            public void Save(BinaryReverseWriter writer)
-            {
-
-                writer.Write((uint)Data.Length);
-                writer.Write(Data);
-            }
-
-            public Layer Layer { get; }
-
-            public byte[] Data { get; }
+            Data = new byte[0];
+            Layer = layer;
+            Layer.BlendingRangesData = this;
         }
+
+        public BlendingRanges(BinaryReverseReader reader, Layer layer)
+        {
+            Data = new byte[0];
+
+            Layer = layer;
+            int dataLength = reader.ReadInt32();
+            if (dataLength <= 0) return;
+
+            Data = reader.ReadBytes(dataLength);
+        }
+
+        public void Save(BinaryReverseWriter writer)
+        {
+
+            writer.Write((uint)Data.Length);
+            writer.Write(Data);
+        }
+
+        public Layer Layer { get; }
+
+        public byte[] Data { get; }
     }
 }

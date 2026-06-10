@@ -17,7 +17,7 @@ modification, are permitted provided that the following conditions are met:
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BEHelpers LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -28,33 +28,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+public enum ImageCompression
 {
-    public enum ImageCompression
-    {
-        /// <summary>
-        /// Raw data
-        /// </summary>
-        Raw = 0,
-        /// <summary>
-        /// RLE compressed
-        /// </summary>
-        Rle = 1,
-        /// <summary>
-        /// ZIP without prediction.
-        /// <remarks>
-        /// This is currently not supported since it is not documented.
-        /// Loading will result in an image where all channels are set to zero.
-        /// </remarks>
-        /// </summary>
-        Zip = 2,
-        /// <summary>
-        /// ZIP with prediction.
-        /// <remarks>
-        /// This is currently not supported since it is not documented. 
-        /// Loading will result in an image where all channels are set to zero.
-        /// </remarks>
-        /// </summary>
-        ZipPrediction = 3
-    }
+    /// <summary>
+    /// Raw data
+    /// </summary>
+    Raw = 0,
+    /// <summary>
+    /// RLE compressed
+    /// </summary>
+    Rle = 1,
+    /// <summary>
+    /// ZIP without prediction.
+    /// <remarks>
+    /// This is currently not supported since it is not documented.
+    /// Loading will result in an image where all channels are set to zero.
+    /// </remarks>
+    /// </summary>
+    Zip = 2,
+    /// <summary>
+    /// ZIP with prediction.
+    /// <remarks>
+    /// This is currently not supported since it is not documented. 
+    /// Loading will result in an image where all channels are set to zero.
+    /// </remarks>
+    /// </summary>
+    ZipPrediction = 3
 }

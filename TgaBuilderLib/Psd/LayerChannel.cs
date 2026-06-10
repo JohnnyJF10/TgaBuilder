@@ -17,7 +17,7 @@ modification, are permitted provided that the following conditions are met:
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BEHelpers LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -26,201 +26,197 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+public partial class Layer
 {
-    public partial class Layer
+    public class Channel
     {
-        public class Channel
+        /// <summary>
+        /// The layer to which this channel belongs.
+        /// </summary>
+        public Layer Layer { get; private set; }
+
+        /// <summary>
+        /// 0 = red, 1 = green, etc.
+        /// 1 = transparency mask
+        /// 2 = user supplied layer mask
+        /// </summary>
+        public short ID { get; private set; }
+
+        /// <summary>
+        /// The length of the compressed channel data.
+        /// </summary>
+        public int Length { get; private set; }
+
+        /// <summary>
+        /// The compressed raw channel data.
+        /// </summary>
+        public byte[] Data { get; set; } = null!;
+
+        public byte[] ImageData { get; set; } = null!;
+
+        public ImageCompression ImageCompression { get; set; }
+
+        internal Channel(short id, Layer layer)
         {
-            /// <summary>
-            /// The layer to which this channel belongs.
-            /// </summary>
-            public Layer Layer { get; private set; }
+            ID = id;
+            Layer = layer;
+            Layer.Channels.Add(this);
+            Layer.SortedChannels.Add(ID, this);
+        }
 
-            /// <summary>
-            /// 0 = red, 1 = green, etc.
-            /// 1 = transparency mask
-            /// 2 = user supplied layer mask
-            /// </summary>
-            public short ID { get; private set; }
+        internal Channel(BinaryReverseReader reverseReader, Layer layer)
+        {
 
-            /// <summary>
-            /// The length of the compressed channel data.
-            /// </summary>
-            public int Length { get; private set; }
+            ID = reverseReader.ReadInt16();
+            Length = reverseReader.ReadInt32();
 
-            /// <summary>
-            /// The compressed raw channel data.
-            /// </summary>
-            public byte[] Data { get; set; } = null!;
+            Layer = layer;
+        }
 
-            public byte[] ImageData { get; set; } = null!;
+        internal void Save(BinaryReverseWriter reverseWriter)
+        {
 
-            public ImageCompression ImageCompression { get; set; }
+            reverseWriter.Write(ID);
 
-            internal Channel(short id, Layer layer)
+            CompressImageData();
+
+            reverseWriter.Write(Data.Length + 2); // 2 bytes for the image compression
+        }
+
+        internal void LoadPixelData(BinaryReverseReader reverseReader)
+        {
+            Data = reverseReader.ReadBytes(Length);
+
+            using (BinaryReverseReader imageReader = DataReader!)
             {
-                ID = id;
-                Layer = layer;
-                Layer.Channels.Add(this);
-                Layer.SortedChannels.Add(ID, this);
-            }
+                ImageCompression = (ImageCompression)imageReader.ReadInt16();
 
-            internal Channel(BinaryReverseReader reverseReader, Layer layer)
-            {
-
-                ID = reverseReader.ReadInt16();
-                Length = reverseReader.ReadInt32();
-
-                Layer = layer;
-            }
-
-            internal void Save(BinaryReverseWriter reverseWriter)
-            {
-
-                reverseWriter.Write(ID);
-
-                CompressImageData();
-
-                reverseWriter.Write(Data.Length + 2); // 2 bytes for the image compression
-            }
-
-            internal void LoadPixelData(BinaryReverseReader reverseReader)
-            {
-                Data = reverseReader.ReadBytes(Length);
-
-                using (BinaryReverseReader imageReader = DataReader!)
+                int bytesPerRow = 0;
+                switch (Layer.PsdFile.Depth)
                 {
-                    ImageCompression = (ImageCompression)imageReader.ReadInt16();
+                    case 1:
+                        bytesPerRow = Layer.Rect.Width; // NOT sure
+                        break;
+                    case 8:
+                        bytesPerRow = Layer.Rect.Width;
+                        break;
+                    case 16:
+                        bytesPerRow = Layer.Rect.Width * 2;
+                        break;
+                }
 
-                    int bytesPerRow = 0;
-                    switch (Layer.PsdFile.Depth)
-                    {
-                        case 1:
-                            bytesPerRow = Layer.Rect.Width; // NOT sure
-                            break;
-                        case 8:
-                            bytesPerRow = Layer.Rect.Width;
-                            break;
-                        case 16:
-                            bytesPerRow = Layer.Rect.Width * 2;
-                            break;
-                    }
+                ImageData = new byte[Layer.Rect.Height * bytesPerRow];
 
-                    ImageData = new byte[Layer.Rect.Height * bytesPerRow];
+                switch (ImageCompression)
+                {
+                    case ImageCompression.Raw:
+                        imageReader.Read(ImageData, 0, ImageData.Length);
+                        break;
 
-                    switch (ImageCompression)
-                    {
-                        case ImageCompression.Raw:
-                            imageReader.Read(ImageData, 0, ImageData.Length);
-                            break;
+                    case ImageCompression.Rle:
+                        {
+                            var rowLengthList = new int[Layer.Rect.Height];
 
-                        case ImageCompression.Rle:
+                            for (int i = 0; i < rowLengthList.Length; i++)
                             {
-                                var rowLengthList = new int[Layer.Rect.Height];
-
-                                for (int i = 0; i < rowLengthList.Length; i++)
-                                {
-                                    rowLengthList[i] = imageReader.ReadInt16();
-                                }
-
-                                for (int i = 0; i < Layer.Rect.Height; i++)
-                                {
-                                    int rowIndex = i * bytesPerRow;
-
-                                    // Here we optionally check the list and the current index
-                                    int compressedLength = rowLengthList[i];
-                                    RleHelper.DecodedRow(imageReader.BaseStream, ImageData, rowIndex, bytesPerRow, compressedLength);
-                                }
+                                rowLengthList[i] = imageReader.ReadUInt16();
                             }
-                            break;
-                    }
+
+                            for (int i = 0; i < Layer.Rect.Height; i++)
+                            {
+                                int rowIndex = i * bytesPerRow;
+
+                                // Here we optionally check the list and the current index
+                                int compressedLength = rowLengthList[i];
+                                RleHelper.DecodedRow(imageReader.BaseStream, ImageData, rowIndex, bytesPerRow, compressedLength);
+                            }
+                        }
+                        break;
                 }
             }
+        }
 
-            private void CompressImageData()
+        private void CompressImageData()
+        {
+            if (ImageCompression == ImageCompression.Rle)
             {
-                if (ImageCompression == ImageCompression.Rle)
+                var memoryStream = new MemoryStream();
+                var reverseWriter = new BinaryReverseWriter(memoryStream);
+
+                long lengthPosition = reverseWriter.BaseStream.Position;
+
+                var rleRowLengths = new int[Layer.Rect.Height];
+
+                for (int i = 0; i < rleRowLengths.Length; i++)
                 {
-                    var memoryStream = new MemoryStream();
-                    var reverseWriter = new BinaryReverseWriter(memoryStream);
-
-                    long lengthPosition = reverseWriter.BaseStream.Position;
-
-                    var rleRowLengths = new int[Layer.Rect.Height];
-
-                    for (int i = 0; i < rleRowLengths.Length; i++)
-                    {
-                        reverseWriter.Write((short)0x1234);
-                    }
-
-                    int bytesPerRow = 0;
-
-                    switch (Layer.PsdFile.Depth)
-                    {
-                        case 1:
-                        case 8:
-                            bytesPerRow = Layer.Rect.Width;
-                            break;
-                        case 16:
-                            bytesPerRow = Layer.Rect.Width * 2;
-                            break;
-                    }
-
-                    for (int row = 0; row < Layer.Rect.Height; row++)
-                    {
-                        int rowIndex = row * bytesPerRow;
-                        rleRowLengths[row] = RleHelper.EncodedRow(reverseWriter.BaseStream, ImageData, rowIndex, bytesPerRow);
-                    }
-
-                    long endPosition = reverseWriter.BaseStream.Position;
-
-                    reverseWriter.BaseStream.Position = lengthPosition;
-
-                    foreach (int length in rleRowLengths)
-                    {
-                        reverseWriter.Write((short)length);
-                    }
-
-                    reverseWriter.BaseStream.Position = endPosition;
-
-                    Data = memoryStream.ToArray();
-
-                    reverseWriter.Dispose();
-                    memoryStream.Dispose();
+                    reverseWriter.Write((short)0x1234);
                 }
-                else
+
+                int bytesPerRow = 0;
+
+                switch (Layer.PsdFile.Depth)
                 {
-                    Data = (byte[])ImageData.Clone();
+                    case 1:
+                    case 8:
+                        bytesPerRow = Layer.Rect.Width;
+                        break;
+                    case 16:
+                        bytesPerRow = Layer.Rect.Width * 2;
+                        break;
                 }
+
+                for (int row = 0; row < Layer.Rect.Height; row++)
+                {
+                    int rowIndex = row * bytesPerRow;
+                    rleRowLengths[row] = RleHelper.EncodedRow(reverseWriter.BaseStream, ImageData, rowIndex, bytesPerRow);
+                }
+
+                long endPosition = reverseWriter.BaseStream.Position;
+
+                reverseWriter.BaseStream.Position = lengthPosition;
+
+                foreach (int length in rleRowLengths)
+                {
+                    reverseWriter.Write((ushort)length);
+                }
+
+                reverseWriter.BaseStream.Position = endPosition;
+
+                Data = memoryStream.ToArray();
+
+                reverseWriter.Dispose();
+                memoryStream.Dispose();
             }
-
-            internal void SavePixelData(BinaryReverseWriter writer)
+            else
             {
-
-                writer.Write((short)ImageCompression);
-                if (ImageCompression == ImageCompression.Rle)
-                {
-                    if (Data == null || Data.Length == 0)
-                        CompressImageData();
-                    if (Data == null)
-                        throw new InvalidDataException("RLE channel data is missing.");
-                    writer.Write(Data);
-                }
-                else
-                {
-                    writer.Write(ImageData);
-                }
+                Data = (byte[])ImageData.Clone();
             }
+        }
 
-            public BinaryReverseReader? DataReader
+        internal void SavePixelData(BinaryReverseWriter writer)
+        {
+
+            writer.Write((short)ImageCompression);
+            if (ImageCompression == ImageCompression.Rle)
             {
-                get => Data == null ? null : new BinaryReverseReader(new MemoryStream(Data));
+                if (Data == null || Data.Length == 0)
+                    CompressImageData();
+                if (Data == null)
+                    throw new InvalidDataException("RLE channel data is missing.");
+                writer.Write(Data);
             }
+            else
+            {
+                writer.Write(ImageData);
+            }
+        }
+
+        public BinaryReverseReader? DataReader
+        {
+            get => Data == null ? null : new BinaryReverseReader(new MemoryStream(Data));
         }
     }
 }

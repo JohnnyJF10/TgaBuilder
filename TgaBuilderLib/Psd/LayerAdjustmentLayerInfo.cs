@@ -17,7 +17,7 @@ modification, are permitted provided that the following conditions are met:
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BEHelpers LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -27,108 +27,99 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
 
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Text;
-using static TgaBuilderLib.Psd.ResolutionInfo;
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+public partial class Layer
 {
-    public partial class Layer
+    public class AdjustmentLayerInfo
     {
-        public class AdjustmentLayerInfo
+        public AdjustmentLayerInfo(string key, Layer layer)
         {
-            public AdjustmentLayerInfo(string key, Layer layer)
+            Key = key;
+            Layer = layer;
+            Layer.AdjustmentInfo.Add(this);
+        }
+
+        public AdjustmentLayerInfo(BinaryReverseReader reader, Layer layer)
+        {
+
+            Layer = layer;
+
+            ReadOnlySpan<char> signature = reader.ReadChars(4);
+
+            if (!signature.SequenceEqual("8BIM".AsSpan()))
             {
-                Key = key;
-                Layer = layer;
-                Layer.AdjustmentInfo.Add(this);
+                throw new IOException("Could not read an image resource");
             }
 
-            public AdjustmentLayerInfo(BinaryReverseReader reader, Layer layer)
-            {
+            Key = new string(reader.ReadChars(4));
 
-                Layer = layer;
+            uint dataLength = reader.ReadUInt32();
 
-                ReadOnlySpan<char> signature = reader.ReadChars(4);
-
-                if (!signature.SequenceEqual("8BIM".AsSpan()))
-                {
-                    throw new IOException("Could not read an image resource");
-                }
-
-                Key = new string(reader.ReadChars(4));
-
-                uint dataLength = reader.ReadUInt32();
-
-                Data = reader.ReadBytes((int)dataLength);
-            }
-
-            /// <summary>
-            /// The layer to which this info belongs
-            /// </summary>
-            private Layer Layer { get; set; }
-
-            public string Key { get; protected set; }
-
-            public byte[] Data { get; protected set; } = Array.Empty<byte>();
-
-            public void Save(BinaryReverseWriter writer)
-            {
-
-                const string signature = "8BIM";
-
-                writer.Write(signature.ToCharArray());
-                writer.Write(Key.ToCharArray());
-                writer.Write((uint)Data.Length);
-                writer.Write(Data);
-            }
-
-            public BinaryReverseReader DataReader
-            {
-                get => new BinaryReverseReader(new MemoryStream(Data));
-            }
+            Data = reader.ReadBytes((int)dataLength);
         }
 
         /// <summary>
-        /// The Luni layer cantains the layer name in unicode
+        /// The layer to which this info belongs
         /// </summary>
-        public class UnicodeNameLayerInfo : AdjustmentLayerInfo
+        private Layer Layer { get; set; }
+
+        public string Key { get; protected set; }
+
+        public byte[] Data { get; protected set; } = Array.Empty<byte>();
+
+        public void Save(BinaryReverseWriter writer)
         {
-            public UnicodeNameLayerInfo(Layer layer, string layerNameUnicode) 
-                : base("luni", layer)
-            {
 
-                int len = layerNameUnicode.Length;
+            const string signature = "8BIM";
 
-                using (var memoryStream = new MemoryStream())
-                using (var writer = new BinaryReverseWriter(memoryStream))
-                {
-                    writer.Write(len + 1);
-
-                    writer.Write((byte)0);
-
-                    writer.Write(Encoding.Unicode.GetBytes(layerNameUnicode));
-
-                    writer.Write((byte)0);
-
-                    Data = memoryStream.ToArray();
-                }
-            }
+            writer.Write(signature.ToCharArray());
+            writer.Write(Key.ToCharArray());
+            writer.Write((uint)Data.Length);
+            writer.Write(Data);
         }
 
-        /// <summary>
-        /// Color setting of the layer name text
-        /// </summary>
-        public class SheetColorLayerInfo : AdjustmentLayerInfo
+        public BinaryReverseReader DataReader
         {
-            public SheetColorLayerInfo(Layer layer)
-                : base("lclr", layer)
-            {
-                Data = new byte[8];
-            }
+            get => new BinaryReverseReader(new MemoryStream(Data));
         }
-
     }
+
+    /// <summary>
+    /// The Luni layer cantains the layer name in unicode
+    /// </summary>
+    public class UnicodeNameLayerInfo : AdjustmentLayerInfo
+    {
+        public UnicodeNameLayerInfo(Layer layer, string layerName) 
+            : base("luni", layer)
+        {
+
+            int len = layerName.Length;
+
+            using (var memoryStream = new MemoryStream())
+            using (var writer = new BinaryReverseWriter(memoryStream))
+            {
+                writer.Write(len + 1);
+
+                writer.Write(Encoding.BigEndianUnicode.GetBytes(layerName + "\0"));
+
+                Data = memoryStream.ToArray();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Color setting of the layer name text
+    /// </summary>
+    public class SheetColorLayerInfo : AdjustmentLayerInfo
+    {
+        public SheetColorLayerInfo(Layer layer)
+            : base("lclr", layer)
+        {
+            Data = new byte[8];
+        }
+    }
+
 }
