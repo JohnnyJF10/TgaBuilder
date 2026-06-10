@@ -26,208 +26,206 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
+
 using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Globalization;
 using TgaBuilderLib.Abstraction;
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+public partial class Layer
 {
-    public partial class Layer
+    public class Mask
     {
-        public class Mask
+        private static readonly int PositionIsRelativeBit = BitVector32.CreateMask();
+        private static readonly int DisabledBit = BitVector32.CreateMask(PositionIsRelativeBit);
+        private static readonly int _invertOnBlendBit = BitVector32.CreateMask(DisabledBit);
+
+        internal Mask(Layer layer)
         {
-            private static readonly int PositionIsRelativeBit = BitVector32.CreateMask();
-            private static readonly int DisabledBit = BitVector32.CreateMask(PositionIsRelativeBit);
-            private static readonly int _invertOnBlendBit = BitVector32.CreateMask(DisabledBit);
+            Layer = layer;
+            Layer.MaskData = this;
+        }
 
-            internal Mask(Layer layer)
+        internal Mask(BinaryReverseReader reader, Layer layer)
+        {
+
+            Layer = layer;
+
+            uint maskLength = reader.ReadUInt32();
+
+            if (maskLength <= 0)
+                return;
+
+            long startPosition = reader.BaseStream.Position;
+
+            int rectY = reader.ReadInt32();
+            int rectX = reader.ReadInt32();
+            var localRectangle = new PixelRect
             {
-                Layer = layer;
-                Layer.MaskData = this;
+                Y = rectY,
+                X = rectX,
+                Height = reader.ReadInt32() - rectY,
+                Width = reader.ReadInt32() - rectX,
+            };
+
+            Rect = localRectangle;
+
+            DefaultColor = reader.ReadByte();
+
+            byte flags = reader.ReadByte();
+            _flags = new BitVector32(flags);
+
+            if (maskLength == 36)
+            {
+                var realFlags = new BitVector32(reader.ReadByte());
+
+                byte realUserMaskBackground = reader.ReadByte();
+
+                // Read real user mask rect (top, left, bottom, right) to advance stream
+                reader.ReadInt32();
+                reader.ReadInt32();
+                reader.ReadInt32();
+                reader.ReadInt32();
             }
 
-            internal Mask(BinaryReverseReader reader, Layer layer)
+            // there is other stuff following, but we will ignore this.
+            reader.BaseStream.Position = startPosition + maskLength;
+        }
+
+        public void Save(BinaryReverseWriter writer)
+        {
+
+            if (Rect.IsEmpty)
             {
-
-                Layer = layer;
-
-                uint maskLength = reader.ReadUInt32();
-
-                if (maskLength <= 0)
-                    return;
-
-                long startPosition = reader.BaseStream.Position;
-
-                int rectY = reader.ReadInt32();
-                int rectX = reader.ReadInt32();
-                var localRectangle = new PixelRect
-                {
-                    Y = rectY,
-                    X = rectX,
-                    Height = reader.ReadInt32() - rectY,
-                    Width = reader.ReadInt32() - rectX,
-                };
-
-                Rect = localRectangle;
-
-                DefaultColor = reader.ReadByte();
-
-                byte flags = reader.ReadByte();
-                _flags = new BitVector32(flags);
-
-                if (maskLength == 36)
-                {
-                    var realFlags = new BitVector32(reader.ReadByte());
-
-                    byte realUserMaskBackground = reader.ReadByte();
-
-                    // Read real user mask rect (top, left, bottom, right) to advance stream
-                    reader.ReadInt32();
-                    reader.ReadInt32();
-                    reader.ReadInt32();
-                    reader.ReadInt32();
-                }
-
-                // there is other stuff following, but we will ignore this.
-                reader.BaseStream.Position = startPosition + maskLength;
+                writer.Write((uint)0);
+                return;
             }
 
-            public void Save(BinaryReverseWriter writer)
+            using (new LengthWriter(writer))
             {
+                writer.Write(Rect.Top);
+                writer.Write(Rect.Left);
+                writer.Write(Rect.Bottom);
+                writer.Write(Rect.Right);
 
-                if (Rect.IsEmpty)
-                {
-                    writer.Write((uint)0);
-                    return;
-                }
+                writer.Write(DefaultColor);
 
-                using (new LengthWriter(writer))
-                {
-                    writer.Write(Rect.Top);
-                    writer.Write(Rect.Left);
-                    writer.Write(Rect.Bottom);
-                    writer.Write(Rect.Right);
+                writer.Write((byte)_flags.Data);
 
-                    writer.Write(DefaultColor);
-
-                    writer.Write((byte)_flags.Data);
-
-                    // padding 2 bytes so that size is 20
-                    writer.Write(0);
-                }
+                // padding 2 bytes so that size is 20
+                writer.Write(0);
             }
+        }
 
-            public byte[] ImageData { get; set; } = null!;
+        public byte[] ImageData { get; set; } = null!;
 
-            /// <summary>
-            /// The layer to which this mask belongs.
-            /// </summary>
-            public Layer Layer { get; }
+        /// <summary>
+        /// The layer to which this mask belongs.
+        /// </summary>
+        public Layer Layer { get; }
 
-            /// <summary>
-            /// The rectangle enclosing the mask.
-            /// </summary>
-            public PixelRect Rect { get; private set; }
+        /// <summary>
+        /// The rectangle enclosing the mask.
+        /// </summary>
+        public PixelRect Rect { get; private set; }
 
-            public byte DefaultColor { get; private set; }
+        public byte DefaultColor { get; private set; }
 
-            private BitVector32 _flags;
+        private BitVector32 _flags;
 
-            /// <summary>
-            /// If true, the position of the mask is relative to the layer.
-            /// </summary>
-            public bool PositionIsRelative
-            {
-                get => _flags[PositionIsRelativeBit];
-                private set => _flags[PositionIsRelativeBit] = value;
-            }
+        /// <summary>
+        /// If true, the position of the mask is relative to the layer.
+        /// </summary>
+        public bool PositionIsRelative
+        {
+            get => _flags[PositionIsRelativeBit];
+            private set => _flags[PositionIsRelativeBit] = value;
+        }
 
-            public bool Disabled
-            {
-                get => _flags[DisabledBit];
-                private set { _flags[DisabledBit] = value; }
-            }
+        public bool Disabled
+        {
+            get => _flags[DisabledBit];
+            private set { _flags[DisabledBit] = value; }
+        }
 
-            /// <summary>
-            /// if true, invert the mask when blending.
-            /// </summary>
-            public bool InvertOnBlendBit
-            {
-                get => _flags[_invertOnBlendBit];
-                private set { _flags[_invertOnBlendBit] = value; }
-            }
+        /// <summary>
+        /// if true, invert the mask when blending.
+        /// </summary>
+        public bool InvertOnBlendBit
+        {
+            get => _flags[_invertOnBlendBit];
+            private set { _flags[_invertOnBlendBit] = value; }
+        }
 
-            internal void LoadPixelData(BinaryReverseReader reader)
-            {
+        internal void LoadPixelData(BinaryReverseReader reader)
+        {
 
-                if (Layer.SortedChannels.ContainsKey(-2) == false)
-                    return;
+            if (Layer.SortedChannels.ContainsKey(-2) == false)
+                return;
 
-                Channel maskChannel = Layer.SortedChannels[-2];
+            Channel maskChannel = Layer.SortedChannels[-2];
 
-                maskChannel.Data = reader.ReadBytes(maskChannel.Length);
+            maskChannel.Data = reader.ReadBytes(maskChannel.Length);
 
-                if (Rect.IsEmpty)
+            if (Rect.IsEmpty)
 					return;
 
-                using (BinaryReverseReader readerImg = maskChannel.DataReader!)
-                {
-                    maskChannel.ImageCompression = (ImageCompression)readerImg.ReadInt16();
-
-                    int bytesPerRow = 0;
-
-                    switch (Layer.PsdFile.Depth)
-                    {
-                        case 1:
-                            bytesPerRow = Rect.Width;//NOT Sure
-                            break;
-                        case 8:
-                            bytesPerRow = Rect.Width;
-                            break;
-                        case 16:
-                            bytesPerRow = Rect.Width * 2;
-                            break;
-                    }
-
-                    maskChannel.ImageData = new byte[Rect.Height * bytesPerRow];
-                    // Fill Array
-                    for (int i = 0; i < maskChannel.ImageData.Length; i++)
-                    {
-                        maskChannel.ImageData[i] = 0xAB;
-                    }
-
-                    ImageData = (byte[])maskChannel.ImageData.Clone();
-
-                    switch (maskChannel.ImageCompression)
-                    {
-                        case ImageCompression.Raw:
-                            readerImg.Read(maskChannel.ImageData, 0, maskChannel.ImageData.Length);
-                            break;
-                        case ImageCompression.Rle:
-                            {
-                                int[] rowLengthList = new int[Rect.Height];
-
-                                for (int i = 0; i < rowLengthList.Length; i++)
-                                    rowLengthList[i] = readerImg.ReadInt16();
-
-                                for (int i = 0; i < Rect.Height; i++)
-                                {
-                                    int rowIndex = i * Rect.Width;
-                                    RleHelper.DecodedRow(readerImg.BaseStream, maskChannel.ImageData, rowIndex, bytesPerRow);
-                                }
-                            }
-                            break;
-                    }
-
-                    ImageData = (byte[])maskChannel.ImageData.Clone();
-                }
-            }
-
-            internal void SavePixelData(BinaryReverseWriter writer)
+            using (BinaryReverseReader readerImg = maskChannel.DataReader!)
             {
-                //writer.Write(m_data);
+                maskChannel.ImageCompression = (ImageCompression)readerImg.ReadInt16();
+
+                int bytesPerRow = 0;
+
+                switch (Layer.PsdFile.Depth)
+                {
+                    case 1:
+                        bytesPerRow = Rect.Width;//NOT Sure
+                        break;
+                    case 8:
+                        bytesPerRow = Rect.Width;
+                        break;
+                    case 16:
+                        bytesPerRow = Rect.Width * 2;
+                        break;
+                }
+
+                maskChannel.ImageData = new byte[Rect.Height * bytesPerRow];
+                // Fill Array
+                for (int i = 0; i < maskChannel.ImageData.Length; i++)
+                {
+                    maskChannel.ImageData[i] = 0xAB;
+                }
+
+                ImageData = (byte[])maskChannel.ImageData.Clone();
+
+                switch (maskChannel.ImageCompression)
+                {
+                    case ImageCompression.Raw:
+                        readerImg.Read(maskChannel.ImageData, 0, maskChannel.ImageData.Length);
+                        break;
+                    case ImageCompression.Rle:
+                        {
+                            int[] rowLengthList = new int[Rect.Height];
+
+                            for (int i = 0; i < rowLengthList.Length; i++)
+                                rowLengthList[i] = readerImg.ReadInt16();
+
+                            for (int i = 0; i < Rect.Height; i++)
+                            {
+                                int rowIndex = i * Rect.Width;
+                                RleHelper.DecodedRow(readerImg.BaseStream, maskChannel.ImageData, rowIndex, bytesPerRow);
+                            }
+                        }
+                        break;
+                }
+
+                ImageData = (byte[])maskChannel.ImageData.Clone();
             }
+        }
+
+        internal void SavePixelData(BinaryReverseWriter writer)
+        {
+            //writer.Write(m_data);
         }
     }
 }

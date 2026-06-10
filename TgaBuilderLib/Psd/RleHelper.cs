@@ -26,122 +26,108 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using System.IO;
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+internal static class RleHelper
 {
-    class RleHelper
+    internal static int EncodedRow(
+        Stream stream,
+        byte[] imgData,
+        int startIdx,
+        int columns)
     {
-        private class RlePacketStateMachine
+        int remaining = columns;
+        int src = startIdx;
+
+        long startPos = stream.Position;
+
+        while (remaining > 0)
         {
-            private bool _rlePacket;
-            private readonly byte[] _packetValues = new byte[128];
-            private int _packetLength;
-            private readonly Stream _stream;
+            int i = 0;
 
-            internal void Flush()
+            while (i < 128
+                   && (remaining > i)
+                   && imgData[src] == imgData[src + i])
             {
-                byte header;
-                if (_rlePacket)
-                {
-                    header = (byte)-(_packetLength - 1);
-                }
-                else
-                {
-                    header = (byte)(_packetLength - 1);
-                }
-
-                _stream.WriteByte(header);
-
-                int length = _rlePacket ? 1 : _packetLength;
-
-                _stream.Write(_packetValues, 0, length);
-
-                _packetLength = 0;
+                i++;
             }
 
-            internal void Push(byte color)
+            if (i > 1)
             {
-                switch (_packetLength)
-                {
-                    case 0:
-                        _rlePacket = false;
-                        _packetValues[0] = color;
-                        _packetLength = 1;
-                        break;
-                    case 1:
-                        _rlePacket = color == _packetValues[0];
-                        _packetValues[1] = color;
-                        _packetLength = 2;
-                        break;
-                    default:
-                        if (_packetLength == _packetValues.Length)
-                        {
-                            // Packet is full. Start a new one.
-                            Flush();
-                            Push(color);
-                        }
-                        else if (_packetLength >= 2 && _rlePacket && color != _packetValues[_packetLength - 1])
-                        {
-                            // We were filling in an RLE packet, and we got a non-repeated color.
-                            // Emit the current packet and start a new one.
-                            Flush();
-                            Push(color);
-                        }
-                        else if (_packetLength >= 2 && _rlePacket && color == _packetValues[_packetLength - 1])
-                        {
-                            // We are filling in an RLE packet, and we got another repeated color.
-                            // Add the new color to the current packet.
-                            ++_packetLength;
-                            _packetValues[_packetLength - 1] = color;
-                        }
-                        else if (_packetLength >= 2 && !_rlePacket && color != _packetValues[_packetLength - 1])
-                        {
-                            // We are filling in a raw packet, and we got another random color.
-                            // Add the new color to the current packet.
-                            ++_packetLength;
-                            _packetValues[_packetLength - 1] = color;
-                        }
-                        else if (_packetLength >= 2 && !_rlePacket && color == _packetValues[_packetLength - 1])
-                        {
-                            // We were filling in a raw packet, but we got a repeated color.
-                            // Emit the current packet without its last color, and start a
-                            // new RLE packet that starts with a length of 2.
-                            --_packetLength;
-                            Flush();
-                            Push(color);
-                            Push(color);
-                        }
-                        break;
-                }
-            }
+                // Run found
+                stream.WriteByte((byte)(-(i - 1)));
+                stream.WriteByte(imgData[src]);
 
-            internal RlePacketStateMachine(Stream stream)
+                src += i;
+                remaining -= i;
+            }
+            else
             {
-                _stream = stream;
+                // Search literal block
+                i = 0;
+
+                while (i < 128 && (remaining - (i + 1) > 0)
+                      && (imgData[src + i] != imgData[src + i + 1]
+                      || remaining <= (i + 2)
+                      || imgData[src + i] != imgData[src + i + 2]))
+                {
+                    i++;
+                }
+
+                if (remaining == 1)
+                    i = 1;
+
+                if (i > 0)
+                {
+                    stream.WriteByte((byte)(i - 1));
+
+                    for (int j = 0; j < i; j++)
+                        stream.WriteByte(imgData[src + j]);
+
+                    src += i;
+                    remaining -= i;
+                }
             }
         }
 
-        public static int EncodedRow(Stream stream, byte[] imgData, int startIdx, int columns)
+        return (int)(stream.Position - startPos);
+    }
+
+    internal static void DecodedRow(Stream stream, byte[] imgData, int startIdx, int columns, int compressedLength = -1)
+    {
+        Stream targetStream = stream;
+        MemoryStream? memStream = null;
+
+        // If compressedLength >= 0, we have a hint that this row is compressed and how many bytes belong to it.
+        if (compressedLength > 0)
         {
-            long startPosition = stream.Position;
+            byte[] compressedBuffer = new byte[compressedLength];
 
-            RlePacketStateMachine machine = new RlePacketStateMachine(stream);
+            // Read exactly compressedLength bytes from the stream into the buffer,
+            // handling cases where Read might return less than requested
+            int bytesRead = 0;
+            while (bytesRead < compressedLength)
+            {
+                int read = stream.Read(compressedBuffer, bytesRead, compressedLength - bytesRead);
 
-            for (int x = 0; x < columns; ++x)
-                machine.Push(imgData[x + startIdx]);
+                if (read == 0)
+                    break; // End of stream reached before we got all the data we expectedsS
 
-            machine.Flush();
+                bytesRead += read;
+            }
 
-            return (int)(stream.Position - startPosition);
+            // We feed the compressed data into a MemoryStream, so that we can read it as if it were a normal stream.
+            memStream = new MemoryStream(compressedBuffer);
+            targetStream = memStream;
         }
 
-        public static void DecodedRow(Stream stream, byte[] imgData, int startIdx, int columns)
+        try
         {
             int count = 0;
             while (count < columns)
             {
-                byte byteValue = (byte)stream.ReadByte();
+                byte byteValue = (byte)targetStream.ReadByte();
 
                 int len = byteValue;
                 if (len < 128)
@@ -149,7 +135,7 @@ namespace TgaBuilderLib.Psd
                     len++;
                     while (len != 0 && startIdx + count < imgData.Length)
                     {
-                        byteValue = (byte)stream.ReadByte();
+                        byteValue = (byte)targetStream.ReadByte();
 
                         imgData[startIdx + count] = byteValue;
                         count++;
@@ -162,7 +148,7 @@ namespace TgaBuilderLib.Psd
                     // (Interpret len as a negative 8-bit int.)
                     len ^= 0x0FF;
                     len += 2;
-                    byteValue = (byte)stream.ReadByte();
+                    byteValue = (byte)targetStream.ReadByte();
 
                     while (len != 0 && startIdx + count < imgData.Length)
                     {
@@ -171,12 +157,17 @@ namespace TgaBuilderLib.Psd
                         len--;
                     }
                 }
-                else if (128 == len)
+                else if (len == 128)
                 {
                     // Do nothing
                 }
             }
-
+        }
+        finally
+        {
+            // Important: If we created a MemoryStream, we need to dispose it to free resources.
+            // If we didn't create one, this will just be a no-op.
+            memStream?.Dispose();
         }
     }
 }

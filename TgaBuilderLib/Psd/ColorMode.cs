@@ -28,17 +28,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+public enum ColorMode : byte
 {
-    public enum ColorMode : byte
-    {
-        Bitmap = 0,
-        Grayscale = 1,
-        Indexed = 2,
-        RGB = 3,
-        CMYK = 4,
-        Multichannel = 7,
-        Duotone = 8,
-        Lab = 9
-    };
-}
+    Bitmap = 0,
+    Grayscale = 1,
+    Indexed = 2,
+    RGB = 3,
+    CMYK = 4,
+    Multichannel = 7,
+    Duotone = 8,
+    Lab = 9
+};

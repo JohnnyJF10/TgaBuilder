@@ -27,67 +27,99 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
 
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
+using System.Text;
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+public partial class Layer
 {
-    public partial class Layer
+    public class AdjustmentLayerInfo
     {
-        public class AdjustmentLayerInfo
+        public AdjustmentLayerInfo(string key, Layer layer)
         {
-            public AdjustmentLayerInfo(string key, Layer layer)
-            {
-                Key = key;
-                Layer = layer;
-                Layer.AdjustmentInfo.Add(this);
-            }
-
-            public AdjustmentLayerInfo(BinaryReverseReader reader, Layer layer)
-            {
-
-                Layer = layer;
-
-                ReadOnlySpan<char> signature = reader.ReadChars(4);
-
-                if (!signature.SequenceEqual("8BIM".AsSpan()))
-                {
-                    throw new IOException("Could not read an image resource");
-                }
-
-                Key = new string(reader.ReadChars(4));
-
-                uint dataLength = reader.ReadUInt32();
-
-                Data = reader.ReadBytes((int)dataLength);
-            }
-
-            /// <summary>
-            /// The layer to which this info belongs
-            /// </summary>
-            private Layer Layer { get; set; }
-
-            public string Key { get; }
-
-            public byte[] Data { get; } = Array.Empty<byte>();
-
-            public void Save(BinaryReverseWriter writer)
-            {
-
-                const string signature = "8BIM";
-
-                writer.Write(signature.ToCharArray());
-                writer.Write(Key.ToCharArray());
-                writer.Write((uint)Data.Length);
-                writer.Write(Data);
-            }
-
-            public BinaryReverseReader DataReader
-            {
-                get => new BinaryReverseReader(new MemoryStream(Data));
-            }
+            Key = key;
+            Layer = layer;
+            Layer.AdjustmentInfo.Add(this);
         }
 
+        public AdjustmentLayerInfo(BinaryReverseReader reader, Layer layer)
+        {
+
+            Layer = layer;
+
+            ReadOnlySpan<char> signature = reader.ReadChars(4);
+
+            if (!signature.SequenceEqual("8BIM".AsSpan()))
+            {
+                throw new IOException("Could not read an image resource");
+            }
+
+            Key = new string(reader.ReadChars(4));
+
+            uint dataLength = reader.ReadUInt32();
+
+            Data = reader.ReadBytes((int)dataLength);
+        }
+
+        /// <summary>
+        /// The layer to which this info belongs
+        /// </summary>
+        private Layer Layer { get; set; }
+
+        public string Key { get; protected set; }
+
+        public byte[] Data { get; protected set; } = Array.Empty<byte>();
+
+        public void Save(BinaryReverseWriter writer)
+        {
+
+            const string signature = "8BIM";
+
+            writer.Write(signature.ToCharArray());
+            writer.Write(Key.ToCharArray());
+            writer.Write((uint)Data.Length);
+            writer.Write(Data);
+        }
+
+        public BinaryReverseReader DataReader
+        {
+            get => new BinaryReverseReader(new MemoryStream(Data));
+        }
     }
+
+    /// <summary>
+    /// The Luni layer cantains the layer name in unicode
+    /// </summary>
+    public class UnicodeNameLayerInfo : AdjustmentLayerInfo
+    {
+        public UnicodeNameLayerInfo(Layer layer, string layerName) 
+            : base("luni", layer)
+        {
+
+            int len = layerName.Length;
+
+            using (var memoryStream = new MemoryStream())
+            using (var writer = new BinaryReverseWriter(memoryStream))
+            {
+                writer.Write(len + 1);
+
+                writer.Write(Encoding.BigEndianUnicode.GetBytes(layerName + "\0"));
+
+                Data = memoryStream.ToArray();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Color setting of the layer name text
+    /// </summary>
+    public class SheetColorLayerInfo : AdjustmentLayerInfo
+    {
+        public SheetColorLayerInfo(Layer layer)
+            : base("lclr", layer)
+        {
+            Data = new byte[8];
+        }
+    }
+
 }

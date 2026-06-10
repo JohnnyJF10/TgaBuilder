@@ -52,10 +52,12 @@ namespace TgaBuilderLib.BitmapBytesIO
         void ToTga(IReadableBitmap bitmap);
 
         void ToKrita(IReadableBitmap bitmap);
+        void ToPsd(IReadableBitmap bitmap);
 
         void WriteKrita(string filePath, CancellationToken? cancellationToken = null);
 
         void WriteTga(string filePath, CancellationToken? cancellationToken = null);
+        void WritePsd(string filePath, CancellationToken? cancellationToken = null);
 
         void ClearLoadedData();
     }

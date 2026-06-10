@@ -148,7 +148,8 @@ namespace TgaBuilderAvaloniaUi.Services
                 {
                     new("Png Files (*.png)") { Patterns = new[] { "*.png" }},
                     new("Tga Files (*.tga)") { Patterns = new[] { "*.tga" }},
-                    new("Krita Files (*.kra)") { Patterns = new[] { "*.kra" }}
+                    new("Krita Files (*.kra)") { Patterns = new[] { "*.kra" }},
+                    new("Photoshop Files (*.psd)") { Patterns = new[] { "*.psd" }}
                 };
 
             var fileResult = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -261,7 +262,8 @@ namespace TgaBuilderAvaloniaUi.Services
                 && types.HasFlag(FileTypes.JPEG)
                 && types.HasFlag(FileTypes.BMP)
                 && types.HasFlag(FileTypes.PSD)
-                && types.HasFlag(FileTypes.DDS))
+                && types.HasFlag(FileTypes.DDS)
+                && types.HasFlag(FileTypes.KRA))
                 return "Image Files";
             if (types.HasFlag(FileTypes.PHD)
                 && types.HasFlag(FileTypes.TR2)

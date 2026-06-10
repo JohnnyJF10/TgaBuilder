@@ -30,95 +30,94 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.IO;
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+
+/// <summary>
+/// Summary description for ImageResource.
+/// </summary>
+public class ImageResource
 {
-
-    /// <summary>
-    /// Summary description for ImageResource.
-    /// </summary>
-    public class ImageResource
+    public ImageResource()
     {
-        public ImageResource()
+        OSType = string.Empty;
+        Name = string.Empty;
+        Data = Array.Empty<byte>();
+    }
+
+    public ImageResource(short id)
+    {
+        OSType = string.Empty;
+        Name = string.Empty;
+        ID = id;
+        Data = Array.Empty<byte>();
+    }
+
+    public ImageResource(ImageResource imgRes)
+    {
+        OSType = string.Empty;
+        ID = imgRes.ID;
+        Name = imgRes.Name;
+
+        Data = new byte[imgRes.Data.Length];
+        imgRes.Data.CopyTo(Data, 0);
+    }
+
+    public ImageResource(BinaryReverseReader reverseReader)
+    {
+        Name = string.Empty;
+        OSType = new string(reverseReader.ReadChars(4));
+        if (OSType != "8BIM" && OSType != "MeSa")
         {
-            OSType = string.Empty;
-            Name = string.Empty;
-            Data = Array.Empty<byte>();
+            throw new InvalidOperationException("Could not read an image resource");
         }
 
-        public ImageResource(short id)
+        ID = reverseReader.ReadInt16();
+        Name = reverseReader.ReadPascalString();
+
+        uint settingLength = reverseReader.ReadUInt32();
+        Data = reverseReader.ReadBytes((int)settingLength);
+
+        if (reverseReader.BaseStream.Position % 2 == 1) reverseReader.ReadByte();
+    }
+
+    public short ID { get; set; }
+
+    public string Name { get; }
+
+    public byte[] Data { get; set; }
+
+    public string OSType { get; private set; }
+
+    public void Save(BinaryReverseWriter reverseWriter)
+    {
+        StoreData();
+
+        if (string.IsNullOrEmpty(OSType))
         {
-            OSType = string.Empty;
-            Name = string.Empty;
-            ID = id;
-            Data = Array.Empty<byte>();
+            OSType = "8BIM";
         }
 
-        public ImageResource(ImageResource imgRes)
-        {
-            OSType = string.Empty;
-            ID = imgRes.ID;
-            Name = imgRes.Name;
+        reverseWriter.Write(OSType.ToCharArray());
+        reverseWriter.Write(ID);
 
-            Data = new byte[imgRes.Data.Length];
-            imgRes.Data.CopyTo(Data, 0);
-        }
+        reverseWriter.WritePascalString(Name);
 
-        public ImageResource(BinaryReverseReader reverseReader)
-        {
-            Name = string.Empty;
-            OSType = new string(reverseReader.ReadChars(4));
-            if (OSType != "8BIM" && OSType != "MeSa")
-            {
-                throw new InvalidOperationException("Could not read an image resource");
-            }
+        reverseWriter.Write(Data.Length);
+        reverseWriter.Write(Data);
 
-            ID = reverseReader.ReadInt16();
-            Name = reverseReader.ReadPascalString();
+        if (reverseWriter.BaseStream.Position % 2 == 1) reverseWriter.Write((byte)0);
+    }
 
-            uint settingLength = reverseReader.ReadUInt32();
-            Data = reverseReader.ReadBytes((int)settingLength);
+    protected virtual void StoreData()
+    {
 
-            if (reverseReader.BaseStream.Position % 2 == 1) reverseReader.ReadByte();
-        }
+    }
 
-        public short ID { get; set; }
+    public BinaryReverseReader DataReader => new BinaryReverseReader(new MemoryStream(Data));
 
-        public string Name { get; }
-
-        public byte[] Data { get; set; }
-
-        public string OSType { get; private set; }
-
-        public void Save(BinaryReverseWriter reverseWriter)
-        {
-            StoreData();
-
-            if (OSType == string.Empty)
-            {
-                OSType = "8BIM";
-            }
-
-            reverseWriter.Write(OSType.ToCharArray());
-            reverseWriter.Write(ID);
-
-            reverseWriter.WritePascalString(Name);
-
-            reverseWriter.Write(Data.Length);
-            reverseWriter.Write(Data);
-
-            if (reverseWriter.BaseStream.Position % 2 == 1) reverseWriter.Write((byte)0);
-        }
-
-        protected virtual void StoreData()
-        {
-
-        }
-
-        public BinaryReverseReader DataReader => new BinaryReverseReader(new MemoryStream(Data));
-
-        public override string ToString()
-        {
-            return string.Format("{0} {1}", (ResourceIDs)ID, Name);
-        }
+    public override string ToString()
+    {
+        return string.Format("{0} {1}", (ResourceIDs)ID, Name);
     }
 }

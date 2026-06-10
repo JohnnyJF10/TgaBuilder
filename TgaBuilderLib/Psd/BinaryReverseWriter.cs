@@ -26,88 +26,86 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using System.IO;
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+/// <summary>
+/// Writes primitive data types as binary values in in big-endian format
+/// </summary>
+public sealed class BinaryReverseWriter : BinaryWriter
 {
-    /// <summary>
-    /// Writes primitive data types as binary values in in big-endian format
-    /// </summary>
-    public sealed class BinaryReverseWriter : BinaryWriter
+    public bool AutoFlush { get; set; }
+
+    public BinaryReverseWriter(Stream stream)
+        : base(stream)
     {
-        public bool AutoFlush { get; set; }
 
-        public BinaryReverseWriter(Stream stream)
-            : base(stream)
+    }
+
+    public void WritePascalString(string s)
+    {
+        char[] c = s.Length > 255 ? s.Substring(0, 255).ToCharArray() : s.ToCharArray();
+
+        Write((byte)c.Length);
+        Write(c);
+
+        int realLength = c.Length + 1;
+
+        if (realLength % 2 == 0) return;
+
+        for (int i = 0; i < 2 - realLength % 2; i++)
         {
-
+            Write((byte)0);
         }
 
-        public void WritePascalString(string s)
-        {
-            char[] c = s.Length > 255 ? s.Substring(0, 255).ToCharArray() : s.ToCharArray();
+        if (AutoFlush) Flush();
+    }
 
-            Write((byte)c.Length);
-            Write(c);
+    public override void Write(short val)
+    {
+        val = Utilities.SwapBytes(val);
+        base.Write(val);
 
-            int realLength = c.Length + 1;
+        if (AutoFlush) Flush();
+    }
 
-            if (realLength % 2 == 0) return;
+    public override void Write(int val)
+    {
+        val = Utilities.SwapBytes(val);
+        base.Write(val);
 
-            for (int i = 0; i < 2 - realLength % 2; i++)
-            {
-                Write((byte)0);
-            }
+        if (AutoFlush) Flush();
+    }
 
-            if (AutoFlush) Flush();
-        }
+    public override void Write(long val)
+    {
+        val = Utilities.SwapBytes(val);
+        base.Write(val);
 
-        public override void Write(short val)
-        {
-            val = Utilities.SwapBytes(val);
-            base.Write(val);
+        if (AutoFlush) Flush();
+    }
 
-            if (AutoFlush) Flush();
-        }
+    public override void Write(ushort val)
+    {
+        val = Utilities.SwapBytes(val);
+        base.Write(val);
 
-        public override void Write(int val)
-        {
-            val = Utilities.SwapBytes(val);
-            base.Write(val);
+        if (AutoFlush) Flush();
+    }
 
-            if (AutoFlush) Flush();
-        }
+    public override void Write(uint val)
+    {
+        val = Utilities.SwapBytes(val);
+        base.Write(val);
 
-        public override void Write(long val)
-        {
-            val = Utilities.SwapBytes(val);
-            base.Write(val);
+        if (AutoFlush) Flush();
+    }
 
-            if (AutoFlush) Flush();
-        }
+    public override void Write(ulong val)
+    {
+        val = Utilities.SwapBytes(val);
+        base.Write(val);
 
-        public override void Write(ushort val)
-        {
-            val = Utilities.SwapBytes(val);
-            base.Write(val);
-
-            if (AutoFlush) Flush();
-        }
-
-        public override void Write(uint val)
-        {
-            val = Utilities.SwapBytes(val);
-            base.Write(val);
-
-            if (AutoFlush) Flush();
-        }
-
-        public override void Write(ulong val)
-        {
-            val = Utilities.SwapBytes(val);
-            base.Write(val);
-
-            if (AutoFlush) Flush();
-        }
+        if (AutoFlush) Flush();
     }
 }

@@ -27,41 +27,39 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
 
-using System.IO;
 using TgaBuilderLib.Abstraction;
 
-namespace TgaBuilderLib.Psd
+namespace TgaBuilderLib.Psd;
+
+/// <summary>
+/// Summary description for Thumbnail.
+/// </summary>
+public sealed class Thumbnail : ImageResource
 {
-    /// <summary>
-    /// Summary description for Thumbnail.
-    /// </summary>
-    public sealed class Thumbnail : ImageResource
+    public IReadableBitmap? Image { get; private set; }
+
+    public Thumbnail(ImageResource imageResource, IMediaFactory? mediaFactory = null)
+        : base(imageResource)
     {
-        public IReadableBitmap? Image { get; private set; }
-
-        public Thumbnail(ImageResource imageResource, IMediaFactory? mediaFactory = null)
-            : base(imageResource)
+        using (BinaryReverseReader reverseReader = DataReader)
         {
-            using (BinaryReverseReader reverseReader = DataReader)
+            int format = reverseReader.ReadInt32();
+            int width = reverseReader.ReadInt32();
+            int height = reverseReader.ReadInt32();
+
+            reverseReader.ReadInt32(); // read widthBytes
+            reverseReader.ReadInt32(); // read size
+            reverseReader.ReadInt32(); // read compressedSize
+            reverseReader.ReadInt16(); // read bitPerPixel
+            reverseReader.ReadInt16(); // read planes
+
+            if (format == 1 && mediaFactory != null)
             {
-                int format = reverseReader.ReadInt32();
-                int width = reverseReader.ReadInt32();
-                int height = reverseReader.ReadInt32();
+                byte[] imgData = reverseReader.ReadBytes((int)(reverseReader.BaseStream.Length - reverseReader.BaseStream.Position));
 
-                reverseReader.ReadInt32(); // read widthBytes
-                reverseReader.ReadInt32(); // read size
-                reverseReader.ReadInt32(); // read compressedSize
-                reverseReader.ReadInt16(); // read bitPerPixel
-                reverseReader.ReadInt16(); // read planes
-
-                if (format == 1 && mediaFactory != null)
+                using (MemoryStream strm = new MemoryStream(imgData))
                 {
-                    byte[] imgData = reverseReader.ReadBytes((int)(reverseReader.BaseStream.Length - reverseReader.BaseStream.Position));
-
-                    using (MemoryStream strm = new MemoryStream(imgData))
-                    {
-                        Image = mediaFactory.LoadBitmap(strm);
-                    }
+                    Image = mediaFactory.LoadBitmap(strm);
                 }
             }
         }

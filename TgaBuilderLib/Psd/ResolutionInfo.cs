@@ -27,95 +27,110 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
 
-using System;
-using System.IO;
+namespace TgaBuilderLib.Psd;
 
-namespace TgaBuilderLib.Psd
+/// <summary>
+/// Summary description for ResolutionInfo.
+/// </summary>
+public sealed class ResolutionInfo : ImageResource
 {
     /// <summary>
-    /// Summary description for ResolutionInfo.
+    /// Fixed-point number: pixels per inch
     /// </summary>
-    public sealed class ResolutionInfo : ImageResource
+    public short HRes { get; private set; }
+
+    /// <summary>
+    /// Fixed-point number: pixels per inch
+    /// </summary>
+    public short VRes { get; private set; }
+
+    /// <summary>
+    /// 1=pixels per inch, 2=pixels per centimeter
+    /// </summary>
+    public enum ResUnit
     {
-        /// <summary>
-        /// Fixed-point number: pixels per inch
-        /// </summary>
-        public short HRes { get; private set; }
+        PxPerInch = 1,
+        PxPerCent = 2
+    }
 
-        /// <summary>
-        /// Fixed-point number: pixels per inch
-        /// </summary>
-        public short VRes { get; private set; }
+    public ResUnit HResUnit { get; private set; }
 
-        /// <summary>
-        /// 1=pixels per inch, 2=pixels per centimeter
-        /// </summary>
-        public enum ResUnit
+    public ResUnit VResUnit { get; private set; }
+
+    /// <summary>
+    /// 1=in, 2=cm, 3=pt, 4=picas, 5=columns
+    /// </summary>
+    public enum Unit
+    {
+        In = 1,
+        Cm = 2,
+        Pt = 3,
+        Picas = 4,
+        Columns = 5
+    }
+
+    public Unit WidthUnit { get; private set; }
+
+    public Unit HeightUnit { get; private set; }
+
+    public ResolutionInfo()
+    {
+        ID = (short)ResourceIDs.ResolutionInfo;
+    }
+
+    /// <summary>
+    /// Creates a ResolutionInfo resource for writing into a PSD file.
+    /// </summary>
+    public ResolutionInfo(
+        short hRes, short vRes,
+        ResUnit hResUnit = ResUnit.PxPerInch,
+        ResUnit vResUnit = ResUnit.PxPerInch,
+        Unit widthUnit = Unit.In,
+        Unit heightUnit = Unit.In)
+    {
+        ID = (short)ResourceIDs.ResolutionInfo;
+        HRes = hRes;
+        VRes = vRes;
+        HResUnit = hResUnit;
+        VResUnit = vResUnit;
+        WidthUnit = widthUnit;
+        HeightUnit = heightUnit;
+    }
+
+    public ResolutionInfo(ImageResource imgRes)
+        : base(imgRes)
+    {
+        using (BinaryReverseReader reverseReader = imgRes.DataReader)
         {
-            PxPerInch = 1,
-            PxPerCent = 2
+            HRes = reverseReader.ReadInt16();
+            HResUnit = (ResUnit)reverseReader.ReadInt32();
+            WidthUnit = (Unit)reverseReader.ReadInt16();
+
+            VRes = reverseReader.ReadInt16();
+            VResUnit = (ResUnit)reverseReader.ReadInt32();
+            HeightUnit = (Unit)reverseReader.ReadInt16();
         }
+    }
 
-        public ResUnit HResUnit { get; private set; }
-
-        public ResUnit VResUnit { get; private set; }
-
-        /// <summary>
-        /// 1=in, 2=cm, 3=pt, 4=picas, 5=columns
-        /// </summary>
-        public enum Unit
+    protected override void StoreData()
+    {
+        using (var memoryStream = new MemoryStream())
+        using (var reverseWriter = new BinaryReverseWriter(memoryStream))
         {
-            In = 1,
-            Cm = 2,
-            Pt = 3,
-            Picas = 4,
-            Columns = 5
+            reverseWriter.Write(HRes);
+            reverseWriter.Write((int)HResUnit);
+            reverseWriter.Write((short)WidthUnit);
+
+            reverseWriter.Write(VRes);
+            reverseWriter.Write((int)VResUnit);
+            reverseWriter.Write((short)HeightUnit);
+
+            Data = memoryStream.ToArray();
         }
+    }
 
-        public Unit WidthUnit { get; private set; }
-
-        public Unit HeightUnit { get; private set; }
-
-        public ResolutionInfo()
-        {
-            ID = (short)ResourceIDs.ResolutionInfo;
-        }
-
-        public ResolutionInfo(ImageResource imgRes)
-            : base(imgRes)
-        {
-            using (BinaryReverseReader reverseReader = imgRes.DataReader)
-            {
-                HRes = reverseReader.ReadInt16();
-                HResUnit = (ResUnit)reverseReader.ReadInt32();
-                WidthUnit = (Unit)reverseReader.ReadInt16();
-
-                VRes = reverseReader.ReadInt16();
-                VResUnit = (ResUnit)reverseReader.ReadInt32();
-                HeightUnit = (Unit)reverseReader.ReadInt16();
-            }
-        }
-
-        protected override void StoreData()
-        {
-            using (var memoryStream = new MemoryStream())
-            using (var reverseWriter = new BinaryReverseWriter(memoryStream))
-            {
-                reverseWriter.Write(HRes);
-                reverseWriter.Write((int)HResUnit);
-                reverseWriter.Write((short)WidthUnit);
-
-                reverseWriter.Write(VRes);
-                reverseWriter.Write((int)VResUnit);
-                reverseWriter.Write((short)HeightUnit);
-
-                Data = memoryStream.ToArray();
-            }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}{2}x{1}{3}", HRes, VRes, Enum.GetName(typeof(Unit), WidthUnit), Enum.GetName(typeof(Unit), HeightUnit));
-        }
+    public override string ToString()
+    {
+        return string.Format("{0}{2}x{1}{3}", HRes, VRes, Enum.GetName(typeof(Unit), WidthUnit), Enum.GetName(typeof(Unit), HeightUnit));
     }
 }

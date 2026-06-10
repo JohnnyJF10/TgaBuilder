@@ -27,52 +27,48 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
 
-using System.Collections.Generic;
-using System.IO;
+namespace TgaBuilderLib.Psd;
 
-namespace TgaBuilderLib.Psd
+public sealed class AlphaChannels : ImageResource
 {
-    public sealed class AlphaChannels : ImageResource
+    private readonly List<string> _channelNames = new List<string>();
+
+    public AlphaChannels()
+        : base((short)ResourceIDs.AlphaChannelNames)
     {
-        private readonly List<string> _channelNames = new List<string>();
+    }
 
-        public AlphaChannels()
-            : base((short)ResourceIDs.AlphaChannelNames)
+    public AlphaChannels(ImageResource imageResource)
+        : base(imageResource)
+    {
+        using (BinaryReverseReader reverseReader = imageResource.DataReader)
         {
-        }
-
-        public AlphaChannels(ImageResource imageResource)
-            : base(imageResource)
-        {
-            using (BinaryReverseReader reverseReader = imageResource.DataReader)
+            // the names are pascal strings without padding!!!
+            while (reverseReader.BaseStream.Length - reverseReader.BaseStream.Position > 0)
             {
-                // the names are pascal strings without padding!!!
-                while (reverseReader.BaseStream.Length - reverseReader.BaseStream.Position > 0)
-                {
-                    byte stringLength = reverseReader.ReadByte();
+                byte stringLength = reverseReader.ReadByte();
 
-                    string s = new string(reverseReader.ReadChars(stringLength));
+                string s = new string(reverseReader.ReadChars(stringLength));
 
-                    if (s.Length > 0) _channelNames.Add(s);
-                }
+                if (s.Length > 0) _channelNames.Add(s);
             }
         }
+    }
 
-        public IEnumerable<string> ChannelNames => _channelNames;
+    public IEnumerable<string> ChannelNames => _channelNames;
 
-        protected override void StoreData()
+    protected override void StoreData()
+    {
+        using (var memoryStream = new MemoryStream())
+        using (var reverseWriter = new BinaryReverseWriter(memoryStream))
         {
-            using (var memoryStream = new MemoryStream())
-            using (var reverseWriter = new BinaryReverseWriter(memoryStream))
+            foreach (string name in ChannelNames)
             {
-                foreach (string name in ChannelNames)
-                {
-                    reverseWriter.Write((byte)name.Length);
-                    reverseWriter.Write(name.ToCharArray());
-                }
-
-                Data = memoryStream.ToArray();
+                reverseWriter.Write((byte)name.Length);
+                reverseWriter.Write(name.ToCharArray());
             }
+
+            Data = memoryStream.ToArray();
         }
     }
 }
