@@ -40,6 +40,8 @@ public class TransitionViewModel : ThrottledViewModelBase
         TransitionOutVM = TransitionInVM.TransitionOutVM;
 
         IsBrickMode = true;
+
+        _transitionHelper.EnsureBuffers(64, 64);
     }
 
     // =====================================================================

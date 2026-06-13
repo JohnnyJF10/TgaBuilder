@@ -153,6 +153,10 @@ public class TransitionInViewModel : ThrottledViewModelBase
     private void DoColorPicking(int x, int y, int imageNum, bool pickShadowColor)
     {
         var sampledColor = _bitmapOperations.GetPixelBrush(imageNum == 1 ? Image1 : Image2, x, y);
+
+        _transitionHelper.CurrentBricksPipelineRequirements
+            = BricksPipelineRequirements.RequiresDrawing;
+
         if (pickShadowColor)
             ShadowColor = sampledColor;
         else
@@ -245,9 +249,6 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
     private void UpdateHelperDimensionsAndResult(IWriteableBitmap referenceImage)
     {
-        _transitionHelper.Width = referenceImage.PixelWidth;
-        _transitionHelper.Height = referenceImage.PixelHeight;
-
         // Provision the reusable buffer set for the new input picture size.
         _transitionHelper.EnsureBuffers(referenceImage.PixelWidth, referenceImage.PixelHeight);
 
@@ -302,12 +303,6 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
     private void ConfigureTransitionHelper()
     {
-        // EdgeColor/ShadowColor are consumed only in the drawing stage, so a color change must not
-        // force a full re-analysis. Pin the pipeline to the drawing stage (mirrors EdgeViewModel /
-        // ShadowViewModel).
-        _transitionHelper.CurrentBricksPipelineRequirements
-            = BricksPipelineRequirements.RequiresDrawing;
-
         _transitionHelper.EdgeColor = EdgeColor;
         _transitionHelper.ShadowColor = ShadowColor;
     }

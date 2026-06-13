@@ -45,7 +45,7 @@ public partial class TransitionHelper
         DrawResult(tilePixels, selection, shadowedBg, result);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     private void DrawShadows(byte[] bgPixels, bool[] selection, byte[] shadowedBg)
     {
         unsafe
@@ -155,7 +155,7 @@ public partial class TransitionHelper
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     private void DrawResult(byte[] tilePixels, bool[] selection, byte[] shadowedBg, byte[] result)
     {
         if (tilePixels.Length != shadowedBg.Length)
