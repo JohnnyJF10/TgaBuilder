@@ -10,28 +10,30 @@ public partial class TransitionHelper
         int n = width * height; 
 
         if (width == Width
-            && height == Width
+            && height == Height
             && _scratchFiltered.Length == n)
-            return; 
+            return;
 
-        int n4 = n * TRANSITIONS_BPP; 
+        int n4 = n * TRANSITIONS_BPP;
 
         Pixels1 = new byte[n4];
         Pixels2 = new byte[n4];
-        PixelsResult = new byte[n4]; 
+        PixelsResult = new byte[n4];
 
         _labels = new int[n];
-        _selection = new bool[n]; 
+        _selection = new bool[n];
         _scratchFiltered = new float[n];
         _scratchGray = new float[n];
         _scratchFilteredColor = new byte[n4];
         _scratchShadowedBg = new byte[n4];
-        _scratchLabelMap = new byte[n4]; 
+        _scratchLabelMap = new byte[n4];
+        _edgeDist = new int[n];
 
         Width = width;
-        Height = height; 
+        Height = height;
 
         _labelsBuilt = false;
         _selectionBuilt = false;
-    } 
+        _edgeDistValid = false;
+    }
 }

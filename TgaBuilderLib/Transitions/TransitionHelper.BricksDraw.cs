@@ -40,13 +40,136 @@ public partial class TransitionHelper
 
         byte[] shadowedBg = _scratchShadowedBg;
 
-        DrawShadows(bgPixels, selection, shadowedBg);
+        // Precompute the pixel-to-edge distance map once and reuse it for both passes. It depends
+        // only on the selection, so drawing-only recalcs (edge/shadow slider changes) reuse it.
+        if (!_edgeDistValid)
+        {
+            ComputeEdgeDistanceTransform(selection, _edgeDist);
+            _edgeDistValid = true;
+        }
 
-        DrawResult(tilePixels, selection, shadowedBg, result);
+        DrawShadows(bgPixels, selection, _edgeDist, shadowedBg);
+
+        DrawResult(tilePixels, selection, _edgeDist, shadowedBg, result);
     }
 
+    // Computes, for every pixel, the Chebyshev (L-infinity) distance to the nearest pixel of
+    // OPPOSITE selection state (min value 1; the INF sentinel when no opposite pixel exists).
+    // This is the same quantity the per-pixel ring searches in DrawShadows/DrawResult used to
+    // compute, but in O(Width*Height) via an exact two-pass (1,1) chamfer distance transform.
+    // The image border is intentionally NOT treated as a boundary: out-of-image neighbors are
+    // skipped, so border falloff stays driven solely by the dynamicSize cap in the draw passes
+    // (this mirrors the old out-of-bounds branch, which was dead code under that cap).
+    private void ComputeEdgeDistanceTransform(bool[] selection, int[] edgeDist)
+    {
+        int width = Width;
+        int height = Height;
+        int inf = width + height;
 
-    private void DrawShadows(byte[] bgPixels, bool[] selection, byte[] shadowedBg)
+        unsafe
+        {
+            fixed (bool* pSel = selection)
+            fixed (int* pDist = edgeDist)
+            {
+                // Seed pass: a pixel with an 8-connected neighbor of opposite state is distance 1
+                // from the boundary (D == 1, the global minimum); everything else starts at INF.
+                // Seeding with 1 (rather than 0) lets the two passes below converge directly to
+                // D(i) = distance to nearest opposite pixel, with no separate +1 fold.
+                for (int y = 0; y < height; y++)
+                {
+                    int row = y * width;
+                    for (int x = 0; x < width; x++)
+                    {
+                        int i = row + x;
+                        bool s = pSel[i];
+
+                        bool boundary = false;
+                        int yStart = y > 0 ? -1 : 0;
+                        int yEnd = y < height - 1 ? 1 : 0;
+                        int xStart = x > 0 ? -1 : 0;
+                        int xEnd = x < width - 1 ? 1 : 0;
+
+                        for (int dy = yStart; dy <= yEnd && !boundary; dy++)
+                        {
+                            int nRow = i + dy * width;
+                            for (int dx = xStart; dx <= xEnd; dx++)
+                            {
+                                if (dx == 0 && dy == 0)
+                                    continue;
+                                if (pSel[nRow + dx] != s)
+                                {
+                                    boundary = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        pDist[i] = boundary ? 1 : inf;
+                    }
+                }
+
+                // Forward pass: relax against NW, N, NE, W neighbors (finalized in raster order).
+                for (int y = 0; y < height; y++)
+                {
+                    int row = y * width;
+                    for (int x = 0; x < width; x++)
+                    {
+                        int i = row + x;
+                        int best = pDist[i];
+                        if (best == 1)
+                            continue; // already at the global minimum
+
+                        if (y > 0)
+                        {
+                            int up = i - width;
+                            best = MinPlusOne(best, pDist[up], inf);           // N
+                            if (x > 0) best = MinPlusOne(best, pDist[up - 1], inf);          // NW
+                            if (x < width - 1) best = MinPlusOne(best, pDist[up + 1], inf);  // NE
+                        }
+                        if (x > 0) best = MinPlusOne(best, pDist[i - 1], inf);  // W
+
+                        pDist[i] = best;
+                    }
+                }
+
+                // Backward pass: relax against SE, S, SW, E neighbors (finalized in reverse order).
+                for (int y = height - 1; y >= 0; y--)
+                {
+                    int row = y * width;
+                    for (int x = width - 1; x >= 0; x--)
+                    {
+                        int i = row + x;
+                        int best = pDist[i];
+                        if (best == 1)
+                            continue;
+
+                        if (y < height - 1)
+                        {
+                            int down = i + width;
+                            best = MinPlusOne(best, pDist[down], inf);          // S
+                            if (x < width - 1) best = MinPlusOne(best, pDist[down + 1], inf); // SE
+                            if (x > 0) best = MinPlusOne(best, pDist[down - 1], inf);         // SW
+                        }
+                        if (x < width - 1) best = MinPlusOne(best, pDist[i + 1], inf); // E
+
+                        pDist[i] = best;
+                    }
+                }
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    // Returns min(current, neighbor + 1), treating the INF sentinel as unreachable (no overflow).
+    private static int MinPlusOne(int current, int neighbor, int inf)
+    {
+        if (neighbor >= inf)
+            return current;
+        int candidate = neighbor + 1;
+        return candidate < current ? candidate : current;
+    }
+
+    private void DrawShadows(byte[] bgPixels, bool[] selection, int[] edgeDist, byte[] shadowedBg)
     {
         unsafe
         {
@@ -91,44 +214,8 @@ public partial class TransitionHelper
                         if (dynamicShadowSize <= 0)
                             continue;
 
-                        bool currentSelectionState = selection[pixelIndex];
-                        int minOppositeDist = dynamicShadowSize + 1;
-
-                        for (int d = 1; d <= dynamicShadowSize; d++)
-                        {
-                            bool foundOppositeSelection = false;
-
-                            for (int i = -d; i <= d; i++)
-                            {
-                                int topY = y - d;
-                                int botY = y + d;
-                                int xPlusI = x + i;
-
-                                if (topY >= 0 && topY < Height && xPlusI >= 0 && xPlusI < Width && selection[topY * Width + xPlusI] != currentSelectionState)
-                                    foundOppositeSelection = true;
-                                if (!foundOppositeSelection && botY >= 0 && botY < Height && xPlusI >= 0 && xPlusI < Width && selection[botY * Width + xPlusI] != currentSelectionState)
-                                    foundOppositeSelection = true;
-
-                                int leftX = x - d;
-                                int rightX = x + d;
-                                int yPlusI = y + i;
-                                if (!foundOppositeSelection && i > -d && i < d)
-                                {
-                                    if (leftX >= 0 && leftX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + leftX] != currentSelectionState)
-                                        foundOppositeSelection = true;
-                                    else if (rightX >= 0 && rightX < Width && yPlusI >= 0 && yPlusI < Height && selection[yPlusI * Width + rightX] != currentSelectionState)
-                                        foundOppositeSelection = true;
-                                }
-
-                                if (foundOppositeSelection) break;
-                            }
-
-                            if (foundOppositeSelection)
-                            {
-                                minOppositeDist = d;
-                                break;
-                            }
-                        }
+                        // Distance to the nearest opposite-selection pixel (precomputed).
+                        int minOppositeDist = edgeDist[pixelIndex];
 
                         if (minOppositeDist <= dynamicShadowSize)
                         {
@@ -155,8 +242,7 @@ public partial class TransitionHelper
         }
     }
 
-
-    private void DrawResult(byte[] tilePixels, bool[] selection, byte[] shadowedBg, byte[] result)
+    private void DrawResult(byte[] tilePixels, bool[] selection, int[] edgeDist, byte[] shadowedBg, byte[] result)
     {
         if (tilePixels.Length != shadowedBg.Length)
             throw new ArgumentException("Tile and shadow buffer must have the same length.");
@@ -206,54 +292,8 @@ public partial class TransitionHelper
                         int dynamicEdgeWidth = Math.Min(EdgeWidth, distToBorder);
                         if (selection[pixelIndex])
                         {
-                            int minDist = dynamicEdgeWidth + 1;
-
-                            // 2. Find the shortest distance to the next unselected pixel
-                            if (dynamicEdgeWidth > 0)
-                            {
-                                // Ring-like search outwards up to the 'dynamicEdgeWidth'
-                                for (int d = 1; d <= dynamicEdgeWidth; d++)
-                                {
-                                    bool foundEdge = false;
-
-                                    // Check the perimeter of the square at distance 'd'
-                                    for (int i = -d; i <= d; i++)
-                                    {
-                                        // Top and Bottom edges of the search square
-                                        int topY = y - d;
-                                        int botY = y + d;
-                                        int xPlusI = x + i;
-
-                                        // Check top boundary (out of bounds logic kept for safety,
-                                        // though dynamicEdgeWidth theoretically prevents it)
-                                        if (topY < 0 || topY >= Height || xPlusI < 0 || xPlusI >= Width || !selection[topY * Width + xPlusI])
-                                            foundEdge = true;
-                                        // Check bottom boundary
-                                        else if (botY < 0 || botY >= Height || xPlusI < 0 || xPlusI >= Width || !selection[botY * Width + xPlusI])
-                                            foundEdge = true;
-
-                                        // Left and Right edges (skip corners to avoid duplicate checks)
-                                        int leftX = x - d;
-                                        int rightX = x + d;
-                                        int yPlusI = y + i;
-                                        if (i > -d && i < d)
-                                        {
-                                            if (leftX < 0 || leftX >= Width || yPlusI < 0 || yPlusI >= Height || !selection[yPlusI * Width + leftX])
-                                                foundEdge = true;
-                                            else if (rightX < 0 || rightX >= Width || yPlusI < 0 || yPlusI >= Height || !selection[yPlusI * Width + rightX])
-                                                foundEdge = true;
-                                        }
-
-                                        if (foundEdge) break;
-                                    }
-
-                                    if (foundEdge)
-                                    {
-                                        minDist = d;
-                                        break; // Found the closest edge, stop searching
-                                    }
-                                }
-                            }
+                            // Distance to the nearest unselected pixel (precomputed).
+                            int minDist = edgeDist[pixelIndex];
 
                             // 3. Color the selected tile pixel based on the distance (Edge tint)
                             if (dynamicEdgeWidth > 0 && minDist <= dynamicEdgeWidth)

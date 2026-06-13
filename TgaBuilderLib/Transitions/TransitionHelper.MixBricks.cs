@@ -39,6 +39,7 @@ partial class TransitionHelper
         {
             BuildSelection(_tileSegmentList, _labels, tilePixels);
             _selectionBuilt = true;
+            _edgeDistValid = false; // selection changed → edge-distance map must be recomputed
         }
 
 
