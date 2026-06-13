@@ -25,17 +25,17 @@ namespace TgaBuilderLib.Transitions
         public byte[] PixelsResult { get; set; }
 
 
-        private int[] _labels = Array.Empty<int>();
+        private int[] _labels = new int[64 * 64];
         private List<TileSegment> _tileSegmentList = new();
-        private bool[] _selection = Array.Empty<bool>();
+        private bool[] _selection = new bool[64 * 64];
 
         // Reusable scratch buffers provisioned by EnsureBuffers when the view opens or the
         // input picture sizes change, reused across recalcs, and released in CleanUp.
-        private float[] _scratchFiltered = Array.Empty<float>();
-        private float[] _scratchGray = Array.Empty<float>();
-        private byte[] _scratchFilteredColor = Array.Empty<byte>();
-        private byte[] _scratchShadowedBg = Array.Empty<byte>();
-        private byte[] _scratchLabelMap = Array.Empty<byte>();
+        private float[] _scratchFiltered = new float[64 * 64];
+        private float[] _scratchGray = new float[64 * 64];
+        private byte[] _scratchFilteredColor = new byte[64 * 64 * TRANSITIONS_BPP];
+        private byte[] _scratchShadowedBg = new byte[64 * 64 * TRANSITIONS_BPP];
+        private byte[] _scratchLabelMap = new byte[64 * 64 * TRANSITIONS_BPP];
 
         private int _provisionedWidth;
         private int _provisionedHeight;
@@ -135,17 +135,17 @@ namespace TgaBuilderLib.Transitions
 
         public void CleanUp()
         {
-            _labels = Array.Empty<int>();
+            _labels = new int[64 * 64];
             _tileSegmentList = new List<TileSegment>();
-            _selection = Array.Empty<bool>();
+            _selection = new bool[64 * 64];
 
             // Release the reusable scratch buffers so their memory can be reclaimed while the
             // view is closed.
-            _scratchFiltered = Array.Empty<float>();
-            _scratchGray = Array.Empty<float>();
-            _scratchFilteredColor = Array.Empty<byte>();
-            _scratchShadowedBg = Array.Empty<byte>();
-            _scratchLabelMap = Array.Empty<byte>();
+            _scratchFiltered = new float[64 * 64];
+            _scratchGray = new float[64 * 64];
+            _scratchFilteredColor = new byte[64 * 64 * TRANSITIONS_BPP];
+            _scratchShadowedBg = new byte[64 * 64 * TRANSITIONS_BPP];
+            _scratchLabelMap = new byte[64 * 64 * TRANSITIONS_BPP];
 
             _provisionedWidth = 0;
             _provisionedHeight = 0;

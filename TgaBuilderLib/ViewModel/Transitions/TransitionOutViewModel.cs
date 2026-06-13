@@ -43,7 +43,9 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
     private bool _initTextVisible = true;
 
-    public IVisualInvalidator? VisualInvalidator { get; set; }
+    public IVisualInvalidator? ResultInvalidator { get; set; }
+
+    public IVisualInvalidator? LabelInvalidator { get; set; }
 
 
 
@@ -165,6 +167,8 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
         using var frameBuffer = labelBmp.GetLocker(requiresRefresh: true);
         Marshal.Copy(mapData, 0, frameBuffer.BackBuffer, mapW * mapH * TRANSITIONS_BPP);
+
+        LabelInvalidator?.InvalidateVisual();
     }
 
     private void RequestNewIndicatorMapImage(int x, int y)
@@ -192,6 +196,8 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
         using var frameBuffer = indicatorBmp.GetLocker(requiresRefresh: true);
         Marshal.Copy(mapData, 0, frameBuffer.BackBuffer, mapW * mapH * TRANSITIONS_BPP);
+
+        ResultInvalidator?.InvalidateVisual();
     }
 
     private void SetExplicitTileVisibility(int x, int y)
@@ -251,7 +257,7 @@ public class TransitionOutViewModel : ThrottledViewModelBase
             destination: ResLockedFrameBuffer.BackBuffer, 
             length: _transitionHelper.PixelsResult.Length);
 
-        VisualInvalidator?.InvalidateVisual();
+        ResultInvalidator?.InvalidateVisual();
 
         if (_transitionHelper.TypeOfTransition == TransitionType.Bricks)
             UpdateLabelMapImage();

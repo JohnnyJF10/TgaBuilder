@@ -40,7 +40,9 @@ namespace TgaBuilderAvaloniaUi.View
             if (viewModel is not TransitionViewModel vm)
             return;
 
-            vm.TransitionOutVM.VisualInvalidator = new VisualInvalidator(ResultImage);
+            vm.TransitionOutVM.ResultInvalidator = new VisualInvalidator(ResultImage);
+
+            vm.TransitionOutVM.LabelInvalidator = new VisualInvalidator(LabelMapImage);
         }
 
         private void SubscribeToLabelMapExpanded(INotifyPropertyChanged viewModel)
