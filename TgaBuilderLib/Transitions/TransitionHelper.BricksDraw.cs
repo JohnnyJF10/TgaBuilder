@@ -22,7 +22,10 @@ public partial class TransitionHelper
         ColorBurn       // Darkens strongly with edge color
     }
 
-    private byte[] BricksDraw(byte[] tilePixels, byte[] bgPixels, bool[] selection)
+    // Writes the blended transition into the caller-provided result buffer using the reusable
+    // _scratchShadowedBg buffer for the intermediate shadow pass. Both buffers are fully
+    // overwritten via Buffer.MemoryCopy before any per-pixel work, so reuse leaves no stale data.
+    private void BricksDraw(byte[] tilePixels, byte[] bgPixels, bool[] selection, byte[] result)
     {
         if (bgPixels.Length != tilePixels.Length)
             throw new ArgumentException("Input image raw arrays must have same length.");
@@ -35,16 +38,11 @@ public partial class TransitionHelper
         ShadowSize = Math.Clamp(ShadowSize, 0, 32);
         ShadowHardness = Math.Clamp(ShadowHardness, 0, 100);
 
-        int stride = Width * TRANSITIONS_BPP;
-        var shadowedBg = new byte[bgPixels.Length];
-        var result = new byte[bgPixels.Length];
+        byte[] shadowedBg = _scratchShadowedBg;
 
         DrawShadows(bgPixels, selection, shadowedBg);
 
         DrawResult(tilePixels, selection, shadowedBg, result);
-
-        return result;
-
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

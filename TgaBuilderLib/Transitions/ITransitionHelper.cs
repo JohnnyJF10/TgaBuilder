@@ -58,6 +58,7 @@ namespace TgaBuilderLib.Transitions
         int UnderfillingThreshold { get; set; }
 
         // Methods
+        void EnsureBuffers(int width, int height);
         void Mix();
         byte[] GetLabelMap();
         int GetLabelAtPixel(int x, int y);

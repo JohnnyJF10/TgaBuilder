@@ -30,39 +30,58 @@ namespace TgaBuilderLib.Transitions
     {
 
         // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
-        private (int[] labels, List<TileSegment> tileSegmentList) BricksAnalyze(byte[] pixels)
+        // Writes the labels into the reusable _labels buffer and returns the tile segment list.
+        private List<TileSegment> BricksAnalyze(byte[] pixels)
         {
             int totalPixels = Width * Height;
 
-            float[] filtered = new float[totalPixels];
-            int[] labels = new int[totalPixels];
-            byte[] filteredColorPixels = pixels;
+            // Reuse the cached label buffer. `filtered`/`filteredColorPixels` are reference aliases
+            // onto the appropriate scratch buffers (or the unfiltered inputs for FilterType.None).
+            int[] labels = _labels;
+            float[] filtered;
+            byte[] filteredColorPixels;
 
-            // 1. Compute grayscale values
-            float[] gray = new float[totalPixels];
+            // 1. Compute grayscale values (fully overwrites _scratchGray, so no clear needed)
+            float[] gray = _scratchGray;
             ComputeGrayValues(pixels, gray);
 
-            // 2. Initial Filter
+            // 2. Initial Filter. The gray filters write only the interior [1..W-2, 1..H-2], so the
+            //    reused _scratchFiltered buffer must be cleared first to match the fresh-array
+            //    zero border the segmentation relies on. The color filters write only the interior
+            //    too, but seed their borders from the copied source pixels (same as the former
+            //    pixels.Clone()), so they need the copy rather than a clear.
             switch (SelectedFilter)
             {
                 case FilterType.BoxBlur:
+                    filtered = _scratchFiltered;
+                    Array.Clear(filtered, 0, totalPixels);
                     BoxBlurGray(filtered, gray);
-                    filteredColorPixels = (byte[])pixels.Clone();
+                    filteredColorPixels = _scratchFilteredColor;
+                    Array.Copy(pixels, filteredColorPixels, pixels.Length);
                     BoxBlurColor(filteredColorPixels, pixels);
                     break;
                 case FilterType.Median:
+                    filtered = _scratchFiltered;
+                    Array.Clear(filtered, 0, totalPixels);
                     MedianFilter3x3Gray(filtered, gray);
-                    filteredColorPixels = (byte[])pixels.Clone();
+                    filteredColorPixels = _scratchFilteredColor;
+                    Array.Copy(pixels, filteredColorPixels, pixels.Length);
                     MedianFilter3x3Color(filteredColorPixels, pixels);
                     break;
                 case FilterType.Bilateral:
+                    filtered = _scratchFiltered;
+                    Array.Clear(filtered, 0, totalPixels);
                     BilateralFilter3x3Gray(filtered, gray, BilateralSigma);
-                    filteredColorPixels = (byte[])pixels.Clone();
+                    filteredColorPixels = _scratchFilteredColor;
+                    Array.Copy(pixels, filteredColorPixels, pixels.Length);
                     BilateralFilter3x3Color(filteredColorPixels, pixels, BilateralSigma);
                     break;
                 case FilterType.Gaussian:
+                    filtered = _scratchFiltered;
+                    Array.Clear(filtered, 0, totalPixels);
                     GaussianBlur3x3Gray(filtered, gray, GaussianSigma);
-                    filteredColorPixels = (byte[])pixels.Clone();
+                    filteredColorPixels = _scratchFilteredColor;
+                    Array.Copy(pixels, filteredColorPixels, pixels.Length);
                     GaussianBlur3x3Color(filteredColorPixels, pixels, GaussianSigma);
                     break;
                 case FilterType.None:
@@ -72,7 +91,9 @@ namespace TgaBuilderLib.Transitions
                     break;
             }
 
-            // 3. Segmentation
+            // 3. Segmentation (writes labels in place). Clear first so unassigned pixels read 0,
+            //    matching the former fresh int[] allocation.
+            Array.Clear(labels, 0, totalPixels);
             int labelCount = SegmentationMethod switch
             {
                 SegmentationMethod.Felzenszwalb => Felzenszwalb(filteredColorPixels, labels, FelzenszwalbMinSize, FelzenszwalbScale),
@@ -87,7 +108,7 @@ namespace TgaBuilderLib.Transitions
             // 4. Build _tileSegmentList (centroids + pixel offsets)
             var tileSegmentList = BuildTileSegmentList(labels, Width, Height, labelCount);
 
-            return (labels, tileSegmentList);
+            return tileSegmentList;
         }
 
         private void ComputeGrayValues(byte[] pixels, float[] gray)

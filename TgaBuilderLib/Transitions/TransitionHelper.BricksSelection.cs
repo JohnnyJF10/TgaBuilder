@@ -14,12 +14,16 @@ public partial class TransitionHelper
     // a per-pixel topology test for corner tiles when SliceCornerTiles is enabled.
     // The per-pixel cut uses the same ComputeFocus logic as MixSmooth at hardness=1 and
     // offset=0, so the resulting border exactly follows the ComputeTopology boundary.
-    private bool[] BuildSelection(
+    private void BuildSelection(
         List<TileSegment> tileSegments,
         int[] labels,
         byte[] tilePixels)
     {
-        bool[] selection = new bool[Width * Height];
+        // Reuse the cached selection buffer. It is cleared here because the logic below only sets
+        // pixels to true (it never resets them), so stale trues from a previous recalc must not
+        // leak through.
+        bool[] selection = _selection;
+        Array.Clear(selection, 0, Width * Height);
         int labelCount = tileSegments.Count;
 
         TransitionDirection mode = Direction;
@@ -100,8 +104,6 @@ public partial class TransitionHelper
 
         if (UnderfillingThreshold > 0)
             SubstractUnderfilled(selection, tilePixels);
-
-        return selection;
     }
 
     private void SubstractUnderfilled(bool[] selection, byte[] tilePixels)

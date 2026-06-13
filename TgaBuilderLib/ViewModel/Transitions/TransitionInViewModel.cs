@@ -181,67 +181,79 @@ public class TransitionInViewModel : ThrottledViewModelBase
     public void LoadImage1(IWriteableBitmap bitmap)
     {
         Image1 = PrepareAndResizeImage(bitmap);
-        _transitionHelper.Pixels1 = ExtractPixels(Image1);
-    
+
         InitTextVisible = false;
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
-    
+
+        // Provision buffers for the new dimensions before copying pixels into them.
         UpdateHelperDimensionsAndResult(Image1);
-    
+        _transitionHelper.Pixels1 = CopyPixelsInto(Image1, _transitionHelper.Pixels1);
+
         if (AreDimensionsDifferent(Image1, Image2))
         {
             Image2 = ImageInResize(Image2, Image1.PixelWidth, Image1.PixelHeight);
-           _transitionHelper.Pixels2 = ExtractPixels(Image2);
+            _transitionHelper.Pixels2 = CopyPixelsInto(Image2, _transitionHelper.Pixels2);
         }
-    
+
         _ = TriggerRecalculation();
     }
-    
+
     public void LoadImage2(IWriteableBitmap bitmap)
     {
         Image2 = PrepareAndResizeImage(bitmap);
-        _transitionHelper.Pixels2 = ExtractPixels(Image2);
-    
+
         InitTextVisible = false;
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresDrawing;
-    
+
+        // Provision buffers for the new dimensions before copying pixels into them.
         UpdateHelperDimensionsAndResult(Image2);
-    
+        _transitionHelper.Pixels2 = CopyPixelsInto(Image2, _transitionHelper.Pixels2);
+
         if (AreDimensionsDifferent(Image1, Image2))
         {
             Image1 = ImageInResize(Image1, Image2.PixelWidth, Image2.PixelHeight);
-            _transitionHelper.Pixels1 = ExtractPixels(Image1);
+            _transitionHelper.Pixels1 = CopyPixelsInto(Image1, _transitionHelper.Pixels1);
             _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
         }
 
         _ = TriggerRecalculation();
     }
-    
+
     private IWriteableBitmap PrepareAndResizeImage(IWriteableBitmap bitmap)
     {
         var imageIn = bitmap.HasAlpha
             ? _mediaFactory.CloneBitmap(bitmap)
             : _bitmapOperations.ConvertRGB24ToBGRA32(bitmap);
-    
+
         return ImageInResize(imageIn);
     }
-    
-    private byte[] ExtractPixels(IWriteableBitmap image)
+
+    // Copies the image pixels into the helper's reusable buffer. Once EnsureBuffers has run for
+    // the current dimensions the target is correctly sized and reused in place; the fresh-array
+    // fallback only guards against an unexpected size mismatch.
+    private byte[] CopyPixelsInto(IWriteableBitmap image, byte[] target)
     {
-        // Todo: Let helper prepare buffers instead of copying pixels here
-        var pixels = new byte[image.PixelWidth * image.PixelHeight * TRANSITIONS_BPP];
-        image.CopyPixels(pixels, image.PixelWidth * TRANSITIONS_BPP, 0);
-        return pixels;
+        int stride = image.PixelWidth * TRANSITIONS_BPP;
+        int needed = stride * image.PixelHeight;
+
+        if (target.Length != needed)
+            target = new byte[needed];
+
+        image.CopyPixels(target, stride, 0);
+        return target;
     }
-    
+
     private void UpdateHelperDimensionsAndResult(IWriteableBitmap referenceImage)
     {
         _transitionHelper.Width = referenceImage.PixelWidth;
         _transitionHelper.Height = referenceImage.PixelHeight;
-    
+
+        // Provision the reusable buffer set for the new input picture size.
+        _transitionHelper.EnsureBuffers(referenceImage.PixelWidth, referenceImage.PixelHeight);
+
         TransitionOutVM.ResultImage = _mediaFactory.CreateEmptyBitmap(
-            referenceImage.PixelWidth, 
-            referenceImage.PixelHeight, 
+            referenceImage.PixelWidth,
+            referenceImage.PixelHeight,
             true);
     }
     
@@ -290,8 +302,14 @@ public class TransitionInViewModel : ThrottledViewModelBase
 
     private void ConfigureTransitionHelper()
     {
+        // EdgeColor/ShadowColor are consumed only in the drawing stage, so a color change must not
+        // force a full re-analysis. Pin the pipeline to the drawing stage (mirrors EdgeViewModel /
+        // ShadowViewModel).
+        _transitionHelper.CurrentBricksPipelineRequirements
+            = BricksPipelineRequirements.RequiresDrawing;
+
         _transitionHelper.EdgeColor = EdgeColor;
-        _transitionHelper.ShadowColor = ShadowColor;        
+        _transitionHelper.ShadowColor = ShadowColor;
     }
 
     protected override async Task TriggerRecalculation()

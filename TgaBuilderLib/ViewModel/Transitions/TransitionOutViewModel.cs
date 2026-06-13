@@ -147,6 +147,7 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
     private void UpdateLabelMapImage()
     {
+        // mapData is the helper's reused label-map buffer (no per-call allocation).
         byte[] mapData = _transitionHelper.GetLabelMap();
 
         int mapW = ResultImage?.PixelWidth ?? 0;
@@ -155,13 +156,15 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         if (mapData.Length == 0 || mapW == 0 || mapH == 0)
             return;
 
-        var labelBmp = _mediaFactory.CreateEmptyBitmap(mapW, mapH, true);
-        labelBmp.WritePixels(
-            new PixelRect(0, 0, mapW, mapH),
-            mapData,
-            mapW * 4);
+        var labelBmp = LabelMapImage;
+        if (labelBmp is null || labelBmp.PixelWidth != mapW || labelBmp.PixelHeight != mapH)
+        {
+            labelBmp = _mediaFactory.CreateEmptyBitmap(mapW, mapH, true);
+            LabelMapImage = labelBmp;
+        }
 
-        LabelMapImage = labelBmp;
+        using var frameBuffer = labelBmp.GetLocker(requiresRefresh: true);
+        Marshal.Copy(mapData, 0, frameBuffer.BackBuffer, mapW * mapH * TRANSITIONS_BPP);
     }
 
     private void RequestNewIndicatorMapImage(int x, int y)
@@ -171,6 +174,7 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         if (label == 0)
             return;
 
+        // mapData is the helper's reused label-map buffer (no per-call allocation).
         byte[] mapData = _transitionHelper.GetTileIndicator(label);
 
         int mapW = ResultImage?.PixelWidth ?? 0;
@@ -179,13 +183,15 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         if (mapData.Length == 0 || mapW == 0 || mapH == 0)
             return;
 
-        var indicatorBmp = _mediaFactory.CreateEmptyBitmap(mapW, mapH, true);
-        indicatorBmp.WritePixels(
-            new PixelRect(0, 0, mapW, mapH),
-            mapData,
-            mapW * 4);
+        var indicatorBmp = IndicatorMapImage;
+        if (indicatorBmp is null || indicatorBmp.PixelWidth != mapW || indicatorBmp.PixelHeight != mapH)
+        {
+            indicatorBmp = _mediaFactory.CreateEmptyBitmap(mapW, mapH, true);
+            IndicatorMapImage = indicatorBmp;
+        }
 
-        IndicatorMapImage = indicatorBmp;
+        using var frameBuffer = indicatorBmp.GetLocker(requiresRefresh: true);
+        Marshal.Copy(mapData, 0, frameBuffer.BackBuffer, mapW * mapH * TRANSITIONS_BPP);
     }
 
     private void SetExplicitTileVisibility(int x, int y)

@@ -29,6 +29,22 @@ namespace TgaBuilderLib.Transitions
         private List<TileSegment> _tileSegmentList = new();
         private bool[] _selection = Array.Empty<bool>();
 
+        // Reusable scratch buffers provisioned by EnsureBuffers when the view opens or the
+        // input picture sizes change, reused across recalcs, and released in CleanUp.
+        private float[] _scratchFiltered = Array.Empty<float>();
+        private float[] _scratchGray = Array.Empty<float>();
+        private byte[] _scratchFilteredColor = Array.Empty<byte>();
+        private byte[] _scratchShadowedBg = Array.Empty<byte>();
+        private byte[] _scratchLabelMap = Array.Empty<byte>();
+
+        private int _provisionedWidth;
+        private int _provisionedHeight;
+
+        // Because _labels/_selection are now pre-provisioned (length is always Width*Height),
+        // their array length can no longer signal "never computed". These flags do.
+        private bool _labelsBuilt;
+        private bool _selectionBuilt;
+
         public int Width { get; set; } = 64;
         public int Height { get; set; } = 64;
 
@@ -78,9 +94,43 @@ namespace TgaBuilderLib.Transitions
         public void Mix()
         {
             if (TypeOfTransition == TransitionType.Smooth)
-                PixelsResult = MixSmooth(Pixels1, Pixels2);
+                MixSmooth(Pixels1, Pixels2, PixelsResult);
             else
-                PixelsResult = MixBricks(Pixels1, Pixels2);
+                MixBricks(Pixels1, Pixels2, PixelsResult);
+        }
+
+        // Provisions the reusable buffer set for the given input picture size. Called when the
+        // transitions view opens and whenever the input picture dimensions change. Cheap no-op
+        // when the size is unchanged, so callers may invoke it freely.
+        public void EnsureBuffers(int width, int height)
+        {
+            int n = width * height;
+
+            if (width == _provisionedWidth
+                && height == _provisionedHeight
+                && _scratchFiltered.Length == n)
+                return;
+
+            int n4 = n * TRANSITIONS_BPP;
+
+            Pixels1 = new byte[n4];
+            Pixels2 = new byte[n4];
+            PixelsResult = new byte[n4];
+
+            _labels = new int[n];
+            _selection = new bool[n];
+
+            _scratchFiltered = new float[n];
+            _scratchGray = new float[n];
+            _scratchFilteredColor = new byte[n4];
+            _scratchShadowedBg = new byte[n4];
+            _scratchLabelMap = new byte[n4];
+
+            _provisionedWidth = width;
+            _provisionedHeight = height;
+
+            _labelsBuilt = false;
+            _selectionBuilt = false;
         }
 
         public void CleanUp()
@@ -88,6 +138,19 @@ namespace TgaBuilderLib.Transitions
             _labels = Array.Empty<int>();
             _tileSegmentList = new List<TileSegment>();
             _selection = Array.Empty<bool>();
+
+            // Release the reusable scratch buffers so their memory can be reclaimed while the
+            // view is closed.
+            _scratchFiltered = Array.Empty<float>();
+            _scratchGray = Array.Empty<float>();
+            _scratchFilteredColor = Array.Empty<byte>();
+            _scratchShadowedBg = Array.Empty<byte>();
+            _scratchLabelMap = Array.Empty<byte>();
+
+            _provisionedWidth = 0;
+            _provisionedHeight = 0;
+            _labelsBuilt = false;
+            _selectionBuilt = false;
 
             Width = 64;
             Height = 64;

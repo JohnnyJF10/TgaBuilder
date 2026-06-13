@@ -16,7 +16,7 @@ public partial class TransitionHelper
         if (x < 0 || x >= Width || y < 0 || y >= Height)
             return 0;
 
-        if (_labels.Length == 0)
+        if (!_labelsBuilt)
             return 0;
 
         int index = y * Width + x;
@@ -24,23 +24,25 @@ public partial class TransitionHelper
     }
     public byte[] GetLabelMap()
     {
-        int[] currentLabels = new int[Width * Height];
-        int labelCount = _labels[0];
+        if (!_labelsBuilt)
+            return Array.Empty<byte>();
 
-        for (int i = 0; i < _labels.Length; i++)
+        int totalPixels = Width * Height;
+
+        // Find the highest label by scanning _labels directly (no throwaway copy).
+        int labelCount = 0;
+        for (int i = 0; i < totalPixels; i++)
         {
             int label = _labels[i];
-
-            currentLabels[i] = label;
-
             if (label > labelCount)
                 labelCount = label;
         }
 
         int stride = Width * TRANSITIONS_BPP;
 
-        // Create target array
-        byte[] map = new byte[Width * Height * TRANSITIONS_BPP];
+        // Reuse the owned label-map buffer. Every pixel is written below (label 0 → opaque black,
+        // otherwise the deterministic color), so no clear is needed.
+        byte[] map = _scratchLabelMap;
 
         // Generate colors deterministically
         uint[] colors = new uint[labelCount + 1];
@@ -59,7 +61,7 @@ public partial class TransitionHelper
         unsafe
         {
             fixed (byte* pDebug = map)
-            fixed (int* pLabels = currentLabels)
+            fixed (int* pLabels = _labels)
             {
                 for (int y = 0; y < Height; y++)
                 {
@@ -88,25 +90,19 @@ public partial class TransitionHelper
     // Gets a debug map highlighting the tile at (xPos, yPos) with the specified color, or gray if no color is provided.
     public byte[] GetTileIndicator(int tileIndex)
     {
-        int[] currentLabels = new int[Width * Height];
-        int labelCount = _labels[0];
+        if (!_labelsBuilt)
+            return Array.Empty<byte>();
 
-        for (int i = 0; i < _labels.Length; i++)
-        {
-            int label = _labels[i];
-
-            currentLabels[i] = label;
-
-            if (label > labelCount)
-                labelCount = label;
-        }
-
+        int totalPixels = Width * Height;
         int requestedLabel = tileIndex;
 
         int stride = Width * TRANSITIONS_BPP;
 
-        // Create target array
-        byte[] map = new byte[Width * Height * TRANSITIONS_BPP];
+        // Reuse the owned label-map buffer. Only the matching-label pixels are written below, so
+        // it must be cleared first to keep non-matching pixels transparent (matching the former
+        // freshly allocated, zero-initialized array).
+        byte[] map = _scratchLabelMap;
+        Array.Clear(map, 0, totalPixels * TRANSITIONS_BPP);
 
 
         byte r = _systemAccentColor.R;
@@ -119,7 +115,7 @@ public partial class TransitionHelper
         unsafe
         {
             fixed (byte* pDebug = map)
-            fixed (int* pLabels = currentLabels)
+            fixed (int* pLabels = _labels)
             {
                 for (int y = 0; y < Height; y++)
                 {
