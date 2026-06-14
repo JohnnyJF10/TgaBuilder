@@ -20,6 +20,7 @@ using TgaBuilderWpfUi.Wrappers;
 using Application = System.Windows.Application;
 using Wpf.Ui.Appearance;
 using TgaBuilderLib.Krita;
+using TgaBuilderLib.Psd;
 
 namespace TgaBuilderWpfUi
 {
@@ -75,6 +76,7 @@ namespace TgaBuilderWpfUi
         private void AddCoreServicesToProvider(IServiceCollection services)
         {
             services.AddSingleton<IKraFileService, KraFileService>();
+            services.AddSingleton<IPsdFileService, PsdFileService>();
             services.AddSingleton<ITrngDecrypter, TrngDecrypter>();
             services.AddSingleton<IBitmapBytesIO, BitmapBytesIO>();
 

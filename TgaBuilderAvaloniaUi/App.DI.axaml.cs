@@ -21,6 +21,7 @@ using TgaBuilderLib.ViewModel.Views;
 using Avalonia;
 using Avalonia.Controls;
 using TgaBuilderLib.Krita;
+using TgaBuilderLib.Psd;
 
 namespace TgaBuilderAvaloniaUi
 {
@@ -83,6 +84,7 @@ namespace TgaBuilderAvaloniaUi
         private void AddCoreServicesToProvider(IServiceCollection services)
         {
             services.AddSingleton<IKraFileService, KraFileService>();
+            services.AddSingleton<IPsdFileService, PsdFileService>();
             services.AddSingleton<ITrngDecrypter, TrngDecrypter>();
             services.AddSingleton<IBitmapBytesIO, BitmapBytesIO>();
 

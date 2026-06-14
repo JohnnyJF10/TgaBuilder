@@ -10,50 +10,48 @@ namespace TgaBuilderLib.Psd;
 public partial class PsdFile
 {
     /// <summary>
-    /// Saves a 32-bit RGBA PSD file containing a merged background image and a set of layers.
+    /// Saves a 32-bit RGBA PSD file containing the given layers.
+    /// The merged/composite background image is computed from the layers.
     /// </summary>
     /// <param name="filename">Destination file path.</param>
-    /// <param name="background">
-    /// Merged/composite background bitmap in BGRA 32-bit format.
-    /// Its dimensions define the PSD canvas size.
-    /// </param>
     /// <param name="layerInfos">
     /// Layers to include in the PSD, listed from bottom to top.
     /// Each layer bitmap must be in BGRA 32-bit format.
     /// </param>
-    public void Save(string filename, IReadableBitmap background, IEnumerable<PsdLayerInfo> layerInfos)
+    public void Save(string filename, IEnumerable<PsdLayerInfo> layerInfos)
     {
         using var stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
-        Save(stream, background, layerInfos);
+        Save(stream, layerInfos);
     }
 
     /// <summary>
     /// Writes a 32-bit RGBA PSD file to the given stream.
+    /// The merged/composite background image is computed from the layers.
     /// </summary>
     /// <param name="stream">Output stream (must be writable and seekable).</param>
-    /// <param name="background">
-    /// Merged/composite background bitmap in BGRA 32-bit format.
-    /// Its dimensions define the PSD canvas size.
-    /// </param>
     /// <param name="layerInfos">
     /// Layers to include in the PSD, listed from bottom to top.
     /// Each layer bitmap must be in BGRA 32-bit format.
     /// </param>
-    public void Save(Stream stream, IReadableBitmap background, IEnumerable<PsdLayerInfo> layerInfos)
+    public void Save(Stream stream, IEnumerable<PsdLayerInfo> layerInfos)
     {
+        var infoList = layerInfos.ToList();
+
+        if (infoList.Count == 0)
+            throw new ArgumentException("Error, list of Layer Infos cannot be empty");
+
         Version = 1;
 
-        Columns = background.PixelWidth;
-        Rows = background.PixelHeight;
+        // The canvas spans the bounding box of all layer rectangles.
+        // Smaller Images will put to the top-left corner of the canvas.
+        Columns = infoList.Max(info => info.Rect.Right);
+        Rows = infoList.Max(info => info.Rect.Bottom);
 
         Depth = 8;
         Channels = 4; // RGBA
 
         var writer = new BinaryReverseWriter(stream);
-        var layerList = layerInfos.Select(info => new Layer(info, this)).ToList();
-
-        if (!layerList.Any())
-            throw new ArgumentException("Error, list of Layer Infos cannot be empty");
+        var layerList = infoList.Select(info => new Layer(info, this)).ToList();
 
         // ── Header ──────────────────────────────────────────────────────────
         writer.Write("8BPS".ToCharArray());  // PSD signature
@@ -126,8 +124,9 @@ public partial class PsdFile
         writer.Write((short)ImageCompression.Rle);
 
         int pixelCount = Columns * Rows;
-        var bgra = new byte[pixelCount * 4];
-        background.CopyPixels(new PixelRect(0, 0, Columns, Rows), bgra, Columns * 4, 0);
+
+        // The merged image is the straight-alpha composite of all layers.
+        var bgra = CompositeLayers(infoList, Columns, Rows);
 
         // PSD stores channels as separate planar arrays: R, G, B, A
         // BGRA layout: [0]=B  [1]=G  [2]=R  [3]=A
@@ -180,5 +179,78 @@ public partial class PsdFile
         {
             writer.Write(compressedChannelData[ch]);
         }
+    }
+
+    /// <summary>
+    /// Composites the layers (index 0 = bottom) onto a transparent
+    /// <paramref name="width"/> x <paramref name="height"/> canvas using the
+    /// straight-alpha "source over" operator. Each layer is placed at its
+    /// <see cref="PsdLayerInfo.Rect"/> offset, its alpha is scaled by
+    /// <see cref="PsdLayerInfo.Opacity"/>, and invisible layers are skipped.
+    /// Layer bitmaps are expected to be BGRA 32-bit. Blend modes other than
+    /// Normal are not applied to the merged result.
+    /// </summary>
+    private static byte[] CompositeLayers(IReadOnlyList<PsdLayerInfo> layers, int width, int height)
+    {
+        var canvas = new byte[width * height * 4]; // BGRA, fully transparent
+
+        foreach (var info in layers)
+        {
+            if (!info.Visible)
+                continue;
+
+            int layerW = info.Rect.Width;
+            int layerH = info.Rect.Height;
+            int offsetX = info.Rect.X;
+            int offsetY = info.Rect.Y;
+            float layerOpacity = info.Opacity / 255f;
+
+            var src = new byte[layerW * layerH * 4];
+            info.Bitmap.CopyPixels(new PixelRect(0, 0, layerW, layerH), src, layerW * 4, 0);
+
+            for (int y = 0; y < layerH; y++)
+            {
+                int dy = y + offsetY;
+                if (dy < 0 || dy >= height)
+                    continue;
+
+                int sRow = y * layerW * 4;
+                int dRow = dy * width * 4;
+
+                for (int x = 0; x < layerW; x++)
+                {
+                    int dx = x + offsetX;
+                    if (dx < 0 || dx >= width)
+                        continue;
+
+                    int sPix = sRow + x * 4;
+                    int dPix = dRow + dx * 4;
+
+                    float sourceAlpha = (src[sPix + 3] / 255f) * layerOpacity;
+
+                    if (sourceAlpha <= 0f)
+                        continue;
+
+                    float destinationAlpha = canvas[dPix + 3] / 255f;
+
+                    float oa = sourceAlpha + destinationAlpha * (1f - sourceAlpha);
+
+                    if (oa <= 0f)
+                        continue;
+
+                    for (int c = 0; c < 3; c++)
+                    {
+                        float sc = src[sPix + c];
+                        float dc = canvas[dPix + c];
+                        float oc = (sc * sourceAlpha + dc * destinationAlpha * (1f - sourceAlpha)) / oa;
+                        canvas[dPix + c] = (byte)Math.Clamp(oc + 0.5f, 0f, 255f);
+                    }
+
+                    canvas[dPix + 3] = (byte)Math.Clamp(oa * 255f + 0.5f, 0f, 255f);
+                }
+            }
+        }
+
+        return canvas;
     }
 }
