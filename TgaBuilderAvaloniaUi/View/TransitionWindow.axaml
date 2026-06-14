@@ -232,6 +232,7 @@
                 IsVisible="{Binding TransitionOutVM.IsLabelMapExpanded}"
                 Background="Transparent">
                 <Image
+                    x:Name="LabelMapImage"
                     Margin="0,4,0,0"
                     RenderOptions.BitmapInterpolationMode="None"
                     Source="{Binding TransitionOutVM.LabelMapImage, Converter={StaticResource WriteableBitmapConverter}}"

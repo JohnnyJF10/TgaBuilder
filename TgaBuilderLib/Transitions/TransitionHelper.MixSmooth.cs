@@ -6,9 +6,12 @@ public partial class TransitionHelper
 {
 
     // Mixes two pixel buffers into one based on transition mode, pivot, and hardness.
-    public byte[] MixSmooth(
+    // Writes into the caller-provided result buffer (fully overwritten, every pixel) so no
+    // per-recalc allocation occurs.
+    public void MixSmooth(
         byte[] pixels1,
-        byte[] pixels2)
+        byte[] pixels2,
+        byte[] result)
     {
         if (pixels1.Length != pixels2.Length)
             throw new ArgumentException("Pixel arrays must have same length.");
@@ -16,8 +19,6 @@ public partial class TransitionHelper
         Hardness = Math.Clamp(Hardness, 0.0f, 1.0f);
         Pivot = Math.Clamp(Pivot, 0.0f, 1.0f);
         Widening = Math.Clamp(Widening, 0.0f, 1.0f);
-
-        byte[] result = new byte[pixels1.Length];
 
         float lower = Pivot * Hardness;
         float upper = 1.0f - (1.0f - Pivot) * Hardness;
@@ -57,8 +58,6 @@ public partial class TransitionHelper
                 }
             }
         }
-
-        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

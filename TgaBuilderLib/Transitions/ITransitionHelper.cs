@@ -7,9 +7,11 @@ namespace TgaBuilderLib.Transitions
 {
     public interface ITransitionHelper
     {
+        bool IsActive { get; }
+
         // Source Image Dimensions
-        int Width { get; set; }
-        int Height { get; set; }
+        int Width { get; }
+        int Height { get; }
 
         byte[] Pixels1 { get; set; }
         byte[] Pixels2 { get; set; }
@@ -58,6 +60,7 @@ namespace TgaBuilderLib.Transitions
         int UnderfillingThreshold { get; set; }
 
         // Methods
+        void EnsureBuffers(int width, int height);
         void Mix();
         byte[] GetLabelMap();
         int GetLabelAtPixel(int x, int y);

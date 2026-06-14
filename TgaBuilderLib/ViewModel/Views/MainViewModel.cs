@@ -445,7 +445,7 @@ namespace TgaBuilderLib.ViewModel
                 return;
 
             var transitionView = _getViewCallback(ViewIndex.Transition);
-            if (transitionView.DataContext is not TransitionViewModel)
+            if (transitionView.DataContext is not TransitionViewModel transitionViewModel)
                 return;
 
             transitionView.Topmost = true;

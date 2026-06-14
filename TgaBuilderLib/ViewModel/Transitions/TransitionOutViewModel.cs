@@ -43,7 +43,9 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
     private bool _initTextVisible = true;
 
-    public IVisualInvalidator? VisualInvalidator { get; set; }
+    public IVisualInvalidator? ResultInvalidator { get; set; }
+
+    public IVisualInvalidator? LabelInvalidator { get; set; }
 
 
 
@@ -147,45 +149,56 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
     private void UpdateLabelMapImage()
     {
-        byte[] mapData = _transitionHelper.GetLabelMap();
-
-        int mapW = ResultImage?.PixelWidth ?? 0;
-        int mapH = ResultImage?.PixelHeight ?? 0;
-
-        if (mapData.Length == 0 || mapW == 0 || mapH == 0)
+        if (ResultImage.PixelWidth <= 0 || ResultImage.PixelHeight <= 0)
             return;
 
-        var labelBmp = _mediaFactory.CreateEmptyBitmap(mapW, mapH, true);
-        labelBmp.WritePixels(
-            new PixelRect(0, 0, mapW, mapH),
-            mapData,
-            mapW * 4);
+        // mapData is the helper's reused label-map buffer (no per-call allocation).
+        byte[] mapData = _transitionHelper.GetLabelMap();
 
-        LabelMapImage = labelBmp;
+        var labelBmp = LabelMapImage;
+        if (labelBmp is null 
+            || labelBmp.PixelWidth != ResultImage.PixelWidth 
+            || labelBmp.PixelHeight != ResultImage.PixelHeight)
+        {
+            labelBmp = _mediaFactory.CreateEmptyBitmap(ResultImage.PixelWidth, ResultImage.PixelHeight, true);
+            LabelMapImage = labelBmp;
+        }
+
+        using var frameBuffer = labelBmp.GetLocker(requiresRefresh: true);
+        Marshal.Copy(mapData, 0, frameBuffer.BackBuffer, ResultImage.PixelWidth * ResultImage.PixelHeight * TRANSITIONS_BPP);
+
+        LabelInvalidator?.InvalidateVisual();
     }
 
     private void RequestNewIndicatorMapImage(int x, int y)
     {
+        if (ResultImage.PixelWidth <= 0 || ResultImage.PixelHeight <= 0)
+            return;
+
         int label = _transitionHelper.GetLabelAtPixel(x, y);
 
         if (label == 0)
             return;
 
+        // mapData is the helper's reused label-map buffer (no per-call allocation).
         byte[] mapData = _transitionHelper.GetTileIndicator(label);
 
-        int mapW = ResultImage?.PixelWidth ?? 0;
-        int mapH = ResultImage?.PixelHeight ?? 0;
-
-        if (mapData.Length == 0 || mapW == 0 || mapH == 0)
+        if (mapData.Length == 0 || ResultImage.PixelWidth <= 0 || ResultImage.PixelHeight <= 0)
             return;
 
-        var indicatorBmp = _mediaFactory.CreateEmptyBitmap(mapW, mapH, true);
-        indicatorBmp.WritePixels(
-            new PixelRect(0, 0, mapW, mapH),
-            mapData,
-            mapW * 4);
+        var indicatorBmp = IndicatorMapImage;
+        if (indicatorBmp is null 
+            || indicatorBmp.PixelWidth != ResultImage.PixelWidth 
+            || indicatorBmp.PixelHeight != ResultImage.PixelHeight)
+        {
+            indicatorBmp = _mediaFactory.CreateEmptyBitmap(ResultImage.PixelWidth, ResultImage.PixelHeight, true);
+            IndicatorMapImage = indicatorBmp;
+        }
 
-        IndicatorMapImage = indicatorBmp;
+        using var frameBuffer = indicatorBmp.GetLocker(requiresRefresh: true);
+        Marshal.Copy(mapData, 0, frameBuffer.BackBuffer, ResultImage.PixelWidth * ResultImage.PixelHeight * TRANSITIONS_BPP);
+
+        ResultInvalidator?.InvalidateVisual();
     }
 
     private void SetExplicitTileVisibility(int x, int y)
@@ -224,6 +237,12 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         InitTextVisible = true;
         _resultImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
         _labelMapImage = null;
+
+        if (ResultInvalidator is not null)
+            ResultInvalidator = null;
+
+        if (LabelInvalidator is not null) 
+            LabelInvalidator = null;
     }
 
     public void EndMouseInteraction()
@@ -245,7 +264,7 @@ public class TransitionOutViewModel : ThrottledViewModelBase
             destination: ResLockedFrameBuffer.BackBuffer, 
             length: _transitionHelper.PixelsResult.Length);
 
-        VisualInvalidator?.InvalidateVisual();
+        ResultInvalidator?.InvalidateVisual();
 
         if (_transitionHelper.TypeOfTransition == TransitionType.Bricks)
             UpdateLabelMapImage();

@@ -28,66 +28,77 @@ namespace TgaBuilderLib.Transitions
 
     public partial class TransitionHelper
     {
-
-        // Runs a watershed-style tile analysis and builds labels, centroids, and a debug map.
-        private (int[] labels, List<TileSegment> tileSegmentList) BricksAnalyze(byte[] pixels)
+        private List<TileSegment> BricksAnalyze(byte[] pixels)
         {
+
+            bool isGraySegmentation = SegmentationMethod == SegmentationMethod.Watershed
+            || SegmentationMethod == SegmentationMethod.BrickFit
+            || SegmentationMethod == SegmentationMethod.GridFit;
+
             int totalPixels = Width * Height;
 
-            float[] filtered = new float[totalPixels];
-            int[] labels = new int[totalPixels];
-            byte[] filteredColorPixels = pixels;
 
-            // 1. Compute grayscale values
-            float[] gray = new float[totalPixels];
-            ComputeGrayValues(pixels, gray);
+            // 1. Pre-Processings
+            if (isGraySegmentation)
+                ComputeGrayValues(pixels, _scratchGray);
+            else
+                Array.Copy(pixels, _scratchFilteredColor, pixels.Length);
 
-            // 2. Initial Filter
-            switch (SelectedFilter)
+            // 2. Initial Filter. 
+
+            switch (SelectedFilter, isGraySegmentation)
             {
-                case FilterType.BoxBlur:
-                    BoxBlurGray(filtered, gray);
-                    filteredColorPixels = (byte[])pixels.Clone();
-                    BoxBlurColor(filteredColorPixels, pixels);
+                case (FilterType.BoxBlur, true):
+                    BoxBlurGray(_scratchFiltered, _scratchGray);
                     break;
-                case FilterType.Median:
-                    MedianFilter3x3Gray(filtered, gray);
-                    filteredColorPixels = (byte[])pixels.Clone();
-                    MedianFilter3x3Color(filteredColorPixels, pixels);
+                case (FilterType.BoxBlur, false):
+                    BoxBlurColor(_scratchFilteredColor, pixels);
                     break;
-                case FilterType.Bilateral:
-                    BilateralFilter3x3Gray(filtered, gray, BilateralSigma);
-                    filteredColorPixels = (byte[])pixels.Clone();
-                    BilateralFilter3x3Color(filteredColorPixels, pixels, BilateralSigma);
+                case (FilterType.Median, true):
+                    MedianFilter3x3Gray(_scratchFiltered, _scratchGray);
                     break;
-                case FilterType.Gaussian:
-                    GaussianBlur3x3Gray(filtered, gray, GaussianSigma);
-                    filteredColorPixels = (byte[])pixels.Clone();
-                    GaussianBlur3x3Color(filteredColorPixels, pixels, GaussianSigma);
+                case (FilterType.Median, false):
+                    MedianFilter3x3Color(_scratchFilteredColor, pixels);
+                    break;                
+                case (FilterType.Bilateral, true):
+                    BilateralFilter3x3Gray(_scratchFiltered, _scratchGray, BilateralSigma);
                     break;
-                case FilterType.None:
+                case (FilterType.Bilateral, false):
+                    BilateralFilter3x3Color(_scratchFilteredColor, pixels, BilateralSigma);
+                    break;                
+                case (FilterType.Gaussian, true):
+                    GaussianBlur3x3Gray(_scratchFiltered, _scratchGray, GaussianSigma);
+                    break;
+                case (FilterType.Gaussian, false):
+                    GaussianBlur3x3Color(_scratchFilteredColor, pixels, GaussianSigma);
+                    break;
+                case (FilterType.None, true):
+                    Array.Copy(_scratchGray, _scratchFiltered, totalPixels);
+                    break;
+                case (FilterType.None, false):
+                    Array.Copy(_scratchFilteredColor, pixels, totalPixels * TRANSITIONS_BPP);
+                    break;
                 default:
-                    filtered = gray;
-                    filteredColorPixels = pixels;
                     break;
             }
 
             // 3. Segmentation
+            Array.Clear(_labels, 0, totalPixels);
             int labelCount = SegmentationMethod switch
             {
-                SegmentationMethod.Felzenszwalb => Felzenszwalb(filteredColorPixels, labels, FelzenszwalbMinSize, FelzenszwalbScale),
-                SegmentationMethod.Slic => Slic(filteredColorPixels, labels, SlicSegmentCount, SlicCompactness),
-                SegmentationMethod.Quickshift => Quickshift(filteredColorPixels, labels, QuickshiftMaxDist, QuickshiftRatio),
-                SegmentationMethod.Watershed => Watershed(filtered, labels),
-                SegmentationMethod.BrickFit => BrickFit(filtered, labels, GridFitAngle),
-                SegmentationMethod.GridFit => GridFit(filtered, labels, GridFitAngle),
+                SegmentationMethod.Felzenszwalb => Felzenszwalb(_scratchFilteredColor, _labels, FelzenszwalbMinSize, FelzenszwalbScale),
+                SegmentationMethod.Slic => Slic(_scratchFilteredColor, _labels, SlicSegmentCount, SlicCompactness),
+                SegmentationMethod.Quickshift => Quickshift(_scratchFilteredColor, _labels, QuickshiftMaxDist, QuickshiftRatio),
+                SegmentationMethod.Watershed => Watershed(_scratchFiltered, _labels),
+                SegmentationMethod.BrickFit => BrickFit(_scratchFiltered, _labels, GridFitAngle),
+                SegmentationMethod.GridFit => GridFit(_scratchFiltered, _labels, GridFitAngle),
                 _ => 0
             };
 
             // 4. Build _tileSegmentList (centroids + pixel offsets)
-            var tileSegmentList = BuildTileSegmentList(labels, Width, Height, labelCount);
+            var tileSegmentList = BuildTileSegmentList(_labels, Width, Height, labelCount);
 
-            return (labels, tileSegmentList);
+            return tileSegmentList;
         }
 
         private void ComputeGrayValues(byte[] pixels, float[] gray)
