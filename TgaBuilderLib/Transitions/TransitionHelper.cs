@@ -88,28 +88,6 @@ public partial class TransitionHelper : ITransitionHelper
             MixBricks(Pixels1, Pixels2, PixelsResult);
     }
 
-    //public void SetUp()
-    //{
-    //    _labels = new int[INIT_SIZE * INIT_SIZE];
-    //    _tileSegmentList = new List<TileSegment>();
-    //    _selection = new bool[INIT_SIZE * INIT_SIZE];
-    //    // Release the reusable scratch buffers so their memory can be reclaimed while the
-    //    // view is closed.
-    //    _scratchFiltered = new float[INIT_SIZE * INIT_SIZE];
-    //    _scratchGray = new float[INIT_SIZE * INIT_SIZE];
-    //    _scratchFilteredColor = new byte[INIT_SIZE * INIT_SIZE * TRANSITIONS_BPP];
-    //    _scratchShadowedBg = new byte[INIT_SIZE * INIT_SIZE * TRANSITIONS_BPP];
-    //    _scratchLabelMap = new byte[INIT_SIZE * INIT_SIZE * TRANSITIONS_BPP];
-//
-    //    Width = INIT_SIZE;
-    //    Height = INIT_SIZE;
-    //    Pixels1 = new byte[INIT_SIZE * INIT_SIZE * TRANSITIONS_BPP];
-    //    Pixels2 = new byte[INIT_SIZE * INIT_SIZE * TRANSITIONS_BPP];
-    //    PixelsResult = new byte[INIT_SIZE * INIT_SIZE * TRANSITIONS_BPP];
-//
-    //    IsActive = true;
-    //}
-
     public void CleanUp()
     {
         _labels = Array.Empty<int>();

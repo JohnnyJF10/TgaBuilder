@@ -140,15 +140,6 @@ public class TransitionViewModel : ThrottledViewModelBase
         TransitionInVM.Mix();
     }
 
-
-    // Provisions the reusable buffer set when the transitions view is opened. At this point no
-    // images are loaded yet, so the helper is still at its default size; loading an image
-    // re-provisions for the real input picture size via EnsureBuffers.
-    public void OnViewOpened()
-    {
-        _transitionHelper.EnsureBuffers(_transitionHelper.Width, _transitionHelper.Height);
-    }
-
     private void MarkFinished()
     {
         TransitionInVM.ResetImages();

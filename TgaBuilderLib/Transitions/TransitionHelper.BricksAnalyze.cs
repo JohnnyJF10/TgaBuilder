@@ -72,6 +72,12 @@ namespace TgaBuilderLib.Transitions
                 case (FilterType.Gaussian, false):
                     GaussianBlur3x3Color(_scratchFilteredColor, pixels, GaussianSigma);
                     break;
+                case (FilterType.None, true):
+                    Array.Copy(_scratchGray, _scratchFiltered, totalPixels);
+                    break;
+                case (FilterType.None, false):
+                    Array.Copy(_scratchFilteredColor, pixels, totalPixels * TRANSITIONS_BPP);
+                    break;
                 default:
                     break;
             }

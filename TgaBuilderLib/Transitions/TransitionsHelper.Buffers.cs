@@ -2,12 +2,17 @@ namespace TgaBuilderLib.Transitions;
 
 public partial class TransitionHelper
 {
-    /// <summary>Provisions the reusable buffer set for the given input picture size. Called when the
+    /// <summary>
+    /// Provisions the reusable buffer set for the given input picture size. Called when the
     /// transitions view opens and whenever the input picture dimensions change. Cheap no-op
-    /// when the size is unchanged, so callers may invoke it freely.</summary>
+    /// when the size is unchanged, so callers may invoke it freely.
+    /// </summary>
     public void EnsureBuffers(int width, int height)
     {
-        int n = width * height; 
+        if (width <= 0 || height <= 0)
+            throw new ArgumentException("Width and height must be positive integers.");
+
+        int n = width * height;
 
         if (width == Width
             && height == Height

@@ -451,8 +451,6 @@ namespace TgaBuilderLib.ViewModel
             transitionView.Topmost = true;
             IsTransitionViewOpen = true;
 
-            transitionViewModel.OnViewOpened();
-
             await transitionView.ShowAsync();
         }
 
