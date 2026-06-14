@@ -3,6 +3,7 @@ using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 using TgaBuilderLib.Krita;
+using TgaBuilderLib.Psd;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {
@@ -10,10 +11,12 @@ namespace TgaBuilderLib.BitmapBytesIO
     {
         public BitmapBytesIO(
             IMediaFactory mediaFactory,
-            IKraFileService kraFileService)
+            IKraFileService kraFileService,
+            IPsdFileService psdFileService)
         {
             _mediaFactory = mediaFactory ?? throw new ArgumentNullException(nameof(mediaFactory));
             _kritaFileService = kraFileService ?? throw new ArgumentNullException(nameof(kraFileService));
+            _psdFileService = psdFileService ?? throw new ArgumentNullException(nameof(psdFileService));
         }
 
         private const int MAX_SIZE = 32768;
@@ -24,6 +27,8 @@ namespace TgaBuilderLib.BitmapBytesIO
         private readonly IMediaFactory _mediaFactory;
 
         private readonly IKraFileService _kritaFileService;
+
+        private readonly IPsdFileService _psdFileService;
 
         public ResultStatus ResultInfo { get; private set; } = ResultStatus.Success;
 

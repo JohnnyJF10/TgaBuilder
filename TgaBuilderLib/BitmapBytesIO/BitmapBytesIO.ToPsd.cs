@@ -29,17 +29,27 @@ public partial class BitmapBytesIO
         if (LoadedBytes is null)
             throw new InvalidOperationException("No image data loaded. Please load an image first.");
 
-        var bitmap = _mediaFactory.CreateBitmapFromRaw(
-            LoadedWidth, LoadedHeight, hasAlpha: true, LoadedBytes, LoadedWidth * 4);
+        // The layer must own its pixels: LoadedBytes is a pooled buffer that
+        // ClearLoadedData() returns to the pool, so copy the active slice into a
+        // dedicated array. This keeps accumulated layers valid across writes.
+        var ownedBytes = new byte[ActualDataLength];
+        Array.Copy(LoadedBytes, ownedBytes, ActualDataLength);
 
-        var psd = new PsdFile();
+        var bitmap = _mediaFactory.CreateBitmapFromRaw(
+            LoadedWidth, LoadedHeight, hasAlpha: true, ownedBytes, LoadedWidth * 4);
+
+        _psdFileService.OutputPath = filePath;
 
         var layerInfo = new PsdLayerInfo(
             bitmap: bitmap,
             rect: new PixelRect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight),
             name: "Background");
 
-        psd.Save(filePath, bitmap, Enumerable.Empty<PsdLayerInfo>().Append(layerInfo));
+        _psdFileService.LayerInfos.Add(layerInfo);
+
+        _psdFileService.WriteFile();
+
+        _psdFileService.CleanUp();
     }
 
     public IWriteableBitmap ConvertRGB24ToBGRA32(IWriteableBitmap sourceBitmap)
