@@ -47,9 +47,18 @@ public partial class BitmapBytesIO
 
         _psdFileService.LayerInfos.Add(layerInfo);
 
-        _psdFileService.WriteFile();
-
-        _psdFileService.CleanUp();
+        try
+        {
+            _psdFileService.WriteFile();
+        }
+        catch(Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            _psdFileService.CleanUp();
+        }
     }
 
     public IWriteableBitmap ConvertRGB24ToBGRA32(IWriteableBitmap sourceBitmap)

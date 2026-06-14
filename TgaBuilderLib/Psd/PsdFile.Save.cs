@@ -43,6 +43,7 @@ public partial class PsdFile
         Version = 1;
 
         // The canvas spans the bounding box of all layer rectangles.
+        // Smaller Images will put to the top-left corner of the canvas.
         Columns = infoList.Max(info => info.Rect.Right);
         Rows = infoList.Max(info => info.Rect.Bottom);
 
