@@ -35,15 +35,15 @@ public class ExportTransitionViewModel : ViewModelBase
     private AsyncCommand? _exportToPsdCommand;
     private AsyncCommand? _exportToKritaCommand;
 
-    // Both buttons open the same Save dialog with PSD and KRA selectable; the chosen file
-    // extension decides the written format.
+    // Both buttons open the same Save dialog with PSD and KRA selectable; the button only
+    // chooses which format is preselected. The chosen file extension decides what is written.
     public ICommand ExportToPsdCommand => _exportToPsdCommand
-        ??= new AsyncCommand(Export);
+        ??= new AsyncCommand(() => Export(FileTypes.PSD));
 
     public ICommand ExportToKritaCommand => _exportToKritaCommand
-        ??= new AsyncCommand(Export);
+        ??= new AsyncCommand(() => Export(FileTypes.KRA));
 
-    private async Task Export()
+    private async Task Export(FileTypes defaultType)
     {
         if (!_transitionHelper.IsActive)
         {
@@ -53,7 +53,8 @@ public class ExportTransitionViewModel : ViewModelBase
 
         var dialogResult = await _fileService.SaveFileDialog(
             FileTypes.PSD | FileTypes.KRA,
-            title: "Export transition layers");
+            title: "Export transition layers",
+            defaultType: defaultType);
 
         if (dialogResult != true)
             return;

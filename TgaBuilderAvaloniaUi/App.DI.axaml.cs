@@ -22,6 +22,7 @@ using Avalonia;
 using Avalonia.Controls;
 using TgaBuilderLib.Krita;
 using TgaBuilderLib.Psd;
+using FileTypes = TgaBuilderLib.Enums.FileTypes;
 
 namespace TgaBuilderAvaloniaUi
 {
@@ -207,6 +208,9 @@ namespace TgaBuilderAvaloniaUi
                 logger: sp.GetRequiredService<ILogger>(),
                 usageData: sp.GetRequiredService<IUsageData>(),
                 dispatcherService: sp.GetRequiredService<IDispatcherService>(),
+                // Avalonia has no JPEG encoder, so JPG/JPEG are excluded from the output formats.
+                writeableImageFormats: FileTypes.TGA | FileTypes.BMP | FileTypes.PNG
+                    | FileTypes.KRA | FileTypes.PSD,
                 panel: sp.GetRequiredService<TargetTexturePanelViewModel>()));
         }
 

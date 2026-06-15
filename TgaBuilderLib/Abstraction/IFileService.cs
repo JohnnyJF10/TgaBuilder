@@ -19,7 +19,8 @@ namespace TgaBuilderLib.Abstraction
         public Task<bool> SaveFileDialog(
             FileTypes types,
             string? initDir = null,
-            string? title = null);
+            string? title = null,
+            FileTypes? defaultType = null);
 
         public Task<bool> SelectFolderDialog(
             string? initDir = null,

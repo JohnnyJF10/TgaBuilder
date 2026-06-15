@@ -21,6 +21,7 @@ using Application = System.Windows.Application;
 using Wpf.Ui.Appearance;
 using TgaBuilderLib.Krita;
 using TgaBuilderLib.Psd;
+using FileTypes = TgaBuilderLib.Enums.FileTypes;
 
 namespace TgaBuilderWpfUi
 {
@@ -191,6 +192,9 @@ namespace TgaBuilderWpfUi
                 logger: sp.GetRequiredService<ILogger>(),
                 usageData: sp.GetRequiredService<IUsageData>(),
                 dispatcherService: sp.GetRequiredService<IDispatcherService>(),
+                // WPF can encode JPEG, so the full output format set is offered.
+                writeableImageFormats: FileTypes.TGA | FileTypes.BMP | FileTypes.PNG
+                    | FileTypes.JPG | FileTypes.JPEG | FileTypes.KRA | FileTypes.PSD,
                 panel: sp.GetRequiredService<TargetTexturePanelViewModel>()));
         }
 
