@@ -396,33 +396,30 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Smooth mode: Pivot expander wrapping Hardness / Widening / Shift -->
-            <StackPanel
-                Grid.Row="0"
-                Margin="0,0,12,0"
-                Visibility="{Binding DataContext.IsSmoothMode, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Expander
-                    DataContext="{Binding PivotVM}"
-                    Header="Pivot"
-                    IsExpanded="True"
-                    HorizontalAlignment="Stretch">
-                    <local:TransitionWindowSmoothUserControl />
-                </Expander>
-            </StackPanel>
-
-            <!-- Brick mode: scrollable expanders -->
+            <!-- Scrollable expanders -->
             <ScrollViewer
                 VerticalScrollBarVisibility="Auto"
-                HorizontalScrollBarVisibility="Disabled"
-                Visibility="{Binding IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                HorizontalScrollBarVisibility="Disabled">
+                
                 <StackPanel
                     Margin="0,0,12,0">
+                    <!-- Smooth mode: Pivot expander wrapping Hardness / Widening / Shift -->
+                    <Expander
+                        Header="Pivot"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        Visibility="{Binding IsSmoothMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <local:TransitionWindowSmoothUserControl 
+                            DataContext="{Binding PivotVM}"
+                            />
+                    </Expander>
 
                     <!-- Parameter Section: Image Analysis -->
                     <Expander
                         IsExpanded="True"
-                        HorizontalAlignment="Stretch">
-<Expander.Header>
+                        HorizontalAlignment="Stretch"
+                        Visibility="{Binding IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Expander.Header>
                             <StackPanel
                                 DataContext="{Binding TransitionOutVM}"
                                 Orientation="Horizontal">
@@ -447,43 +444,47 @@
                     </Expander>
 
                     <!-- Parameter Section: Pivot Boundaries -->
-                    <Expander
-                        DataContext="{Binding PivotVM}"
+                    <Expander 
                         Header="Pivot"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
-                        Margin="0,8,0,0">
-                        <local:TransitionWindowPivotUserControl />
+                        Margin="0,8,0,0"
+                        Visibility="{Binding IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <local:TransitionWindowPivotUserControl 
+                            DataContext="{Binding PivotVM}"/>
                     </Expander>
 
                     <!-- Parameter Section: Edge Blending -->
-                    <Expander
-                        DataContext="{Binding EdgeVM}"
+                    <Expander 
                         Header="Edge"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
-                        Margin="0,8,0,0">
-                        <local:TransitionWindowEdgeUserControl />
+                        Margin="0,8,0,0"
+                        Visibility="{Binding IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <local:TransitionWindowEdgeUserControl 
+                            DataContext="{Binding EdgeVM}"/>
                     </Expander>
 
                     <!-- Parameter Section: Shadow -->
-                    <Expander
-                        DataContext="{Binding ShadowVM}"
+                    <Expander 
                         Header="Shadow"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
-                        Margin="0,8,0,0">
-                        <local:TransitionWindowShadowUserControl />
+                        Margin="0,8,0,0"
+                        Visibility="{Binding IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <local:TransitionWindowShadowUserControl 
+                            DataContext="{Binding ShadowVM}"/>
                     </Expander>
 
                     <!-- Parameter Section: Underfilling -->
-                    <Expander
-                        DataContext="{Binding UnderfillingVM}"
+                    <Expander 
                         Header="Underfilling"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
-                        Margin="0,8,0,0">
-                        <local:TransitionWindowUnderfillingUserControl />
+                        Margin="0,8,0,0"
+                        Visibility="{Binding IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <local:TransitionWindowUnderfillingUserControl 
+                            DataContext="{Binding UnderfillingVM}"/>
                     </Expander>
 
                     <!-- Parameter Section: Manual -->
@@ -491,22 +492,23 @@
                         Header="Manual"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
-                        Margin="0,8,0,0">
+                        Margin="0,8,0,0"
+                        Visibility="{Binding IsBrickMode, Converter={StaticResource BoolToVisibilityConverter}}">
                         <local:TransitionWindowManualUserControl />
+                    </Expander>
+
+                    <!-- Export (both modes) -->
+                    <Expander
+                        Grid.Row="1"
+                        DataContext="{Binding ExportVM}"
+                        Header="Export"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,8,0,0">
+                        <local:TransitionWindowExportUserControl />
                     </Expander>
                 </StackPanel>
             </ScrollViewer>
-
-            <!-- Export (both modes): pinned at the bottom -->
-            <Expander
-                Grid.Row="1"
-                DataContext="{Binding ExportVM}"
-                Header="Export"
-                IsExpanded="True"
-                HorizontalAlignment="Stretch"
-                Margin="0,8,12,0">
-                <local:TransitionWindowExportUserControl />
-            </Expander>
         </Grid>
 
         <!-- Row 3: footer bar and action buttons -->

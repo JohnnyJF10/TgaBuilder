@@ -6,21 +6,18 @@
              xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
              x:DataType="viewmodel:ExportTransitionViewModel"
              x:CompileBindings="False">
-    <StackPanel Spacing="8">
-        <TextBlock
-            Text="Export the current transition as a layered file."
-            TextWrapping="Wrap"
-            Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
-        <Button
+    <StackPanel Spacing="8"
+        Orientation="Horizontal">
+        <elements:IconButton
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Center"
-            Content="To KRITA"
+            Icon="{StaticResource krita_icon}"
             ap:MouseOverInfoAP.InfoText="Export the transition layers to a Krita (.kra) or Photoshop (.psd) file"
             Command="{Binding ExportToKritaCommand}" />
-        <Button
+        <elements:IconButton
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Center"
-            Content="To PSD"
+            Icon="{StaticResource ps_icon}"
             ap:MouseOverInfoAP.InfoText="Export the transition layers to a Photoshop (.psd) or Krita (.kra) file"
             Command="{Binding ExportToPsdCommand}" />
     </StackPanel>

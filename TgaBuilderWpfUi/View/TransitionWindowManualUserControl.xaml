@@ -20,19 +20,17 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel
-                            Margin="8,6,8,8">
-        <StackPanel
             DataContext="{Binding TransitionOutVM}"
                                 Orientation="Horizontal"
-                                Margin="0,0,0,8">
-            <elements:ToggleButtonEx
+                                Margin="8,6,8,8">
+        <elements:ToggleButtonEx
                                     VerticalAlignment="Center"
                                     ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
                                     Icon="{ui:SymbolIcon Pen24}"
                                     MinHeight="36"
                                     MinWidth="36"
                                     IsChecked="{Binding IsExplicitTileVisibilityDrawMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <elements:ToggleButtonEx
+        <elements:ToggleButtonEx
                                     Margin="8,0,0,0"
                                     x:Name="ProtectEdgesToggleButton"
                                     VerticalAlignment="Center"
@@ -41,7 +39,7 @@
                                     Icon="{ui:SymbolIcon Eraser24}"
                                     ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
                                     IsChecked="{Binding IsExplicitTileVisibilityEraseMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <ui:Button
+        <ui:Button
                                     VerticalAlignment="Center"
                                     MinHeight="36"
                                     MinWidth="36"
@@ -51,6 +49,5 @@
                                     Command="{Binding ResetExplicitVisibilityCommand}" />
 
 
-        </StackPanel>
     </StackPanel>
 </UserControl>

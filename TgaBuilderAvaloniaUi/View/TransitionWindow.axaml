@@ -285,35 +285,30 @@
             Margin="10,2,10,10"
             RowDefinitions="*,Auto">
 
-            <!-- Smooth mode: Pivot expander wrapping Hardness / Widening / Shift -->
-            <StackPanel
-                Grid.Row="0"
-                Spacing="8"
-                Margin="0,0,20,0"
-                IsVisible="{Binding IsSmoothMode}">
-                <Expander
-                    DataContext="{Binding PivotVM}"
-                    Header="Pivot"
-                    IsExpanded="True"
-                    HorizontalAlignment="Stretch">
-                    <local:TransitionWindowSmoothUserControl />
-                </Expander>
-            </StackPanel>
-
             <!-- Brick mode: scrollable expanders -->
             <ScrollViewer
                 Grid.Row="0"
-                IsVisible="{Binding IsBrickMode}"
                 VerticalScrollBarVisibility="Auto"
                 HorizontalScrollBarVisibility="Disabled">
                 <StackPanel
                     Spacing="8"
                     Margin="0,0,20,0">
 
+                    <!-- Smooth mode: Pivot expander wrapping Hardness / Widening / Shift -->
+                    <Expander
+                        Header="Pivot"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        IsVisible="{Binding IsSmoothMode}">
+                        <local:TransitionWindowSmoothUserControl 
+                            DataContext="{Binding PivotVM}"/>
+                    </Expander>
+
                     <!-- Parameter Section: Image Analysis -->
                     <Expander
                         IsExpanded="True"
-                        HorizontalAlignment="Stretch">
+                        HorizontalAlignment="Stretch"
+                        IsVisible="{Binding IsBrickMode}">
                         <Expander.Header>
                             <StackPanel
                                 Orientation="Horizontal">
@@ -344,60 +339,66 @@
 
                     <!-- Parameter Section: Pivot Boundaries -->
                     <Expander
-                        DataContext="{Binding PivotVM}"
                         Header="Pivot"
                         IsExpanded="True"
-                        HorizontalAlignment="Stretch">
-                        <local:TransitionWindowPivotUserControl />
+                        HorizontalAlignment="Stretch"
+                        IsVisible="{Binding IsBrickMode}">
+                        <local:TransitionWindowPivotUserControl 
+                            DataContext="{Binding PivotVM}"/>
                     </Expander>
 
                     <!-- Parameter Section: Edge Blending -->
                      <Expander
-                        DataContext="{Binding EdgeVM}"
+                        
                          Header="Edge"
                          IsExpanded="True"
-                         HorizontalAlignment="Stretch">
-                         <local:TransitionWindowEdgeUserControl />
+                         HorizontalAlignment="Stretch"
+                         IsVisible="{Binding IsBrickMode}">
+                         <local:TransitionWindowEdgeUserControl 
+                            DataContext="{Binding EdgeVM}"/>
                      </Expander>
 
                      <!-- Parameter Section: Shadow -->
                      <Expander
-                        DataContext="{Binding ShadowVM}"
+                        
                          Header="Shadow"
                          IsExpanded="True"
-                         HorizontalAlignment="Stretch">
-                         <local:TransitionWindowShadowUserControl />
+                         HorizontalAlignment="Stretch"
+                         IsVisible="{Binding IsBrickMode}">
+                         <local:TransitionWindowShadowUserControl 
+                            DataContext="{Binding ShadowVM}"/>
                      </Expander>
 
                       <!-- Parameter Section: Underfilling -->
                       <Expander
-                          DataContext="{Binding UnderfillingVM}"
+                          
                           Header="Underfilling"
                           IsExpanded="True"
-                          HorizontalAlignment="Stretch">
-                         <local:TransitionWindowUnderfillingUserControl />
+                          HorizontalAlignment="Stretch"
+                          IsVisible="{Binding IsBrickMode}">
+                         <local:TransitionWindowUnderfillingUserControl
+                            DataContext="{Binding UnderfillingVM}"/>
                      </Expander>
 
                      <!-- Parameter Section: Manual -->
                      <Expander
                          Header="Manual"
                          IsExpanded="True"
-                         HorizontalAlignment="Stretch">
+                         HorizontalAlignment="Stretch"
+                         IsVisible="{Binding IsBrickMode}">
                          <local:TransitionWindowManualUserControl />
                      </Expander>
+                     <!-- Export (both modes) -->
+                    <Expander
+                        Grid.Row="1"
+                        DataContext="{Binding ExportVM}"
+                        Header="Export"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch">
+                        <local:TransitionWindowExportUserControl />
+                    </Expander>
                  </StackPanel>
              </ScrollViewer>
-
-            <!-- Export (both modes): pinned at the bottom -->
-            <Expander
-                Grid.Row="1"
-                DataContext="{Binding ExportVM}"
-                Header="Export"
-                IsExpanded="True"
-                HorizontalAlignment="Stretch"
-                Margin="0,8,20,0">
-                <local:TransitionWindowExportUserControl />
-            </Expander>
          </Grid>
 
         <!-- ========================================================================= -->
