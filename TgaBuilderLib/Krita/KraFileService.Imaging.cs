@@ -21,6 +21,10 @@ public partial class KraFileService
 
         foreach (var layer in layers)
         {
+            // Hidden layers must not contribute to the flattened/preview image.
+            if (!layer.Visible)
+                continue;
+
             int layerBpp = layer.HasAlpha ? 4 : 3;
 
             for (int y = 0; y < layer.Height && y < height; y++)

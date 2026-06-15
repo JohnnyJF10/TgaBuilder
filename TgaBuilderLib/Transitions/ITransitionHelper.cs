@@ -65,6 +65,10 @@ namespace TgaBuilderLib.Transitions
         byte[] GetLabelMap();
         int GetLabelAtPixel(int x, int y);
         byte[] GetTileIndicator(int tileIndex);
+
+        // Builds the bottom-to-top layer stack for a multi-layer export of the
+        // current transition (smooth or bricks).
+        IReadOnlyList<TransitionExportLayer> GetExportLayers();
         bool SetExplicitTileVisibility(int tileIndex, bool shouldDraw);
 
         void ResetAllExplicitTileVisibility();

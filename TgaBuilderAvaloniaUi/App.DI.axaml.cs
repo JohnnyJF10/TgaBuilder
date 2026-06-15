@@ -93,6 +93,8 @@ namespace TgaBuilderAvaloniaUi
                 tenLevelFactory: sp.GetRequiredService<Func<string, int, LevelBase>>(),
                 bitmapIO: sp.GetRequiredService<IBitmapBytesIO>()));
 
+            services.AddSingleton<ITransitionLayerExporter, TransitionLayerExporter>();
+
             services.AddSingleton<IAsyncFileLoader, AsyncFileLoader>();
             services.AddSingleton<IBitmapOperations, BitmapOperations>();
             services.AddSingleton<ILogger, Logger>();
@@ -355,6 +357,12 @@ namespace TgaBuilderAvaloniaUi
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 transitionInVM: sp.GetRequiredService<TransitionInViewModel>()));
 
+            services.AddTransient(sp => new ExportTransitionViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                exporter: sp.GetRequiredService<ITransitionLayerExporter>(),
+                fileService: sp.GetRequiredService<IFileService>(),
+                messageService: sp.GetRequiredService<IMessageService>()));
+
             services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
@@ -364,6 +372,7 @@ namespace TgaBuilderAvaloniaUi
                 edgeViewModel: sp.GetRequiredService<EdgeViewModel>(),
                 shadowViewModel: sp.GetRequiredService<ShadowViewModel>(),
                 underfillingViewModel: sp.GetRequiredService<UnderfillingViewModel>(),
+                exportTransitionViewModel: sp.GetRequiredService<ExportTransitionViewModel>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
             services.AddTransient(sp => new ModificationsViewModel(

@@ -1,0 +1,31 @@
+<UserControl x:Class="TgaBuilderWpfUi.View.TransitionWindowExportUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:ExportTransitionViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <StackPanel>
+        <TextBlock
+            Text="Export the current transition as a layered file."
+            TextWrapping="Wrap"
+            Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+        <ui:Button
+            Margin="0,8,0,0"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            Content="To KRITA"
+            ap:MouseOverInfoAP.InfoText="Export the transition layers to a Krita (.kra) or Photoshop (.psd) file"
+            Command="{Binding ExportToKritaCommand}" />
+        <ui:Button
+            Margin="0,8,0,0"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            Content="To PSD"
+            ap:MouseOverInfoAP.InfoText="Export the transition layers to a Photoshop (.psd) or Krita (.kra) file"
+            Command="{Binding ExportToPsdCommand}" />
+    </StackPanel>
+</UserControl>

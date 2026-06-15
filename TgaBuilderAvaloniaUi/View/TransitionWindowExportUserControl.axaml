@@ -1,0 +1,27 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowExportUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+             x:DataType="viewmodel:ExportTransitionViewModel"
+             x:CompileBindings="False">
+    <StackPanel Spacing="8">
+        <TextBlock
+            Text="Export the current transition as a layered file."
+            TextWrapping="Wrap"
+            Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+        <Button
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            Content="To KRITA"
+            ap:MouseOverInfoAP.InfoText="Export the transition layers to a Krita (.kra) or Photoshop (.psd) file"
+            Command="{Binding ExportToKritaCommand}" />
+        <Button
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            Content="To PSD"
+            ap:MouseOverInfoAP.InfoText="Export the transition layers to a Photoshop (.psd) or Krita (.kra) file"
+            Command="{Binding ExportToPsdCommand}" />
+    </StackPanel>
+</UserControl>

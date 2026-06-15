@@ -283,13 +283,22 @@
             Grid.RowSpan="2"
             Grid.Column="1"
             Margin="10,2,10,10"
-            RowDefinitions="*">
+            RowDefinitions="*,Auto">
 
-            <!-- Smooth mode: Hardness / Widening / Shift sliders -->
-            <local:TransitionWindowSmoothUserControl
-                DataContext="{Binding PivotVM}"
+            <!-- Smooth mode: Pivot expander wrapping Hardness / Widening / Shift -->
+            <StackPanel
                 Grid.Row="0"
-                IsVisible="{Binding $parent[Window].DataContext.IsSmoothMode}" />
+                Spacing="8"
+                Margin="0,0,20,0"
+                IsVisible="{Binding IsSmoothMode}">
+                <Expander
+                    DataContext="{Binding PivotVM}"
+                    Header="Pivot"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch">
+                    <local:TransitionWindowSmoothUserControl />
+                </Expander>
+            </StackPanel>
 
             <!-- Brick mode: scrollable expanders -->
             <ScrollViewer
@@ -378,6 +387,17 @@
                      </Expander>
                  </StackPanel>
              </ScrollViewer>
+
+            <!-- Export (both modes): pinned at the bottom -->
+            <Expander
+                Grid.Row="1"
+                DataContext="{Binding ExportVM}"
+                Header="Export"
+                IsExpanded="True"
+                HorizontalAlignment="Stretch"
+                Margin="0,8,20,0">
+                <local:TransitionWindowExportUserControl />
+            </Expander>
          </Grid>
 
         <!-- ========================================================================= -->

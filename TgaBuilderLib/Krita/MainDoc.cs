@@ -28,7 +28,7 @@ public class MainDoc
               .Append($"filename=\"{Xml.Escape(l.Name)}\" ")
               .Append($"uuid=\"{l.Uuid}\" ")
               .Append("nodetype=\"paintlayer\" colorspacename=\"RGBA\" compositeop=\"normal\" ")
-              .Append("opacity=\"255\" visible=\"1\" locked=\"0\" collapsed=\"0\" ")
+              .Append($"opacity=\"255\" visible=\"{(l.Visible ? "1" : "0")}\" locked=\"0\" collapsed=\"0\" ")
               .Append("x=\"0\" y=\"0\" intimeline=\"1\" colorlabel=\"0\" ")
               .Append("channelflags=\"\" channellockflags=\"1111\" ")
               .Append($"selected=\"{(i == Layers.Count - 1 ? "true" : "false")}\"/>\n");

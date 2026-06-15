@@ -85,6 +85,8 @@ namespace TgaBuilderWpfUi
                 tenLevelFactory: sp.GetRequiredService<Func<string, int, LevelBase>>(),
                 bitmapIO: sp.GetRequiredService<IBitmapBytesIO>()));
 
+            services.AddSingleton<ITransitionLayerExporter, TransitionLayerExporter>();
+
             services.AddSingleton<IAsyncFileLoader, AsyncFileLoader>();
             services.AddSingleton<IBitmapOperations, BitmapOperations>();
             services.AddSingleton<ILogger, Logger>();
@@ -313,6 +315,11 @@ namespace TgaBuilderWpfUi
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 transitionInVM: sp.GetRequiredService<TransitionInViewModel>()));
 
+            services.AddTransient(sp => new ExportTransitionViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                exporter: sp.GetRequiredService<ITransitionLayerExporter>(),
+                fileService: sp.GetRequiredService<IFileService>(),
+                messageService: sp.GetRequiredService<IMessageService>()));
 
             services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
@@ -323,6 +330,7 @@ namespace TgaBuilderWpfUi
                 edgeViewModel: sp.GetRequiredService<EdgeViewModel>(),
                 shadowViewModel: sp.GetRequiredService<ShadowViewModel>(),
                 underfillingViewModel: sp.GetRequiredService<UnderfillingViewModel>(),
+                exportTransitionViewModel: sp.GetRequiredService<ExportTransitionViewModel>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
             services.AddSingleton(sp => new ModificationOutViewModel(

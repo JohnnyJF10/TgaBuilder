@@ -23,6 +23,7 @@ public class TransitionViewModel : ThrottledViewModelBase
         EdgeViewModel edgeViewModel,
         ShadowViewModel shadowViewModel,
         UnderfillingViewModel underfillingViewModel,
+        ExportTransitionViewModel exportTransitionViewModel,
         MainViewModel mainViewModel)
     {
         _mediaFactory = mediaFactory;
@@ -35,6 +36,7 @@ public class TransitionViewModel : ThrottledViewModelBase
         EdgeVM = edgeViewModel;
         ShadowVM = shadowViewModel;
         UnderfillingVM = underfillingViewModel;
+        ExportVM = exportTransitionViewModel;
 
         TransitionInVM = PivotVM.TransitionInVM;
         TransitionOutVM = TransitionInVM.TransitionOutVM;
@@ -63,6 +65,7 @@ public class TransitionViewModel : ThrottledViewModelBase
     public EdgeViewModel EdgeVM { get; set; }
     public ShadowViewModel ShadowVM { get; set; }
     public UnderfillingViewModel UnderfillingVM { get; set; }
+    public ExportTransitionViewModel ExportVM { get; set; }
 
     // =====================================================================
     // Commands
