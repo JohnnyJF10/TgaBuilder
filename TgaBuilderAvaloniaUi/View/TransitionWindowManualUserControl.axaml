@@ -15,43 +15,55 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-        <StackPanel
+        <WrapPanel
             DataContext="{Binding TransitionOutVM}"
             Orientation="Horizontal"
-                    Spacing="8"
                     Margin="0,6,8,8">
             <elements:IconToggleButton
                 Classes="outlined"
                 VerticalAlignment="Center"
+                Margin="0,0,8,8"
                 MinHeight="36"
                 MinWidth="36"
                 Icon="{StaticResource pen_white}"
-                ap:MouseOverInfoAP.InfoText="Enable manual drawing of visible tiles"
+                ap:MouseOverInfoAP.InfoText="Enable manual drawing of visible tiles. The mouse wheel rotates the last tile set visible."
                 IsChecked="{Binding IsExplicitTileVisibilityDrawMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <elements:IconToggleButton
                 x:Name="ProtectEdgesToggleButton"
                 Classes="outlined"
                 VerticalAlignment="Center"
+                Margin="0,0,8,8"
                 MinHeight="36"
                 MinWidth="36"
                 Icon="{StaticResource eraser}"
-                ap:MouseOverInfoAP.InfoText="Enable manual erasing of visible tiles"
+                ap:MouseOverInfoAP.InfoText="Enable manual erasing of visible tiles. Erasing a moved/rotated tile restores its original position and rotation."
                 IsChecked="{Binding IsExplicitTileVisibilityEraseMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <elements:IconToggleButton
                 Classes="outlined"
                 VerticalAlignment="Center"
+                Margin="0,0,8,8"
                 MinHeight="36"
                 MinWidth="36"
                 Icon="{StaticResource arrow_move}"
                 ap:MouseOverInfoAP.InfoText="Move tiles by dragging and rotate them with the mouse wheel"
                 IsChecked="{Binding IsTileMoveRotateMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <elements:IconToggleButton
+                Classes="outlined"
+                VerticalAlignment="Center"
+                Margin="0,0,8,8"
+                MinHeight="36"
+                MinWidth="36"
+                Icon="{StaticResource arrow_rotate_counterclockwise}"
+                ap:MouseOverInfoAP.InfoText="Rotate a tile: click it and drag to spin it; the mouse wheel fine-tunes the last rotated tile"
+                IsChecked="{Binding IsTileRotateMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <elements:IconButton
                 Classes="outlined"
                 VerticalAlignment="Center"
+                Margin="0,0,8,8"
                 MinHeight="36"
                 MinWidth="36"
                 Icon="{StaticResource backspace}"
                 ap:MouseOverInfoAP.InfoText="Reset all manual adjustments (visibility, moves and rotations)"
                 Command="{Binding ResetExplicitVisibilityCommand}" />
-        </StackPanel>
+        </WrapPanel>
 </UserControl>

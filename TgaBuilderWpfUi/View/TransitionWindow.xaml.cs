@@ -204,7 +204,7 @@ namespace TgaBuilderWpfUi.View
 
             var tpvm = tvm.TransitionOutVM;
 
-            if (!tpvm.IsTileMoveRotateMode)
+            if (!tpvm.IsWheelRotationMode)
                 return;
 
             int notches = e.Delta > 0 ? 1 : (e.Delta < 0 ? -1 : 0);

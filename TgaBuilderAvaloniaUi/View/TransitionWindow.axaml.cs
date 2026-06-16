@@ -238,7 +238,7 @@ namespace TgaBuilderAvaloniaUi.View
 
             var tpvm = vm.TransitionOutVM;
 
-            if (!tpvm.IsTileMoveRotateMode)
+            if (!tpvm.IsWheelRotationMode)
                 return;
 
             int notches = e.Delta.Y > 0 ? 1 : (e.Delta.Y < 0 ? -1 : 0);

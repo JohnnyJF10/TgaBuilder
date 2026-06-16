@@ -70,9 +70,10 @@ Version 2.2.5 with major transition performance improvements, new controls to ma
 - **Brick / Underfilling** expander (new): reverse toggle turns underfilling into overfilling by substituting bright pixels (useful for sandy textures and bright backgrounds).
 - **Brick / Underfilling** expander: **Threshold** (`0` – `255`) sets the underfilling intensity (`0` = none, `255` = maximum).
 - **Brick / Underfilling** expander: **Pivot** (`0` – `1`) sets the positional bias of the underfilling area.
-- **Brick / Manual** expander (new): **Tile Visibility Pen** toggle — draw on the result image to mark tiles as visible.
-- **Brick / Manual** expander: **Tile Visibility Eraser** toggle — draw on the result image to mark tiles as hidden.
-- **Brick / Manual** expander: **Tile Move & Rotate** toggle — drag a single tile on the result image to reposition it, and use the mouse wheel to freely rotate the grabbed tile around its centroid. Moved/rotated tiles are drawn on top of other tiles, become visible automatically if they were hidden, and leave a hole (reflected by the hover indicator) at their original position. Edge tiles are not movable while edge protection is on.
+- **Brick / Manual** expander (new): **Tile Visibility Pen** toggle — draw on the result image to mark tiles as visible. The mouse wheel rotates the last tile that was set visible.
+- **Brick / Manual** expander: **Tile Visibility Eraser** toggle — draw on the result image to mark tiles as hidden. Erasing a moved/rotated tile returns it to its original position and orientation.
+- **Brick / Manual** expander: **Tile Move & Rotate** toggle — drag a single tile on the result image to reposition it, and use the mouse wheel to freely rotate the grabbed tile around its centroid. Moved/rotated tiles are drawn on top of other tiles (with full shadow and edge tinting), become visible automatically if they were hidden, and leave a hole (reflected by the hover indicator) at their original position. Edge tiles are not movable while edge protection is on.
+- **Brick / Manual** expander: **Tile Rotate** toggle — click a tile and drag to spin it (rotation follows the horizontal drag distance); the mouse wheel fine-tunes the last rotated tile.
 - **Brick / Manual** expander: **Reset** button clears all manual adjustments — visibility overrides, moves and rotations — and reverts to the computed result.
 - **Main window / Target panel**: hold **Space** while clicking or dragging to make a free (grid-independent) selection; release Space to return to normal grid-snapped behavior.
 - **Main window (Avalonia UI)**: **Copy / Paste** (`Ctrl+C` / `Ctrl+V`) support added.

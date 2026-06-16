@@ -15,14 +15,24 @@ public partial class TransitionHelper
             throw new ArgumentOutOfRangeException(nameof(tileIndex), "Tile index is out of range.");
 
         int listIndex = tileIndex - 1;
+        var segment = _tileSegmentList[listIndex];
 
-        bool? currentValue = _tileSegmentList[listIndex].ShouldDrawExplicitly;
+        bool? currentValue = segment.ShouldDrawExplicitly;
+        segment.ShouldDrawExplicitly = shouldDraw;
 
-        _tileSegmentList[listIndex].ShouldDrawExplicitly = shouldDraw;
+        bool changed = !currentValue.HasValue || currentValue.Value != shouldDraw;
 
-        if (!currentValue.HasValue || currentValue.Value != shouldDraw)
-            return true; // Visibility changed
-        return false;
+        // Erasing a tile returns it to its original position and orientation: a hidden tile should
+        // not retain a manual move/rotation, so revealing it again starts clean.
+        if (!shouldDraw && (segment.OffsetX != 0 || segment.OffsetY != 0 || segment.TwistAngle != 0f))
+        {
+            segment.OffsetX = 0;
+            segment.OffsetY = 0;
+            segment.TwistAngle = 0f;
+            changed = true;
+        }
+
+        return changed;
     }
 
     // Picks the tile that can be manually moved/rotated at the given result-image pixel. Uses the
@@ -71,6 +81,40 @@ public partial class TransitionHelper
         bool changed = segment.OffsetX != offsetX || segment.OffsetY != offsetY;
         segment.OffsetX = offsetX;
         segment.OffsetY = offsetY;
+
+        if (segment.ShouldDrawExplicitly != true)
+        {
+            segment.ShouldDrawExplicitly = true;
+            changed = true;
+        }
+
+        return changed;
+    }
+
+    // Current manual rotation (in degrees) of the given tile. Used by the view model to anchor a
+    // drag-to-rotate gesture to the tile's existing angle.
+    public float GetTileTwist(int tileLabel)
+    {
+        int listIndex = tileLabel - 1;
+        if (listIndex < 0 || listIndex >= _tileSegmentList.Count)
+            return 0f;
+
+        return _tileSegmentList[listIndex].TwistAngle;
+    }
+
+    // Sets a tile's absolute manual rotation (in degrees) about its centroid via its TwistAngle
+    // property. A rotated tile is always made visible. Returns true if anything changed. Used by the
+    // drag-to-rotate gesture; the mouse wheel uses the incremental RotateTileBy.
+    public bool SetTileTwist(int tileLabel, float angleDegrees)
+    {
+        int listIndex = tileLabel - 1;
+        if (listIndex < 0 || listIndex >= _tileSegmentList.Count)
+            return false;
+
+        var segment = _tileSegmentList[listIndex];
+
+        bool changed = segment.TwistAngle != angleDegrees;
+        segment.TwistAngle = angleDegrees;
 
         if (segment.ShouldDrawExplicitly != true)
         {

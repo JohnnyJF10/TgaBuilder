@@ -73,7 +73,9 @@ namespace TgaBuilderLib.Transitions
         // Manual single-tile move/rotate operations.
         int PickManipulableTileAt(int x, int y);
         (int X, int Y) GetTileOffset(int tileLabel);
+        float GetTileTwist(int tileLabel);
         bool MoveTile(int tileLabel, int offsetX, int offsetY);
+        bool SetTileTwist(int tileLabel, float angleDegrees);
         bool RotateTileBy(int tileLabel, float deltaDegrees);
 
         // Builds the bottom-to-top layer stack for a multi-layer export of the
