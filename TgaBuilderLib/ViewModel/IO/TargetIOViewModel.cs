@@ -21,22 +21,23 @@ namespace TgaBuilderLib.ViewModel
             ILogger logger,
             IUndoRedoManager undoRedoManager,
             IUsageData usageData,
+            FileTypes writeableImageFormats,
             TexturePanelViewModelBase panel)
             : base(getViewCallback, fileService, messageService, imageManager, logger, usageData, dispatcherService, panel)
         {
             _mediaFactory = mediaFactory;
             _messageBoxService = messageBoxService;
             _undoRedoManager = undoRedoManager;
+            _writeableImageFormats = writeableImageFormats;
         }
 
         private const FileTypes DEF_FILE_TYPES =
             FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
             | FileTypes.JPEG | FileTypes.PSD | FileTypes.KRA | FileTypes.DDS;
 
-
-        private const FileTypes WRITEABLE_FILE_TYPES =
-            FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
-            | FileTypes.JPEG | FileTypes.KRA | FileTypes.PSD;
+        // Output formats are injected so each frontend can advertise only what it can encode
+        // (e.g. Avalonia has no JPEG encoder, WPF does).
+        private readonly FileTypes _writeableImageFormats;
 
         private static bool IsHandleableSaveFileException(Exception e)
             => e is FileNotFoundException
@@ -219,7 +220,7 @@ namespace TgaBuilderLib.ViewModel
         {
             if (String.IsNullOrEmpty(fileName) || !IsFileWriteable(fileName))
             {
-                var dialogResult = await _fileService.SaveFileDialog(WRITEABLE_FILE_TYPES);
+                var dialogResult = await _fileService.SaveFileDialog(_writeableImageFormats);
 
                 if (dialogResult == true)
                     fileName = _fileService.SelectedPath;
@@ -272,16 +273,9 @@ namespace TgaBuilderLib.ViewModel
         {
             string extension = Path.GetExtension(filePath)?.TrimStart('.').ToLower() ?? "";
 
-            foreach (FileTypes type in Enum.GetValues(typeof(FileTypes)))
-            {
-                if (type == FileTypes.None)
-                    continue;
-
-                if (WRITEABLE_FILE_TYPES.HasFlag(type)
-                    && type.ToString().ToLower() == extension)
-                    return true;
-            }
-            return false;
+            return FileTypeRegistry
+                .Enumerate(_writeableImageFormats)
+                .Any(type => FileTypeRegistry.GetExtension(type) == extension);
         }
     }
 }

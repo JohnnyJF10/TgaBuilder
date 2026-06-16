@@ -21,6 +21,7 @@ using Application = System.Windows.Application;
 using Wpf.Ui.Appearance;
 using TgaBuilderLib.Krita;
 using TgaBuilderLib.Psd;
+using FileTypes = TgaBuilderLib.Enums.FileTypes;
 
 namespace TgaBuilderWpfUi
 {
@@ -84,6 +85,8 @@ namespace TgaBuilderWpfUi
                 trLevelFactory: sp.GetRequiredService<Func<string, int, bool, LevelBase>>(),
                 tenLevelFactory: sp.GetRequiredService<Func<string, int, LevelBase>>(),
                 bitmapIO: sp.GetRequiredService<IBitmapBytesIO>()));
+
+            services.AddSingleton<ITransitionLayerExporter, TransitionLayerExporter>();
 
             services.AddSingleton<IAsyncFileLoader, AsyncFileLoader>();
             services.AddSingleton<IBitmapOperations, BitmapOperations>();
@@ -189,6 +192,9 @@ namespace TgaBuilderWpfUi
                 logger: sp.GetRequiredService<ILogger>(),
                 usageData: sp.GetRequiredService<IUsageData>(),
                 dispatcherService: sp.GetRequiredService<IDispatcherService>(),
+                // WPF can encode JPEG, so the full output format set is offered.
+                writeableImageFormats: FileTypes.TGA | FileTypes.BMP | FileTypes.PNG
+                    | FileTypes.JPG | FileTypes.JPEG | FileTypes.KRA | FileTypes.PSD,
                 panel: sp.GetRequiredService<TargetTexturePanelViewModel>()));
         }
 
@@ -313,6 +319,11 @@ namespace TgaBuilderWpfUi
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 transitionInVM: sp.GetRequiredService<TransitionInViewModel>()));
 
+            services.AddTransient(sp => new ExportTransitionViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                exporter: sp.GetRequiredService<ITransitionLayerExporter>(),
+                fileService: sp.GetRequiredService<IFileService>(),
+                messageService: sp.GetRequiredService<IMessageService>()));
 
             services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
@@ -323,6 +334,7 @@ namespace TgaBuilderWpfUi
                 edgeViewModel: sp.GetRequiredService<EdgeViewModel>(),
                 shadowViewModel: sp.GetRequiredService<ShadowViewModel>(),
                 underfillingViewModel: sp.GetRequiredService<UnderfillingViewModel>(),
+                exportTransitionViewModel: sp.GetRequiredService<ExportTransitionViewModel>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
             services.AddSingleton(sp => new ModificationOutViewModel(

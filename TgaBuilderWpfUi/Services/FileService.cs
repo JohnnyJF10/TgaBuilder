@@ -1,23 +1,19 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
+using TgaBuilderLib.FileHandling;
 
 
 namespace TgaBuilderWpfUi.Services
 {
-    public partial class FileService : IFileService
+    public class FileService : IFileService
     {
-        private record FileTypeInfo
-        {
-            public string Extension { get; set; } = string.Empty;
-            public string Description { get; set; } = string.Empty;
-            public string Title { get; set; } = string.Empty;
-        }
-
         private const string DEFAULT_OPEN_FILE_TITLE = "Select an Image File";
-        private const string DEFAULT_SAVE_FILE_TITLE = "Save TGA File";
+        private const string DEFAULT_SAVE_FILE_TITLE = "Save File";
         private const string DEFAULT_OPEN_FOLDER_TITLE = "Select a Folder";
+
+        private const string ALL_FILES_FILTER = "All Files (*.*)|*.*";
 
         public string SelectedPath { get; set; } = "";
 
@@ -26,12 +22,12 @@ namespace TgaBuilderWpfUi.Services
             string? initDir = null,
             string? title = null)
         {
-            var openFileDialog = new OpenFileDialog();
-
-            openFileDialog.Filter = GetConvergedFilter(types);
-            openFileDialog.Filter += "|All Files (*.*)|*.*";
-            openFileDialog.DefaultExt = GetDefaultExt(types);
-            openFileDialog.Title = title ?? DEFAULT_OPEN_FILE_TITLE;
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = ConvergedFilter(types) + "|" + ALL_FILES_FILTER,
+                DefaultExt = FirstExtension(types),
+                Title = title ?? DEFAULT_OPEN_FILE_TITLE,
+            };
 
             if (initDir != null) openFileDialog.InitialDirectory = initDir;
 
@@ -48,19 +44,15 @@ namespace TgaBuilderWpfUi.Services
             string? initDir = null,
             string? title = null)
         {
-            var openFileDialog = new OpenFileDialog();
+            var filterParts = typesList.Select(ConvergedFilter).ToList();
+            filterParts.Add(ALL_FILES_FILTER);
 
-            var filterParts = new List<string>();
-            foreach (var fileTypes in typesList)
+            var openFileDialog = new OpenFileDialog
             {
-                string filter = GetConvergedFilter(fileTypes);
-                filterParts.Add(filter);
-            }
-
-            openFileDialog.Filter = string.Join("|", filterParts);
-            openFileDialog.Filter += "|All Files (*.*)|*.*";
-            openFileDialog.DefaultExt = GetDefaultExt(typesList.First());
-            openFileDialog.Title = title ?? DEFAULT_OPEN_FILE_TITLE;
+                Filter = string.Join("|", filterParts),
+                DefaultExt = FirstExtension(typesList.FirstOrDefault()),
+                Title = title ?? DEFAULT_OPEN_FILE_TITLE,
+            };
 
             if (initDir != null) openFileDialog.InitialDirectory = initDir;
 
@@ -75,12 +67,22 @@ namespace TgaBuilderWpfUi.Services
         public Task<bool> SaveFileDialog(
             FileTypes types,
             string? initDir = null,
-            string? title = null)
+            string? title = null,
+            FileTypes? defaultType = null)
         {
-            var saveFileDialog = new SaveFileDialog();
+            // One filter entry per format; the preferred format leads so it is preselected.
+            var ordered = OrderWithDefaultFirst(types, defaultType);
 
-            saveFileDialog.Filter = GetSeparatedFilter(types);
-            saveFileDialog.Title = title ?? DEFAULT_SAVE_FILE_TITLE;
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = string.Join("|", ordered.Select(SeparateFilterEntry)),
+                FilterIndex = 1,
+                Title = title ?? DEFAULT_SAVE_FILE_TITLE,
+            };
+
+            if (ordered.Count > 0)
+                saveFileDialog.DefaultExt = FileTypeRegistry.GetExtension(ordered[0]);
+
             if (initDir != null) saveFileDialog.InitialDirectory = initDir;
 
             var result = saveFileDialog.ShowDialog() == true;
@@ -103,85 +105,40 @@ namespace TgaBuilderWpfUi.Services
             return Task.FromResult(result);
         }
 
-        private string GetConvergedFilter(FileTypes selectedTypes, string OptionName = "All supported files")
+        // --- filter building (registry-driven, no per-format code) ---
+
+        // "Image Files (*.tga;*.png;...)|*.tga;*.png;..."
+        private static string ConvergedFilter(FileTypes types)
         {
-            List<string> extensions = new List<string>();
+            var patterns = FileTypeRegistry.Enumerate(types)
+                .Select(t => $"*.{FileTypeRegistry.GetExtension(t)}")
+                .ToList();
 
-            foreach (var kvp in FileTypeLookup)
-            {
-                if (selectedTypes.HasFlag(kvp.Key))
-                {
-                    var ext = kvp.Value.Extension;
-                    if (!string.IsNullOrWhiteSpace(ext))
-                    {
-                        if (!ext.StartsWith("*."))
-                            ext = "*." + ext.TrimStart('.');
-                        extensions.Add(ext);
-                    }
-                }
-            }
-
-            OptionName = CheckForSpecificExpressions(selectedTypes);
-
-            string allSupportedExtensions = string.Join(";", extensions);
-
-            return $"{OptionName} ({allSupportedExtensions})|{allSupportedExtensions}";
+            string joined = string.Join(";", patterns);
+            return $"{FileTypeRegistry.GetCategoryLabel(types)} ({joined})|{joined}";
         }
 
-        private string GetSeparatedFilter(FileTypes types)
+        // "Photoshop Files (*.psd)|*.psd"
+        private static string SeparateFilterEntry(FileTypes type)
         {
-            var filters = new List<string>();
-
-            foreach (FileTypes type in Enum.GetValues(typeof(FileTypes)))
-            {
-                if (type == FileTypes.None)
-                    continue;
-
-                if (types.HasFlag(type))
-                {
-                    string extension = type.ToString().ToLower();
-                    string name = type.ToString().ToUpper();
-                    filters.Add($"{name} (*.{extension})|*.{extension}");
-                }
-            }
-
-            return string.Join("|", filters);
+            var info = FileTypeRegistry.Get(type)!;
+            return $"{info.DisplayName} (*.{info.Extension})|*.{info.Extension}";
         }
 
-        private string GetDefaultExt(FileTypes types)
+        private static List<FileTypes> OrderWithDefaultFirst(FileTypes types, FileTypes? defaultType)
         {
-            var reducedType = ReduceToSingleSelection(types);
-            return FileTypeLookup.TryGetValue(reducedType, out var info) ? info.Extension : "";
+            var ordered = FileTypeRegistry.Enumerate(types).ToList();
+
+            if (defaultType is FileTypes preferred && ordered.Remove(preferred))
+                ordered.Insert(0, preferred);
+
+            return ordered;
         }
 
-        private string GetTitle(FileTypes types)
+        private static string FirstExtension(FileTypes types)
         {
-            var reducedType = ReduceToSingleSelection(types);
-            return FileTypeLookup.TryGetValue(reducedType, out var info) ? info.Title : "";
+            var first = FileTypeRegistry.Enumerate(types).FirstOrDefault();
+            return first == FileTypes.None ? string.Empty : FileTypeRegistry.GetExtension(first);
         }
-        private FileTypes ReduceToSingleSelection(FileTypes types)
-        {
-            if (types == FileTypes.None) return FileTypes.None;
-
-            foreach (FileTypes type in Enum.GetValues(typeof(FileTypes)).Cast<FileTypes>().Reverse())
-                if (types.HasFlag(type)) return type;
-
-            return FileTypes.None;
-        }
-
-        private const FileTypes DEF_FILE_TYPES =
-            FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
-            | FileTypes.JPEG | FileTypes.PSD | FileTypes.DDS;
-
-        private const FileTypes TR_FILE_TYPES = FileTypes.PHD | FileTypes.TR2
-            | FileTypes.TR4 | FileTypes.TRC | FileTypes.TEN;
-
-        private string CheckForSpecificExpressions(FileTypes selectedTypes)
-        => selectedTypes switch
-        {
-            DEF_FILE_TYPES => "Image Files",
-            TR_FILE_TYPES => "TR Level Files",
-            _ => "All supported files"
-        };
     }
 }

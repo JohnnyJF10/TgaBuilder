@@ -22,6 +22,7 @@ using Avalonia;
 using Avalonia.Controls;
 using TgaBuilderLib.Krita;
 using TgaBuilderLib.Psd;
+using FileTypes = TgaBuilderLib.Enums.FileTypes;
 
 namespace TgaBuilderAvaloniaUi
 {
@@ -92,6 +93,8 @@ namespace TgaBuilderAvaloniaUi
                 trLevelFactory: sp.GetRequiredService<Func<string, int, bool, LevelBase>>(),
                 tenLevelFactory: sp.GetRequiredService<Func<string, int, LevelBase>>(),
                 bitmapIO: sp.GetRequiredService<IBitmapBytesIO>()));
+
+            services.AddSingleton<ITransitionLayerExporter, TransitionLayerExporter>();
 
             services.AddSingleton<IAsyncFileLoader, AsyncFileLoader>();
             services.AddSingleton<IBitmapOperations, BitmapOperations>();
@@ -205,6 +208,9 @@ namespace TgaBuilderAvaloniaUi
                 logger: sp.GetRequiredService<ILogger>(),
                 usageData: sp.GetRequiredService<IUsageData>(),
                 dispatcherService: sp.GetRequiredService<IDispatcherService>(),
+                // Avalonia has no JPEG encoder, so JPG/JPEG are excluded from the output formats.
+                writeableImageFormats: FileTypes.TGA | FileTypes.BMP | FileTypes.PNG
+                    | FileTypes.KRA | FileTypes.PSD,
                 panel: sp.GetRequiredService<TargetTexturePanelViewModel>()));
         }
 
@@ -355,6 +361,12 @@ namespace TgaBuilderAvaloniaUi
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
                 transitionInVM: sp.GetRequiredService<TransitionInViewModel>()));
 
+            services.AddTransient(sp => new ExportTransitionViewModel(
+                transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
+                exporter: sp.GetRequiredService<ITransitionLayerExporter>(),
+                fileService: sp.GetRequiredService<IFileService>(),
+                messageService: sp.GetRequiredService<IMessageService>()));
+
             services.AddTransient(sp => new TransitionViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 transitionHelper: sp.GetRequiredService<ITransitionHelper>(),
@@ -364,6 +376,7 @@ namespace TgaBuilderAvaloniaUi
                 edgeViewModel: sp.GetRequiredService<EdgeViewModel>(),
                 shadowViewModel: sp.GetRequiredService<ShadowViewModel>(),
                 underfillingViewModel: sp.GetRequiredService<UnderfillingViewModel>(),
+                exportTransitionViewModel: sp.GetRequiredService<ExportTransitionViewModel>(),
                 mainViewModel: sp.GetRequiredService<MainViewModel>()));
 
             services.AddTransient(sp => new ModificationsViewModel(
