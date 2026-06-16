@@ -499,7 +499,6 @@
 
                     <!-- Export (both modes) -->
                     <Expander
-                        Grid.Row="1"
                         DataContext="{Binding ExportVM}"
                         Header="Export"
                         IsExpanded="True"

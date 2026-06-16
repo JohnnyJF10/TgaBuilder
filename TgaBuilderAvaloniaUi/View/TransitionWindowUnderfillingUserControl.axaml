@@ -34,7 +34,7 @@
 
     <!-- Row 2: Underfilling Threshold Slider & Icons -->
     <Path Grid.Row="1" Grid.Column="0"
-          Margin="0,2,0,8"
+          Margin="2,2,0,8"
           Fill="{DynamicResource IconFillBrush}"
           Data="{StaticResource tab_prohibited}"
           Width="18"

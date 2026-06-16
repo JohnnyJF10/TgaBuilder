@@ -66,9 +66,9 @@ public class ExportTransitionViewModel : ViewModelBase
             var layers = _transitionHelper.GetExportLayers();
             await Task.Run(() => _exporter.Export(filePath, layers));
         }
-        catch
+        catch (Exception ex)
         {
-            _messageService.SendMessage(MessageType.DestinationSaveError);
+            _messageService.SendMessage(MessageType.DestinationSaveError, ex: ex);
             return;
         }
 
