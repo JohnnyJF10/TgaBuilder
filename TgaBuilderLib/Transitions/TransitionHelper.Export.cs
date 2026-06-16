@@ -47,6 +47,24 @@ public partial class TransitionHelper
             // The other buffer stays fully transparent (all zero) at this pixel.
         }
 
+        // Manually moved/rotated tiles are selected at their new positions, where the loop above
+        // copied the wrong (static) source pixels. Repaint their true content from the original
+        // source pixels so the exported "Bricks" layer matches the on-screen result.
+        foreach (var tile in _manipulatedTiles)
+        {
+            int[] dst = tile.DstOffsets;
+            int[] src = tile.SrcOffsets;
+            for (int i = 0; i < dst.Length; i++)
+            {
+                int d = dst[i] * TRANSITIONS_BPP;
+                int s = src[i] * TRANSITIONS_BPP;
+                selected[d + 0] = Pixels1[s + 0];
+                selected[d + 1] = Pixels1[s + 1];
+                selected[d + 2] = Pixels1[s + 2];
+                selected[d + 3] = Pixels1[s + 3];
+            }
+        }
+
         return new[]
         {
             new TransitionExportLayer(background, Width, Height, "Background", true),

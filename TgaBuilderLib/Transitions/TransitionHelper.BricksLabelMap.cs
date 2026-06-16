@@ -11,6 +11,12 @@ public partial class TransitionHelper
 {
     // Creates a colored debug map from label data and stores analysis dimensions.
 
+    // The label map picking and the hover indicator follow manual moves/rotations, so they read
+    // from the current occupancy map once it has been built; before that they fall back to the raw
+    // segmentation. The colored debug map (GetLabelMap) deliberately keeps using _labels.
+    private int[] CurrentLabels =>
+        (_selectionBuilt && _manualLabels.Length == _labels.Length) ? _manualLabels : _labels;
+
     public int GetLabelAtPixel(int x, int y)
     {
         if (x < 0 || x >= Width || y < 0 || y >= Height)
@@ -20,7 +26,7 @@ public partial class TransitionHelper
             return 0;
 
         int index = y * Width + x;
-        return _labels[index];
+        return CurrentLabels[index];
     }
     public byte[] GetLabelMap()
     {
@@ -112,10 +118,14 @@ public partial class TransitionHelper
         // ARGB (same as before)
         uint indicatorColorArgb = (uint)(255 << 24 | r << 16 | g << 8 | b);
 
+        // Highlight the tile at its current location: a moved tile lights up at its new position
+        // and a vacated hole stays empty, reflecting the manual adjustments.
+        int[] sourceLabels = CurrentLabels;
+
         unsafe
         {
             fixed (byte* pDebug = map)
-            fixed (int* pLabels = _labels)
+            fixed (int* pLabels = sourceLabels)
             {
                 for (int y = 0; y < Height; y++)
                 {

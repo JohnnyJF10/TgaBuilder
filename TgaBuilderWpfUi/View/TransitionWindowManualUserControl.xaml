@@ -25,7 +25,7 @@
                                 Margin="8,6,8,8">
         <elements:ToggleButtonEx
                                     VerticalAlignment="Center"
-                                    ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
+                                    ap:MouseOverInfoAP.InfoText="Enable manual drawing of visible tiles"
                                     Icon="{ui:SymbolIcon Pen24}"
                                     MinHeight="36"
                                     MinWidth="36"
@@ -37,15 +37,23 @@
                                     MinHeight="36"
                                     MinWidth="36"
                                     Icon="{ui:SymbolIcon Eraser24}"
-                                    ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
+                                    ap:MouseOverInfoAP.InfoText="Enable manual erasing of visible tiles"
                                     IsChecked="{Binding IsExplicitTileVisibilityEraseMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <elements:ToggleButtonEx
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Icon="{ui:SymbolIcon ArrowMove24}"
+                                    ap:MouseOverInfoAP.InfoText="Move tiles by dragging and rotate them with the mouse wheel"
+                                    IsChecked="{Binding IsTileMoveRotateMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <ui:Button
                                     VerticalAlignment="Center"
                                     MinHeight="36"
                                     MinWidth="36"
                                     Margin="8,0,0,0"
                                     Icon="{ui:SymbolIcon Backspace24}"
-                                    ap:MouseOverInfoAP.InfoText="Reset Explicit Visibility"
+                                    ap:MouseOverInfoAP.InfoText="Reset all manual adjustments (visibility, moves and rotations)"
                                     Command="{Binding ResetExplicitVisibilityCommand}" />
 
 

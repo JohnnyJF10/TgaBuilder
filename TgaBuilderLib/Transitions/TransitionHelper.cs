@@ -34,6 +34,14 @@ public partial class TransitionHelper : ITransitionHelper
     // Per-pixel Chebyshev distance to the nearest opposite-selection pixel, precomputed once
     // per selection change and reused by both shadow and edge drawing passes.
     private int[] _edgeDist = Array.Empty<int>();
+    // "Current occupancy" label map: like _labels, but reflecting manual tile moves/rotations
+    // (holes where a tile left, relocated footprints where it went). Drives tile picking and the
+    // hover indicator so they follow the manual adjustments; the colored debug label map
+    // (GetLabelMap) keeps using the untouched _labels.
+    private int[] _manualLabels = Array.Empty<int>();
+    // User-manipulated (moved and/or rotated) tiles, recomputed by BuildSelection whenever the
+    // manipulation state changes and drawn as an overlay on top of the base result by BricksDraw.
+    private readonly List<ManipulatedTile> _manipulatedTiles = new();
 
     private bool _labelsBuilt;
     private bool _selectionBuilt;
@@ -76,6 +84,9 @@ public partial class TransitionHelper : ITransitionHelper
     public Color ShadowColor { get; set; } = new Color(42, 42, 42, 42);
     public int ShadowSize { get; set; } = 3;
     public int ShadowHardness { get; set; } = 50;
+    // Label of the tile the user is currently moving/rotating. Drawn and stamped last so it ends
+    // up on top of any other manipulated tiles it overlaps. 0 means "none".
+    public int ActiveManipulatedTileLabel { get; set; }
     public event EventHandler? RecalculationCompleted;
     public void Mix()
     {
@@ -100,6 +111,9 @@ public partial class TransitionHelper : ITransitionHelper
         _scratchShadowedBg = Array.Empty<byte>();
         _scratchLabelMap = Array.Empty<byte>();
         _edgeDist = Array.Empty<int>();
+        _manualLabels = Array.Empty<int>();
+        _manipulatedTiles.Clear();
+        ActiveManipulatedTileLabel = 0;
 
         _labelsBuilt = false;
         _selectionBuilt = false;
@@ -143,4 +157,15 @@ public partial class TransitionHelper : ITransitionHelper
         UnderfillingThreshold = 0;
     }
 
+    // A user-manipulated (moved and/or rotated) tile. The two parallel arrays map every
+    // destination pixel offset the tile now covers (DstOffsets) to the source pixel offset it
+    // samples from the original, un-manipulated tile image (SrcOffsets). Computed once per
+    // selection rebuild via inverse mapping so the footprint used for the selection, the manual
+    // label map and the color overlay are guaranteed identical.
+    private struct ManipulatedTile
+    {
+        public int Label;
+        public int[] DstOffsets;
+        public int[] SrcOffsets;
+    }
 }

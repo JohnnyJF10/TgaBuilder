@@ -23,8 +23,16 @@ public partial class TransitionHelper
         // pixels to true (it never resets them), so stale trues from a previous recalc must not
         // leak through.
         bool[] selection = _selection;
-        Array.Clear(selection, 0, Width * Height);
+        int pixelCount = Width * Height;
+        Array.Clear(selection, 0, pixelCount);
         int labelCount = tileSegments.Count;
+
+        // Rebuild the "current occupancy" label map. It starts as the untouched segmentation (so
+        // every tile stays pickable, including hidden ones) and is then patched by
+        // ApplyManipulatedTiles to punch holes at vacated positions and stamp relocated footprints.
+        if (_manualLabels.Length == pixelCount)
+            Array.Copy(_labels, _manualLabels, pixelCount);
+        _manipulatedTiles.Clear();
 
         TransitionDirection mode = Direction;
         bool reversePivot = ReversePivot;
@@ -59,6 +67,18 @@ public partial class TransitionHelper
 
             float v = ComputeFocus(Direction, segment.CentroidX, segment.CentroidY, Widening, Shift);
             bool shouldDraw = segment.ShouldDrawExplicitly ?? (ReversePivot ? (v <= Pivot) : (v >= Pivot));
+
+            // Manually moved/rotated tiles are placed explicitly by the user. They bypass the
+            // edge-protection, corner-slicing and underfilling cuts and are rasterized after the
+            // static selection is finalized (see ApplyManipulatedTiles), so they always land on
+            // top and are never eaten into.
+            bool isManipulated = segment.OffsetX != 0 || segment.OffsetY != 0 || segment.TwistAngle != 0f;
+            if (isManipulated)
+            {
+                if (shouldDraw)
+                    _manipulatedTiles.Add(ComputeManipulatedFootprint(labelID, segment));
+                continue;
+            }
 
             ReadOnlySpan<int> tileOffsets = CollectionsMarshal.AsSpan(pixelOffsets);
 
@@ -104,6 +124,157 @@ public partial class TransitionHelper
 
         if (UnderfillingThreshold > 0)
             SubstractUnderfilled(selection, tilePixels);
+
+        ApplyManipulatedTiles(tileSegments, selection);
+    }
+
+    // Computes a manipulated tile's footprint by inverse mapping. For every destination pixel in
+    // the transformed bounding box it finds the source pixel it samples from (R(-twist) around the
+    // centroid, minus the offset) and keeps it only when that source pixel actually belongs to the
+    // tile. Using inverse mapping avoids the holes a forward rotation would leave and yields one
+    // unique source per destination, so no destination is ever written twice.
+    private ManipulatedTile ComputeManipulatedFootprint(int label, TileSegment segment)
+    {
+        int width = Width;
+        int height = Height;
+        var pixelOffsets = segment.PixelOffsets;
+
+        // Original axis-aligned bounding box of the tile.
+        int minX = int.MaxValue, minY = int.MaxValue, maxX = int.MinValue, maxY = int.MinValue;
+        foreach (int off in pixelOffsets)
+        {
+            int x = off % width;
+            int y = off / width;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+        }
+
+        // CentroidX/Y are normalized (0..1); multiplying by the dimension restores the exact
+        // pixel-space centroid the tile is rotated around.
+        double cx = segment.CentroidX * width;
+        double cy = segment.CentroidY * height;
+        int ox = segment.OffsetX;
+        int oy = segment.OffsetY;
+
+        double ang = segment.TwistAngle * Math.PI / 180.0;
+        double cos = Math.Cos(ang);
+        double sin = Math.Sin(ang);
+
+        // Forward-transform the four corners to bound the destination region, then clamp to image.
+        int[] cornerX = { minX, maxX, minX, maxX };
+        int[] cornerY = { minY, minY, maxY, maxY };
+        int dMinX = int.MaxValue, dMinY = int.MaxValue, dMaxX = int.MinValue, dMaxY = int.MinValue;
+        for (int c = 0; c < 4; c++)
+        {
+            double rx = cos * (cornerX[c] - cx) - sin * (cornerY[c] - cy) + cx + ox;
+            double ry = sin * (cornerX[c] - cx) + cos * (cornerY[c] - cy) + cy + oy;
+            int lo = (int)Math.Floor(rx);
+            int hi = (int)Math.Ceiling(rx);
+            if (lo < dMinX) dMinX = lo;
+            if (hi > dMaxX) dMaxX = hi;
+            lo = (int)Math.Floor(ry);
+            hi = (int)Math.Ceiling(ry);
+            if (lo < dMinY) dMinY = lo;
+            if (hi > dMaxY) dMaxY = hi;
+        }
+
+        // Expand by 1px so nearest-neighbor rounding at the rotated edges can never clip the tile,
+        // then clamp to the image (out-of-image parts are dropped by the per-pixel bounds check).
+        dMinX -= 1; dMinY -= 1; dMaxX += 1; dMaxY += 1;
+        if (dMinX < 0) dMinX = 0;
+        if (dMinY < 0) dMinY = 0;
+        if (dMaxX > width - 1) dMaxX = width - 1;
+        if (dMaxY > height - 1) dMaxY = height - 1;
+
+        var dst = new List<int>();
+        var src = new List<int>();
+
+        for (int dy = dMinY; dy <= dMaxY; dy++)
+        {
+            for (int dx = dMinX; dx <= dMaxX; dx++)
+            {
+                double px = dx - ox - cx;
+                double py = dy - oy - cy;
+
+                // Inverse rotation R(-twist).
+                double sxf = cos * px + sin * py + cx;
+                double syf = -sin * px + cos * py + cy;
+
+                // Standard nearest-neighbor rounding (Math.Round would use banker's rounding and
+                // could drop pixels asymmetrically at .5 boundaries during rotation).
+                int sxi = (int)Math.Floor(sxf + 0.5);
+                int syi = (int)Math.Floor(syf + 0.5);
+
+                if (sxi < 0 || sxi >= width || syi < 0 || syi >= height)
+                    continue;
+
+                int srcIdx = syi * width + sxi;
+                if (_labels[srcIdx] != label)
+                    continue;
+
+                dst.Add(dy * width + dx);
+                src.Add(srcIdx);
+            }
+        }
+
+        return new ManipulatedTile
+        {
+            Label = label,
+            DstOffsets = dst.ToArray(),
+            SrcOffsets = src.ToArray()
+        };
+    }
+
+    // Finalizes the manual moves/rotations collected during BuildSelection:
+    //   1) reorders so the active tile is processed last (so it wins overlaps / draws on top),
+    //   2) adds each transformed footprint to the selection so shadows, edges and the final mask
+    //      follow the new position (underfilling has already run, so it can't eat a placed tile),
+    //   3) punches the manipulated tiles' original pixels out of the manual label map (the holes
+    //      they left), then stamps the transformed footprints in. Punching for all tiles before
+    //      stamping prevents a footprint that lands on another tile's vacated pixels from being
+    //      cleared again.
+    private void ApplyManipulatedTiles(List<TileSegment> tileSegments, bool[] selection)
+    {
+        if (_manipulatedTiles.Count == 0)
+            return;
+
+        int activeLabel = ActiveManipulatedTileLabel;
+        if (activeLabel > 0)
+        {
+            int activeIdx = _manipulatedTiles.FindIndex(t => t.Label == activeLabel);
+            if (activeIdx >= 0 && activeIdx != _manipulatedTiles.Count - 1)
+            {
+                var active = _manipulatedTiles[activeIdx];
+                _manipulatedTiles.RemoveAt(activeIdx);
+                _manipulatedTiles.Add(active);
+            }
+        }
+
+        foreach (var tile in _manipulatedTiles)
+        {
+            int[] dst = tile.DstOffsets;
+            for (int i = 0; i < dst.Length; i++)
+                selection[dst[i]] = true;
+        }
+
+        if (_manualLabels.Length != Width * Height)
+            return;
+
+        foreach (var tile in _manipulatedTiles)
+        {
+            var original = tileSegments[tile.Label - 1].PixelOffsets;
+            foreach (int off in original)
+                _manualLabels[off] = 0;
+        }
+
+        foreach (var tile in _manipulatedTiles)
+        {
+            int[] dst = tile.DstOffsets;
+            for (int i = 0; i < dst.Length; i++)
+                _manualLabels[dst[i]] = tile.Label;
+        }
     }
 
     private void SubstractUnderfilled(bool[] selection, byte[] tilePixels)

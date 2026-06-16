@@ -59,12 +59,22 @@ namespace TgaBuilderLib.Transitions
         bool ReverseUnderfilling { get; set; }
         int UnderfillingThreshold { get; set; }
 
+        // Label of the tile currently being moved/rotated (drawn on top of other manipulated
+        // tiles). 0 means none.
+        int ActiveManipulatedTileLabel { get; set; }
+
         // Methods
         void EnsureBuffers(int width, int height);
         void Mix();
         byte[] GetLabelMap();
         int GetLabelAtPixel(int x, int y);
         byte[] GetTileIndicator(int tileIndex);
+
+        // Manual single-tile move/rotate operations.
+        int PickManipulableTileAt(int x, int y);
+        (int X, int Y) GetTileOffset(int tileLabel);
+        bool MoveTile(int tileLabel, int offsetX, int offsetY);
+        bool RotateTileBy(int tileLabel, float deltaDegrees);
 
         // Builds the bottom-to-top layer stack for a multi-layer export of the
         // current transition (smooth or bricks).

@@ -306,11 +306,12 @@
                                 x:Name="ResultImage"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                             Source="{Binding TransitionOutVM.ResultImage, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="Uniform" 
+                                Stretch="Uniform"
                                 MouseMove="ResultImage_MouseMove"
                                 MouseEnter="ResultImage_MouseEnter"
                                 MouseLeave="ResultImage_MouseLeave"
-                                MouseDown="ResultImage_MouseDown"/>
+                                MouseDown="ResultImage_MouseDown"
+                                MouseWheel="ResultImage_MouseWheel"/>
                             <Image
                                 x:Name="IndicatorImage"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"

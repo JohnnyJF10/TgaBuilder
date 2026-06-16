@@ -95,6 +95,19 @@ public class TransitionOutViewModel : ThrottledViewModelBase
 
     private bool _isExplicitTileVisibilityDrawMode;
     private bool _isExplicitTileVisibilityEraseMode;
+    private bool _isTileMoveRotateMode;
+
+    // Rotation applied per mouse-wheel notch, in degrees. The wheel gives discrete steps; the tile
+    // can still reach any angle by accumulating notches.
+    private const float RotationStepDegrees = 5f;
+
+    // Drag/rotate target state. _activeManipulationLabel is the tile the user grabbed (and the
+    // wheel rotation target); the rest anchor a drag to the tile's offset at grab time.
+    private int _activeManipulationLabel;
+    private int _dragStartX;
+    private int _dragStartY;
+    private int _dragBaseOffsetX;
+    private int _dragBaseOffsetY;
 
 
     public bool IsExplicitTileVisibilityDrawMode
@@ -103,12 +116,18 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         set
         {
             SetProperty(ref _isExplicitTileVisibilityDrawMode, value, nameof(IsExplicitTileVisibilityDrawMode));
+            OnPropertyChanged(nameof(IsAnyManualMode));
 
             if (!value)
                 return;
 
             _isExplicitTileVisibilityEraseMode = false;
             OnPropertyChanged(nameof(IsExplicitTileVisibilityEraseMode));
+
+            _isTileMoveRotateMode = false;
+            OnPropertyChanged(nameof(IsTileMoveRotateMode));
+
+            EndActiveManipulation();
         }
     }
 
@@ -118,13 +137,47 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         set
         {
             SetProperty(ref _isExplicitTileVisibilityEraseMode, value, nameof(IsExplicitTileVisibilityEraseMode));
+            OnPropertyChanged(nameof(IsAnyManualMode));
+
             if (!value)
                 return;
 
             _isExplicitTileVisibilityDrawMode = false;
             OnPropertyChanged(nameof(IsExplicitTileVisibilityDrawMode));
+
+            _isTileMoveRotateMode = false;
+            OnPropertyChanged(nameof(IsTileMoveRotateMode));
+
+            EndActiveManipulation();
         }
     }
+
+    public bool IsTileMoveRotateMode
+    {
+        get => _isTileMoveRotateMode;
+        set
+        {
+            SetProperty(ref _isTileMoveRotateMode, value, nameof(IsTileMoveRotateMode));
+            OnPropertyChanged(nameof(IsAnyManualMode));
+
+            if (!value)
+            {
+                EndActiveManipulation();
+                return;
+            }
+
+            _isExplicitTileVisibilityDrawMode = false;
+            OnPropertyChanged(nameof(IsExplicitTileVisibilityDrawMode));
+
+            _isExplicitTileVisibilityEraseMode = false;
+            OnPropertyChanged(nameof(IsExplicitTileVisibilityEraseMode));
+        }
+    }
+
+    // True while any of the manual single-tile modes (draw / erase / move-rotate) is active. The
+    // views use it to decide whether to show the hover indicator and route pointer interactions.
+    public bool IsAnyManualMode =>
+        _isExplicitTileVisibilityDrawMode || _isExplicitTileVisibilityEraseMode || _isTileMoveRotateMode;
 
 
     // =====================================================================
@@ -134,6 +187,10 @@ public class TransitionOutViewModel : ThrottledViewModelBase
     private RelayCommand<(int, int)>? _setExplicitTileVisibilityCommand;
     private RelayCommand? _resetExplicitVisibilityCommand;
     private RelayCommand<(int, int)>? _requestLabelIndicatorCommand;
+    private RelayCommand<(int, int)>? _manualPointerDownCommand;
+    private RelayCommand<(int, int)>? _manualPointerDragCommand;
+    private RelayCommand<(int, int, int)>? _rotateActiveTileCommand;
+    private RelayCommand? _endManipulationCommand;
 
 
     public ICommand SetExplicitTileVisibilityCommand => _setExplicitTileVisibilityCommand
@@ -143,6 +200,18 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         ??= new RelayCommand(ResetAllExplicitTileVisibility);
     public ICommand RequestLabelIndicatorCommand => _requestLabelIndicatorCommand
         ??= new RelayCommand<(int, int)>(args => RequestNewIndicatorMapImage(args.Item1, args.Item2));
+
+    // Routes a pointer press / drag in the result image to the active manual mode: visibility
+    // draw/erase, or begin/continue a tile move.
+    public ICommand ManualPointerDownCommand => _manualPointerDownCommand
+        ??= new RelayCommand<(int, int)>(args => ManualPointerDown(args.Item1, args.Item2));
+    public ICommand ManualPointerDragCommand => _manualPointerDragCommand
+        ??= new RelayCommand<(int, int)>(args => ManualPointerDrag(args.Item1, args.Item2));
+    // (x, y, notches) — rotates the active (or hovered) tile in move-rotate mode.
+    public ICommand RotateActiveTileCommand => _rotateActiveTileCommand
+        ??= new RelayCommand<(int, int, int)>(args => RotateActiveTile(args.Item1, args.Item2, args.Item3));
+    public ICommand EndManipulationCommand => _endManipulationCommand
+        ??= new RelayCommand(EndActiveManipulation);
 
 
 
@@ -175,7 +244,11 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         if (ResultImage.PixelWidth <= 0 || ResultImage.PixelHeight <= 0)
             return;
 
-        int label = _transitionHelper.GetLabelAtPixel(x, y);
+        // In move-rotate mode only highlight tiles that can actually be grabbed (protected edge
+        // tiles read as none), giving the user clear feedback about what is movable.
+        int label = _isTileMoveRotateMode
+            ? _transitionHelper.PickManipulableTileAt(x, y)
+            : _transitionHelper.GetLabelAtPixel(x, y);
 
         if (label == 0)
             return;
@@ -222,9 +295,103 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         _ = TriggerRecalculation();
     }
 
+    // Pointer pressed in the result image. Draw/erase modes toggle tile visibility; move-rotate
+    // mode grabs the tile under the cursor as the active manipulation/rotation target.
+    private void ManualPointerDown(int x, int y)
+    {
+        if (_isTileMoveRotateMode)
+        {
+            BeginManipulation(x, y);
+            return;
+        }
+
+        if (_isExplicitTileVisibilityDrawMode || _isExplicitTileVisibilityEraseMode)
+            SetExplicitTileVisibility(x, y);
+    }
+
+    // Pointer dragged (left button held). Draw/erase keep toggling along the path; move-rotate
+    // drags the grabbed tile by the cursor delta.
+    private void ManualPointerDrag(int x, int y)
+    {
+        if (_isTileMoveRotateMode)
+        {
+            DragActiveTile(x, y);
+            return;
+        }
+
+        if (_isExplicitTileVisibilityDrawMode || _isExplicitTileVisibilityEraseMode)
+            SetExplicitTileVisibility(x, y);
+    }
+
+    private void BeginManipulation(int x, int y)
+    {
+        int label = _transitionHelper.PickManipulableTileAt(x, y);
+
+        _activeManipulationLabel = label;
+        _transitionHelper.ActiveManipulatedTileLabel = label;
+
+        if (label == 0)
+            return;
+
+        (_dragBaseOffsetX, _dragBaseOffsetY) = _transitionHelper.GetTileOffset(label);
+        _dragStartX = x;
+        _dragStartY = y;
+    }
+
+    private void DragActiveTile(int x, int y)
+    {
+        if (_activeManipulationLabel == 0)
+            return;
+
+        int offsetX = _dragBaseOffsetX + (x - _dragStartX);
+        int offsetY = _dragBaseOffsetY + (y - _dragStartY);
+
+        bool changed = _transitionHelper.MoveTile(_activeManipulationLabel, offsetX, offsetY);
+
+        _transitionHelper.CurrentBricksPipelineRequirements
+            = BricksPipelineRequirements.RequiresSelectionBuilding;
+
+        if (changed)
+            _ = TriggerRecalculation();
+    }
+
+    private void RotateActiveTile(int x, int y, int notches)
+    {
+        if (!_isTileMoveRotateMode || notches == 0)
+            return;
+
+        // Without a grabbed tile (scrolling over a tile without clicking first), adopt the tile
+        // under the cursor as the active rotation target.
+        if (_activeManipulationLabel == 0)
+        {
+            int label = _transitionHelper.PickManipulableTileAt(x, y);
+            if (label == 0)
+                return;
+
+            _activeManipulationLabel = label;
+            _transitionHelper.ActiveManipulatedTileLabel = label;
+        }
+
+        bool changed = _transitionHelper.RotateTileBy(_activeManipulationLabel, notches * RotationStepDegrees);
+
+        _transitionHelper.CurrentBricksPipelineRequirements
+            = BricksPipelineRequirements.RequiresSelectionBuilding;
+
+        if (changed)
+            _ = TriggerRecalculation();
+    }
+
+    private void EndActiveManipulation()
+    {
+        // Releases the wheel-rotation target. The helper keeps its ActiveManipulatedTileLabel so
+        // the last-moved tile stays on top until another tile is grabbed or a reset occurs.
+        _activeManipulationLabel = 0;
+    }
+
     private void ResetAllExplicitTileVisibility()
     {
         _transitionHelper.ResetAllExplicitTileVisibility();
+        EndActiveManipulation();
 
         _transitionHelper.CurrentBricksPipelineRequirements
             = BricksPipelineRequirements.RequiresSelectionBuilding;
@@ -250,6 +417,8 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         IsLabelMapExpanded = false;
         IsExplicitTileVisibilityDrawMode = false;
         IsExplicitTileVisibilityEraseMode = false;
+        IsTileMoveRotateMode = false;
+        EndActiveManipulation();
     }
 
 

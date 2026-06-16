@@ -51,6 +51,44 @@ public partial class TransitionHelper
         DrawShadows(bgPixels, selection, _edgeDist, shadowedBg);
 
         DrawResult(tilePixels, selection, _edgeDist, shadowedBg, result);
+
+        // Manually moved/rotated tiles are part of the selection (so they cast shadows and form
+        // the mask correctly), but the base pass above sampled the static tile image at their new
+        // positions, i.e. the wrong content. Repaint their true content from the original source
+        // pixels here, on top of everything, so they overlay any static tiles they now cover.
+        DrawManipulatedTiles(tilePixels, result);
+    }
+
+    // Repaints the user-manipulated tiles over the finished base result. For each tile the source
+    // pixels (the tile's original, un-rotated image data) are copied into their transformed
+    // destination positions computed by BuildSelection. Drawn in list order with the active tile
+    // last, so the tile the user is currently manipulating ends up on top.
+    private void DrawManipulatedTiles(byte[] tilePixels, byte[] result)
+    {
+        if (_manipulatedTiles.Count == 0)
+            return;
+
+        unsafe
+        {
+            fixed (byte* pTile = tilePixels)
+            fixed (byte* pRes = result)
+            {
+                foreach (var tile in _manipulatedTiles)
+                {
+                    int[] dst = tile.DstOffsets;
+                    int[] src = tile.SrcOffsets;
+                    for (int i = 0; i < dst.Length; i++)
+                    {
+                        int d = dst[i] * TRANSITIONS_BPP;
+                        int s = src[i] * TRANSITIONS_BPP;
+                        pRes[d + 0] = pTile[s + 0];
+                        pRes[d + 1] = pTile[s + 1];
+                        pRes[d + 2] = pTile[s + 2];
+                        pRes[d + 3] = pTile[s + 3];
+                    }
+                }
+            }
+        }
     }
 
     // Computes, for every pixel, the Chebyshev (L-infinity) distance to the nearest pixel of

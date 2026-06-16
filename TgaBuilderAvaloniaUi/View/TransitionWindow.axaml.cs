@@ -174,21 +174,17 @@ namespace TgaBuilderAvaloniaUi.View
 
             var tpvm = vm.TransitionOutVM;
 
-            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
+            if (!tpvm.IsAnyManualMode)
                 return;
 
-            if (tpvm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
-            {
-                var currentPosition = e.GetPosition(ResultImage);
-                requestLabelIndicatorCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
-            }
+            var currentPosition = e.GetPosition(ResultImage);
+            int x = (int)currentPosition.X;
+            int y = (int)currentPosition.Y;
 
-            if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed
-                && tpvm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
-            {
-                var currentPosition = e.GetPosition(ResultImage);
-                setExplicitTileVisibilityCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
-            }
+            tpvm.RequestLabelIndicatorCommand.Execute((X: x, Y: y));
+
+            if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed)
+                tpvm.ManualPointerDragCommand.Execute((X: x, Y: y));
         }
 
         private void ResultImage_PointerEntered(object? sender, PointerEventArgs e)
@@ -198,7 +194,7 @@ namespace TgaBuilderAvaloniaUi.View
 
             var tpvm = vm.TransitionOutVM;
 
-            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
+            if (!tpvm.IsAnyManualMode)
                 return;
 
             tpvm.IsIndicatorMapVisible = true;
@@ -211,10 +207,11 @@ namespace TgaBuilderAvaloniaUi.View
 
             var tpvm = vm.TransitionOutVM;
 
-            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
+            if (!tpvm.IsAnyManualMode)
                 return;
 
             tpvm.IsIndicatorMapVisible = false;
+            tpvm.EndManipulationCommand.Execute(null);
         }
 
         private void ResultImage_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -224,15 +221,35 @@ namespace TgaBuilderAvaloniaUi.View
 
             var tpvm = vm.TransitionOutVM;
 
-            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
+            if (!tpvm.IsAnyManualMode)
                 return;
 
-            if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed
-                && tpvm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
-            {
-                var currentPosition = e.GetPosition(ResultImage);
-                setExplicitTileVisibilityCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
-            }
+            if (!e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed)
+                return;
+
+            var currentPosition = e.GetPosition(ResultImage);
+            tpvm.ManualPointerDownCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
+        }
+
+        private void ResultImage_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            var tpvm = vm.TransitionOutVM;
+
+            if (!tpvm.IsTileMoveRotateMode)
+                return;
+
+            int notches = e.Delta.Y > 0 ? 1 : (e.Delta.Y < 0 ? -1 : 0);
+            if (notches == 0)
+                return;
+
+            var currentPosition = e.GetPosition(ResultImage);
+            tpvm.RotateActiveTileCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y, Notches: notches));
+
+            // Prevent the wheel from also scrolling/zooming the surrounding UI while rotating.
+            e.Handled = true;
         }
     }
 }

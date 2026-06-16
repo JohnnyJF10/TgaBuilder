@@ -37,13 +37,21 @@
                 Icon="{StaticResource eraser}"
                 ap:MouseOverInfoAP.InfoText="Enable manual erasing of visible tiles"
                 IsChecked="{Binding IsExplicitTileVisibilityEraseMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <elements:IconToggleButton
+                Classes="outlined"
+                VerticalAlignment="Center"
+                MinHeight="36"
+                MinWidth="36"
+                Icon="{StaticResource arrow_move}"
+                ap:MouseOverInfoAP.InfoText="Move tiles by dragging and rotate them with the mouse wheel"
+                IsChecked="{Binding IsTileMoveRotateMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <elements:IconButton
                 Classes="outlined"
                 VerticalAlignment="Center"
                 MinHeight="36"
                 MinWidth="36"
                 Icon="{StaticResource backspace}"
-                ap:MouseOverInfoAP.InfoText="Reset Explicit Visibility"
+                ap:MouseOverInfoAP.InfoText="Reset all manual adjustments (visibility, moves and rotations)"
                 Command="{Binding ResetExplicitVisibilityCommand}" />
         </StackPanel>
 </UserControl>

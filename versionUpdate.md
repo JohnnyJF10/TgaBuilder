@@ -72,7 +72,8 @@ Version 2.2.5 with major transition performance improvements, new controls to ma
 - **Brick / Underfilling** expander: **Pivot** (`0` – `1`) sets the positional bias of the underfilling area.
 - **Brick / Manual** expander (new): **Tile Visibility Pen** toggle — draw on the result image to mark tiles as visible.
 - **Brick / Manual** expander: **Tile Visibility Eraser** toggle — draw on the result image to mark tiles as hidden.
-- **Brick / Manual** expander: **Reset** button clears all manual visibility overrides and reverts to the computed result.
+- **Brick / Manual** expander: **Tile Move & Rotate** toggle — drag a single tile on the result image to reposition it, and use the mouse wheel to freely rotate the grabbed tile around its centroid. Moved/rotated tiles are drawn on top of other tiles, become visible automatically if they were hidden, and leave a hole (reflected by the hover indicator) at their original position. Edge tiles are not movable while edge protection is on.
+- **Brick / Manual** expander: **Reset** button clears all manual adjustments — visibility overrides, moves and rotations — and reverts to the computed result.
 - **Main window / Target panel**: hold **Space** while clicking or dragging to make a free (grid-independent) selection; release Space to return to normal grid-snapped behavior.
 - **Main window (Avalonia UI)**: **Copy / Paste** (`Ctrl+C` / `Ctrl+V`) support added.
 - **Release build lineup changed**: the combined release now ships three packages — `TgaBuilder-Standard-Vx.x.x.zip` (WPF .NET 6, requires .NET 6 runtime), `TgaBuilder-PreviewAvalonia-Windows-Vx.x.x.zip` (Avalonia UI, Windows, self-contained), and `TgaBuilder-PreviewAvalonia-Linux-Vx.x.x.zip` (Avalonia UI, Linux, self-contained). The former separate WPF .NET 8 and non-self-contained Avalonia builds are no longer included.

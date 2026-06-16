@@ -33,6 +33,12 @@ public partial class TransitionHelper
         _scratchShadowedBg = new byte[n4];
         _scratchLabelMap = new byte[n4];
         _edgeDist = new int[n];
+        _manualLabels = new int[n];
+
+        // The tile set changes with the picture size, so any pending manual move/rotate state
+        // no longer maps to a valid tile and must be dropped.
+        _manipulatedTiles.Clear();
+        ActiveManipulatedTileLabel = 0;
 
         Width = width;
         Height = height;
