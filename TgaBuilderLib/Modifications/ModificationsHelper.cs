@@ -39,6 +39,14 @@ namespace TgaBuilderLib.Modifications
         private const float COLOR_OVERLAY_LUMA_PRESERVATION_INIT = 1f;
         private const float COLOR_OVERLAY_CHROMA_BOOST_INIT = 1f;
 
+        private const bool COLOR_OVERRIDE_ENABLED_INIT = false;
+        private const float COLOR_OVERRIDE_AMOUNT_INIT = 1f;
+        private const float COLOR_OVERRIDE_DECOLORIZE_INIT = 1f;
+        private const float COLOR_OVERRIDE_TRANSFER_INIT = 1f;
+        private const int COLOR_OVERRIDE_SMOOTHING_INIT = 0;
+        private const int COLOR_OVERRIDE_SMOOTHING_MAX = 32;
+        private const float COLOR_OVERRIDE_CHROMA_RESTORE_INIT = 1f;
+
         // =====================================================================
         // Dimensions
         // =====================================================================
@@ -52,6 +60,12 @@ namespace TgaBuilderLib.Modifications
 
         public byte[] PixelsInput {get; set;} = new byte[64 * 64 * BPP];
         public byte[] PixelsOutput { get; set;} = new byte[64 * 64 * BPP];
+
+        // Secondary input texture used by the Color Override stage. Stored at
+        // its own resolution; sampled with normalised coordinates at apply time.
+        public byte[] PixelsSecondary { get; set; } = Array.Empty<byte>();
+        public int SecondaryWidth { get; set; } = 0;
+        public int SecondaryHeight { get; set; } = 0;
 
 
         // =====================================================================
@@ -94,6 +108,24 @@ namespace TgaBuilderLib.Modifications
         public float ColorOverlaySoftLightStrength { get; set; } = COLOR_OVERLAY_SOFT_LIGHT_STRENGTH_INIT;
         public float ColorOverlayLumaPreservation { get; set; } = COLOR_OVERLAY_LUMA_PRESERVATION_INIT;
         public float ColorOverlayChromaBoost { get; set; } = COLOR_OVERLAY_CHROMA_BOOST_INIT;
+
+        // =====================================================================
+        // Color Override adjustments  (texture-to-texture colour transfer)
+        // Enabled:        on/off toggle for the whole stage
+        // Amount:         0 .. 1   master blend with the original
+        // Decolorize:     0 .. 1   removes the original texture's own colour
+        // Transfer:       0 .. 1   applies the secondary input's colour
+        // Smoothing:      0 .. 32  box-blur radius of the secondary colour field
+        // ChromaRestore:  0 .. 2   scales / restores the resulting colour amount
+        // =====================================================================
+
+        public bool ColorOverrideEnabled { get; set; } = COLOR_OVERRIDE_ENABLED_INIT;
+        public float ColorOverrideAmount { get; set; } = COLOR_OVERRIDE_AMOUNT_INIT;
+        public float ColorOverrideDecolorize { get; set; } = COLOR_OVERRIDE_DECOLORIZE_INIT;
+        public float ColorOverrideTransfer { get; set; } = COLOR_OVERRIDE_TRANSFER_INIT;
+        public int ColorOverrideSmoothing { get; set; } = COLOR_OVERRIDE_SMOOTHING_INIT;
+        public float ColorOverrideChromaRestore { get; set; } = COLOR_OVERRIDE_CHROMA_RESTORE_INIT;
+
         public event EventHandler? RecalculationCompleted;
 
         // =====================================================================
@@ -114,6 +146,7 @@ namespace TgaBuilderLib.Modifications
             ApplyHueSaturationVibrance(PixelsOutput);
             ApplyTemperatureTint(PixelsOutput);
             ApplyColorOverlay(PixelsOutput);
+            ApplyColorOverride(PixelsOutput);
         }
 
         public void CleanUp()
@@ -144,6 +177,22 @@ namespace TgaBuilderLib.Modifications
             ColorOverlaySoftLightStrength = COLOR_OVERLAY_SOFT_LIGHT_STRENGTH_INIT;
             ColorOverlayLumaPreservation = COLOR_OVERLAY_LUMA_PRESERVATION_INIT;
             ColorOverlayChromaBoost = COLOR_OVERLAY_CHROMA_BOOST_INIT;
+
+            PixelsSecondary = Array.Empty<byte>();
+            SecondaryWidth = 0;
+            SecondaryHeight = 0;
+
+            ColorOverrideEnabled = COLOR_OVERRIDE_ENABLED_INIT;
+            ColorOverrideAmount = COLOR_OVERRIDE_AMOUNT_INIT;
+            ColorOverrideDecolorize = COLOR_OVERRIDE_DECOLORIZE_INIT;
+            ColorOverrideTransfer = COLOR_OVERRIDE_TRANSFER_INIT;
+            ColorOverrideSmoothing = COLOR_OVERRIDE_SMOOTHING_INIT;
+            ColorOverrideChromaRestore = COLOR_OVERRIDE_CHROMA_RESTORE_INIT;
+
+            _coSecA = null;
+            _coSecB = null;
+            _coScratch = null;
+            _coPrefix = null;
         }
     }
 }

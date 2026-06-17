@@ -328,7 +328,13 @@ namespace TgaBuilderAvaloniaUi
                 modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
                 modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
 
-                
+            services.AddTransient(sp => new ColorOverrideViewModel(
+                mediaFactory: sp.GetRequiredService<IMediaFactory>(),
+                modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
+                bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
+                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+
+
 
             services.AddSingleton(sp => new TransitionOutViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
@@ -385,7 +391,8 @@ namespace TgaBuilderAvaloniaUi
                 mainViewModel: sp.GetRequiredService<MainViewModel>(),
                 basicVM: sp.GetRequiredService<BasicViewModel>(),
                 colorVM: sp.GetRequiredService<ColorViewModel>(),
-                colorOverlayVM: sp.GetRequiredService<ColorOverlayViewModel>()));
+                colorOverlayVM: sp.GetRequiredService<ColorOverlayViewModel>(),
+                colorOverrideVM: sp.GetRequiredService<ColorOverrideViewModel>()));
 
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),

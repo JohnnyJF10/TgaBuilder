@@ -18,7 +18,8 @@ public class ModificationsViewModel : ViewModelBase
         
         BasicViewModel basicVM,
         ColorViewModel colorVM,
-        ColorOverlayViewModel colorOverlayVM
+        ColorOverlayViewModel colorOverlayVM,
+        ColorOverrideViewModel colorOverrideVM
         )
     {
         _mediaFactory = mediaFactory;
@@ -28,6 +29,7 @@ public class ModificationsViewModel : ViewModelBase
         BasicVM = basicVM;
         ColorVM = colorVM;
         ColorOverlayVM = colorOverlayVM;
+        ColorOverrideVM = colorOverrideVM;
 
         ModificationInVM = BasicVM.ModificationInVM;
         ModificationOutVM = ModificationInVM.ModificationOutVM;
@@ -48,9 +50,10 @@ public class ModificationsViewModel : ViewModelBase
     // View Model Children
     // =====================================================================
 
-    public BasicViewModel BasicVM { get; set; } 
+    public BasicViewModel BasicVM { get; set; }
     public ColorViewModel ColorVM { get; set; }
     public ColorOverlayViewModel ColorOverlayVM { get; set; }
+    public ColorOverrideViewModel ColorOverrideVM { get; set; }
 
 
     public ModificationInViewModel ModificationInVM { get; set; }
@@ -62,12 +65,16 @@ public class ModificationsViewModel : ViewModelBase
     // =====================================================================
 
     private RelayCommand? _loadImageInCommand;
+    private RelayCommand? _loadSecondaryImageCommand;
     private RelayCommand? _applyCommand;
     private RelayCommand<IView>? _cancelCommand;
     private RelayCommand<IView>? _oKCommand;
 
-    public ICommand LoadImageInCommand => _loadImageInCommand 
+    public ICommand LoadImageInCommand => _loadImageInCommand
         ??= new RelayCommand(() => ModificationInVM.LoadImageIn(_mainViewModel.Selection.Presenter));
+
+    public ICommand LoadSecondaryImageCommand => _loadSecondaryImageCommand
+        ??= new RelayCommand(() => ColorOverrideVM.LoadSecondaryImage(_mainViewModel.Selection.Presenter));
 
     public ICommand ApplyCommand => _applyCommand ??= new RelayCommand(Apply);
     public ICommand CancelCommand => _cancelCommand ??= new RelayCommand<IView>(Cancel);
@@ -109,6 +116,7 @@ public class ModificationsViewModel : ViewModelBase
 
         ModificationInVM.ResetImages();
         ModificationOutVM.ResetImages();
+        ColorOverrideVM.ResetState();
 
         _mainViewModel.IsModificationsViewOpen = false;
     }

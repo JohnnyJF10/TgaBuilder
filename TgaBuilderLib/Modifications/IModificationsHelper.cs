@@ -20,6 +20,12 @@ namespace TgaBuilderLib.Modifications
 
         byte[] PixelsOutput { get; set; }
 
+        byte[] PixelsSecondary { get; set; }
+
+        int SecondaryWidth { get; set; }
+
+        int SecondaryHeight { get; set; }
+
         // =====================================================================
         // Basic adjustments
         // =====================================================================
@@ -48,6 +54,13 @@ namespace TgaBuilderLib.Modifications
         float ColorOverlaySoftLightStrength { get; set; }
         float ColorOverlayLumaPreservation { get; set; }
         float ColorOverlayChromaBoost { get; set; }
+
+        bool ColorOverrideEnabled { get; set; }
+        float ColorOverrideAmount { get; set; }
+        float ColorOverrideDecolorize { get; set; }
+        float ColorOverrideTransfer { get; set; }
+        int ColorOverrideSmoothing { get; set; }
+        float ColorOverrideChromaRestore { get; set; }
 
         // =====================================================================
         // Methods
