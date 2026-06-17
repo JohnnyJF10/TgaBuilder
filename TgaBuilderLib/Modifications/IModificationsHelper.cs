@@ -62,6 +62,13 @@ namespace TgaBuilderLib.Modifications
         int ColorOverrideSmoothing { get; set; }
         float ColorOverrideChromaRestore { get; set; }
 
+        RetroQuantizationLevel RetroQuantization { get; set; }
+        bool RetroPaletteLimitEnabled { get; set; }
+        int RetroMaxColors { get; set; }
+        RetroDitherMode RetroDitherMode { get; set; }
+        float RetroDitherStrength { get; set; }
+        int RetroDitherCellSize { get; set; }
+
         // =====================================================================
         // Methods
         // =====================================================================

@@ -19,7 +19,8 @@ public class ModificationsViewModel : ViewModelBase
         BasicViewModel basicVM,
         ColorViewModel colorVM,
         ColorOverlayViewModel colorOverlayVM,
-        ColorOverrideViewModel colorOverrideVM
+        ColorOverrideViewModel colorOverrideVM,
+        RetrofierViewModel retrofierVM
         )
     {
         _mediaFactory = mediaFactory;
@@ -30,6 +31,7 @@ public class ModificationsViewModel : ViewModelBase
         ColorVM = colorVM;
         ColorOverlayVM = colorOverlayVM;
         ColorOverrideVM = colorOverrideVM;
+        RetrofierVM = retrofierVM;
 
         ModificationInVM = BasicVM.ModificationInVM;
         ModificationOutVM = ModificationInVM.ModificationOutVM;
@@ -54,6 +56,7 @@ public class ModificationsViewModel : ViewModelBase
     public ColorViewModel ColorVM { get; set; }
     public ColorOverlayViewModel ColorOverlayVM { get; set; }
     public ColorOverrideViewModel ColorOverrideVM { get; set; }
+    public RetrofierViewModel RetrofierVM { get; set; }
 
 
     public ModificationInViewModel ModificationInVM { get; set; }

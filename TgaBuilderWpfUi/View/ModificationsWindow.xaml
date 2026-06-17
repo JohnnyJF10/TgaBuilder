@@ -378,6 +378,18 @@
                     <local:ModificationsWindowColorOverrideUserControl />
                 </Expander>
 
+                <!-- ============================================================= -->
+                <!-- Expander: Texture Retrofier                                    -->
+                <!-- ============================================================= -->
+                <Expander
+                    DataContext="{Binding RetrofierVM}"
+                    Header="Texture Retrofier"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0">
+                    <local:ModificationsWindowRetrofierUserControl />
+                </Expander>
+
             </StackPanel>
         </ScrollViewer>
 

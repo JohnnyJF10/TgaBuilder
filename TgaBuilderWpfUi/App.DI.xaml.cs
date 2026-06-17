@@ -366,6 +366,10 @@ namespace TgaBuilderWpfUi
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
                 modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
 
+            services.AddTransient(sp => new RetrofierViewModel(
+                modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
+                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+
             services.AddTransient(sp => new ModificationsViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationsHelper: sp.GetRequiredService<IModificationsHelper>(),
@@ -373,7 +377,8 @@ namespace TgaBuilderWpfUi
                 basicVM: sp.GetRequiredService<BasicViewModel>(),
                 colorVM: sp.GetRequiredService<ColorViewModel>(),
                 colorOverlayVM: sp.GetRequiredService<ColorOverlayViewModel>(),
-                colorOverrideVM: sp.GetRequiredService<ColorOverrideViewModel>()));
+                colorOverrideVM: sp.GetRequiredService<ColorOverrideViewModel>(),
+                retrofierVM: sp.GetRequiredService<RetrofierViewModel>()));
 
             services.AddSingleton(sp => new MainViewModel(
                 getViewCallback: idx => sp.GetServices<IView>().ElementAt((int)idx),

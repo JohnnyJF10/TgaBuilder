@@ -47,6 +47,17 @@ namespace TgaBuilderLib.Modifications
         private const int COLOR_OVERRIDE_SMOOTHING_MAX = 32;
         private const float COLOR_OVERRIDE_CHROMA_RESTORE_INIT = 1f;
 
+        private const RetroQuantizationLevel RETRO_QUANTIZATION_INIT = RetroQuantizationLevel.None;
+        private const bool RETRO_PALETTE_LIMIT_ENABLED_INIT = false;
+        private const int RETRO_MAX_COLORS_INIT = 16;
+        private const int RETRO_MIN_COLORS = 2;
+        private const int RETRO_MAX_COLORS = 256;
+        private const RetroDitherMode RETRO_DITHER_MODE_INIT = RetroDitherMode.None;
+        private const float RETRO_DITHER_STRENGTH_INIT = 1f;
+        private const int RETRO_DITHER_CELL_SIZE_INIT = 1;
+        private const int RETRO_DITHER_CELL_SIZE_MAX = 8;
+        private const float RETRO_DITHER_FREE_AMPLITUDE = 32f;
+
         // =====================================================================
         // Dimensions
         // =====================================================================
@@ -126,6 +137,23 @@ namespace TgaBuilderLib.Modifications
         public int ColorOverrideSmoothing { get; set; } = COLOR_OVERRIDE_SMOOTHING_INIT;
         public float ColorOverrideChromaRestore { get; set; } = COLOR_OVERRIDE_CHROMA_RESTORE_INIT;
 
+        // =====================================================================
+        // Texture Retrofier adjustments  (TR1/TR2 Sega Saturn look)
+        // Quantization:      per-channel colour-space reduction (6/5/4-bit)
+        // PaletteLimit:      cap the texture to a maximum number of colours
+        // MaxColors:         2 .. 256  (only when palette limit is enabled)
+        // DitherMode:        ordered dithering pattern (checkerboard / Bayer)
+        // DitherStrength:    0 .. 1    intensity of the dither pattern
+        // DitherCellSize:    1 .. 8    size (px) of each dither cell / block
+        // =====================================================================
+
+        public RetroQuantizationLevel RetroQuantization { get; set; } = RETRO_QUANTIZATION_INIT;
+        public bool RetroPaletteLimitEnabled { get; set; } = RETRO_PALETTE_LIMIT_ENABLED_INIT;
+        public int RetroMaxColors { get; set; } = RETRO_MAX_COLORS_INIT;
+        public RetroDitherMode RetroDitherMode { get; set; } = RETRO_DITHER_MODE_INIT;
+        public float RetroDitherStrength { get; set; } = RETRO_DITHER_STRENGTH_INIT;
+        public int RetroDitherCellSize { get; set; } = RETRO_DITHER_CELL_SIZE_INIT;
+
         public event EventHandler? RecalculationCompleted;
 
         // =====================================================================
@@ -147,6 +175,7 @@ namespace TgaBuilderLib.Modifications
             ApplyTemperatureTint(PixelsOutput);
             ApplyColorOverlay(PixelsOutput);
             ApplyColorOverride(PixelsOutput);
+            ApplyRetrofier(PixelsOutput);
         }
 
         public void CleanUp()
@@ -188,6 +217,13 @@ namespace TgaBuilderLib.Modifications
             ColorOverrideTransfer = COLOR_OVERRIDE_TRANSFER_INIT;
             ColorOverrideSmoothing = COLOR_OVERRIDE_SMOOTHING_INIT;
             ColorOverrideChromaRestore = COLOR_OVERRIDE_CHROMA_RESTORE_INIT;
+
+            RetroQuantization = RETRO_QUANTIZATION_INIT;
+            RetroPaletteLimitEnabled = RETRO_PALETTE_LIMIT_ENABLED_INIT;
+            RetroMaxColors = RETRO_MAX_COLORS_INIT;
+            RetroDitherMode = RETRO_DITHER_MODE_INIT;
+            RetroDitherStrength = RETRO_DITHER_STRENGTH_INIT;
+            RetroDitherCellSize = RETRO_DITHER_CELL_SIZE_INIT;
 
             _coSecA = null;
             _coSecB = null;
