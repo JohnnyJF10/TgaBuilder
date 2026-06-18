@@ -51,6 +51,10 @@ public class ColorOverrideViewModel : ThrottledViewModelBase
     private IWriteableBitmap _secondaryImage;
     private bool _secondaryInitTextVisible = true;
 
+    // The loaded secondary texture at its own (clamped) resolution. Kept so it can
+    // be re-fitted to the input size whenever the input picture changes size.
+    private IWriteableBitmap? _secondarySource;
+
     public IWriteableBitmap SecondaryImage
     {
         get => _secondaryImage;
@@ -178,13 +182,11 @@ public class ColorOverrideViewModel : ThrottledViewModelBase
 
     public void LoadSecondaryImage(IWriteableBitmap bitmap)
     {
-        SecondaryImage = PrepareAndResizeImage(bitmap);
-
-        _modificationHelper.PixelsSecondary = ExtractPixels(SecondaryImage);
-        _modificationHelper.SecondaryWidth = SecondaryImage.PixelWidth;
-        _modificationHelper.SecondaryHeight = SecondaryImage.PixelHeight;
-
+        _secondarySource = PrepareSecondarySource(bitmap);
+        SecondaryImage = _secondarySource;
         SecondaryInitTextVisible = false;
+
+        SyncSecondaryToBuffer();
 
         // Loading a secondary implies the user wants to use the effect.
         if (!_isColorOverrideEnabled)
@@ -193,16 +195,44 @@ public class ColorOverrideViewModel : ThrottledViewModelBase
             _ = TriggerRecalculation();
     }
 
-    private IWriteableBitmap PrepareAndResizeImage(IWriteableBitmap bitmap)
+    // Re-fits the loaded secondary texture to the (possibly new) input size and
+    // copies it into the helper buffer. Called by the owning view model after the
+    // input picture — and therefore the buffer set — has changed size.
+    public void OnInputResized()
+    {
+        if (_secondarySource is null)
+            return;
+
+        SyncSecondaryToBuffer();
+        _ = TriggerRecalculation();
+    }
+
+    private void SyncSecondaryToBuffer()
+    {
+        if (_secondarySource is null || !_modificationHelper.IsActive)
+            return;
+
+        int width = _modificationHelper.Width;
+        int height = _modificationHelper.Height;
+
+        var fitted = (_secondarySource.PixelWidth == width && _secondarySource.PixelHeight == height)
+            ? _secondarySource
+            : _bitmapOperations.ResizeScaled(_secondarySource, width, height);
+
+        _modificationHelper.PixelsSecondary = CopyPixelsInto(fitted, _modificationHelper.PixelsSecondary);
+        _modificationHelper.ColorOverrideHasSecondary = true;
+    }
+
+    private IWriteableBitmap PrepareSecondarySource(IWriteableBitmap bitmap)
     {
         var image = bitmap.HasAlpha
             ? _mediaFactory.CloneBitmap(bitmap)
             : _bitmapOperations.ConvertRGB24ToBGRA32(bitmap);
 
-        return Resize(image);
+        return ClampSize(image);
     }
 
-    private IWriteableBitmap Resize(IWriteableBitmap image)
+    private IWriteableBitmap ClampSize(IWriteableBitmap image)
     {
         int width = Math.Clamp(image.PixelWidth, MIN_SIZE, MAX_SIZE);
         int height = Math.Clamp(image.PixelHeight, MIN_SIZE, MAX_SIZE);
@@ -213,15 +243,23 @@ public class ColorOverrideViewModel : ThrottledViewModelBase
         return _bitmapOperations.ResizeScaled(image, width, height);
     }
 
-    private static byte[] ExtractPixels(IWriteableBitmap image)
+    // Copies the image pixels into the helper's reusable secondary buffer, reusing
+    // it in place when the size already matches.
+    private static byte[] CopyPixelsInto(IWriteableBitmap image, byte[] target)
     {
-        var pixels = new byte[image.PixelWidth * image.PixelHeight * BPP];
-        image.CopyPixels(pixels, image.PixelWidth * BPP, 0);
-        return pixels;
+        int stride = image.PixelWidth * BPP;
+        int needed = stride * image.PixelHeight;
+
+        if (target.Length != needed)
+            target = new byte[needed];
+
+        image.CopyPixels(target, stride, 0);
+        return target;
     }
 
     public void ResetState()
     {
+        _secondarySource = null;
         _secondaryImage = _mediaFactory.CreateEmptyBitmap(64, 64, true);
         OnPropertyChanged(nameof(SecondaryImage));
 

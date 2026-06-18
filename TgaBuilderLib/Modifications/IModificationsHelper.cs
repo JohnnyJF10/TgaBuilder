@@ -9,8 +9,10 @@ namespace TgaBuilderLib.Modifications
         // Dimensions
         // =====================================================================
 
-        int Width { get; set; }
-        int Height { get; set; }
+        bool IsActive { get; }
+
+        int Width { get; }
+        int Height { get; }
 
         // =====================================================================
         // Buffers
@@ -22,9 +24,7 @@ namespace TgaBuilderLib.Modifications
 
         byte[] PixelsSecondary { get; set; }
 
-        int SecondaryWidth { get; set; }
-
-        int SecondaryHeight { get; set; }
+        bool ColorOverrideHasSecondary { get; set; }
 
         // =====================================================================
         // Basic adjustments
@@ -72,6 +72,8 @@ namespace TgaBuilderLib.Modifications
         // =====================================================================
         // Methods
         // =====================================================================
+
+        void EnsureBuffers(int width, int height);
 
         void Apply();
 

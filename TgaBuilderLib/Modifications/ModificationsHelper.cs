@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
@@ -62,21 +63,48 @@ namespace TgaBuilderLib.Modifications
         // Dimensions
         // =====================================================================
 
-        public int Width { get; set; } = 64;
-        public int Height { get; set; } = 64;
+        public int Width { get; private set; } = -1;
+        public int Height { get; private set; } = -1;
+
+        public bool IsActive => Width > 0 && Height > 0;
 
         // =====================================================================
         // Buffers
+        //
+        // The public image buffers (input texture, secondary colour-override
+        // texture and result) and the private scratch buffers below are all
+        // provisioned together by EnsureBuffers when the modifications view opens
+        // or the input picture size changes, reused across recalcs, and released
+        // in CleanUp — mirroring the transition helper.
         // =====================================================================
 
-        public byte[] PixelsInput {get; set;} = new byte[64 * 64 * BPP];
-        public byte[] PixelsOutput { get; set;} = new byte[64 * 64 * BPP];
+        public byte[] PixelsInput { get; set; } = Array.Empty<byte>();
+        public byte[] PixelsOutput { get; set; } = Array.Empty<byte>();
 
-        // Secondary input texture used by the Color Override stage. Stored at
-        // its own resolution; sampled with normalised coordinates at apply time.
+        // Secondary input texture (Color Override). Resized to the input size so
+        // it shares the input dimensions and is sampled 1:1.
         public byte[] PixelsSecondary { get; set; } = Array.Empty<byte>();
-        public int SecondaryWidth { get; set; } = 0;
-        public int SecondaryHeight { get; set; } = 0;
+
+        // True once the user has loaded a secondary texture for the Color Override.
+        public bool ColorOverrideHasSecondary { get; set; }
+
+        // Color Override scratch: the secondary OKLab chroma fields (a, b), a blur
+        // scratch channel and a prefix-sum row/column accumulator.
+        private float[] _coSecA = Array.Empty<float>();
+        private float[] _coSecB = Array.Empty<float>();
+        private float[] _coScratch = Array.Empty<float>();
+        private float[] _coPrefix = Array.Empty<float>();
+
+        // Texture Retrofier scratch: packed-RGB per-pixel keys (sorted into a
+        // histogram), the distinct colours and their counts, the median-cut
+        // order, the distinct-to-palette map and the resulting palette.
+        private int[] _retroKeys = Array.Empty<int>();
+        private int[] _retroDistinct = Array.Empty<int>();
+        private int[] _retroCounts = Array.Empty<int>();
+        private int[] _retroOrder = Array.Empty<int>();
+        private int[] _retroDistinctToPalette = Array.Empty<int>();
+        private readonly int[] _retroPalette = new int[RETRO_MAX_COLORS];
+        private readonly List<(int Start, int Count)> _retroBoxes = new();
 
 
         // =====================================================================
@@ -162,11 +190,13 @@ namespace TgaBuilderLib.Modifications
 
         public void Apply()
         {
-            int count = PixelsInput.Length;
+            // Buffers are provisioned by EnsureBuffers; nothing to do until then.
+            if (!IsActive
+                || PixelsInput.Length == 0
+                || PixelsOutput.Length != PixelsInput.Length)
+                return;
 
-            PixelsOutput = new byte[count];
-
-            Array.Copy(PixelsInput, PixelsOutput, count);
+            Array.Copy(PixelsInput, 0, PixelsOutput, 0, PixelsInput.Length);
 
             ApplyExposure(PixelsOutput);
             ApplyBrightnessContrast(PixelsOutput);
@@ -180,11 +210,7 @@ namespace TgaBuilderLib.Modifications
 
         public void CleanUp()
         {
-            Width = 64;
-            Height = 64;
-
-            PixelsInput = new byte[64 * 64 * BPP];
-            PixelsOutput = new byte[64 * 64 * BPP];
+            ReleaseBuffers();
 
             Exposure = EXPOSURE_INIT;
             Brightness = BRIGHTNESS_INIT;
@@ -207,10 +233,6 @@ namespace TgaBuilderLib.Modifications
             ColorOverlayLumaPreservation = COLOR_OVERLAY_LUMA_PRESERVATION_INIT;
             ColorOverlayChromaBoost = COLOR_OVERLAY_CHROMA_BOOST_INIT;
 
-            PixelsSecondary = Array.Empty<byte>();
-            SecondaryWidth = 0;
-            SecondaryHeight = 0;
-
             ColorOverrideEnabled = COLOR_OVERRIDE_ENABLED_INIT;
             ColorOverrideAmount = COLOR_OVERRIDE_AMOUNT_INIT;
             ColorOverrideDecolorize = COLOR_OVERRIDE_DECOLORIZE_INIT;
@@ -224,11 +246,6 @@ namespace TgaBuilderLib.Modifications
             RetroDitherMode = RETRO_DITHER_MODE_INIT;
             RetroDitherStrength = RETRO_DITHER_STRENGTH_INIT;
             RetroDitherCellSize = RETRO_DITHER_CELL_SIZE_INIT;
-
-            _coSecA = null;
-            _coSecB = null;
-            _coScratch = null;
-            _coPrefix = null;
         }
     }
 }

@@ -36,7 +36,7 @@ public class ModificationsViewModel : ViewModelBase
         ModificationInVM = BasicVM.ModificationInVM;
         ModificationOutVM = ModificationInVM.ModificationOutVM;
 
-        ModificationInVM.LoadImageIn(_mainViewModel.Selection.Presenter);
+        LoadInput();
     }
 
     // =====================================================================
@@ -74,10 +74,19 @@ public class ModificationsViewModel : ViewModelBase
     private RelayCommand<IView>? _oKCommand;
 
     public ICommand LoadImageInCommand => _loadImageInCommand
-        ??= new RelayCommand(() => ModificationInVM.LoadImageIn(_mainViewModel.Selection.Presenter));
+        ??= new RelayCommand(LoadInput);
 
     public ICommand LoadSecondaryImageCommand => _loadSecondaryImageCommand
         ??= new RelayCommand(() => ColorOverrideVM.LoadSecondaryImage(_mainViewModel.Selection.Presenter));
+
+    // Loads the input texture from the current selection (provisioning the helper
+    // buffers for its size) and re-fits the secondary colour-override texture to
+    // the new buffer size.
+    private void LoadInput()
+    {
+        ModificationInVM.LoadImageIn(_mainViewModel.Selection.Presenter);
+        ColorOverrideVM.OnInputResized();
+    }
 
     public ICommand ApplyCommand => _applyCommand ??= new RelayCommand(Apply);
     public ICommand CancelCommand => _cancelCommand ??= new RelayCommand<IView>(Cancel);

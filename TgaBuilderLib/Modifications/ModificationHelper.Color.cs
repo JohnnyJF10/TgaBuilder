@@ -17,7 +17,7 @@ public partial class ModificationsHelper
             float b = pixels[i + 0] / 255f;
             float g = pixels[i + 1] / 255f;
             float r = pixels[i + 2] / 255f;
-            RgbToHsl(r, g, b, out float h, out float s, out float l);
+            var (h, s, l) = RgbToHsl((r, g, b));
             // Hue shift
             h = (h + hueDelta + 1f) % 1f;
             // Saturation (simple additive)
@@ -25,7 +25,7 @@ public partial class ModificationsHelper
             // Vibrance: boosts low-saturation colors more than high-saturation
             float vibranceEffect = Vibrance * (1f - s);
             s = Math.Clamp(s + vibranceEffect, 0f, 1f);
-            HslToRgb(h, s, l, out float nr, out float ng, out float nb);
+            var (nr, ng, nb) = HslToRgb((h, s, l));
             pixels[i + 0] = Clamp01(nb);
             pixels[i + 1] = Clamp01(ng);
             pixels[i + 2] = Clamp01(nr);
@@ -62,20 +62,17 @@ public partial class ModificationsHelper
     // =====================================================================
     // HSL helpers
     // =====================================================================
-    private static void RgbToHsl(float r, float g, float b,
-        out float h, out float s, out float l)
+    private static (float H, float S, float L) RgbToHsl((float R, float G, float B) c)
     {
+        float r = c.R, g = c.G, b = c.B;
         float max = Math.Max(r, Math.Max(g, b));
         float min = Math.Min(r, Math.Min(g, b));
         float delta = max - min;
-        l = (max + min) * 0.5f;
+        float l = (max + min) * 0.5f;
         if (delta < 0.00001f)
-        {
-            h = 0f;
-            s = 0f;
-            return;
-        }
-        s = delta / (1f - Math.Abs(2f * l - 1f));
+            return (0f, 0f, l);
+        float s = delta / (1f - Math.Abs(2f * l - 1f));
+        float h;
         if (max == r)
             h = ((g - b) / delta % 6f) / 6f;
         else if (max == g)
@@ -83,26 +80,25 @@ public partial class ModificationsHelper
         else
             h = ((r - g) / delta + 4f) / 6f;
         if (h < 0f) h += 1f;
+        return (h, s, l);
     }
-    private static void HslToRgb(float h, float s, float l,
-        out float r, out float g, out float b)
+    private static (float R, float G, float B) HslToRgb((float H, float S, float L) c)
     {
-        float c = (1f - Math.Abs(2f * l - 1f)) * s;
-        float x = c * (1f - Math.Abs(h * 6f % 2f - 1f));
-        float m = l - c * 0.5f;
+        float h = c.H, s = c.S, l = c.L;
+        float chroma = (1f - Math.Abs(2f * l - 1f)) * s;
+        float x = chroma * (1f - Math.Abs(h * 6f % 2f - 1f));
+        float m = l - chroma * 0.5f;
         float r1, g1, b1;
         int seg = (int)(h * 6f) % 6;
         switch (seg)
         {
-            case 0: r1 = c; g1 = x; b1 = 0; break;
-            case 1: r1 = x; g1 = c; b1 = 0; break;
-            case 2: r1 = 0; g1 = c; b1 = x; break;
-            case 3: r1 = 0; g1 = x; b1 = c; break;
-            case 4: r1 = x; g1 = 0; b1 = c; break;
-            default: r1 = c; g1 = 0; b1 = x; break;
+            case 0: r1 = chroma; g1 = x; b1 = 0; break;
+            case 1: r1 = x; g1 = chroma; b1 = 0; break;
+            case 2: r1 = 0; g1 = chroma; b1 = x; break;
+            case 3: r1 = 0; g1 = x; b1 = chroma; break;
+            case 4: r1 = x; g1 = 0; b1 = chroma; break;
+            default: r1 = chroma; g1 = 0; b1 = x; break;
         }
-        r = r1 + m;
-        g = g1 + m;
-        b = b1 + m;
+        return (r1 + m, g1 + m, b1 + m);
     }
 }
