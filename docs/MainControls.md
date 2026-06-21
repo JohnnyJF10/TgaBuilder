@@ -2,7 +2,7 @@
 
 ## Title Bar
 
-![TitleBar](../Screenshots/TitleBar.png)
+![TitleBar](../pics/TitleBar.png)
 
 ### Source Loading
 
@@ -72,7 +72,7 @@
 
 ## Selection Area
 
-![SelectionArea](../Screenshots/Selection.png)
+![SelectionArea](../pics/Selection.png)
 
 - Click the **Preview Image** to manually switch to Placing Mode on the Destination Panel
 - Buttons to copy entire contents from Source to Destination panels or vice versa
@@ -87,7 +87,7 @@
 
 ## Animation Area
 
-![Animation Area](../Screenshots/Animation.png)
+![Animation Area](../pics/Animation.png)
 
 - Set animation speed
 - Start / stop animation
@@ -97,18 +97,18 @@
 
 ## Import Tab (Source Panel)
 
-![Import Tab](../Screenshots/TabImport.png)
+![Import Tab](../pics/TabImport.png)
 
 From left to right:
 - Import atlas from Classic TR levels  
   _Supports:_ **TR1–TRC, TRLE, TRNG, TEN** (`Ctrl + Q`)
 - Enable remapping for imports (removes padding in TE-built atlases)
 
-![Repacking](../Screenshots/Repacking.png)
+![Repacking](../pics/Repacking.png)
 
 - Set horizontal page count (1, 2, 4, 8, 16 pages)
 
-![PageSizeImport](../Screenshots/PageSizeImport.png)
+![PageSizeImport](../pics/PageSizeImport.png)
 
 - Open Batch Loader (`Ctrl + W`)
 
@@ -121,7 +121,7 @@ From left to right:
 
 ## Batch File Loader
 
-![Batch Loader](../Screenshots/BatchLoader.png)
+![Batch Loader](../pics/BatchLoader.png)
 
 - Import multiple image files from a folder  
   _Supported formats:_ **TGA, DDS, PNG, BMP, JPG, JPEG**
@@ -136,7 +136,7 @@ From left to right:
 
 ## Grid Tab (Source Panel)
 
-![Grid Tab](../Screenshots/TabGrid.png)
+![Grid Tab](../pics/TabGrid.png)
 
 From left to right:
 - Set **X offset**
@@ -151,7 +151,7 @@ From left to right:
 
 This tab allows you to modify the pixel format of the texture panel. TgaBuilder fully supports the opening, modification and writing of both **24-bit** and **32-bit** pixel formats.
 
-![Format Tab](../Screenshots/TabFormat.png)
+![Format Tab](../pics/TabFormat.png)
 
 From left to right:
 - BPP toggle
@@ -166,7 +166,7 @@ The BPP toggle is set automatically depending on the input after loading. You ca
 
 Switching between the two settings will set the pixel values appropriately (e.g. alpha = 0 areas will be converted to magenta areas, and vice versa).
 
-![Format](../Screenshots/Format.png)
+![Format](../pics/Format.png)
 
 > ⚠️ Switching from **BGRA 32 BPP** to **RGB 24 BPP** will set the magenta colour correctly, but since pixels with an alpha value other than **0** or **255** are not supported by RGB 24 BPP, information will be lost, possibly making the switching step irreversible.
 
@@ -174,7 +174,7 @@ Switching between the two settings will set the pixel values appropriately (e.g.
 
 ## View Tab (Source and Destination Panel)
 
-![View Tab](../Screenshots/TabView.png)
+![View Tab](../pics/TabView.png)
 
 From left to right:
 - Fit panel **width** to viewport
@@ -185,7 +185,7 @@ From left to right:
 
 ## Placing Tab (Destination Panel)
 
-![Placing Tab](../Screenshots/TabPlacing.png)
+![Placing Tab](../pics/TabPlacing.png)
 
 From left to right:
 - Enable **Resize to Picker** mode (resize selection to destination picker size)
@@ -193,24 +193,24 @@ From left to right:
 - Enable **Swap and Place** mode (put replaced tile into selection)
 - Enable transparent overlay (do not draw magenta/alpha 0 to destination)
 
-![TransparentOverlay](../Screenshots/OverlayTransparent.png)
+![TransparentOverlay](../pics/OverlayTransparent.png)
 
 - Set **Opacity** for placed tile
 
-![Opacity](../Screenshots/Opacity.png)
+![Opacity](../pics/Opacity.png)
 
 ---
 
 ## Size Tab (Destination Panel)
 
-![Size Tab](../Screenshots/TabSize.png)
+![Size Tab](../pics/TabSize.png)
 
 From left to right:
 - Set destination panel **height** (in pages, max 128 pages)
 - Set destination panel **width** (in pages, possible values: 1, 2, 4, 8, or 16 pages)
 - Enable texture **rearranging during width changes**
 
-![TextureRearranging](../Screenshots/ResizeSorted.png)
+![TextureRearranging](../pics/ResizeSorted.png)
 
 ---
 
@@ -218,7 +218,7 @@ From left to right:
 
 Same functions as in TBuilder.
 
-![Mode Tab](../Screenshots/TabMode.png)
+![Mode Tab](../pics/TabMode.png)
 
 From left to right:
 - Standard tile placing
