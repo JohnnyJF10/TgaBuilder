@@ -311,6 +311,7 @@
                                 MouseEnter="ResultImage_MouseEnter"
                                 MouseLeave="ResultImage_MouseLeave"
                                 MouseDown="ResultImage_MouseDown"
+                                MouseUp="ResultImage_MouseUp"
                                 MouseWheel="ResultImage_MouseWheel"/>
                             <Image
                                 x:Name="IndicatorImage"

@@ -151,6 +151,8 @@ namespace TgaBuilderWpfUi.View
 
             if (e.LeftButton == MouseButtonState.Pressed)
                 tpvm.ManualPointerDragCommand.Execute((X: x, Y: y));
+            else if (tpvm.IsTileRotateMode && ResultImage.IsMouseCaptured)
+                ResultImage.ReleaseMouseCapture();
         }
 
         private void ResultImage_MouseEnter(object sender, MouseEventArgs e)
@@ -177,7 +179,14 @@ namespace TgaBuilderWpfUi.View
                 return;
 
             tpvm.IsIndicatorMapVisible = false;
-            tpvm.EndManipulationCommand.Execute(null);
+
+            if (tpvm.IsTileMoveRotateMode || tpvm.IsTileRotateMode)
+            {
+                if (tpvm.IsTileRotateMode && ResultImage.IsMouseCaptured)
+                    return;
+
+                tpvm.EndManipulationCommand.Execute(null);
+            }
         }
 
         private void ResultImage_MouseDown(object sender, MouseButtonEventArgs e)
@@ -195,6 +204,20 @@ namespace TgaBuilderWpfUi.View
 
             var position = e.GetPosition(ResultImage);
             tpvm.ManualPointerDownCommand.Execute((X: (int)position.X, Y: (int)position.Y));
+
+            if (tpvm.IsTileRotateMode)
+                ResultImage.CaptureMouse();
+        }
+
+        private void ResultImage_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionOutVM;
+
+            if (tpvm.IsTileRotateMode && ResultImage.IsMouseCaptured)
+                ResultImage.ReleaseMouseCapture();
         }
 
         private void ResultImage_MouseWheel(object sender, MouseWheelEventArgs e)

@@ -185,6 +185,8 @@ namespace TgaBuilderAvaloniaUi.View
 
             if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed)
                 tpvm.ManualPointerDragCommand.Execute((X: x, Y: y));
+            else if (tpvm.IsTileRotateMode && e.Pointer.Captured == ResultImage)
+                e.Pointer.Capture(null);
         }
 
         private void ResultImage_PointerEntered(object? sender, PointerEventArgs e)
@@ -211,7 +213,14 @@ namespace TgaBuilderAvaloniaUi.View
                 return;
 
             tpvm.IsIndicatorMapVisible = false;
-            tpvm.EndManipulationCommand.Execute(null);
+
+            if (tpvm.IsTileMoveRotateMode || tpvm.IsTileRotateMode)
+            {
+                if (tpvm.IsTileRotateMode && e.Pointer.Captured == ResultImage)
+                    return;
+
+                tpvm.EndManipulationCommand.Execute(null);
+            }
         }
 
         private void ResultImage_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -229,6 +238,20 @@ namespace TgaBuilderAvaloniaUi.View
 
             var currentPosition = e.GetPosition(ResultImage);
             tpvm.ManualPointerDownCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
+
+            if (tpvm.IsTileRotateMode)
+                e.Pointer.Capture(ResultImage);
+        }
+
+        private void ResultImage_PointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel vm)
+                return;
+
+            var tpvm = vm.TransitionOutVM;
+
+            if (tpvm.IsTileRotateMode && e.Pointer.Captured == ResultImage)
+                e.Pointer.Capture(null);
         }
 
         private void ResultImage_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
