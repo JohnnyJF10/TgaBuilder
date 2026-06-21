@@ -140,14 +140,19 @@ namespace TgaBuilderWpfUi.View
 
             var tpvm = tvm.TransitionOutVM;
 
-            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
+            if (!tpvm.IsAnyManualMode)
                 return;
 
-            if (tpvm.RequestLabelIndicatorCommand is ICommand requestLabelIndicatorCommand)
-                requestLabelIndicatorCommand.Execute((X: (int)e.GetPosition(ResultImage).X, Y: (int)e.GetPosition(ResultImage).Y));
+            var position = e.GetPosition(ResultImage);
+            int x = (int)position.X;
+            int y = (int)position.Y;
 
-            if (e.LeftButton == MouseButtonState.Pressed && tpvm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
-                setExplicitTileVisibilityCommand.Execute((X: (int)e.GetPosition(ResultImage).X, Y: (int)e.GetPosition(ResultImage).Y));
+            tpvm.RequestLabelIndicatorCommand.Execute((X: x, Y: y));
+
+            if (e.LeftButton == MouseButtonState.Pressed)
+                tpvm.ManualPointerDragCommand.Execute((X: x, Y: y));
+            else if (tpvm.IsTileRotateMode && ResultImage.IsMouseCaptured)
+                ResultImage.ReleaseMouseCapture();
         }
 
         private void ResultImage_MouseEnter(object sender, MouseEventArgs e)
@@ -157,7 +162,7 @@ namespace TgaBuilderWpfUi.View
 
             var tpvm = tvm.TransitionOutVM;
 
-            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
+            if (!tpvm.IsAnyManualMode)
                 return;
 
             tpvm.IsIndicatorMapVisible = true;
@@ -170,10 +175,18 @@ namespace TgaBuilderWpfUi.View
 
             var tpvm = tvm.TransitionOutVM;
 
-            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
+            if (!tpvm.IsAnyManualMode)
                 return;
 
             tpvm.IsIndicatorMapVisible = false;
+
+            if (tpvm.IsTileMoveRotateMode || tpvm.IsTileRotateMode)
+            {
+                if (tpvm.IsTileRotateMode && ResultImage.IsMouseCaptured)
+                    return;
+
+                tpvm.EndManipulationCommand.Execute(null);
+            }
         }
 
         private void ResultImage_MouseDown(object sender, MouseButtonEventArgs e)
@@ -183,11 +196,49 @@ namespace TgaBuilderWpfUi.View
 
             var tpvm = tvm.TransitionOutVM;
 
-            if (!tpvm.IsExplicitTileVisibilityDrawMode && !tpvm.IsExplicitTileVisibilityEraseMode)
+            if (!tpvm.IsAnyManualMode)
                 return;
 
-            if (e.LeftButton == MouseButtonState.Pressed && tpvm.SetExplicitTileVisibilityCommand is ICommand setExplicitTileVisibilityCommand)
-                setExplicitTileVisibilityCommand.Execute((X: (int)e.GetPosition(ResultImage).X, Y: (int)e.GetPosition(ResultImage).Y));
+            if (e.LeftButton != MouseButtonState.Pressed)
+                return;
+
+            var position = e.GetPosition(ResultImage);
+            tpvm.ManualPointerDownCommand.Execute((X: (int)position.X, Y: (int)position.Y));
+
+            if (tpvm.IsTileRotateMode)
+                ResultImage.CaptureMouse();
+        }
+
+        private void ResultImage_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionOutVM;
+
+            if (tpvm.IsTileRotateMode && ResultImage.IsMouseCaptured)
+                ResultImage.ReleaseMouseCapture();
+        }
+
+        private void ResultImage_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (DataContext is not TransitionViewModel tvm)
+                return;
+
+            var tpvm = tvm.TransitionOutVM;
+
+            if (!tpvm.IsWheelRotationMode)
+                return;
+
+            int notches = e.Delta > 0 ? 1 : (e.Delta < 0 ? -1 : 0);
+            if (notches == 0)
+                return;
+
+            var position = e.GetPosition(ResultImage);
+            tpvm.RotateActiveTileCommand.Execute((X: (int)position.X, Y: (int)position.Y, Notches: notches));
+
+            // Prevent the wheel from also scrolling/zooming the surrounding UI while rotating.
+            e.Handled = true;
         }
     }
 }

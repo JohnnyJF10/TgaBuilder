@@ -51,6 +51,59 @@ public partial class TransitionHelper
         DrawShadows(bgPixels, selection, _edgeDist, shadowedBg);
 
         DrawResult(tilePixels, selection, _edgeDist, shadowedBg, result);
+
+        // Manually moved/rotated tiles are part of the selection (so they cast shadows and form
+        // the mask correctly), but the base pass above sampled the static tile image at their new
+        // positions, i.e. the wrong content. Repaint their true content from the original source
+        // pixels here, on top of everything, so they overlay any static tiles they now cover.
+        DrawManipulatedTiles(tilePixels, result);
+    }
+
+    // Repaints the user-manipulated tiles over the finished base result. For each destination pixel
+    // the true source color (the tile's original, un-rotated image data) is blended through the
+    // shared BlendSelectedPixel path, so moved/rotated tiles get the same edge tinting (and over the
+    // same shadowed background) as static tiles. Edge proximity uses _edgeDist, which was computed
+    // from the final selection that already includes these footprints. Drawn in list order with the
+    // active tile last, so the tile the user is currently manipulating ends up on top.
+    private void DrawManipulatedTiles(byte[] tilePixels, byte[] result)
+    {
+        if (_manipulatedTiles.Count == 0)
+            return;
+
+        int eA = EdgeColor.A ?? 255;
+        int invA = 255 - eA;
+        int eR = EdgeColor.R;
+        int eG = EdgeColor.G;
+        int eB = EdgeColor.B;
+
+        unsafe
+        {
+            fixed (byte* pTile = tilePixels)
+            fixed (byte* pRes = result)
+            fixed (byte* pShadowBg = _scratchShadowedBg)
+            fixed (int* pEdgeDist = _edgeDist)
+            {
+                foreach (var tile in _manipulatedTiles)
+                {
+                    int[] dst = tile.DstOffsets;
+                    int[] src = tile.SrcOffsets;
+                    for (int i = 0; i < dst.Length; i++)
+                    {
+                        int d = dst[i];
+                        int s = src[i];
+                        int x = d % Width;
+                        int y = d / Width;
+
+                        BlendSelectedPixel(
+                            pRes, d * TRANSITIONS_BPP,
+                            pTile, s * TRANSITIONS_BPP,
+                            pShadowBg, d * TRANSITIONS_BPP,
+                            x, y, pEdgeDist[d],
+                            eA, invA, eR, eG, eB);
+                    }
+                }
+            }
+        }
     }
 
     // Computes, for every pixel, the Chebyshev (L-infinity) distance to the nearest pixel of
@@ -281,112 +334,129 @@ public partial class TransitionHelper
                     for (int x = 0; x < Width; x++)
                     {
                         int pixelIndex = y * Width + x;
+                        if (!selection[pixelIndex])
+                            continue;
+
                         int offset = rowOffset + (x * 4);
 
-                        // 1. Calculate dynamic widths based on proximity to image borders.
-                        int distToBorderX = Math.Min(x, Width - 1 - x);
-                        int distToBorderY = Math.Min(y, Height - 1 - y);
-                        int distToBorder = Math.Min(distToBorderX, distToBorderY);
-
-                        // Dynamic widths drop linearly towards image bounds.
-                        int dynamicEdgeWidth = Math.Min(EdgeWidth, distToBorder);
-                        if (selection[pixelIndex])
-                        {
-                            // Distance to the nearest unselected pixel (precomputed).
-                            int minDist = edgeDist[pixelIndex];
-
-                            // 3. Color the selected tile pixel based on the distance (Edge tint)
-                            if (dynamicEdgeWidth > 0 && minDist <= dynamicEdgeWidth)
-                            {
-                                int weight255 = ((dynamicEdgeWidth - minDist + 1) * 255) / dynamicEdgeWidth;
-                                int invWeight255 = 255 - weight255;
-
-                                // Current channels of the tile pixel
-                                int tB = pTile[offset + 0];
-                                int tG = pTile[offset + 1];
-                                int tR = pTile[offset + 2];
-                                int tA = pTile[offset + 3];
-
-                                int tintedB, tintedG, tintedR;
-
-                                // 1. Application mode for the edge color
-                                switch (BlendMode)
-                                {
-                                    case EdgeBlendMode.Screen: // Multiply negatively
-                                        tintedB = 255 - ((255 - tB) * (255 - eB) / 255);
-                                        tintedG = 255 - ((255 - tG) * (255 - eG) / 255);
-                                        tintedR = 255 - ((255 - tR) * (255 - eR) / 255);
-                                        break;
-
-                                    case EdgeBlendMode.Additive: // Add
-                                        tintedB = Math.Min(255, tB + eB);
-                                        tintedG = Math.Min(255, tG + eG);
-                                        tintedR = Math.Min(255, tR + eR);
-                                        break;
-
-                                    case EdgeBlendMode.Overlay: // Copy into each other
-                                        tintedB = (tB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
-                                        tintedG = (tG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
-                                        tintedR = (tR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
-                                        break;
-
-                                    case EdgeBlendMode.HardLight:
-                                        tintedB = (eB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
-                                        tintedG = (eG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
-                                        tintedR = (eR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
-                                        break;
-
-                                    case EdgeBlendMode.SoftLight:
-                                        tintedB = SoftLightChannel(tB, eB);
-                                        tintedG = SoftLightChannel(tG, eG);
-                                        tintedR = SoftLightChannel(tR, eR);
-                                        break;
-
-                                    case EdgeBlendMode.ColorDodge:
-                                        tintedB = eB == 255 ? 255 : Math.Min(255, (tB * 255) / (255 - eB));
-                                        tintedG = eG == 255 ? 255 : Math.Min(255, (tG * 255) / (255 - eG));
-                                        tintedR = eR == 255 ? 255 : Math.Min(255, (tR * 255) / (255 - eR));
-                                        break;
-
-                                    case EdgeBlendMode.ColorBurn:
-                                        tintedB = eB == 0 ? 0 : Math.Max(0, 255 - ((255 - tB) * 255) / eB);
-                                        tintedG = eG == 0 ? 0 : Math.Max(0, 255 - ((255 - tG) * 255) / eG);
-                                        tintedR = eR == 0 ? 0 : Math.Max(0, 255 - ((255 - tR) * 255) / eR);
-                                        break;
-
-                                    case EdgeBlendMode.Multiply: // Standard: Multiply
-                                    default:
-                                        tintedB = (tB * eB) / 255;
-                                        tintedG = (tG * eG) / 255;
-                                        tintedR = (tR * eR) / 255;
-                                        break;
-                                }
-
-                                // 2. Background influence
-                                // How strongly does the edge color influence the original background?
-                                int maxEdgeB = (tintedB * eA + pShadowBg[offset + 0] * invA) / 255;
-                                int maxEdgeG = (tintedG * eA + pShadowBg[offset + 1] * invA) / 255;
-                                int maxEdgeR = (tintedR * eA + pShadowBg[offset + 2] * invA) / 255;
-                                int maxEdgeAlpha = (tA * eA + pShadowBg[offset + 3] * invA) / 255;
-
-                                // 3. Final gradient blending based on distance to edge
-                                pRes[offset + 0] = (byte)((maxEdgeB * weight255 + tB * invWeight255) / 255);
-                                pRes[offset + 1] = (byte)((maxEdgeG * weight255 + tG * invWeight255) / 255);
-                                pRes[offset + 2] = (byte)((maxEdgeR * weight255 + tR * invWeight255) / 255);
-                                pRes[offset + 3] = (byte)((maxEdgeAlpha * weight255 + tA * invWeight255) / 255);
-                            }
-                            else
-                            {
-                                // Inner pixels or absolute image border pixels: copy original tile.
-                                pRes[offset + 0] = pTile[offset + 0];
-                                pRes[offset + 1] = pTile[offset + 1];
-                                pRes[offset + 2] = pTile[offset + 2];
-                                pRes[offset + 3] = pTile[offset + 3];
-                            }
-                        }
+                        // Selected tile pixel: copy the tile color, tinting it toward EdgeColor near
+                        // the selection boundary. Shared with the manipulated-tile overlay pass so
+                        // both static and moved/rotated tiles get identical edge tinting.
+                        BlendSelectedPixel(
+                            pRes, offset,
+                            pTile, offset,
+                            pShadowBg, offset,
+                            x, y, edgeDist[pixelIndex],
+                            eA, invA, eR, eG, eB);
                     }
                 }
             }
+        }
+    }
+
+    // Writes one selected tile pixel into the result: the tile color, blended toward EdgeColor
+    // (per BlendMode and EdgeWidth) as it approaches the selection boundary, over the shadowed
+    // background. Factored out of DrawResult so the manipulated-tile overlay reuses the exact same
+    // edge tinting. AggressiveInlining keeps DrawResult's per-pixel hot loop allocation/call-free.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private unsafe void BlendSelectedPixel(
+        byte* pRes, int resOffset,
+        byte* pTile, int tileOffset,
+        byte* pShadowBg, int shadowOffset,
+        int x, int y, int minDist,
+        int eA, int invA, int eR, int eG, int eB)
+    {
+        // Dynamic edge width drops linearly towards the image bounds.
+        int distToBorderX = Math.Min(x, Width - 1 - x);
+        int distToBorderY = Math.Min(y, Height - 1 - y);
+        int distToBorder = Math.Min(distToBorderX, distToBorderY);
+        int dynamicEdgeWidth = Math.Min(EdgeWidth, distToBorder);
+
+        if (dynamicEdgeWidth > 0 && minDist <= dynamicEdgeWidth)
+        {
+            int weight255 = ((dynamicEdgeWidth - minDist + 1) * 255) / dynamicEdgeWidth;
+            int invWeight255 = 255 - weight255;
+
+            // Current channels of the tile pixel
+            int tB = pTile[tileOffset + 0];
+            int tG = pTile[tileOffset + 1];
+            int tR = pTile[tileOffset + 2];
+            int tA = pTile[tileOffset + 3];
+
+            int tintedB, tintedG, tintedR;
+
+            // 1. Application mode for the edge color
+            switch (BlendMode)
+            {
+                case EdgeBlendMode.Screen: // Multiply negatively
+                    tintedB = 255 - ((255 - tB) * (255 - eB) / 255);
+                    tintedG = 255 - ((255 - tG) * (255 - eG) / 255);
+                    tintedR = 255 - ((255 - tR) * (255 - eR) / 255);
+                    break;
+
+                case EdgeBlendMode.Additive: // Add
+                    tintedB = Math.Min(255, tB + eB);
+                    tintedG = Math.Min(255, tG + eG);
+                    tintedR = Math.Min(255, tR + eR);
+                    break;
+
+                case EdgeBlendMode.Overlay: // Copy into each other
+                    tintedB = (tB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
+                    tintedG = (tG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
+                    tintedR = (tR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
+                    break;
+
+                case EdgeBlendMode.HardLight:
+                    tintedB = (eB < 128) ? (2 * tB * eB / 255) : (255 - 2 * (255 - tB) * (255 - eB) / 255);
+                    tintedG = (eG < 128) ? (2 * tG * eG / 255) : (255 - 2 * (255 - tG) * (255 - eG) / 255);
+                    tintedR = (eR < 128) ? (2 * tR * eR / 255) : (255 - 2 * (255 - tR) * (255 - eR) / 255);
+                    break;
+
+                case EdgeBlendMode.SoftLight:
+                    tintedB = SoftLightChannel(tB, eB);
+                    tintedG = SoftLightChannel(tG, eG);
+                    tintedR = SoftLightChannel(tR, eR);
+                    break;
+
+                case EdgeBlendMode.ColorDodge:
+                    tintedB = eB == 255 ? 255 : Math.Min(255, (tB * 255) / (255 - eB));
+                    tintedG = eG == 255 ? 255 : Math.Min(255, (tG * 255) / (255 - eG));
+                    tintedR = eR == 255 ? 255 : Math.Min(255, (tR * 255) / (255 - eR));
+                    break;
+
+                case EdgeBlendMode.ColorBurn:
+                    tintedB = eB == 0 ? 0 : Math.Max(0, 255 - ((255 - tB) * 255) / eB);
+                    tintedG = eG == 0 ? 0 : Math.Max(0, 255 - ((255 - tG) * 255) / eG);
+                    tintedR = eR == 0 ? 0 : Math.Max(0, 255 - ((255 - tR) * 255) / eR);
+                    break;
+
+                case EdgeBlendMode.Multiply: // Standard: Multiply
+                default:
+                    tintedB = (tB * eB) / 255;
+                    tintedG = (tG * eG) / 255;
+                    tintedR = (tR * eR) / 255;
+                    break;
+            }
+
+            // 2. Background influence: how strongly the edge color influences the background.
+            int maxEdgeB = (tintedB * eA + pShadowBg[shadowOffset + 0] * invA) / 255;
+            int maxEdgeG = (tintedG * eA + pShadowBg[shadowOffset + 1] * invA) / 255;
+            int maxEdgeR = (tintedR * eA + pShadowBg[shadowOffset + 2] * invA) / 255;
+            int maxEdgeAlpha = (tA * eA + pShadowBg[shadowOffset + 3] * invA) / 255;
+
+            // 3. Final gradient blending based on distance to edge
+            pRes[resOffset + 0] = (byte)((maxEdgeB * weight255 + tB * invWeight255) / 255);
+            pRes[resOffset + 1] = (byte)((maxEdgeG * weight255 + tG * invWeight255) / 255);
+            pRes[resOffset + 2] = (byte)((maxEdgeR * weight255 + tR * invWeight255) / 255);
+            pRes[resOffset + 3] = (byte)((maxEdgeAlpha * weight255 + tA * invWeight255) / 255);
+        }
+        else
+        {
+            // Inner pixels or absolute image border pixels: copy original tile.
+            pRes[resOffset + 0] = pTile[tileOffset + 0];
+            pRes[resOffset + 1] = pTile[tileOffset + 1];
+            pRes[resOffset + 2] = pTile[tileOffset + 2];
+            pRes[resOffset + 3] = pTile[tileOffset + 3];
         }
     }
 

@@ -210,7 +210,9 @@
                                 PointerMoved="ResultImage_PointerMoved"
                                 PointerEntered="ResultImage_PointerEntered"
                                 PointerExited="ResultImage_PointerExited"
-                                PointerPressed="ResultImage_PointerPressed" />
+                                PointerPressed="ResultImage_PointerPressed"
+                                PointerReleased="ResultImage_PointerReleased"
+                                PointerWheelChanged="ResultImage_PointerWheelChanged" />
                             <Image
                                 x:Name="IndicatorImage"
                                 RenderOptions.BitmapInterpolationMode="None"

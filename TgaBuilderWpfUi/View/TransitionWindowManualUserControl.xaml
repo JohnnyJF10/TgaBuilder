@@ -19,35 +19,52 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <StackPanel
+    <WrapPanel
             DataContext="{Binding TransitionOutVM}"
                                 Orientation="Horizontal"
                                 Margin="8,6,8,8">
         <elements:ToggleButtonEx
+                                    Margin="0,0,8,8"
                                     VerticalAlignment="Center"
-                                    ap:MouseOverInfoAP.InfoText="Reverse the pivot direction"
+                                    ap:MouseOverInfoAP.InfoText="Enable manual drawing of visible tiles. The mouse wheel rotates the last tile set visible."
                                     Icon="{ui:SymbolIcon Pen24}"
                                     MinHeight="36"
                                     MinWidth="36"
                                     IsChecked="{Binding IsExplicitTileVisibilityDrawMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <elements:ToggleButtonEx
-                                    Margin="8,0,0,0"
+                                    Margin="0,0,8,8"
                                     x:Name="ProtectEdgesToggleButton"
                                     VerticalAlignment="Center"
                                     MinHeight="36"
                                     MinWidth="36"
                                     Icon="{ui:SymbolIcon Eraser24}"
-                                    ap:MouseOverInfoAP.InfoText="Protect Edges: Enabling ensures that tile texture bordering edges contains tiles and background bordering edges do not contain tiles."
+                                    ap:MouseOverInfoAP.InfoText="Enable manual erasing of visible tiles. Erasing a moved/rotated tile restores its original position and rotation."
                                     IsChecked="{Binding IsExplicitTileVisibilityEraseMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <elements:ToggleButtonEx
+                                    Margin="0,0,8,8"
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Icon="{ui:SymbolIcon ArrowMove24}"
+                                    ap:MouseOverInfoAP.InfoText="Move tiles by dragging and rotate them with the mouse wheel"
+                                    IsChecked="{Binding IsTileMoveRotateMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <elements:ToggleButtonEx
+                                    Margin="0,0,8,8"
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Icon="{ui:SymbolIcon ArrowRotateCounterclockwise24}"
+                                    ap:MouseOverInfoAP.InfoText="Rotate a tile: click it and drag to spin it; the mouse wheel fine-tunes the last rotated tile"
+                                    IsChecked="{Binding IsTileRotateMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <ui:Button
                                     VerticalAlignment="Center"
                                     MinHeight="36"
                                     MinWidth="36"
-                                    Margin="8,0,0,0"
+                                    Margin="0,0,8,8"
                                     Icon="{ui:SymbolIcon Backspace24}"
-                                    ap:MouseOverInfoAP.InfoText="Reset Explicit Visibility"
+                                    ap:MouseOverInfoAP.InfoText="Reset all manual adjustments (visibility, moves and rotations)"
                                     Command="{Binding ResetExplicitVisibilityCommand}" />
 
 
-    </StackPanel>
+    </WrapPanel>
 </UserControl>
