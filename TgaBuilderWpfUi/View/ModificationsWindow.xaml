@@ -17,8 +17,8 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     Title="Single Texture Modifications"
-    Width="470"
-    Height="300"
+    Width="640"
+    Height="320"
     MinWidth="450"
     MinHeight="300"
     d:Background="Black"
@@ -36,6 +36,8 @@
                     Source="/Styles/CheckerBrush.xaml" />
                 <ResourceDictionary
                     Source="/Styles/MouseWheelSliderStyle.xaml" />
+                <ResourceDictionary
+                    Source="/Styles/ToggleButtonExStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter
@@ -106,6 +108,7 @@
 
         <!-- ========================================================================= -->
         <!-- LEFT PANE: IMAGE PREVIEWS                                                 -->
+        <!-- Layout grows to Input -> Secondary -> Result when Color Override is on.  -->
         <!-- ========================================================================= -->
         <Grid
             Grid.Row="2"
@@ -116,6 +119,36 @@
                     Width="*" />
                 <ColumnDefinition
                     Width="35" />
+                <!-- Secondary input column (collapses when Color Override is off) -->
+                <ColumnDefinition>
+                    <ColumnDefinition.Style>
+                        <Style TargetType="ColumnDefinition">
+                            <Setter Property="Width" Value="0" />
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsChecked, ElementName=ColorOverrideToggle}"
+                                    Value="True">
+                                    <Setter Property="Width" Value="*" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ColumnDefinition.Style>
+                </ColumnDefinition>
+                <!-- Second arrow column (collapses when Color Override is off) -->
+                <ColumnDefinition>
+                    <ColumnDefinition.Style>
+                        <Style TargetType="ColumnDefinition">
+                            <Setter Property="Width" Value="0" />
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsChecked, ElementName=ColorOverrideToggle}"
+                                    Value="True">
+                                    <Setter Property="Width" Value="35" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ColumnDefinition.Style>
+                </ColumnDefinition>
                 <ColumnDefinition
                     Width="*" />
             </Grid.ColumnDefinitions>
@@ -166,11 +199,57 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center" />
 
+            <!-- Secondary Input Image (Color Override source) -->
+            <Border
+                DataContext="{Binding ColorOverrideVM}"
+                Grid.Row="0"
+                Grid.Column="2"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Visibility="{Binding IsChecked, ElementName=ColorOverrideToggle, Converter={StaticResource BoolToVisibilityConverter}}"
+                Background="Transparent">
+                <Grid>
+                    <Viewbox
+                        Stretch="Uniform"
+                        Margin="10"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor">
+                        <Grid
+                            Width="{Binding SecondaryImage.PixelWidth, FallbackValue=128}"
+                            Height="{Binding SecondaryImage.PixelHeight, FallbackValue=128}">
+                            <Rectangle
+                                Fill="{StaticResource CheckerBrush}" />
+                            <Image
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                Source="{Binding SecondaryImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Fill" />
+                        </Grid>
+                    </Viewbox>
+                    <TextBlock
+                        Text="Secondary"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        d:Foreground="White"
+                        FontSize="16"
+                        Visibility="{Binding SecondaryInitTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                        IsHitTestVisible="False" />
+                </Grid>
+            </Border>
+
+            <!-- Second arrow indicator (Secondary -> Result) -->
+            <ui:SymbolIcon
+                Grid.Row="0"
+                Grid.Column="3"
+                Symbol="ArrowRight24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Visibility="{Binding IsChecked, ElementName=ColorOverrideToggle, Converter={StaticResource BoolToVisibilityConverter}}" />
+
             <!-- Result Image -->
             <Border
                 DataContext="{Binding ModificationOutVM}"
                 Grid.Row="0"
-                Grid.Column="2"
+                Grid.Column="4"
                 Margin="10"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -193,6 +272,20 @@
                 Margin="10,5"
                 ap:MouseOverInfoAP.InfoText="Copy input image from the current selection"
                 Command="{Binding LoadImageInCommand}" />
+
+            <!-- Copy from Selection button (bottom of secondary image) -->
+            <ui:Button
+                Grid.Row="1"
+                Grid.Column="2"
+                Icon="{ui:SymbolIcon ImageCopy24}"
+                Width="36"
+                Height="36"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="10,5"
+                Visibility="{Binding IsChecked, ElementName=ColorOverrideToggle, Converter={StaticResource BoolToVisibilityConverter}}"
+                ap:MouseOverInfoAP.InfoText="Copy the secondary colour-source image from the current selection"
+                Command="{Binding LoadSecondaryImageCommand}" />
 
         </Grid>
 
@@ -252,6 +345,49 @@
                     HorizontalAlignment="Stretch"
                     Margin="0,8,0,0">
                     <local:ModificationsWindowColorOverlayUserControl />
+                </Expander>
+
+                <!-- ============================================================= -->
+                <!-- Expander: Color Override                                       -->
+                <!-- ============================================================= -->
+                <Expander
+                    DataContext="{Binding ColorOverrideVM}"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0">
+                    <Expander.Header>
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <TextBlock
+                                Text="Color Override"
+                                VerticalAlignment="Center"
+                                d:Foreground="White"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <!-- Toggle: enable the override and reveal the secondary image -->
+                            <elements:ToggleButtonEx
+                                x:Name="ColorOverrideToggle"
+                                ap:MouseOverInfoAP.InfoText="Enable colour override and show the secondary colour-source texture"
+                                IsChecked="{Binding IsColorOverrideEnabled}"
+                                Icon="{ui:SymbolIcon PaintBrush24}"
+                                Width="30"
+                                Height="30"
+                                Margin="10,-10,0,-10"
+                                Padding="0" />
+                        </StackPanel>
+                    </Expander.Header>
+                    <local:ModificationsWindowColorOverrideUserControl />
+                </Expander>
+
+                <!-- ============================================================= -->
+                <!-- Expander: Texture Retrofier                                    -->
+                <!-- ============================================================= -->
+                <Expander
+                    DataContext="{Binding RetrofierVM}"
+                    Header="Texture Retrofier"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0">
+                    <local:ModificationsWindowRetrofierUserControl />
                 </Expander>
 
             </StackPanel>

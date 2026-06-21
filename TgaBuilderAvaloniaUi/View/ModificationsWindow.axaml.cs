@@ -11,11 +11,15 @@ namespace TgaBuilderAvaloniaUi.View
 {
     public partial class ModificationsWindow : AsyncWindow
     {
+        private ColumnDefinition? _secondaryColumn;
+        private ColumnDefinition? _secondaryArrowColumn;
+
         public ModificationsWindow(INotifyPropertyChanged viewModel)
         {
             InitializeComponent();
             base.DataContext = viewModel;
             InitializeVisualInvalidator(viewModel);
+            SubscribeToColorOverrideEnabled(viewModel);
         }
 
         [Obsolete("For designer use only")]
@@ -35,6 +39,42 @@ namespace TgaBuilderAvaloniaUi.View
             return;
 
             vm.ModificationOutVM.VisualInvalidator = new VisualInvalidator(ResultImage);
+        }
+
+        private void SubscribeToColorOverrideEnabled(INotifyPropertyChanged viewModel)
+        {
+            if (viewModel is not ModificationsViewModel vm)
+                return;
+
+            vm.ColorOverrideVM.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(vm.ColorOverrideVM.IsColorOverrideEnabled))
+                    UpdateSecondaryColumnWidths();
+            };
+
+            UpdateSecondaryColumnWidths();
+        }
+
+        private void UpdateSecondaryColumnWidths()
+        {
+            if (_secondaryColumn is null || _secondaryArrowColumn is null)
+            {
+                var grid = this.FindControl<Grid>("ImageAreaGrid");
+                if (grid is not null && grid.ColumnDefinitions.Count > 4)
+                {
+                    _secondaryColumn = grid.ColumnDefinitions[2];
+                    _secondaryArrowColumn = grid.ColumnDefinitions[3];
+                }
+            }
+
+            if (_secondaryColumn is null || _secondaryArrowColumn is null
+                || DataContext is not ModificationsViewModel vm)
+                return;
+
+            bool enabled = vm.ColorOverrideVM.IsColorOverrideEnabled;
+
+            _secondaryColumn.Width = enabled ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+            _secondaryArrowColumn.Width = enabled ? new GridLength(35) : new GridLength(0);
         }
 
         protected override void OnClosing(Avalonia.Controls.WindowClosingEventArgs e)

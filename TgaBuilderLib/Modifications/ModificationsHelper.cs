@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
@@ -39,19 +40,71 @@ namespace TgaBuilderLib.Modifications
         private const float COLOR_OVERLAY_LUMA_PRESERVATION_INIT = 1f;
         private const float COLOR_OVERLAY_CHROMA_BOOST_INIT = 1f;
 
+        private const bool COLOR_OVERRIDE_ENABLED_INIT = false;
+        private const float COLOR_OVERRIDE_AMOUNT_INIT = 1f;
+        private const float COLOR_OVERRIDE_DECOLORIZE_INIT = 1f;
+        private const float COLOR_OVERRIDE_TRANSFER_INIT = 1f;
+        private const int COLOR_OVERRIDE_SMOOTHING_INIT = 0;
+        private const int COLOR_OVERRIDE_SMOOTHING_MAX = 32;
+        private const float COLOR_OVERRIDE_CHROMA_RESTORE_INIT = 1f;
+
+        private const RetroQuantizationLevel RETRO_QUANTIZATION_INIT = RetroQuantizationLevel.None;
+        private const bool RETRO_PALETTE_LIMIT_ENABLED_INIT = false;
+        private const int RETRO_MAX_COLORS_INIT = 16;
+        private const int RETRO_MIN_COLORS = 2;
+        private const int RETRO_MAX_COLORS = 256;
+        private const RetroDitherMode RETRO_DITHER_MODE_INIT = RetroDitherMode.None;
+        private const float RETRO_DITHER_STRENGTH_INIT = 1f;
+        private const int RETRO_DITHER_CELL_SIZE_INIT = 1;
+        private const int RETRO_DITHER_CELL_SIZE_MAX = 8;
+        private const float RETRO_DITHER_FREE_AMPLITUDE = 32f;
+
         // =====================================================================
         // Dimensions
         // =====================================================================
 
-        public int Width { get; set; } = 64;
-        public int Height { get; set; } = 64;
+        public int Width { get; private set; } = -1;
+        public int Height { get; private set; } = -1;
+
+        public bool IsActive => Width > 0 && Height > 0;
 
         // =====================================================================
         // Buffers
+        //
+        // The public image buffers (input texture, secondary colour-override
+        // texture and result) and the private scratch buffers below are all
+        // provisioned together by EnsureBuffers when the modifications view opens
+        // or the input picture size changes, reused across recalcs, and released
+        // in CleanUp — mirroring the transition helper.
         // =====================================================================
 
-        public byte[] PixelsInput {get; set;} = new byte[64 * 64 * BPP];
-        public byte[] PixelsOutput { get; set;} = new byte[64 * 64 * BPP];
+        public byte[] PixelsInput { get; set; } = Array.Empty<byte>();
+        public byte[] PixelsOutput { get; set; } = Array.Empty<byte>();
+
+        // Secondary input texture (Color Override). Resized to the input size so
+        // it shares the input dimensions and is sampled 1:1.
+        public byte[] PixelsSecondary { get; set; } = Array.Empty<byte>();
+
+        // True once the user has loaded a secondary texture for the Color Override.
+        public bool ColorOverrideHasSecondary { get; set; }
+
+        // Color Override scratch: the secondary OKLab chroma fields (a, b), a blur
+        // scratch channel and a prefix-sum row/column accumulator.
+        private float[] _coSecA = Array.Empty<float>();
+        private float[] _coSecB = Array.Empty<float>();
+        private float[] _coScratch = Array.Empty<float>();
+        private float[] _coPrefix = Array.Empty<float>();
+
+        // Texture Retrofier scratch: packed-RGB per-pixel keys (sorted into a
+        // histogram), the distinct colours and their counts, the median-cut
+        // order, the distinct-to-palette map and the resulting palette.
+        private int[] _retroKeys = Array.Empty<int>();
+        private int[] _retroDistinct = Array.Empty<int>();
+        private int[] _retroCounts = Array.Empty<int>();
+        private int[] _retroOrder = Array.Empty<int>();
+        private int[] _retroDistinctToPalette = Array.Empty<int>();
+        private readonly int[] _retroPalette = new int[RETRO_MAX_COLORS];
+        private readonly List<(int Start, int Count)> _retroBoxes = new();
 
 
         // =====================================================================
@@ -94,6 +147,41 @@ namespace TgaBuilderLib.Modifications
         public float ColorOverlaySoftLightStrength { get; set; } = COLOR_OVERLAY_SOFT_LIGHT_STRENGTH_INIT;
         public float ColorOverlayLumaPreservation { get; set; } = COLOR_OVERLAY_LUMA_PRESERVATION_INIT;
         public float ColorOverlayChromaBoost { get; set; } = COLOR_OVERLAY_CHROMA_BOOST_INIT;
+
+        // =====================================================================
+        // Color Override adjustments  (texture-to-texture colour transfer)
+        // Enabled:        on/off toggle for the whole stage
+        // Amount:         0 .. 1   master blend with the original
+        // Decolorize:     0 .. 1   removes the original texture's own colour
+        // Transfer:       0 .. 1   applies the secondary input's colour
+        // Smoothing:      0 .. 32  box-blur radius of the secondary colour field
+        // ChromaRestore:  0 .. 2   scales / restores the resulting colour amount
+        // =====================================================================
+
+        public bool ColorOverrideEnabled { get; set; } = COLOR_OVERRIDE_ENABLED_INIT;
+        public float ColorOverrideAmount { get; set; } = COLOR_OVERRIDE_AMOUNT_INIT;
+        public float ColorOverrideDecolorize { get; set; } = COLOR_OVERRIDE_DECOLORIZE_INIT;
+        public float ColorOverrideTransfer { get; set; } = COLOR_OVERRIDE_TRANSFER_INIT;
+        public int ColorOverrideSmoothing { get; set; } = COLOR_OVERRIDE_SMOOTHING_INIT;
+        public float ColorOverrideChromaRestore { get; set; } = COLOR_OVERRIDE_CHROMA_RESTORE_INIT;
+
+        // =====================================================================
+        // Texture Retrofier adjustments  (TR1/TR2 Sega Saturn look)
+        // Quantization:      per-channel colour-space reduction (6/5/4-bit)
+        // PaletteLimit:      cap the texture to a maximum number of colours
+        // MaxColors:         2 .. 256  (only when palette limit is enabled)
+        // DitherMode:        ordered dithering pattern (checkerboard / Bayer)
+        // DitherStrength:    0 .. 1    intensity of the dither pattern
+        // DitherCellSize:    1 .. 8    size (px) of each dither cell / block
+        // =====================================================================
+
+        public RetroQuantizationLevel RetroQuantization { get; set; } = RETRO_QUANTIZATION_INIT;
+        public bool RetroPaletteLimitEnabled { get; set; } = RETRO_PALETTE_LIMIT_ENABLED_INIT;
+        public int RetroMaxColors { get; set; } = RETRO_MAX_COLORS_INIT;
+        public RetroDitherMode RetroDitherMode { get; set; } = RETRO_DITHER_MODE_INIT;
+        public float RetroDitherStrength { get; set; } = RETRO_DITHER_STRENGTH_INIT;
+        public int RetroDitherCellSize { get; set; } = RETRO_DITHER_CELL_SIZE_INIT;
+
         public event EventHandler? RecalculationCompleted;
 
         // =====================================================================
@@ -102,11 +190,13 @@ namespace TgaBuilderLib.Modifications
 
         public void Apply()
         {
-            int count = PixelsInput.Length;
+            // Buffers are provisioned by EnsureBuffers; nothing to do until then.
+            if (!IsActive
+                || PixelsInput.Length == 0
+                || PixelsOutput.Length != PixelsInput.Length)
+                return;
 
-            PixelsOutput = new byte[count];
-
-            Array.Copy(PixelsInput, PixelsOutput, count);
+            Array.Copy(PixelsInput, 0, PixelsOutput, 0, PixelsInput.Length);
 
             ApplyExposure(PixelsOutput);
             ApplyBrightnessContrast(PixelsOutput);
@@ -114,15 +204,13 @@ namespace TgaBuilderLib.Modifications
             ApplyHueSaturationVibrance(PixelsOutput);
             ApplyTemperatureTint(PixelsOutput);
             ApplyColorOverlay(PixelsOutput);
+            ApplyColorOverride(PixelsOutput);
+            ApplyRetrofier(PixelsOutput);
         }
 
         public void CleanUp()
         {
-            Width = 64;
-            Height = 64;
-
-            PixelsInput = new byte[64 * 64 * BPP];
-            PixelsOutput = new byte[64 * 64 * BPP];
+            ReleaseBuffers();
 
             Exposure = EXPOSURE_INIT;
             Brightness = BRIGHTNESS_INIT;
@@ -144,6 +232,20 @@ namespace TgaBuilderLib.Modifications
             ColorOverlaySoftLightStrength = COLOR_OVERLAY_SOFT_LIGHT_STRENGTH_INIT;
             ColorOverlayLumaPreservation = COLOR_OVERLAY_LUMA_PRESERVATION_INIT;
             ColorOverlayChromaBoost = COLOR_OVERLAY_CHROMA_BOOST_INIT;
+
+            ColorOverrideEnabled = COLOR_OVERRIDE_ENABLED_INIT;
+            ColorOverrideAmount = COLOR_OVERRIDE_AMOUNT_INIT;
+            ColorOverrideDecolorize = COLOR_OVERRIDE_DECOLORIZE_INIT;
+            ColorOverrideTransfer = COLOR_OVERRIDE_TRANSFER_INIT;
+            ColorOverrideSmoothing = COLOR_OVERRIDE_SMOOTHING_INIT;
+            ColorOverrideChromaRestore = COLOR_OVERRIDE_CHROMA_RESTORE_INIT;
+
+            RetroQuantization = RETRO_QUANTIZATION_INIT;
+            RetroPaletteLimitEnabled = RETRO_PALETTE_LIMIT_ENABLED_INIT;
+            RetroMaxColors = RETRO_MAX_COLORS_INIT;
+            RetroDitherMode = RETRO_DITHER_MODE_INIT;
+            RetroDitherStrength = RETRO_DITHER_STRENGTH_INIT;
+            RetroDitherCellSize = RETRO_DITHER_CELL_SIZE_INIT;
         }
     }
 }

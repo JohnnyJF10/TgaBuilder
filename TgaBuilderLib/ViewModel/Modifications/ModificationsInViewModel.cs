@@ -6,13 +6,13 @@ using TgaBuilderLib.Modifications;
 
 namespace TgaBuilderLib.ViewModel;
 
-public class ModificationInViewModel : ThrottledViewModelBase
+public class ModificationsInViewModel : ThrottledViewModelBase
 {
-    public ModificationInViewModel(
+    public ModificationsInViewModel(
     IMediaFactory mediaFactory,
     IModificationsHelper modificationHelper,
     IBitmapOperations bitmapOperations,
-    ModificationOutViewModel modificationOutViewModel
+    ModificationsOutViewModel modificationOutViewModel
     )
     {
         _mediaFactory = mediaFactory;
@@ -32,7 +32,7 @@ public class ModificationInViewModel : ThrottledViewModelBase
     private readonly IModificationsHelper _modificationHelper;
     private readonly IBitmapOperations _bitmapOperations;
 
-    public readonly ModificationOutViewModel ModificationOutVM;
+    public readonly ModificationsOutViewModel ModificationOutVM;
 
     // =====================================================================
     // Images and pixel buffers
@@ -108,39 +108,42 @@ public class ModificationInViewModel : ThrottledViewModelBase
     public void LoadImageIn(IWriteableBitmap bitmap)
     {
         ImageIn = PrepareAndResizeImage(bitmap);
-        _modificationHelper.PixelsInput = ExtractPixels(ImageIn);
-    
-        UpdateHelperDimensionsAndResult(ImageIn);
-    
+
+        // Provision the reusable buffer set for the new input size, then copy the
+        // input pixels into the helper's buffer.
+        _modificationHelper.EnsureBuffers(ImageIn.PixelWidth, ImageIn.PixelHeight);
+        _modificationHelper.PixelsInput = CopyPixelsInto(ImageIn, _modificationHelper.PixelsInput);
+
+        ModificationOutVM.ImageOut = _mediaFactory.CreateEmptyBitmap(
+            ImageIn.PixelWidth,
+            ImageIn.PixelHeight,
+            true);
+
         _ = TriggerRecalculation();
     }
-    
+
     private IWriteableBitmap PrepareAndResizeImage(IWriteableBitmap bitmap)
     {
         var imageIn = bitmap.HasAlpha
             ? _mediaFactory.CloneBitmap(bitmap)
             : _bitmapOperations.ConvertRGB24ToBGRA32(bitmap);
-    
+
         return ImageInResize(imageIn);
     }
-    
-    private byte[] ExtractPixels(IWriteableBitmap image)
+
+    // Copies the image pixels into the helper's reusable buffer. Once EnsureBuffers
+    // has run for the current size the target is correctly sized and reused in place;
+    // the fresh-array fallback only guards against an unexpected size mismatch.
+    private byte[] CopyPixelsInto(IWriteableBitmap image, byte[] target)
     {
-        // Todo: Let helper prepare buffers instead of copying pixels here
-        var pixels = new byte[image.PixelWidth * image.PixelHeight * TRANSITIONS_BPP];
-        image.CopyPixels(pixels, image.PixelWidth * TRANSITIONS_BPP, 0);
-        return pixels;
-    }
-    
-    private void UpdateHelperDimensionsAndResult(IWriteableBitmap referenceImage)
-    {
-        _modificationHelper.Width = referenceImage.PixelWidth;
-        _modificationHelper.Height = referenceImage.PixelHeight;
-    
-        ModificationOutVM.ImageOut = _mediaFactory.CreateEmptyBitmap(
-            referenceImage.PixelWidth, 
-            referenceImage.PixelHeight, 
-            true);
+        int stride = image.PixelWidth * TRANSITIONS_BPP;
+        int needed = stride * image.PixelHeight;
+
+        if (target.Length != needed)
+            target = new byte[needed];
+
+        image.CopyPixels(target, stride, 0);
+        return target;
     }
 
     public IWriteableBitmap ImageInResize(IWriteableBitmap imIn, int newWidth = -1, int newHeight = -1)

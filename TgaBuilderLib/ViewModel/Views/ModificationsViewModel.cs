@@ -18,7 +18,9 @@ public class ModificationsViewModel : ViewModelBase
         
         BasicViewModel basicVM,
         ColorViewModel colorVM,
-        ColorOverlayViewModel colorOverlayVM
+        ColorOverlayViewModel colorOverlayVM,
+        ColorOverrideViewModel colorOverrideVM,
+        RetrofierViewModel retrofierVM
         )
     {
         _mediaFactory = mediaFactory;
@@ -28,11 +30,13 @@ public class ModificationsViewModel : ViewModelBase
         BasicVM = basicVM;
         ColorVM = colorVM;
         ColorOverlayVM = colorOverlayVM;
+        ColorOverrideVM = colorOverrideVM;
+        RetrofierVM = retrofierVM;
 
         ModificationInVM = BasicVM.ModificationInVM;
         ModificationOutVM = ModificationInVM.ModificationOutVM;
 
-        ModificationInVM.LoadImageIn(_mainViewModel.Selection.Presenter);
+        LoadInput();
     }
 
     // =====================================================================
@@ -48,13 +52,15 @@ public class ModificationsViewModel : ViewModelBase
     // View Model Children
     // =====================================================================
 
-    public BasicViewModel BasicVM { get; set; } 
+    public BasicViewModel BasicVM { get; set; }
     public ColorViewModel ColorVM { get; set; }
     public ColorOverlayViewModel ColorOverlayVM { get; set; }
+    public ColorOverrideViewModel ColorOverrideVM { get; set; }
+    public RetrofierViewModel RetrofierVM { get; set; }
 
 
-    public ModificationInViewModel ModificationInVM { get; set; }
-    public ModificationOutViewModel ModificationOutVM { get; set; }
+    public ModificationsInViewModel ModificationInVM { get; set; }
+    public ModificationsOutViewModel ModificationOutVM { get; set; }
 
 
     // =====================================================================
@@ -62,12 +68,25 @@ public class ModificationsViewModel : ViewModelBase
     // =====================================================================
 
     private RelayCommand? _loadImageInCommand;
+    private RelayCommand? _loadSecondaryImageCommand;
     private RelayCommand? _applyCommand;
     private RelayCommand<IView>? _cancelCommand;
     private RelayCommand<IView>? _oKCommand;
 
-    public ICommand LoadImageInCommand => _loadImageInCommand 
-        ??= new RelayCommand(() => ModificationInVM.LoadImageIn(_mainViewModel.Selection.Presenter));
+    public ICommand LoadImageInCommand => _loadImageInCommand
+        ??= new RelayCommand(LoadInput);
+
+    public ICommand LoadSecondaryImageCommand => _loadSecondaryImageCommand
+        ??= new RelayCommand(() => ColorOverrideVM.LoadSecondaryImage(_mainViewModel.Selection.Presenter));
+
+    // Loads the input texture from the current selection (provisioning the helper
+    // buffers for its size) and re-fits the secondary colour-override texture to
+    // the new buffer size.
+    private void LoadInput()
+    {
+        ModificationInVM.LoadImageIn(_mainViewModel.Selection.Presenter);
+        ColorOverrideVM.OnInputResized();
+    }
 
     public ICommand ApplyCommand => _applyCommand ??= new RelayCommand(Apply);
     public ICommand CancelCommand => _cancelCommand ??= new RelayCommand<IView>(Cancel);
@@ -109,6 +128,7 @@ public class ModificationsViewModel : ViewModelBase
 
         ModificationInVM.ResetImages();
         ModificationOutVM.ResetImages();
+        ColorOverrideVM.ResetState();
 
         _mainViewModel.IsModificationsViewOpen = false;
     }

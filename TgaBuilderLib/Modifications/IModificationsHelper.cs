@@ -9,8 +9,10 @@ namespace TgaBuilderLib.Modifications
         // Dimensions
         // =====================================================================
 
-        int Width { get; set; }
-        int Height { get; set; }
+        bool IsActive { get; }
+
+        int Width { get; }
+        int Height { get; }
 
         // =====================================================================
         // Buffers
@@ -19,6 +21,10 @@ namespace TgaBuilderLib.Modifications
         byte[] PixelsInput { get; set; }
 
         byte[] PixelsOutput { get; set; }
+
+        byte[] PixelsSecondary { get; set; }
+
+        bool ColorOverrideHasSecondary { get; set; }
 
         // =====================================================================
         // Basic adjustments
@@ -49,9 +55,25 @@ namespace TgaBuilderLib.Modifications
         float ColorOverlayLumaPreservation { get; set; }
         float ColorOverlayChromaBoost { get; set; }
 
+        bool ColorOverrideEnabled { get; set; }
+        float ColorOverrideAmount { get; set; }
+        float ColorOverrideDecolorize { get; set; }
+        float ColorOverrideTransfer { get; set; }
+        int ColorOverrideSmoothing { get; set; }
+        float ColorOverrideChromaRestore { get; set; }
+
+        RetroQuantizationLevel RetroQuantization { get; set; }
+        bool RetroPaletteLimitEnabled { get; set; }
+        int RetroMaxColors { get; set; }
+        RetroDitherMode RetroDitherMode { get; set; }
+        float RetroDitherStrength { get; set; }
+        int RetroDitherCellSize { get; set; }
+
         // =====================================================================
         // Methods
         // =====================================================================
+
+        void EnsureBuffers(int width, int height);
 
         void Apply();
 

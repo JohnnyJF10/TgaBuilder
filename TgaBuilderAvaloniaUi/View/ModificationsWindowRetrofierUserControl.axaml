@@ -1,0 +1,174 @@
+<UserControl x:Class="TgaBuilderAvaloniaUi.View.ModificationsWindowRetrofierUserControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+             x:DataType="viewmodel:RetrofierViewModel"
+             x:CompileBindings="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel
+        Spacing="4"
+        Margin="4,4,4,6">
+
+        <!-- Quantization combo + palette-limit toggle -->
+        <DockPanel
+            LastChildFill="True"
+            ap:MouseOverInfoAP.InfoText="Quantization: rounds RGB channels to multiples of 4 (6-bit), 8 (5-bit) or 16 (4-bit). 5-bit is the classic TR look.">
+            <elements:IconToggleButton
+                DockPanel.Dock="Right"
+                Classes="outlined"
+                Width="34"
+                Height="34"
+                Margin="6,0,0,0"
+                Icon="{StaticResource color_fill}"
+                IsChecked="{Binding IsPaletteLimitEnabled}"
+                ap:MouseOverInfoAP.InfoText="Limit palette: cap the texture to a maximum number of distinct colours (default off)." />
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="16"
+                Height="16"
+                Stretch="Uniform"
+                Margin="5,0,8,0"
+                Data="{StaticResource grid}" />
+            <ComboBox
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                SelectedIndex="{Binding SelectedQuantizationIndex}">
+                <ComboBoxItem Content="No quantization" />
+                <ComboBoxItem Content="6-bit  (× 4)" />
+                <ComboBoxItem Content="5-bit  (× 8)" />
+                <ComboBoxItem Content="4-bit  (× 16)" />
+            </ComboBox>
+        </DockPanel>
+
+        <!-- Max colors (only when palette limit is enabled) -->
+        <DockPanel
+            Margin="0,4,0,0"
+            IsVisible="{Binding IsPaletteLimitEnabled}"
+            ap:MouseOverInfoAP.InfoText="Max colours: the largest number of distinct colours kept in the texture (median-cut palette reduction).">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource color_background}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource color_background_accent}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding MaxColors}"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="256"
+                Minimum="2"
+                SmallChange="1"
+                Value="{Binding MaxColors}" />
+        </DockPanel>
+
+        <!-- Dither mode combo -->
+        <DockPanel
+            Margin="0,4,0,0"
+            LastChildFill="True"
+            ap:MouseOverInfoAP.InfoText="Dithering: ordered pattern applied before quantization (or as a standalone checker effect). Checkerboard gives the iconic alternating-pixel look.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="16"
+                Height="16"
+                Stretch="Uniform"
+                Margin="5,0,8,0"
+                Data="{StaticResource square_simple}" />
+            <ComboBox
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                SelectedIndex="{Binding SelectedDitherModeIndex}">
+                <ComboBoxItem Content="No dithering" />
+                <ComboBoxItem Content="Checkerboard" />
+                <ComboBoxItem Content="Bayer 4×4" />
+                <ComboBoxItem Content="Bayer 8×8" />
+            </ComboBox>
+        </DockPanel>
+
+        <!-- Dither strength (only when a dither mode is selected) -->
+        <DockPanel
+            Margin="0,4,0,0"
+            IsVisible="{Binding IsDitherActive}"
+            ap:MouseOverInfoAP.InfoText="Dither strength: intensity of the dither pattern (0 = none, 100 = full).">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource circle_line}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource circle_hatching}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding DitherStrengthPercent}"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding DitherStrengthPercent}" />
+        </DockPanel>
+
+        <!-- Dither cell size (only when a dither mode is selected) -->
+        <DockPanel
+            Margin="0,4,0,0"
+            IsVisible="{Binding IsDitherActive}"
+            ap:MouseOverInfoAP.InfoText="Dither cell size: size in pixels of each dither block. 1 = classic single-pixel checker, larger = chunkier blocks.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="8"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource circle_small}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource circle}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding DitherCellSize}"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="8"
+                Minimum="1"
+                SmallChange="1"
+                Value="{Binding DitherCellSize}" />
+        </DockPanel>
+    </StackPanel>
+</UserControl>

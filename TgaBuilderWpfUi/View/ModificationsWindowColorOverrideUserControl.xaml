@@ -1,0 +1,194 @@
+<UserControl x:Class="TgaBuilderWpfUi.View.ModificationsWindowColorOverrideUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:elements="clr-namespace:TgaBuilderWpfUi.Elements"
+             xmlns:ap="clr-namespace:TgaBuilderWpfUi.AttachedProperties"
+             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:ColorOverrideViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel Margin="8,4,8,8">
+
+        <!-- Amount: master strength of the whole effect -->
+        <DockPanel
+            Margin="0,4,0,0"
+            ap:MouseOverInfoAP.InfoText="Amount: overall strength of the colour override (0 = original texture, 100 = fully re-coloured).">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource color_background}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource color_background_accent}" />
+            <elements:MouseWheelSlider
+                Style="{StaticResource MouseWheelSliderStyle}"
+                Margin="4,0"
+                VerticalAlignment="Center"
+                AutoToolTipPlacement="BottomRight"
+                AutoToolTipPrecision="0"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding AmountPercent, UpdateSourceTrigger=PropertyChanged}" />
+        </DockPanel>
+
+        <!-- Decolorize: remove the original texture's own colour -->
+        <DockPanel
+            Margin="0,8,0,0"
+            ap:MouseOverInfoAP.InfoText="Remove original colour: fades the input texture toward greyscale before the new colour is applied (100 = fully neutral base).">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource color_fill}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource color_fill_accent}" />
+            <elements:MouseWheelSlider
+                Style="{StaticResource MouseWheelSliderStyle}"
+                Margin="4,0"
+                VerticalAlignment="Center"
+                AutoToolTipPlacement="BottomRight"
+                AutoToolTipPrecision="0"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding DecolorizePercent, UpdateSourceTrigger=PropertyChanged}" />
+        </DockPanel>
+
+        <!-- Transfer: apply the secondary input's colour -->
+        <DockPanel
+            Margin="0,8,0,0"
+            ap:MouseOverInfoAP.InfoText="Apply secondary colour: how strongly the colour of the secondary input is transferred onto the texture.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource color_line}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource color_line_accent}" />
+            <elements:MouseWheelSlider
+                Style="{StaticResource MouseWheelSliderStyle}"
+                Margin="4,0"
+                VerticalAlignment="Center"
+                AutoToolTipPlacement="BottomRight"
+                AutoToolTipPrecision="0"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding TransferPercent, UpdateSourceTrigger=PropertyChanged}" />
+        </DockPanel>
+
+        <!-- Smoothing: filter (blur) the secondary colour field -->
+        <DockPanel
+            Margin="0,8,0,0"
+            ap:MouseOverInfoAP.InfoText="Filtering: blurs the colour taken from the secondary input. Low keeps specific local colours, high transfers an overall averaged tone.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="6"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource circle_small}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource circle}" />
+            <elements:MouseWheelSlider
+                Style="{StaticResource MouseWheelSliderStyle}"
+                Margin="4,0"
+                VerticalAlignment="Center"
+                AutoToolTipPlacement="BottomRight"
+                AutoToolTipPrecision="0"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="32"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding Smoothing, UpdateSourceTrigger=PropertyChanged}" />
+        </DockPanel>
+
+        <!-- Chroma Restore: restore / boost colour in the coloured regions -->
+        <DockPanel
+            Margin="0,8,0,0"
+            ap:MouseOverInfoAP.InfoText="Restore colour: scales the resulting colour intensity to restore or boost colour in the coloured regions (100 = unchanged, 200 = double).">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource dark_theme}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                d:Fill="White"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource data_sunburst}" />
+            <elements:MouseWheelSlider
+                Style="{StaticResource MouseWheelSliderStyle}"
+                Margin="4,0"
+                VerticalAlignment="Center"
+                AutoToolTipPlacement="BottomRight"
+                AutoToolTipPrecision="0"
+                Maximum="200"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding ChromaRestorePercent, UpdateSourceTrigger=PropertyChanged}" />
+        </DockPanel>
+    </StackPanel>
+</UserControl>

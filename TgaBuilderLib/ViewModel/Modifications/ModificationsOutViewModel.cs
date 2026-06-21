@@ -7,9 +7,9 @@ using TgaBuilderLib.Modifications;
 
 namespace TgaBuilderLib.ViewModel;
 
-public class ModificationOutViewModel : ThrottledViewModelBase
+public class ModificationsOutViewModel : ThrottledViewModelBase
 {
-    public ModificationOutViewModel(
+    public ModificationsOutViewModel(
     IMediaFactory mediaFactory,
     IModificationsHelper modificationHelper,
     IBitmapOperations bitmapOperations)
@@ -56,13 +56,20 @@ public class ModificationOutViewModel : ThrottledViewModelBase
 
     private void OnRecalculationCompleted(object? sender, EventArgs e)
     {
+        byte[] output = _modificationHelper.PixelsOutput;
+        int expectedLength = ImageOut.PixelWidth * ImageOut.PixelHeight * TRANSITIONS_BPP;
+
+        // Skip not-yet-provisioned or stale buffers to avoid a size mismatch.
+        if (output.Length == 0 || output.Length != expectedLength)
+            return;
+
         using var ResLockedFrameBuffer = ImageOut.GetLocker(requiresRefresh: true);
 
         Marshal.Copy(
-            source: _modificationHelper.PixelsOutput, 
-            startIndex: 0, 
-            destination: ResLockedFrameBuffer.BackBuffer, 
-            length: _modificationHelper.PixelsOutput.Length);
+            source: output,
+            startIndex: 0,
+            destination: ResLockedFrameBuffer.BackBuffer,
+            length: output.Length);
 
         VisualInvalidator?.InvalidateVisual();
     }
