@@ -23,7 +23,7 @@ public class ColorOverrideViewModel : ThrottledViewModelBase
         IMediaFactory mediaFactory,
         IModificationsHelper modificationHelper,
         IBitmapOperations bitmapOperations,
-        ModificationInViewModel modificationInVM)
+        ModificationsInViewModel modificationInVM)
     {
         _mediaFactory = mediaFactory;
         _modificationHelper = modificationHelper;
@@ -42,7 +42,7 @@ public class ColorOverrideViewModel : ThrottledViewModelBase
     private readonly IModificationsHelper _modificationHelper;
     private readonly IBitmapOperations _bitmapOperations;
 
-    public ModificationInViewModel ModificationInVM { get; }
+    public ModificationsInViewModel ModificationInVM { get; }
 
     // =====================================================================
     // Secondary input image

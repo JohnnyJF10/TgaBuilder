@@ -7,9 +7,9 @@ using TgaBuilderLib.Modifications;
 
 namespace TgaBuilderLib.ViewModel;
 
-public class ModificationOutViewModel : ThrottledViewModelBase
+public class ModificationsOutViewModel : ThrottledViewModelBase
 {
-    public ModificationOutViewModel(
+    public ModificationsOutViewModel(
     IMediaFactory mediaFactory,
     IModificationsHelper modificationHelper,
     IBitmapOperations bitmapOperations)

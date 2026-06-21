@@ -21,17 +21,9 @@
 
     <StackPanel Margin="8,4,8,8">
 
-        <TextBlock
-            TextWrapping="Wrap"
-            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-            d:Foreground="White"
-            FontSize="11"
-            Text="Replicates the limited TR1 / TR2 (Sega Saturn) colour space: channel quantization, an optional reduced palette and retro dithering."
-            Margin="0,0,0,4" />
-
         <!-- Quantization combo + palette-limit toggle -->
         <DockPanel
-            Margin="0,8,0,0"
+            Margin="0,4,0,0"
             LastChildFill="True"
             ap:MouseOverInfoAP.InfoText="Quantization: rounds RGB channels to multiples of 4 (6-bit), 8 (5-bit) or 16 (4-bit). 5-bit is the classic TR look.">
             <elements:ToggleButtonEx

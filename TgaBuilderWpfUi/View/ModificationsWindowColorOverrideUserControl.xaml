@@ -19,17 +19,9 @@
 
     <StackPanel Margin="8,4,8,8">
 
-        <TextBlock
-            TextWrapping="Wrap"
-            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-            d:Foreground="White"
-            FontSize="11"
-            Text="Replaces the colour of the input texture with the colour of the secondary input while keeping the original detail. Toggle the section, then load a secondary texture."
-            Margin="0,0,0,4" />
-
         <!-- Amount: master strength of the whole effect -->
         <DockPanel
-            Margin="0,8,0,0"
+            Margin="0,4,0,0"
             ap:MouseOverInfoAP.InfoText="Amount: overall strength of the colour override (0 = original texture, 100 = fully re-coloured).">
             <Path
                 VerticalAlignment="Center"

@@ -305,38 +305,38 @@ namespace TgaBuilderAvaloniaUi
                 presenter: GetBitmapFromFactory(sp, 2 * PANEL_WIDTH_INIT, PANEL_HEIGHT_INIT, true)));
 
 
-            services.AddSingleton(sp => new ModificationOutViewModel(
+            services.AddSingleton(sp => new ModificationsOutViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>()));
 
-            services.AddSingleton(sp => new ModificationInViewModel(
+            services.AddSingleton(sp => new ModificationsInViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
-                modificationOutViewModel: sp.GetRequiredService<ModificationOutViewModel>()));
+                modificationOutViewModel: sp.GetRequiredService<ModificationsOutViewModel>()));
 
             services.AddTransient(sp => new BasicViewModel(
                 modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
-                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+                modificationInVM: sp.GetRequiredService<ModificationsInViewModel>()));
 
             services.AddTransient(sp => new ColorViewModel(
                 modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
-                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+                modificationInVM: sp.GetRequiredService<ModificationsInViewModel>()));
 
             services.AddTransient(sp => new ColorOverlayViewModel(
                 modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
-                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+                modificationInVM: sp.GetRequiredService<ModificationsInViewModel>()));
 
             services.AddTransient(sp => new ColorOverrideViewModel(
                 mediaFactory: sp.GetRequiredService<IMediaFactory>(),
                 modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
                 bitmapOperations: sp.GetRequiredService<IBitmapOperations>(),
-                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+                modificationInVM: sp.GetRequiredService<ModificationsInViewModel>()));
 
             services.AddTransient(sp => new RetrofierViewModel(
                 modificationHelper: sp.GetRequiredService<IModificationsHelper>(),
-                modificationInVM: sp.GetRequiredService<ModificationInViewModel>()));
+                modificationInVM: sp.GetRequiredService<ModificationsInViewModel>()));
 
 
 

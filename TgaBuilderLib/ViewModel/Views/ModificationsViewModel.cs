@@ -59,8 +59,8 @@ public class ModificationsViewModel : ViewModelBase
     public RetrofierViewModel RetrofierVM { get; set; }
 
 
-    public ModificationInViewModel ModificationInVM { get; set; }
-    public ModificationOutViewModel ModificationOutVM { get; set; }
+    public ModificationsInViewModel ModificationInVM { get; set; }
+    public ModificationsOutViewModel ModificationOutVM { get; set; }
 
 
     // =====================================================================

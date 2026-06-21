@@ -16,13 +16,13 @@ public class RetrofierViewModel : ThrottledViewModelBase
 {
     public RetrofierViewModel(
         IModificationsHelper modificationHelper,
-        ModificationInViewModel modificationInVM)
+        ModificationsInViewModel modificationInVM)
     {
         _modificationHelper = modificationHelper;
         ModificationInVM = modificationInVM;
     }
 
-    public ModificationInViewModel ModificationInVM { get; }
+    public ModificationsInViewModel ModificationInVM { get; }
 
     private readonly IModificationsHelper _modificationHelper;
 

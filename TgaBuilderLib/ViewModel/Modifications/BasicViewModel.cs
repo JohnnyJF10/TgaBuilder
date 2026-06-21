@@ -6,13 +6,13 @@ public class BasicViewModel : ThrottledViewModelBase
 {
     public BasicViewModel(
         IModificationsHelper modificationHelper,
-        ModificationInViewModel modificationInVM)
+        ModificationsInViewModel modificationInVM)
     {
         _modificationHelper = modificationHelper;
         ModificationInVM = modificationInVM;
     }
 
-    public ModificationInViewModel ModificationInVM { get; }
+    public ModificationsInViewModel ModificationInVM { get; }
 
     private IModificationsHelper _modificationHelper;
 

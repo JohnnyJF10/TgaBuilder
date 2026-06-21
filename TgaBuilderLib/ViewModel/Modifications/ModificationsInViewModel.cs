@@ -6,13 +6,13 @@ using TgaBuilderLib.Modifications;
 
 namespace TgaBuilderLib.ViewModel;
 
-public class ModificationInViewModel : ThrottledViewModelBase
+public class ModificationsInViewModel : ThrottledViewModelBase
 {
-    public ModificationInViewModel(
+    public ModificationsInViewModel(
     IMediaFactory mediaFactory,
     IModificationsHelper modificationHelper,
     IBitmapOperations bitmapOperations,
-    ModificationOutViewModel modificationOutViewModel
+    ModificationsOutViewModel modificationOutViewModel
     )
     {
         _mediaFactory = mediaFactory;
@@ -32,7 +32,7 @@ public class ModificationInViewModel : ThrottledViewModelBase
     private readonly IModificationsHelper _modificationHelper;
     private readonly IBitmapOperations _bitmapOperations;
 
-    public readonly ModificationOutViewModel ModificationOutVM;
+    public readonly ModificationsOutViewModel ModificationOutVM;
 
     // =====================================================================
     // Images and pixel buffers
