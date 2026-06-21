@@ -7,15 +7,15 @@
 ![Github All Releases](https://img.shields.io/github/downloads/JohnnyJF10/TgaBuilder/total.svg)
 ![GitHub License](https://img.shields.io/github/license/JohnnyJF10/TgaBuilder)
 
-![Logo](Screenshots/TgaBuilder_logo.png)
+![Logo](pics/TgaBuilder_logo.png)
 
 ## Description
 
-![Overview](Screenshots/Overview.png)
+![Overview](pics/Overview.png)
 
 TgaBuilder is a Texture Panel Building tool for TRLE, which facilitates the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF for Windows and Avalonia UI (cross-platform, preview).
 
-![Overview](Screenshots/Overview_gif.gif)
+![Overview](pics/Overview_gif.gif)
 
 If you have already worked with TBuilder in the past, you should get familiar with TgaBuilder very quickly. It covers most of the features TBuilder has and introduces several more, most prominently:
 
@@ -30,11 +30,11 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 - **Modifications Window** for non-destructive image adjustments
 - and others…
 
-![Modifications](Screenshots/Modifications_gif.gif)
-![TransitionMode](Screenshots/TransitionMode_gif.gif)
-![SmoothTransition](Screenshots/SmoothTransition_gif.gif)
-![BrickTransitionAnalysis](Screenshots/BrickTransitionAnalysis_gif.gif)
-![BrickTransitionManual](Screenshots/BrickTransitionManual_gif.gif)
+![Modifications](pics/Modifications_gif.gif)
+![TransitionMode](pics/TransitionMode_gif.gif)
+![SmoothTransition](pics/SmoothTransition_gif.gif)
+![BrickTransitionAnalysis](pics/BrickTransitionAnalysis_gif.gif)
+![BrickTransitionManual](pics/BrickTransitionManual_gif.gif)
 
 ---
 
