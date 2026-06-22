@@ -1,11 +1,11 @@
-﻿using System;
+﻿using ColorPicker.Models;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ColorPicker.Models;
 
 namespace ColorPicker.UserControls
 {
@@ -106,15 +106,15 @@ namespace ColorPicker.UserControls
             var hue = Hue;
             var pixels = new byte[w * h * 3];
             for (var j = 0; j < h; j++)
-            for (var i = 0; i < w; i++)
-            {
-                var rgbtuple = colorSpaceConversionMethod(hue, i / (double)(w - 1), (h - 1 - j) / (double)(h - 1));
-                double r = rgbtuple.Item1, g = rgbtuple.Item2, b = rgbtuple.Item3;
-                var pos = (j * h + i) * 3;
-                pixels[pos] = (byte)(r * 255);
-                pixels[pos + 1] = (byte)(g * 255);
-                pixels[pos + 2] = (byte)(b * 255);
-            }
+                for (var i = 0; i < w; i++)
+                {
+                    var rgbtuple = colorSpaceConversionMethod(hue, i / (double)(w - 1), (h - 1 - j) / (double)(h - 1));
+                    double r = rgbtuple.Item1, g = rgbtuple.Item2, b = rgbtuple.Item3;
+                    var pos = (j * h + i) * 3;
+                    pixels[pos] = (byte)(r * 255);
+                    pixels[pos + 1] = (byte)(g * 255);
+                    pixels[pos + 2] = (byte)(b * 255);
+                }
 
             GradientBitmap.WritePixels(new Int32Rect(0, 0, w, h), pixels, w * 3, 0);
         }

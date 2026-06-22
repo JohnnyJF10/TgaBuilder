@@ -58,7 +58,7 @@ public class AnalysisViewModel : ThrottledViewModelBase
         set => SelectedFilter = (FilterType)value;
     }
 
-        public int SelectedSegmentationMethodIndex
+    public int SelectedSegmentationMethodIndex
     {
         get => (int)_selectedSegmentationMethod;
         set => SelectedSegmentationMethod = (SegmentationMethod)value;
@@ -149,7 +149,7 @@ public class AnalysisViewModel : ThrottledViewModelBase
 
 
 
-        public bool InvertGrayscale
+    public bool InvertGrayscale
     {
         get => _invertGrayscale;
         set => SetPropertyTriggerRecalculation(ref _invertGrayscale, value);
@@ -175,7 +175,7 @@ public class AnalysisViewModel : ThrottledViewModelBase
 
     private void ConfigureTransitionHelper()
     {
-        _transitionHelper.CurrentBricksPipelineRequirements 
+        _transitionHelper.CurrentBricksPipelineRequirements
         = BricksPipelineRequirements.RequiresAnalysis;
 
         _transitionHelper.SelectedFilter = SelectedFilter;

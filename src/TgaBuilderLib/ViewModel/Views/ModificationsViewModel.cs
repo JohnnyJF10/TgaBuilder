@@ -15,7 +15,7 @@ public class ModificationsViewModel : ViewModelBase
         IMediaFactory mediaFactory,
         IModificationsHelper modificationsHelper,
         MainViewModel mainViewModel,
-        
+
         BasicViewModel basicVM,
         ColorViewModel colorVM,
         ColorOverlayViewModel colorOverlayVM,
@@ -100,7 +100,7 @@ public class ModificationsViewModel : ViewModelBase
     // =====================================================================
     // Actions
     // =====================================================================
- 
+
 
     private void Apply()
     {

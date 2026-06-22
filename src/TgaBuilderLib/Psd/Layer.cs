@@ -52,12 +52,12 @@ public partial class Layer
     /// <summary>
     /// Creates a new Layer for programmatic construction when saving a PSD file.
     /// </summary>
-    public Layer(PsdFile psdFile, 
-                 PixelRect rect, 
+    public Layer(PsdFile psdFile,
+                 PixelRect rect,
                  string name,
-                 byte opacity = 255, 
+                 byte opacity = 255,
                  bool visible = true,
-                 bool clipping = false, 
+                 bool clipping = false,
                  string blendModeKey = "norm",
                  bool isModernPsdLayer = false)
     {
@@ -346,13 +346,13 @@ public partial class Layer
 
             int paddingBytes = (int)((reverseWriter.BaseStream.Position - namePosition) % 4);
             Debug.Print("Layer {0} write padding bytes after name", paddingBytes);
-            
+
             for (int i = 0; i < paddingBytes; i++)
             {
                 reverseWriter.Write((byte)0);
             }
 
-            foreach (AdjustmentLayerInfo info in AdjustmentInfo) 
+            foreach (AdjustmentLayerInfo info in AdjustmentInfo)
                 info.Save(reverseWriter);
         }
     }

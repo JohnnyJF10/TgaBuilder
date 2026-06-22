@@ -1,24 +1,23 @@
 <UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionModeUserControl"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters"
-             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             xmlns:tran="clr-namespace:TgaBuilderLib.Transitions;assembly=TgaBuilderLib"
-             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             mc:Ignorable="d"
-             x:CompileBindings="False">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converter="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+    xmlns:tran="clr-namespace:TgaBuilderLib.Transitions;assembly=TgaBuilderLib"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    mc:Ignorable="d"
+    x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>
-           <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude
                     Source="/Styles/IconRadioButtonStyle.axaml" />
             </ResourceDictionary.MergedDictionaries>
-			 <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+            <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
-        <!-- Top edge -->
         <elements:IconRadioButton
             Classes="outlined"
             GroupName="SelectedTransitionMode"
@@ -30,15 +29,14 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource SystemAccentColorDark1}"
-                          Width="20" Height="20"/>
+                    Foreground="{DynamicResource SystemAccentColorDark1}"
+                    Width="20" Height="20"/>
                 <Line StartPoint="0,0" EndPoint="20,0"
-                      Stroke="{DynamicResource SystemAccentColorLight3}"
-                      StrokeThickness="2"/>
+                    Stroke="{DynamicResource SystemAccentColorLight3}"
+                    StrokeThickness="2"/>
             </Panel>
         </elements:IconRadioButton>
 
-        <!-- Right edge -->
         <elements:IconRadioButton
             Classes="outlined"
             GroupName="SelectedTransitionMode"
@@ -50,15 +48,14 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource SystemAccentColorDark1}"
-                          Width="20" Height="20"/>
+                    Foreground="{DynamicResource SystemAccentColorDark1}"
+                    Width="20" Height="20"/>
                 <Line StartPoint="20,0" EndPoint="20,20"
-                      Stroke="{DynamicResource SystemAccentColorLight3}"
-                      StrokeThickness="2"/>
+                    Stroke="{DynamicResource SystemAccentColorLight3}"
+                    StrokeThickness="2"/>
             </Panel>
         </elements:IconRadioButton>
 
-        <!-- Bottom edge -->
         <elements:IconRadioButton
             Classes="outlined"
             GroupName="SelectedTransitionMode"
@@ -70,15 +67,14 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource SystemAccentColorDark1}"
-                          Width="20" Height="20"/>
+                    Foreground="{DynamicResource SystemAccentColorDark1}"
+                    Width="20" Height="20"/>
                 <Line StartPoint="0,20" EndPoint="20,20"
-                      Stroke="{DynamicResource SystemAccentColorLight3}"
-                      StrokeThickness="2"/>
+                    Stroke="{DynamicResource SystemAccentColorLight3}"
+                    StrokeThickness="2"/>
             </Panel>
         </elements:IconRadioButton>
 
-        <!-- Left edge -->
         <elements:IconRadioButton
             Classes="outlined"
             GroupName="SelectedTransitionMode"
@@ -90,15 +86,14 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource SystemAccentColorDark1}"
-                          Width="20" Height="20"/>
+                    Foreground="{DynamicResource SystemAccentColorDark1}"
+                    Width="20" Height="20"/>
                 <Line StartPoint="0,0" EndPoint="0,20"
-                      Stroke="{DynamicResource SystemAccentColorLight3}"
-                      StrokeThickness="2"/>
+                    Stroke="{DynamicResource SystemAccentColorLight3}"
+                    StrokeThickness="2"/>
             </Panel>
         </elements:IconRadioButton>
 
-        <!-- Diagonal top-left -->
         <elements:IconRadioButton
             Classes="outlined"
             GroupName="SelectedTransitionMode"
@@ -110,15 +105,14 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource SystemAccentColorDark1}"
-                          Width="20" Height="20"/>
+                    Foreground="{DynamicResource SystemAccentColorDark1}"
+                    Width="20" Height="20"/>
                 <Line StartPoint="0,20" EndPoint="20,0"
-                      Stroke="{DynamicResource SystemAccentColorLight3}"
-                      StrokeThickness="2"/>
+                    Stroke="{DynamicResource SystemAccentColorLight3}"
+                    StrokeThickness="2"/>
             </Panel>
         </elements:IconRadioButton>
 
-        <!-- Diagonal top-right -->
         <elements:IconRadioButton
             Classes="outlined"
             GroupName="SelectedTransitionMode"
@@ -130,11 +124,11 @@
             Margin="0,0,5,0">
             <Panel Width="20" Height="20">
                 <PathIcon Data="M0,0 L20,0 L20,20 L0,20 Z"
-                          Foreground="{DynamicResource SystemAccentColorDark1}"
-                          Width="20" Height="20"/>
+                    Foreground="{DynamicResource SystemAccentColorDark1}"
+                    Width="20" Height="20"/>
                 <Line StartPoint="0,0" EndPoint="20,20"
-                      Stroke="{DynamicResource SystemAccentColorLight3}"
-                      StrokeThickness="2"/>
+                    Stroke="{DynamicResource SystemAccentColorLight3}"
+                    StrokeThickness="2"/>
             </Panel>
         </elements:IconRadioButton>
     </StackPanel>

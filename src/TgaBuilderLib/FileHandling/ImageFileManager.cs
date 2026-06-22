@@ -59,7 +59,7 @@ namespace TgaBuilderLib.FileHandling
                     return;
 
                 case FileTypes.KRA:
-                     _bitmapIO.FromKrita(fileName, mode, cancellationToken);
+                    _bitmapIO.FromKrita(fileName, mode, cancellationToken);
                     return;
 
                 case FileTypes.PHD:

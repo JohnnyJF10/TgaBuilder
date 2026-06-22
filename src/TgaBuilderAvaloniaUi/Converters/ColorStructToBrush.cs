@@ -1,7 +1,6 @@
 ﻿using Avalonia.Data.Converters;
 using Avalonia.Media;
 using System;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace TgaBuilderAvaloniaUi.Converters

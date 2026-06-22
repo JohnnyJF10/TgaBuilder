@@ -1,9 +1,7 @@
 ﻿using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Threading;
 using System;
-using TgaBuilderAvaloniaUi.View;
 using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderAvaloniaUi.Services

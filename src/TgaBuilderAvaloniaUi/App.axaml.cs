@@ -3,12 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using TgaBuilderAvaloniaUi.Services;
@@ -55,7 +52,7 @@ namespace TgaBuilderAvaloniaUi
             mainWindow.ThemeToggleButton.Click += (_, _) => ToggleTheme();
 
             var clipboardService = provider.GetRequiredService<IClipboardService>();
-            if (clipboardService is ClipboardService clipboardServiceImpl && mainWindow.Clipboard is not null) 
+            if (clipboardService is ClipboardService clipboardServiceImpl && mainWindow.Clipboard is not null)
                 clipboardServiceImpl.RegisterClipboard(mainWindow.Clipboard);
 
             mainWindow.Show();
@@ -84,24 +81,24 @@ namespace TgaBuilderAvaloniaUi
                 : ThemeVariant.Dark;
         }
 
-    private async Task PeriodicDebugLogging()
-    {
-        while (true)
+        private async Task PeriodicDebugLogging()
         {
-        if (ApplicationLifetime is not Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
-            return;
+            while (true)
+            {
+                if (ApplicationLifetime is not Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+                    return;
 
-        if (desktop.MainWindow is not View.MainWindow mainWindow)
-            return;
+                if (desktop.MainWindow is not View.MainWindow mainWindow)
+                    return;
 
-        if (mainWindow.SourcePanel is not ZoomBorder sourcePanel)
-            return;
+                if (mainWindow.SourcePanel is not ZoomBorder sourcePanel)
+                    return;
 
-        if (mainWindow.TargetPanel is not ZoomBorder targetPanel)
-            return;
+                if (mainWindow.TargetPanel is not ZoomBorder targetPanel)
+                    return;
 
-        await Task.Delay(500);
+                await Task.Delay(500);
+            }
         }
-    }
     }
 }

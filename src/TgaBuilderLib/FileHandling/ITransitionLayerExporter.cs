@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TgaBuilderLib.Transitions;
 
 namespace TgaBuilderLib.FileHandling

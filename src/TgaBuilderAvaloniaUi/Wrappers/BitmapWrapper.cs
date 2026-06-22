@@ -82,7 +82,7 @@ namespace TgaBuilderAvaloniaUi.Wrappers
             var unpremulBitmap = new WriteableBitmap(
                 opaqueBitmap.PixelSize,
                 opaqueBitmap.Dpi,
-                opaqueBitmap.Format ?? PixelFormats.Rgba8888, 
+                opaqueBitmap.Format ?? PixelFormats.Rgba8888,
                 AlphaFormat.Unpremul);
 
             using (var lockedBuffer = unpremulBitmap.Lock())

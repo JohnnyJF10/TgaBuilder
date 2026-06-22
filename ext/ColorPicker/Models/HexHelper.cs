@@ -8,7 +8,7 @@ namespace ColorPicker.Models
         public static Tuple<byte, byte, byte, byte> ParseInputtedHexStringToRgbaValues(string inputtedString, bool parseAlpha, HexRepresentationType hexRepresentation)
         {
             string text = Regex.Replace(inputtedString.ToUpperInvariant(), @"[^0-9A-F]", "");
-            
+
             if (text.Length == 3 || text.Length == 6)
                 return ParseNoAlphaTextToRgba(text, text.Length == 3);
             if (parseAlpha && (text.Length == 4 || text.Length == 8))
@@ -25,8 +25,8 @@ namespace ColorPicker.Models
                 if (hexRepresentationType == HexRepresentationType.RGBA)
                     return $"#{r:X2}{g:X2}{b:X2}{a:X2}";
                 throw new ArgumentOutOfRangeException();
-            } 
-            
+            }
+
             return $"#{r:X2}{g:X2}{b:X2}";
         }
 
@@ -41,7 +41,7 @@ namespace ColorPicker.Models
 
             return (byte)((firstVal << 4) + secondVal);
         }
-        
+
         private static Tuple<byte, byte, byte, byte> ParseTextWithAlphaToRgba(string normalizedInput, bool isShort, HexRepresentationType hexRepresentation)
         {
             if (isShort)
@@ -85,10 +85,10 @@ namespace ColorPicker.Models
                     ParseHexByte(normalizedInput[6], normalizedInput[7])
                 );
             }
-            
+
             throw new ArgumentOutOfRangeException();
         }
-        
+
         private static Tuple<byte, byte, byte, byte> ParseNoAlphaTextToRgba(string normalizedInput, bool isShort)
         {
             if (isShort)
@@ -100,7 +100,7 @@ namespace ColorPicker.Models
                     255
                 );
             }
-            
+
             return new Tuple<byte, byte, byte, byte>(
                 ParseHexByte(normalizedInput[0], normalizedInput[1]),
                 ParseHexByte(normalizedInput[2], normalizedInput[3]),

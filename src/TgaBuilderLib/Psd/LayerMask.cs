@@ -168,7 +168,7 @@ public partial class Layer
             maskChannel.Data = reader.ReadBytes(maskChannel.Length);
 
             if (Rect.IsEmpty)
-					return;
+                return;
 
             using (BinaryReverseReader readerImg = maskChannel.DataReader!)
             {

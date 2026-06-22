@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.ComponentModel;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.ViewModel;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using System.Threading.Tasks;
 
 namespace TgaBuilderAvaloniaUi.View
 {
@@ -142,8 +142,8 @@ namespace TgaBuilderAvaloniaUi.View
                     if (sv.Content is ZoomBorder zb)
                     {
                         zb.Pan(
-                            x: zb.OffsetX, 
-                            y: zb.OffsetY + delta * speedFactor, 
+                            x: zb.OffsetX,
+                            y: zb.OffsetY + delta * speedFactor,
                             skipTransitions: true);
                     }
 
@@ -152,8 +152,8 @@ namespace TgaBuilderAvaloniaUi.View
             }, RoutingStrategies.Tunnel);
         }
 
-        private async void RecentBatchLoaderFoldersButton_Click(object sender, RoutedEventArgs e) 
-        { 
+        private async void RecentBatchLoaderFoldersButton_Click(object sender, RoutedEventArgs e)
+        {
             await Task.Delay(42);
             RecentBatchLoaderFoldersDropDown.Flyout?.Hide();
         }

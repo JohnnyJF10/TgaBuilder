@@ -7,5 +7,6 @@ namespace TgaBuilderAvaloniaUi.View
         public ModificationsWindowColorUserControl()
         {
             InitializeComponent();
-        }    }
+        }
+    }
 }

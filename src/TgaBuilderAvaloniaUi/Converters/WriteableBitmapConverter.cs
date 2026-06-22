@@ -4,7 +4,6 @@ using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using System;
-using System.Diagnostics;
 using System.Globalization;
 
 using TgaBuilderAvaloniaUi.Wrappers;

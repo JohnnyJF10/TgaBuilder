@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using ColorPicker.Models;
+﻿using ColorPicker.Models;
+using System.Windows;
 
 namespace ColorPicker
 {

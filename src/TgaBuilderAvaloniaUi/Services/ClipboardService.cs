@@ -1,10 +1,7 @@
-﻿using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Input.Platform;
+﻿using Avalonia.Input.Platform;
 using Avalonia.Media.Imaging;
 using System;
 using System.Threading.Tasks;
-using TgaBuilderAvaloniaUi.View;
 using TgaBuilderAvaloniaUi.Wrappers;
 using TgaBuilderLib.Abstraction;
 
@@ -22,12 +19,12 @@ namespace TgaBuilderAvaloniaUi.Services
             return bitmap != null;
         }
 
-        public IReadableBitmap? GetImage() 
+        public IReadableBitmap? GetImage()
             => _currentBitmap != null ? new BitmapWrapper(_currentBitmap) : null;
 
         public async Task SetImageAsync(IReadableBitmap bitmap)
         {
-            if (_clipboard is null) 
+            if (_clipboard is null)
                 throw new InvalidOperationException("Clipboard service is not initialized.");
 
             await _clipboard.SetBitmapAsync(((BitmapWrapper)bitmap).InnerBitmap);

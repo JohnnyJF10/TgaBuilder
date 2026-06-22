@@ -1,4 +1,6 @@
-﻿using Avalonia.Media.Imaging;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -9,19 +11,17 @@ using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapBytesIO;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.FileHandling;
+using TgaBuilderLib.Krita;
 using TgaBuilderLib.Level;
 using TgaBuilderLib.Messaging;
+using TgaBuilderLib.Modifications;
+using TgaBuilderLib.Psd;
+using TgaBuilderLib.Transitions;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
-using TgaBuilderLib.Transitions;
-using TgaBuilderLib.Modifications;
 using TgaBuilderLib.ViewModel;
 using TgaBuilderLib.ViewModel.Elements;
 using TgaBuilderLib.ViewModel.Views;
-using Avalonia;
-using Avalonia.Controls;
-using TgaBuilderLib.Krita;
-using TgaBuilderLib.Psd;
 using FileTypes = TgaBuilderLib.Enums.FileTypes;
 
 namespace TgaBuilderAvaloniaUi

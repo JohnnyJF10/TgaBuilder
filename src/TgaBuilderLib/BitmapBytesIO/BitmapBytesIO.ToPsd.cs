@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Psd;
 
 namespace TgaBuilderLib.BitmapBytesIO;
@@ -51,7 +46,7 @@ public partial class BitmapBytesIO
         {
             _psdFileService.WriteFile();
         }
-        catch(Exception)
+        catch (Exception)
         {
             throw;
         }

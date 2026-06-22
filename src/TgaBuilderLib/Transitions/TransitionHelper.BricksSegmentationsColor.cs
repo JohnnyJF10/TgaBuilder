@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace TgaBuilderLib.Transitions;
+﻿namespace TgaBuilderLib.Transitions;
 
 public partial class TransitionHelper
 {

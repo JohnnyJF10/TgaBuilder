@@ -1,12 +1,6 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using System;
-using System.IO;
-using System.Runtime.InteropServices;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.View;
 using TgaBuilderLib.Abstraction;

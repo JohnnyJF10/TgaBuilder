@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Krita;
 using TgaBuilderLib.Psd;
@@ -60,16 +58,16 @@ namespace TgaBuilderLib.FileHandling
             try
             {
                 foreach (var layer in layers)
-                    {
-                        var bitmap = _mediaFactory.CreateBitmapFromRaw(
-                            layer.Width, layer.Height, hasAlpha: true, layer.Bgra, layer.Width * 4);
+                {
+                    var bitmap = _mediaFactory.CreateBitmapFromRaw(
+                        layer.Width, layer.Height, hasAlpha: true, layer.Bgra, layer.Width * 4);
 
-                        _psdFileService.LayerInfos.Add(new PsdLayerInfo(
-                            bitmap: bitmap,
-                            rect: new PixelRect(0, 0, layer.Width, layer.Height),
-                            name: layer.Name,
-                            visible: layer.Visible));
-                    }
+                    _psdFileService.LayerInfos.Add(new PsdLayerInfo(
+                        bitmap: bitmap,
+                        rect: new PixelRect(0, 0, layer.Width, layer.Height),
+                        name: layer.Name,
+                        visible: layer.Visible));
+                }
 
                 _psdFileService.WriteFile();
             }

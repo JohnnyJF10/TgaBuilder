@@ -1,6 +1,4 @@
-﻿
-using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -8,7 +6,6 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
 using TgaBuilderAvaloniaUi.Services;
@@ -33,7 +30,7 @@ namespace TgaBuilderAvaloniaUi.View
                 while (FE.GetType() != typeof(ZoomBorder))
                 {
                     FE = FE.GetVisualParent();
-                    if (FE is null) 
+                    if (FE is null)
                         throw new Exception("ZoomBorder not found");
                 }
                 _imagePanelDict[image] = (ZoomBorder)FE;
@@ -41,9 +38,9 @@ namespace TgaBuilderAvaloniaUi.View
             }
         }
 
-        public bool IsElementFromDestinationPanel(Control element) 
+        public bool IsElementFromDestinationPanel(Control element)
         => element.Tag is not null && string.Equals(element.Tag.ToString(), "Destination");
-        
+
 
         public void SetPanelFromImage(Image image)
             => CurrentPanel = GetPanelFromImage(image);
@@ -69,7 +66,7 @@ namespace TgaBuilderAvaloniaUi.View
             newPixY = dy == 0
                 ? (int)_lastPointerPosition.Y
                 : (int)(((curImage.Bounds.Height + (signY * panel.Bounds.Height)) * 0.5 - panel.OffsetY) / panel.ZoomY);
-            
+
             if (PanelMouseAP.GetPanelMouseCommand(this) is ICommand mousePanelCommand)
                 mousePanelCommand.Execute((newPixX, newPixY, isDestination, MouseAction.Move, _modifier));
         }
@@ -123,11 +120,11 @@ namespace TgaBuilderAvaloniaUi.View
 
                     if (deltaX > 0 && sv.Offset.X < 0.00001)
                         deltaX = 0;
-                  
+
                     if (deltaX < 0 && sv.Offset.X > sv.ScrollBarMaximum.X - 0.00001)
                         deltaX = 0;
 
-                        if (sv.Content is ZoomBorder zb)
+                    if (sv.Content is ZoomBorder zb)
                     {
                         zb.Pan(
                             x: zb.OffsetX + deltaX * speedFactor,
@@ -158,8 +155,8 @@ namespace TgaBuilderAvaloniaUi.View
             double absDeltaX = Math.Abs(e.Delta.X);
             var epsilon = 0.0001;
 
-            return (Math.Abs(absDeltaY - 0.25) < epsilon 
-            || Math.Abs(absDeltaY - 0.5) < epsilon 
+            return (Math.Abs(absDeltaY - 0.25) < epsilon
+            || Math.Abs(absDeltaY - 0.5) < epsilon
             || Math.Abs(absDeltaY - 0.75) < epsilon
             || Math.Abs(absDeltaY - 1.0) < epsilon)
                 && absDeltaX < epsilon;

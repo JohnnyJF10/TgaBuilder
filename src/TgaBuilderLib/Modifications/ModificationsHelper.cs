@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 
@@ -225,7 +223,7 @@ namespace TgaBuilderLib.Modifications
             Hue = HUE_INIT;
             Temperature = TEMPERATURE_INIT;
             Tint = TINT_INIT;
-            
+
             ColorOverlay = new Color(0, 0, 0, 0);
             ColorOverlayAmount = COLOR_OVERLAY_AMOUNT_INIT;
             ColorOverlayMixMode = COLOR_OVERLAY_MIX_MODE_INIT;

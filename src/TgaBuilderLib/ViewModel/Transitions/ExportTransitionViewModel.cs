@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Commands;

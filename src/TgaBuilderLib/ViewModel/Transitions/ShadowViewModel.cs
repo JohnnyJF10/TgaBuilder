@@ -1,5 +1,4 @@
 using TgaBuilderLib.Transitions;
-using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.ViewModel;
 
@@ -36,7 +35,7 @@ public class ShadowViewModel : ThrottledViewModelBase
 
     private void ConfigureTransitionHelper()
     {
-        _transitionHelper.CurrentBricksPipelineRequirements 
+        _transitionHelper.CurrentBricksPipelineRequirements
         = BricksPipelineRequirements.RequiresDrawing;
 
         _transitionHelper.ShadowSize = ShadowSize;

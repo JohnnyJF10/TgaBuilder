@@ -2,8 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
-using System;
-using System.Diagnostics;
 using TgaBuilderAvaloniaUi.View;
 
 namespace TgaBuilderAvaloniaUi.AttachedProperties

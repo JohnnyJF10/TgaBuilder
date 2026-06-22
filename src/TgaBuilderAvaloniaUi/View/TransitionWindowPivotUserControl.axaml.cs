@@ -7,5 +7,6 @@ namespace TgaBuilderAvaloniaUi.View
         public TransitionWindowPivotUserControl()
         {
             InitializeComponent();
-        }    }
+        }
+    }
 }

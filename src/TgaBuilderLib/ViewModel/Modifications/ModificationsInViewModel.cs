@@ -178,7 +178,7 @@ public class ModificationsInViewModel : ThrottledViewModelBase
 
     private void ConfigureTransitionHelper()
     {
-        _modificationHelper.ColorOverlay = OverlayColor;      
+        _modificationHelper.ColorOverlay = OverlayColor;
     }
 
     protected override async Task TriggerRecalculation()

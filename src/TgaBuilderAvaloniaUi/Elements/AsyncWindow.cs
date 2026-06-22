@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using TgaBuilderLib.Abstraction;
 

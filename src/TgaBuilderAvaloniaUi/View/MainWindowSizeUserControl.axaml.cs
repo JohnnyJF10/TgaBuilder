@@ -7,5 +7,6 @@ namespace TgaBuilderAvaloniaUi.View
         public MainWindowSizeUserControl()
         {
             InitializeComponent();
-        }    }
+        }
+    }
 }

@@ -17,7 +17,7 @@ public class DocumentInfo
 
 
     public string Build()
-        =>  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<!DOCTYPE document-info PUBLIC '-//KDE//DTD document-info 1.1//EN' 'http://www.calligra.org/DTD/document-info-1.1.dtd'>\n" +
             "<document-info xmlns=\"http://www.calligra.org/DTD/document-info\">\n" +
             " <about>\n" +

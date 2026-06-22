@@ -5,10 +5,12 @@ using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapBytesIO;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.FileHandling;
+using TgaBuilderLib.Krita;
 using TgaBuilderLib.Level;
 using TgaBuilderLib.Messaging;
-using TgaBuilderLib.Transitions;
 using TgaBuilderLib.Modifications;
+using TgaBuilderLib.Psd;
+using TgaBuilderLib.Transitions;
 using TgaBuilderLib.UndoRedo;
 using TgaBuilderLib.Utils;
 using TgaBuilderLib.ViewModel;
@@ -17,10 +19,8 @@ using TgaBuilderLib.ViewModel.Views;
 using TgaBuilderWpfUi.Services;
 using TgaBuilderWpfUi.View;
 using TgaBuilderWpfUi.Wrappers;
-using Application = System.Windows.Application;
 using Wpf.Ui.Appearance;
-using TgaBuilderLib.Krita;
-using TgaBuilderLib.Psd;
+using Application = System.Windows.Application;
 using FileTypes = TgaBuilderLib.Enums.FileTypes;
 
 namespace TgaBuilderWpfUi
@@ -103,7 +103,7 @@ namespace TgaBuilderWpfUi
         private void AddUIServicesToProvider(IServiceCollection services)
         {
             services.AddSingleton<IMediaFactory, MediaFactory>();
-            services.AddSingleton<ITransitionHelper, TransitionHelper>( sp => new TransitionHelper(
+            services.AddSingleton<ITransitionHelper, TransitionHelper>(sp => new TransitionHelper(
                 AccentColor: GetColorStructFromWpfColor(ApplicationAccentColorManager.GetColorizationColor())));
             services.AddSingleton<IModificationsHelper, ModificationsHelper>();
             services.AddSingleton<IClipboardService, ClipboardService>();

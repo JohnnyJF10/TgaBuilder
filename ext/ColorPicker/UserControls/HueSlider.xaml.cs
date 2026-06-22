@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ColorPicker.Models;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
-using ColorPicker.Models;
 
 namespace ColorPicker.UserControls
 {

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TgaBuilderLib.Icc;
+﻿namespace TgaBuilderLib.Icc;
 
 /* The following implementation has Krita's sRGB built-in ICC profile 
  * as the default layout and tag content source.

@@ -83,9 +83,9 @@ public class TransitionViewModel : ThrottledViewModelBase
 
     public ICommand MixCommand => _mixCommand ??= new RelayCommand(Mix);
 
-    public ICommand LoadImage1Command => _loadImage1Command 
+    public ICommand LoadImage1Command => _loadImage1Command
         ??= new RelayCommand(() => TransitionInVM.LoadImage1(_mainViewModel.Selection.Presenter));
-    public ICommand LoadImage2Command => _loadImage2Command 
+    public ICommand LoadImage2Command => _loadImage2Command
         ??= new RelayCommand(() => TransitionInVM.LoadImage2(_mainViewModel.Selection.Presenter));
 
     public ICommand MarkFinishedCommand => _markFinishedCommand ??= new RelayCommand(MarkFinished);
@@ -100,18 +100,18 @@ public class TransitionViewModel : ThrottledViewModelBase
 
     public bool IsSmoothMode
     {
-         get =>_transitionHelper.TypeOfTransition == TransitionType.Smooth;
-         set
-         {
-             if (value)
-             {
-                 _transitionHelper.TypeOfTransition = TransitionType.Smooth;
-                 OnTransitionTypeChanged();
-             }
-         }
+        get => _transitionHelper.TypeOfTransition == TransitionType.Smooth;
+        set
+        {
+            if (value)
+            {
+                _transitionHelper.TypeOfTransition = TransitionType.Smooth;
+                OnTransitionTypeChanged();
+            }
+        }
     }
     public bool IsBrickMode
-    { 
+    {
         get => _transitionHelper.TypeOfTransition == TransitionType.Bricks;
         set
         {

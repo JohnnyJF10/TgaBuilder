@@ -1,4 +1,4 @@
-﻿<elements:AsyncWindow
+<elements:AsyncWindow
     x:Class="TgaBuilderAvaloniaUi.View.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -30,19 +30,19 @@
     WindowStartupLocation="CenterScreen"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
-  <Window.KeyBindings>
-    <KeyBinding Gesture="Ctrl+A" Command="{Binding NewCommand}" />
-    <KeyBinding Gesture="Ctrl+C" Command="{Binding CopyCommand}" />
-    <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteCommand}" />
-    <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
-    <KeyBinding Gesture="Ctrl+Y" Command="{Binding RedoCommand}" />
-    <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
-    <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
-    <KeyBinding Gesture="Ctrl+E" Command="{Binding OpenSourceCommand}" />
-    <KeyBinding Gesture="Ctrl+D" Command="{Binding OpenDestinationCommand}" />
-    <KeyBinding Gesture="Ctrl+Q" Command="{Binding OpenSourceTrCommand}" />
-    <KeyBinding Gesture="Ctrl+W" Command="{Binding BatchLoaderCommand}" />
-  </Window.KeyBindings>
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+A" Command="{Binding NewCommand}" />
+        <KeyBinding Gesture="Ctrl+C" Command="{Binding CopyCommand}" />
+        <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteCommand}" />
+        <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
+        <KeyBinding Gesture="Ctrl+Y" Command="{Binding RedoCommand}" />
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+        <KeyBinding Gesture="Ctrl+E" Command="{Binding OpenSourceCommand}" />
+        <KeyBinding Gesture="Ctrl+D" Command="{Binding OpenDestinationCommand}" />
+        <KeyBinding Gesture="Ctrl+Q" Command="{Binding OpenSourceTrCommand}" />
+        <KeyBinding Gesture="Ctrl+W" Command="{Binding BatchLoaderCommand}" />
+    </Window.KeyBindings>
 
     <Window.Resources>
         <ResourceDictionary>
@@ -81,16 +81,14 @@
             <ColumnDefinition Width="*" MinWidth="370" />
         </Grid.ColumnDefinitions>
 
-        <!-- Toolbar background strip -->
         <Border Grid.Row="0" Grid.ColumnSpan="3"
-                Background="{DynamicResource ToolbarBackground}"
-                BorderBrush="{DynamicResource SeparatorBrush}"
-                BorderThickness="0,0,0,1" />
+            Background="{DynamicResource ToolbarBackground}"
+            BorderBrush="{DynamicResource SeparatorBrush}"
+            BorderThickness="0,0,0,1" />
 
-        <!-- Middle column background -->
         <Border Grid.Row="1" Grid.Column="1"
-                Background="{DynamicResource MiddleColumnBackground}"
-                CornerRadius="0" />
+            Background="{DynamicResource MiddleColumnBackground}"
+            CornerRadius="0" />
 
         <DockPanel>
             <Border Margin="3,3,0,0" />
@@ -102,52 +100,52 @@
                         IsEnabled="{Binding SourceIO.ControlsEnabled}"
                         Orientation="Horizontal"
                         Spacing="5">
-                      <SplitButton
-                          x:Name="OpenSourceSplitButton"
-                          Width="70"
-                          Background="Transparent"
-                          Height="36"
-                          ap:MouseOverInfoAP.InfoText="Open Source Panels (Ctrl + E)"
-                          Command="{Binding OpenSourceCommand}"
-                          >
-                        <SplitButton.Content>
-                          <Path
-                              Fill="{DynamicResource IconFillBrush}"
-                              Data="{StaticResource folder_open}"
-                              Width="16"
-                              Height="13"
-                              Stretch="Fill"
-                              />
-                        </SplitButton.Content>
-                        <SplitButton.Flyout>
-                            <Flyout>
-								<Grid>
-									<ItemsControl ItemsSource="{Binding SourceIO.RecentSourceFileNames}">
-										<ItemsControl.ItemTemplate>
-											<DataTemplate>
-												<Button
-                                                    x:Name="RecentSourceButton"
-                                                    Tag="Source"
-                                                    Click="RecentSourceButton_Click"
-                                                    MaxWidth="420"
-                                                    Command="{Binding #MainWin.DataContext.OpenRecentSourceCommand}"
-                                                    CommandParameter="{Binding .}"
-                                                    Background="Transparent"
-                                                    >
-													<Button.Content>
-														<TextBlock
-                                                            Text="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
-                                                            TextTrimming="CharacterEllipsis"
-                                                        />
-                                                    </Button.Content>
-                                                </Button>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </Grid>
-                            </Flyout>
-                        </SplitButton.Flyout>
-                      </SplitButton>
+                        <SplitButton
+                            x:Name="OpenSourceSplitButton"
+                            Width="70"
+                            Background="Transparent"
+                            Height="36"
+                            ap:MouseOverInfoAP.InfoText="Open Source Panels (Ctrl + E)"
+                            Command="{Binding OpenSourceCommand}"
+                            >
+                            <SplitButton.Content>
+                                <Path
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Data="{StaticResource folder_open}"
+                                    Width="16"
+                                    Height="13"
+                                    Stretch="Fill"
+                                    />
+                            </SplitButton.Content>
+                            <SplitButton.Flyout>
+                                <Flyout>
+                                    <Grid>
+                                        <ItemsControl ItemsSource="{Binding SourceIO.RecentSourceFileNames}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button
+                                                        x:Name="RecentSourceButton"
+                                                        Tag="Source"
+                                                        Click="RecentSourceButton_Click"
+                                                        MaxWidth="420"
+                                                        Command="{Binding #MainWin.DataContext.OpenRecentSourceCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        Background="Transparent"
+                                                        >
+                                                        <Button.Content>
+                                                            <TextBlock
+                                                                Text="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
+                                                                TextTrimming="CharacterEllipsis"
+                                                                />
+                                                        </Button.Content>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Grid>
+                                </Flyout>
+                            </SplitButton.Flyout>
+                        </SplitButton>
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="{Binding SourceIO.ReloadFileText}"
@@ -197,8 +195,8 @@
             <Border Width="133" DockPanel.Dock="Right" />
             <Border Margin="0,3,0,0">
                 <Border>
-                    <StackPanel 
-                        IsEnabled="{Binding TargetIO.ControlsEnabled}" 
+                    <StackPanel
+                        IsEnabled="{Binding TargetIO.ControlsEnabled}"
                         Orientation="Horizontal"
                         Spacing="5"
                         Margin="21,0"
@@ -210,52 +208,52 @@
                             Icon="{StaticResource document_add}" />
 
 
-                      <SplitButton
-                          x:Name="OpenDestinationSplitButton"
-                          Width="70"
-                          Height="36"
-                          Background="Transparent"
-                          ap:MouseOverInfoAP.InfoText="Open Destination Panels (Ctrl + D)"
-                          Command="{Binding OpenDestinationCommand}"
-                          >
-                        <SplitButton.Content>
-                          <Path
-                              Fill="{DynamicResource IconFillBrush}"
-                              Data="{StaticResource folder_open}" 
-                              Width="16"
-                              Height="13"
-                              Stretch="Fill"
-                              />
-                        </SplitButton.Content>
-                        <SplitButton.Flyout>
-                            <Flyout>
-								<Grid>
-									<ItemsControl ItemsSource="{Binding TargetIO.RecentDestinationFileNames}">
-										<ItemsControl.ItemTemplate>
-											<DataTemplate>
-												<Button
-                                                    x:Name="RecentTargetButton"
-                                                    Tag="Destination"
-                                                    Click="RecentTargetButton_Click"
-                                                    MaxWidth="420"
-                                                    Command="{Binding #MainWin.DataContext.OpenRecentDestinationCommand}"
-                                                    CommandParameter="{Binding .}"
-                                                    Background="Transparent"
-                                                    >
-													<Button.Content>
-														<TextBlock
-                                                            Text="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
-                                                            TextTrimming="CharacterEllipsis"
-                                                        />
-                                                    </Button.Content>
-                                                </Button>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </Grid>
-                            </Flyout>
-                        </SplitButton.Flyout>
-                      </SplitButton>
+                        <SplitButton
+                            x:Name="OpenDestinationSplitButton"
+                            Width="70"
+                            Height="36"
+                            Background="Transparent"
+                            ap:MouseOverInfoAP.InfoText="Open Destination Panels (Ctrl + D)"
+                            Command="{Binding OpenDestinationCommand}"
+                            >
+                            <SplitButton.Content>
+                                <Path
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Data="{StaticResource folder_open}"
+                                    Width="16"
+                                    Height="13"
+                                    Stretch="Fill"
+                                    />
+                            </SplitButton.Content>
+                            <SplitButton.Flyout>
+                                <Flyout>
+                                    <Grid>
+                                        <ItemsControl ItemsSource="{Binding TargetIO.RecentDestinationFileNames}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button
+                                                        x:Name="RecentTargetButton"
+                                                        Tag="Destination"
+                                                        Click="RecentTargetButton_Click"
+                                                        MaxWidth="420"
+                                                        Command="{Binding #MainWin.DataContext.OpenRecentDestinationCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        Background="Transparent"
+                                                        >
+                                                        <Button.Content>
+                                                            <TextBlock
+                                                                Text="{Binding ., Converter={StaticResource PathToFriendlyPathConverter}}"
+                                                                TextTrimming="CharacterEllipsis"
+                                                                />
+                                                        </Button.Content>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Grid>
+                                </Flyout>
+                            </SplitButton.Flyout>
+                        </SplitButton>
 
                         <elements:IconButton
                             ap:MouseOverInfoAP.InfoText="Save File (Ctrl + S)"
@@ -263,47 +261,47 @@
                             Command="{Binding SaveCommand}"
                             Icon="{StaticResource save}" />
 
-                          <SplitButton
-                          x:Name="SaveAsSplitButton"
-                          Width="70"
-                          Height="36"
-                          Background="Transparent"
-                          ap:MouseOverInfoAP.InfoText="Save As (Ctrl + Shift + S)"
-                          Command="{Binding SaveAsCommand}"
-                          CommandParameter="{x:Static enums:FileTypes.TGA}"
-                          >
-                        <SplitButton.Content>
-                          <Path
-                              Fill="{DynamicResource IconFillBrush}"
-                              Data="{StaticResource save_as}" 
-                              Width="17"
-                              Height="17"
-                              Stretch="Fill"
-                              />
-                        </SplitButton.Content>
-                        <SplitButton.Flyout>
-                            <Flyout>
-								<Grid>
-									<ItemsControl ItemsSource="{Binding TargetIO.WriteableImageFormatsEnumerable}">
-										<ItemsControl.ItemTemplate>
-											<DataTemplate>
-												<Button
-                                                    x:Name="RecentTargetButton"
-                                                    Tag="Destination"
-                                                    Click="RecentTargetButton_Click"
-                                                    MaxWidth="420"
-                                                    Command="{Binding #MainWin.DataContext.SaveAsCommand}"
-                                                    CommandParameter="{Binding .}"
-                                                    Background="Transparent"
-                                                    Content="{Binding ., Converter={StaticResource WritableFileTypesConverter}}"
-                                                    />
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </Grid>
-                            </Flyout>
-                        </SplitButton.Flyout>
-                      </SplitButton>
+                        <SplitButton
+                            x:Name="SaveAsSplitButton"
+                            Width="70"
+                            Height="36"
+                            Background="Transparent"
+                            ap:MouseOverInfoAP.InfoText="Save As (Ctrl + Shift + S)"
+                            Command="{Binding SaveAsCommand}"
+                            CommandParameter="{x:Static enums:FileTypes.TGA}"
+                            >
+                            <SplitButton.Content>
+                                <Path
+                                    Fill="{DynamicResource IconFillBrush}"
+                                    Data="{StaticResource save_as}"
+                                    Width="17"
+                                    Height="17"
+                                    Stretch="Fill"
+                                    />
+                            </SplitButton.Content>
+                            <SplitButton.Flyout>
+                                <Flyout>
+                                    <Grid>
+                                        <ItemsControl ItemsSource="{Binding TargetIO.WriteableImageFormatsEnumerable}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button
+                                                        x:Name="RecentTargetButton"
+                                                        Tag="Destination"
+                                                        Click="RecentTargetButton_Click"
+                                                        MaxWidth="420"
+                                                        Command="{Binding #MainWin.DataContext.SaveAsCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        Background="Transparent"
+                                                        Content="{Binding ., Converter={StaticResource WritableFileTypesConverter}}"
+                                                        />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Grid>
+                                </Flyout>
+                            </SplitButton.Flyout>
+                        </SplitButton>
 
                     </StackPanel>
                 </Border>
@@ -326,19 +324,19 @@
                     <local:MainWindowImportUserControl />
                 </TabItem>
                 <TabItem Height="15">
-<TabItem.Header>
+                    <TabItem.Header>
                         <TextBlock FontSize="14" Text="Grid" />
                     </TabItem.Header>
                     <local:MainWindowGridUserControl />
                 </TabItem>
                 <TabItem Height="15">
-<TabItem.Header>
+                    <TabItem.Header>
                         <TextBlock FontSize="14" Text="Format" />
                     </TabItem.Header>
                     <local:MainWindowFormatUserControl DataContext="{Binding SourceFormatTab}" />
                 </TabItem>
                 <TabItem Height="15">
-<TabItem.Header>
+                    <TabItem.Header>
                         <TextBlock FontSize="14" Text="View" />
                     </TabItem.Header>
                     <local:MainWindowViewUserControl DataContext="{Binding SourceViewTab}" />
@@ -382,7 +380,7 @@
                         ZoomX="{Binding Zoom, Mode=OneWayToSource}"
                         ZoomY="{Binding Zoom, Mode=OneWayToSource}"
                         Tag="Source">
-                      
+
                         <Canvas
                             x:Name="SourceCanvas"
                             Width="{Binding #SourceImage.Bounds.Width}"
@@ -407,7 +405,7 @@
                                 ap:PanelMouseAP.IsTargetPanel="False"
                                 RenderOptions.BitmapInterpolationMode="None"
                                 Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="None" 
+                                Stretch="None"
                                 Tag="Source"/>
                             <Rectangle
                                 Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged}"
@@ -553,7 +551,7 @@
             Grid.Row="1"
             Grid.Column="1"
             VerticalAlignment="Top">
-            <local:MainWindowSelectionUserControl 
+            <local:MainWindowSelectionUserControl
                 x:Name="SelectionUserControl"
                 />
             <local:MainWindowAnimationUserControl />
@@ -661,7 +659,7 @@
                                 ap:PanelMouseAP.IsTargetPanel="True"
                                 RenderOptions.BitmapInterpolationMode="None"
                                 Source="{Binding Presenter, Converter={StaticResource WriteableBitmapConverter}}"
-                                Stretch="None" 
+                                Stretch="None"
                                 Tag="Destination"/>
 
                             <Rectangle
@@ -832,83 +830,83 @@
             BorderBrush="{DynamicResource SeparatorBrush}"
             BorderThickness="0,1,0,0"
             Padding="4,2">
-        <DockPanel>
+            <DockPanel>
 
-            <StackPanel
-                Margin="5,0"
-                VerticalAlignment="Center"
-                IsVisible="{Binding PanelInfoVisible, UpdateSourceTrigger=PropertyChanged}"
-                Orientation="Horizontal">
-                <Path 
-                  Margin="0,2,0,0" 
-                  Fill="{DynamicResource IconFillBrush}"
-                  Data="{StaticResource cursor}"
-                  />
-                <TextBlock
-                    Width="100"
-                    Margin="5,5,5,0"
-                    VerticalAlignment="Top"
-                    Text="{Binding PixelInfo}" />
-                <Path 
-                  Width="20"
-                  Height="20"
-                  Stretch="Fill"
-                  IsVisible="{Binding TileInfoVisible, UpdateSourceTrigger=PropertyChanged}"
-                  Fill="{DynamicResource IconFillBrush}"
-                  Data="{StaticResource screenshot_simple}" />
-                <Path 
-                  Width="20"
-                  Height="20"
-                  Stretch="Fill"
-                  IsVisible="{Binding SelectionInfoVisible, UpdateSourceTrigger=PropertyChanged}" 
-                  Fill="{DynamicResource IconFillBrush}"
-                  Data="{StaticResource square_simple}" />
-                <TextBlock
-                    Width="60"
-                    Margin="5,5,5,0"
-                    Text="{Binding TileInfo}" />
-                <Path 
-                  Width="20"
-                  Height="20"
-                  Stretch="Fill"
-                  Margin="0,2,0,0" 
-                  Fill="{DynamicResource IconFillBrush}"
-                  Data="{StaticResource image}" />
-                <TextBlock 
-                  Margin="5,5,5,0" 
-                  Text="{Binding PanelInfo}" />
+                <StackPanel
+                    Margin="5,0"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding PanelInfoVisible, UpdateSourceTrigger=PropertyChanged}"
+                    Orientation="Horizontal">
+                    <Path
+                        Margin="0,2,0,0"
+                        Fill="{DynamicResource IconFillBrush}"
+                        Data="{StaticResource cursor}"
+                        />
+                    <TextBlock
+                        Width="100"
+                        Margin="5,5,5,0"
+                        VerticalAlignment="Top"
+                        Text="{Binding PixelInfo}" />
+                    <Path
+                        Width="20"
+                        Height="20"
+                        Stretch="Fill"
+                        IsVisible="{Binding TileInfoVisible, UpdateSourceTrigger=PropertyChanged}"
+                        Fill="{DynamicResource IconFillBrush}"
+                        Data="{StaticResource screenshot_simple}" />
+                    <Path
+                        Width="20"
+                        Height="20"
+                        Stretch="Fill"
+                        IsVisible="{Binding SelectionInfoVisible, UpdateSourceTrigger=PropertyChanged}"
+                        Fill="{DynamicResource IconFillBrush}"
+                        Data="{StaticResource square_simple}" />
+                    <TextBlock
+                        Width="60"
+                        Margin="5,5,5,0"
+                        Text="{Binding TileInfo}" />
+                    <Path
+                        Width="20"
+                        Height="20"
+                        Stretch="Fill"
+                        Margin="0,2,0,0"
+                        Fill="{DynamicResource IconFillBrush}"
+                        Data="{StaticResource image}" />
+                    <TextBlock
+                        Margin="5,5,5,0"
+                        Text="{Binding PanelInfo}" />
 
-            </StackPanel>
-            <elements:IconButton
-                x:Name="ThemeToggleButton"
-                Classes="flat"
-                DockPanel.Dock="Right"
-                Icon="{StaticResource dark_theme}"
-                ToolTip.Tip="Toggle Dark / Light Mode" />
-            <elements:IconButton
-                Classes="flat"
-                Command="{Binding AboutCommand}"
-                DockPanel.Dock="Right"
-                Icon="{StaticResource info}" />
-            <TextBlock
-                Margin="5,0"
-                VerticalAlignment="Center"
-                DockPanel.Dock="Right"
-                FontWeight="DemiBold"
-                Foreground="DarkRed"
-                Text="{Binding DebugNote}" />
-            <TextBlock
-                x:Name="MouseOverInfoTextBlock"
-                Margin="5,11,5,5"
-                Text="Welcome to TgaBuilder! Made with ❤ for the TRLE community."
-                TextTrimming="CharacterEllipsis"
-                TextWrapping="NoWrap" />
-        </DockPanel>
+                </StackPanel>
+                <elements:IconButton
+                    x:Name="ThemeToggleButton"
+                    Classes="flat"
+                    DockPanel.Dock="Right"
+                    Icon="{StaticResource dark_theme}"
+                    ToolTip.Tip="Toggle Dark / Light Mode" />
+                <elements:IconButton
+                    Classes="flat"
+                    Command="{Binding AboutCommand}"
+                    DockPanel.Dock="Right"
+                    Icon="{StaticResource info}" />
+                <TextBlock
+                    Margin="5,0"
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right"
+                    FontWeight="DemiBold"
+                    Foreground="DarkRed"
+                    Text="{Binding DebugNote}" />
+                <TextBlock
+                    x:Name="MouseOverInfoTextBlock"
+                    Margin="5,11,5,5"
+                    Text="Welcome to TgaBuilder! Made with ❤ for the TRLE community."
+                    TextTrimming="CharacterEllipsis"
+                    TextWrapping="NoWrap" />
+            </DockPanel>
         </Border>
-      <elements:NotificationBar
-        Manager="{Binding #MainWin.Manager}"
-        Grid.Row="1"
-        Grid.ColumnSpan="3"
-        ZIndex="100" />
+        <elements:NotificationBar
+            Manager="{Binding #MainWin.Manager}"
+            Grid.Row="1"
+            Grid.ColumnSpan="3"
+            ZIndex="100" />
     </Grid>
 </elements:AsyncWindow>

@@ -8,7 +8,7 @@ namespace TgaBuilderWpfUi.Services
 {
     public partial class MessageService : IMessageService
     {
-        public MessageService(bool whetherSendSuccessMessage) 
+        public MessageService(bool whetherSendSuccessMessage)
             => _whetherSendSuccessMessage = whetherSendSuccessMessage;
 
         private const int MAX_NUM_PAGES = 128;

@@ -1,5 +1,4 @@
 using TgaBuilderLib.Transitions;
-using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.ViewModel;
 
@@ -45,7 +44,7 @@ public class UnderfillingViewModel : ThrottledViewModelBase
 
     private void ConfigureTransitionHelper()
     {
-        _transitionHelper.CurrentBricksPipelineRequirements 
+        _transitionHelper.CurrentBricksPipelineRequirements
         = BricksPipelineRequirements.RequiresSelectionBuilding;
 
         _transitionHelper.UnderfillingPivot = UnderfillingPivot;

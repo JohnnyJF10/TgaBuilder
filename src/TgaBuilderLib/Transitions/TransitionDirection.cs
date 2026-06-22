@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TgaBuilderLib.Transitions
+﻿namespace TgaBuilderLib.Transitions
 {
     public enum TransitionDirection
     {

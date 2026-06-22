@@ -1,6 +1,5 @@
 using Avalonia.Media;
 using System;
-using System.Diagnostics;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderLib.Messaging;
 

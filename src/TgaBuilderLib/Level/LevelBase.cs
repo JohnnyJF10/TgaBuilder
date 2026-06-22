@@ -1,7 +1,6 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using System.Buffers;
 using System.Runtime.InteropServices;
-using System.Text;
 using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Level

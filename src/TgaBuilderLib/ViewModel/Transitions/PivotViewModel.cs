@@ -83,7 +83,7 @@ public class PivotViewModel : ThrottledViewModelBase
 
     private void ConfigureTransitionHelper()
     {
-        _transitionHelper.CurrentBricksPipelineRequirements 
+        _transitionHelper.CurrentBricksPipelineRequirements
         = BricksPipelineRequirements.RequiresSelectionBuilding;
 
         _transitionHelper.Direction = SelectedTransitionMode;
