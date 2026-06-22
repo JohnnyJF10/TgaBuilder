@@ -28,16 +28,16 @@ namespace TgaBuilderLib.BitmapBytesIO
             memoryStream.Read(LoadedBytes, 0, ActualDataLength);
         }
 
-        public void WriteUsual(string fileName, CancellationToken? cancellationToken = null)
+        public async Task WriteUsual(string fileName, CancellationToken? cancellationToken = null)
         {
             if (LoadedBytes is null)
                 throw new InvalidOperationException("No data loaded to save.");
 
             using var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true);
             if (cancellationToken is not CancellationToken token)
-                fileStream.WriteAsync(LoadedBytes, 0, ActualDataLength);
+                await fileStream.WriteAsync(LoadedBytes, 0, ActualDataLength);
             else
-                fileStream.WriteAsync(LoadedBytes, 0, ActualDataLength, token);
+                await fileStream.WriteAsync(LoadedBytes, 0, ActualDataLength, token);
 
         }
     }

@@ -45,9 +45,7 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         void ToUsual(IReadableBitmap bitmap, string extension);
 
-        void WriteUsual(
-            string filePath,
-            CancellationToken? cancellationToken = null);
+        Task WriteUsual(string filePath, CancellationToken? cancellationToken = null);
 
         void ToTga(IReadableBitmap bitmap);
 
@@ -55,7 +53,6 @@ namespace TgaBuilderLib.BitmapBytesIO
         void ToPsd(IReadableBitmap bitmap);
 
         void WriteKrita(string filePath, CancellationToken? cancellationToken = null);
-
         void WriteTga(string filePath, CancellationToken? cancellationToken = null);
         void WritePsd(string filePath, CancellationToken? cancellationToken = null);
 

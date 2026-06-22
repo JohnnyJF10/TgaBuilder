@@ -71,7 +71,7 @@ public static class CursorProvider
 
             return new Cursor(wb, new PixelPoint(hotspotX, hotspotY));
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return new Cursor(StandardCursorType.Hand);
         }

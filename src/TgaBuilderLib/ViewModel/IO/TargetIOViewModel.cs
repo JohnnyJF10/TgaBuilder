@@ -70,7 +70,7 @@ namespace TgaBuilderLib.ViewModel
             _ioTask = Open(fileName);
         }
 
-        public void SetupSaveTask(string? fileName = null)
+        public void SetupSaveTask(string? fileName = null, FileTypes? fileType = null)
         {
             if (_ioTask != null && !_ioTask.IsCompleted)
             {
@@ -78,7 +78,7 @@ namespace TgaBuilderLib.ViewModel
                 _cancellationTokenSource?.Dispose();
                 _ioTask.Wait();
             }
-            _ioTask = Save(fileName);
+            _ioTask = Save(fileName, fileType);
         }
 
         public void SaveCurrent() => SetupSaveTask(_lastFilePath);
@@ -216,11 +216,13 @@ namespace TgaBuilderLib.ViewModel
             _dispatcherService.Invoke(() => _messageService.SendMessage(resMessage));
         }
 
-        private async Task<bool> Save(string? fileName = null)
+        private async Task<bool> Save(string? fileName = null, FileTypes? fileType = null)
         {
             if (String.IsNullOrEmpty(fileName) || !IsFileWriteable(fileName))
             {
-                var dialogResult = await _fileService.SaveFileDialog(_writeableImageFormats);
+                var dialogResult = await (fileType is null
+                    ? _fileService.SaveFileDialog(_writeableImageFormats)
+                    : _fileService.SaveFileDialog(_writeableImageFormats, defaultType: fileType.Value));
 
                 if (dialogResult == true)
                     fileName = _fileService.SelectedPath;

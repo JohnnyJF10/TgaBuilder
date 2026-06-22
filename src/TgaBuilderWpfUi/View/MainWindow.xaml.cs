@@ -35,5 +35,29 @@ namespace TgaBuilderWpfUi.View
             InitializeComponent();
             base.DataContext = mainViewModel;
         }
+
+        public static List<FileTypes> SupportedFileTypes
+            => new List<FileTypes>
+        {
+            FileTypes.TGA,
+            FileTypes.BMP,
+            FileTypes.PNG,
+            FileTypes.JPEG,
+            FileTypes.JPG,
+            FileTypes.KRA,
+            FileTypes.PSD
+        };
+
+        public static List<string> SupportedFileTypesStrings
+            => new List<string>
+        {
+            "TGA (Targa Image)",
+            "BMP (Bitmap Image)",
+            "PNG (Portable Network Graphics)",
+            "JPEG (JPEG Image)",
+            "JPG (JPG Image)",
+            "KRA (Krita Project)",
+            "PSD (Photoshop Document)"
+        };
     }
 }

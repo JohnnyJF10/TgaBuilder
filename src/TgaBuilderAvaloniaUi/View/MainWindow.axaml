@@ -9,6 +9,7 @@
     xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:paz="using:Avalonia.Controls.PanAndZoom"
+    xmlns:transitions="using:TgaBuilderLib.Transitions"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
     xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
     x:Name="MainWin"
@@ -28,8 +29,7 @@
     Foreground="{DynamicResource SystemBaseHighColor}"
     UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen"
-    Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico"
-    mc:Ignorable="d">
+    Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
   <Window.KeyBindings>
     <KeyBinding Gesture="Ctrl+A" Command="{Binding NewCommand}" />
@@ -262,11 +262,72 @@
                             Background="Transparent"
                             Command="{Binding SaveCommand}"
                             Icon="{StaticResource save}" />
-                        <elements:IconButton
-                            ap:MouseOverInfoAP.InfoText="Save As (Ctrl + Shift + S)"
-                            Background="Transparent"
-                            Command="{Binding SaveAsCommand}"
-                            Icon="{StaticResource save_as} " />
+
+                          <SplitButton
+                          x:Name="SaveAsSplitButton"
+                          Width="70"
+                          Height="36"
+                          Background="Transparent"
+                          ap:MouseOverInfoAP.InfoText="Save As (Ctrl + Shift + S)"
+                          Command="{Binding SaveAsCommand}"
+                          CommandParameter="{x:Static enums:FileTypes.TGA}"
+                          >
+                        <SplitButton.Content>
+                          <Path
+                              Fill="{DynamicResource IconFillBrush}"
+                              Data="{StaticResource save_as}" 
+                              Width="17"
+                              Height="17"
+                              Stretch="Fill"
+                              />
+                        </SplitButton.Content>
+                        <SplitButton.Flyout>
+                            <Flyout>
+								<Grid
+                                RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+						            <Button
+                                         x:Name="TgaSaveAsButton"
+                                         Content="TGA (Targa Image)"
+                                         MaxWidth="420"
+                                         Command="{Binding SaveAsCommand}"
+                                         CommandParameter="{x:Static enums:FileTypes.TGA}"
+                                         Background="Transparent"/>
+                                    <Button
+                                         x:Name="BmpSaveAsButton"
+                                         Grid.Row="1"
+                                         Content="BMP (Bitmap Image)"
+                                         MaxWidth="420"
+                                         Command="{Binding SaveAsCommand}"
+                                         CommandParameter="{x:Static enums:FileTypes.BMP}"
+                                         Background="Transparent"/>
+                                    <Button
+                                         x:Name="PngSaveAsButton"
+                                         Grid.Row="2"
+                                         Content="PNG (Portable Network Graphics)"
+                                         MaxWidth="420"
+                                         Command="{Binding SaveAsCommand}"
+                                         CommandParameter="{x:Static enums:FileTypes.PNG}"
+                                         Background="Transparent"/>
+                                    <Button
+                                         x:Name="KraSaveAsButton"
+                                         Grid.Row="3"
+                                         Content="KRA (Krita Image)"
+                                         MaxWidth="420"
+                                         Command="{Binding SaveAsCommand}"
+                                         CommandParameter="{x:Static enums:FileTypes.KRA}"
+                                         Background="Transparent"/>
+                                    <Button
+                                         x:Name="PsdSaveAsButton"
+                                         Grid.Row="4"
+                                         Content="PSD (Photoshop Image)"
+                                         MaxWidth="420"
+                                         Command="{Binding SaveAsCommand}"
+                                         CommandParameter="{x:Static enums:FileTypes.PSD}"
+                                         Background="Transparent"/>
+                                </Grid>
+                            </Flyout>
+                        </SplitButton.Flyout>
+                      </SplitButton>
 
                     </StackPanel>
                 </Border>
@@ -863,7 +924,7 @@
             <TextBlock
                 x:Name="MouseOverInfoTextBlock"
                 Margin="5,11,5,5"
-                Text="Welcome to TgaBuilder! Made with ❤ by Jonson."
+                Text="Welcome to TgaBuilder! Made with ❤ for the TRLE community."
                 TextTrimming="CharacterEllipsis"
                 TextWrapping="NoWrap" />
         </DockPanel>

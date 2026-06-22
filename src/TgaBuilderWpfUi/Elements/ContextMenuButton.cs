@@ -30,6 +30,19 @@ namespace TgaBuilderWpfUi.Elements
             set => SetValue(ItemsSourceProperty, value);
         }
 
+        public static readonly DependencyProperty DisplayStringsSourceProperty =
+            DependencyProperty.Register(
+                nameof(DisplayStringsSource),
+                typeof(List<string>),
+                typeof(ContextMenuButton),
+                new PropertyMetadata(null));
+
+        public List<string> DisplayStringsSource
+        {
+            get => (List<string>)GetValue(DisplayStringsSourceProperty);
+            set => SetValue(DisplayStringsSourceProperty, value);
+        }
+
         public static readonly DependencyProperty ItemCommandProperty =
             DependencyProperty.Register(
                 nameof(ItemCommand),
@@ -59,16 +72,22 @@ namespace TgaBuilderWpfUi.Elements
         private void OnClick(object sender, RoutedEventArgs e)
         {
             if (ItemCommand == null) return;
-            if (ItemsSource is not IEnumerable<string> ItemsList) return;
-            if (!ItemsList.Any()) return;
+            if (ItemsSource is not IEnumerable ItemsList) return;
+            if (!ItemsList.Cast<object>().Any()) return;
 
             var contextMenu = new ContextMenu();
 
             foreach (var item in ItemsList)
             {
+                int idx = ItemsList.Cast<object>().ToList().IndexOf(item);
+
+                string? header = idx >= 0 && DisplayStringsSource != null && idx < DisplayStringsSource.Count
+                    ? DisplayStringsSource[idx]
+                    : item.ToString();
+
                 var menuItem = new MenuItem
                 {
-                    Header = item.ToString(),
+                    Header = header,
                     Command = ItemCommand,
                     CommandParameter = CommandParameterSelector?.Invoke(item) ?? item
                 };
