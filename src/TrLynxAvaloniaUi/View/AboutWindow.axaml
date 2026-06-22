@@ -32,7 +32,12 @@
                     Margin="8,0"
                     ClipToBounds="True"
                     BoxShadow="0 2 8 0 #20000000">
-                    <Image Source="avares://TrLynxAvaloniaUi/Resources/TrLynx_picture.png" Width="64" Height="64" />
+                    <Image 
+                        Source="avares://TrLynxAvaloniaUi/Resources/TrLynx_picture.png" 
+                        Width="64" 
+                        Height="64" 
+                        RenderOptions.BitmapInterpolationMode="HighQuality"
+                        />
                 </Border>
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" TextWrapping="Wrap"/>
