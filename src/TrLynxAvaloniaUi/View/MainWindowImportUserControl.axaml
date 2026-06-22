@@ -1,0 +1,50 @@
+<UserControl x:Class="TrLynxAvaloniaUi.View.MainWindowImportUserControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:elements="clr-namespace:TrLynxAvaloniaUi.Elements"
+    xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+    xmlns:ap="clr-namespace:TrLynxAvaloniaUi.AttachedProperties"
+    xmlns:enums="clr-namespace:TrLynxLib.Enums;assembly=TrLynxLib"
+    x:DataType="viewmodel:MainViewModel"
+    x:CompileBindings="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/IconToggleButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel Margin="5,0,5,0" HorizontalAlignment="Stretch">
+        <elements:IconButton
+            Classes="outlined"
+            Icon="{StaticResource games}"
+            ap:MouseOverInfoAP.InfoText="Import from Classic TR... (Ctrl + Q)"
+            Command="{Binding OpenSourceTrCommand}"
+            DockPanel.Dock="Left" />
+        <elements:IconToggleButton
+            Classes="outlined"
+            Margin="5,0,0,0"
+            ap:MouseOverInfoAP.InfoText="Use Texture Repacking (remove TE Padding)"
+            Icon="{StaticResource map}"
+            DockPanel.Dock="Left"
+            IsChecked="{Binding SourceIO.TrImportRepackingSelected}" />
+        <elements:IconButton
+            Classes="outlined"
+            Icon="{StaticResource set_top_stack}"
+            Margin="0,0,5,0"
+            ap:MouseOverInfoAP.InfoText="Open Batch Loader... (Ctrl + W)"
+            Command="{Binding BatchLoaderCommand}"
+            DockPanel.Dock="Right" />
+        <elements:MouseWheelNumericUpDown
+            Margin="5,0"
+            Minimum="1"
+            Maximum="16"
+            FormatString="N0"
+            ParsingNumberStyle="Integer"
+            ap:MouseOverInfoAP.InfoText="Set the number of pages of the TR file to import. Each page has a width of 256 pix."
+            Value="{Binding SourceIO.TrImportHorPageNum, UpdateSourceTrigger=PropertyChanged}" />
+    </DockPanel>
+
+</UserControl>

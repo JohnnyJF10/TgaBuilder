@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="TrLynxWpfUi.View.TransitionWindowManualUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TrLynxWpfUi.View" 
+             xmlns:elements="clr-namespace:TrLynxWpfUi.Elements"
+             xmlns:ap="clr-namespace:TrLynxWpfUi.AttachedProperties"
+             xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
+             xmlns:enums="clr-namespace:TrLynxLib.Enums;assembly=TrLynxLib"
+             xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionOutViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/ToggleButtonExStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <WrapPanel
+            DataContext="{Binding TransitionOutVM}"
+                                Orientation="Horizontal"
+                                Margin="8,6,8,8">
+        <elements:ToggleButtonEx
+                                    Margin="0,0,8,8"
+                                    VerticalAlignment="Center"
+                                    ap:MouseOverInfoAP.InfoText="Enable manual drawing of visible tiles. The mouse wheel rotates the last tile set visible."
+                                    Icon="{ui:SymbolIcon Pen24}"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    IsChecked="{Binding IsExplicitTileVisibilityDrawMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <elements:ToggleButtonEx
+                                    Margin="0,0,8,8"
+                                    x:Name="ProtectEdgesToggleButton"
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Icon="{ui:SymbolIcon Eraser24}"
+                                    ap:MouseOverInfoAP.InfoText="Enable manual erasing of visible tiles. Erasing a moved/rotated tile restores its original position and rotation."
+                                    IsChecked="{Binding IsExplicitTileVisibilityEraseMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <elements:ToggleButtonEx
+                                    Margin="0,0,8,8"
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Icon="{ui:SymbolIcon ArrowMove24}"
+                                    ap:MouseOverInfoAP.InfoText="Move tiles by dragging and rotate them with the mouse wheel"
+                                    IsChecked="{Binding IsTileMoveRotateMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <elements:ToggleButtonEx
+                                    Margin="0,0,8,8"
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Icon="{ui:SymbolIcon ArrowRotateCounterclockwise24}"
+                                    ap:MouseOverInfoAP.InfoText="Rotate a tile: click it and drag to spin it; the mouse wheel fine-tunes the last rotated tile"
+                                    IsChecked="{Binding IsTileRotateMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <ui:Button
+                                    VerticalAlignment="Center"
+                                    MinHeight="36"
+                                    MinWidth="36"
+                                    Margin="0,0,8,8"
+                                    Icon="{ui:SymbolIcon Backspace24}"
+                                    ap:MouseOverInfoAP.InfoText="Reset all manual adjustments (visibility, moves and rotations)"
+                                    Command="{Binding ResetExplicitVisibilityCommand}" />
+
+
+    </WrapPanel>
+</UserControl>

@@ -1,0 +1,291 @@
+<elements:AsyncWindow
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:elements="clr-namespace:TrLynxAvaloniaUi.Elements"
+    xmlns:converters="clr-namespace:TrLynxAvaloniaUi.Converters"
+    xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+    xmlns:ap="clr-namespace:TrLynxAvaloniaUi.AttachedProperties"
+    xmlns:local="clr-namespace:TrLynxAvaloniaUi.View"
+    x:Class="TrLynxAvaloniaUi.View.ModificationsWindow"
+    x:DataType="viewmodel:ModificationsViewModel"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterScreen"
+    UseLayoutRounding="True"
+    Background="{DynamicResource WindowBackgroundGradient}"
+    Foreground="{DynamicResource SystemBaseHighColor}"
+    Title="Single Texture Modifications"
+    Width="730"
+    Height="300"
+    MinWidth="460"
+    MinHeight="300"
+    Icon="avares://TrLynxAvaloniaUi/Resources/TrLynx_icon.ico">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude
+                    Source="/Styles/CheckerBrush.axaml" />
+                <ResourceInclude
+                    Source="/Styles/IconToggleButtonStyle.axaml" />
+                <ResourceInclude
+                    Source="/Styles/IconButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:WriteableBitmapConverter
+                x:Key="WriteableBitmapConverter" />
+            <converters:ColorStructToMediaColor
+                x:Key="ColorStructToMediaColor" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid
+        RowDefinitions="*,60">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="2*"
+                MinWidth="210" />
+            <ColumnDefinition
+                Width="*"
+                MinWidth="220" />
+        </Grid.ColumnDefinitions>
+
+        <Grid
+            x:Name="ImageAreaGrid"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            ColumnDefinitions="*, 35, 0, 0, *"
+            RowDefinitions="*,60">
+
+            <Border
+                DataContext="{Binding ModificationInVM}"
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent">
+                <Grid>
+                    <Viewbox
+                        Stretch="Uniform"
+                        Margin="10"
+                        RenderOptions.BitmapInterpolationMode="None">
+                        <Grid
+                            Width="{Binding ImageIn.PixelWidth, FallbackValue=128}"
+                            Height="{Binding ImageIn.PixelHeight, FallbackValue=128}">
+                            <elements:CheckerRectangle
+                                TileDensity="1" />
+                            <Image
+                                x:Name="InputImage"
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding ImageIn, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Fill"
+                                PointerMoved="InputImage_PointerMoved"
+                                PointerEntered="InputImage_PointerEntered"
+                                PointerExited="InputImage_PointerExited"
+                                PointerPressed="InputImage_PointerPressed" />
+                        </Grid>
+                    </Viewbox>
+                </Grid>
+            </Border>
+
+            <PathIcon
+                Grid.Column="1"
+                Data="{StaticResource arrow_forward}"
+                Width="18"
+                Height="18"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center" />
+
+            <Border
+                DataContext="{Binding ColorOverrideVM}"
+                Grid.Column="2"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                IsVisible="{Binding IsColorOverrideEnabled}"
+                Background="Transparent">
+                <Grid>
+                    <Viewbox
+                        Stretch="Uniform"
+                        Margin="10"
+                        RenderOptions.BitmapInterpolationMode="None">
+                        <Grid
+                            Width="{Binding SecondaryImage.PixelWidth, FallbackValue=128}"
+                            Height="{Binding SecondaryImage.PixelHeight, FallbackValue=128}">
+                            <elements:CheckerRectangle
+                                TileDensity="1" />
+                            <Image
+                                RenderOptions.BitmapInterpolationMode="None"
+                                Source="{Binding SecondaryImage, Converter={StaticResource WriteableBitmapConverter}}"
+                                Stretch="Fill" />
+                        </Grid>
+                    </Viewbox>
+                    <TextBlock
+                        Text="Secondary"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        FontSize="18"
+                        IsVisible="{Binding SecondaryInitTextVisible}"
+                        IsHitTestVisible="False" />
+                </Grid>
+            </Border>
+
+            <PathIcon
+                Grid.Column="3"
+                Data="{StaticResource arrow_forward}"
+                Width="18"
+                Height="18"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsVisible="{Binding ColorOverrideVM.IsColorOverrideEnabled}" />
+
+            <Border
+                DataContext="{Binding ModificationOutVM}"
+                Grid.Column="4"
+                Margin="10"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent">
+                <Image
+                    x:Name="ResultImage"
+                    RenderOptions.BitmapInterpolationMode="None"
+                    Source="{Binding ImageOut, Converter={StaticResource WriteableBitmapConverter}}"
+                    Stretch="Uniform" />
+            </Border>
+
+            <elements:IconButton
+                Grid.Row="1"
+                Grid.Column="0"
+                Classes="outlined"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                ap:MouseOverInfoAP.InfoText="Copy input image from the current selection"
+                Icon="{StaticResource image_copy}"
+                Command="{Binding LoadImageInCommand}" />
+
+            <elements:IconButton
+                Grid.Row="1"
+                Grid.Column="2"
+                Classes="outlined"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsVisible="{Binding ColorOverrideVM.IsColorOverrideEnabled}"
+                ap:MouseOverInfoAP.InfoText="Copy the secondary colour-source image from the current selection"
+                Icon="{StaticResource image_copy}"
+                Command="{Binding LoadSecondaryImageCommand}" />
+
+        </Grid>
+
+        <GridSplitter
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.RowSpan="1"
+            Width="4"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Stretch"
+            Background="Transparent"
+            ResizeDirection="Columns" />
+
+        <ScrollViewer
+            Grid.Row="0"
+            Grid.Column="1"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled"
+            Margin="10,4,4,4">
+            <StackPanel
+                Spacing="8"
+                Margin="0,0,16,0">
+
+                <Expander
+                    DataContext="{Binding BasicVM}"
+                    Header="Basic"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch">
+                    <local:ModificationsWindowBasicUserControl />
+                </Expander>
+
+                <Expander
+                    DataContext="{Binding ColorVM}"
+                    Header="Color"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch">
+                    <local:ModificationsWindowColorUserControl />
+                </Expander>
+
+                <Expander
+                    DataContext="{Binding ColorOverlayVM}"
+                    Header="Color Overlay"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch">
+                    <local:ModificationsWindowColorOverlayUserControl />
+                </Expander>
+
+                <Expander
+                    DataContext="{Binding ColorOverrideVM}"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch">
+                    <Expander.Header>
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <TextBlock
+                                Text="Color Override"
+                                VerticalAlignment="Center" />
+                            <elements:IconToggleButton
+                                Classes="outlined"
+                                Icon="{StaticResource paint_bucket}"
+                                VerticalAlignment="Center"
+                                ap:MouseOverInfoAP.InfoText="Enable colour override and show the secondary colour-source texture"
+                                IsChecked="{Binding IsColorOverrideEnabled}"
+                                Margin="15,0,0,0"
+                                Width="26"
+                                Height="26" />
+                        </StackPanel>
+                    </Expander.Header>
+                    <local:ModificationsWindowColorOverrideUserControl />
+                </Expander>
+
+                <Expander
+                    DataContext="{Binding RetrofierVM}"
+                    Header="Texture Retrofier"
+                    IsExpanded="True"
+                    HorizontalAlignment="Stretch">
+                    <local:ModificationsWindowRetrofierUserControl />
+                </Expander>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Margin="-10,0,-10,-10"
+            VerticalAlignment="Stretch"
+            IsHitTestVisible="False"
+            Background="{DynamicResource StatusBarBackground}"
+            BorderBrush="{DynamicResource SeparatorBrush}"
+            BorderThickness="0,1,0,0"
+            CornerRadius="0" />
+
+        <StackPanel
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            Spacing="8"
+            Margin="8">
+            <Button Width="80" Height="32" HorizontalContentAlignment="Center"
+                Content="Apply"
+                Command="{Binding ApplyCommand}" />
+            <Button Width="80" Height="32" HorizontalContentAlignment="Center"
+                Content="Cancel"
+                Command="{Binding CancelCommand}"
+                CommandParameter="{Binding $parent[Window]}" />
+            <Button Width="80" Height="32" HorizontalContentAlignment="Center"
+                Classes="accent"
+                Content="OK"
+                Command="{Binding OKCommand}"
+                CommandParameter="{Binding $parent[Window]}" />
+        </StackPanel>
+
+    </Grid>
+</elements:AsyncWindow>

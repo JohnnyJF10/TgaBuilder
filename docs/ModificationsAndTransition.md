@@ -182,7 +182,7 @@ A **Map** toggle button in the header shows/hides the label map overlay for debu
 
 ### Segmentation Algorithms
 
-TgaBuilder provides **six** segmentation algorithms. Each algorithm has its own set of parameters that appear when the algorithm is selected.
+TrLynx provides **six** segmentation algorithms. Each algorithm has its own set of parameters that appear when the algorithm is selected.
 
 ---
 

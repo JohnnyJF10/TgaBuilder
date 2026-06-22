@@ -1,0 +1,48 @@
+﻿using System;
+
+using System.Threading.Tasks;
+using TrLynxAvaloniaUi.View;
+using TrLynxLib.Messaging;
+
+namespace TrLynxAvaloniaUi.Services
+{
+    internal class MessageBoxService : IMessageBoxService
+    {
+        public async Task ShowErrorMessageBox(string header, string message, Exception? ex = null)
+        {
+            if (ex != null)
+                message += "\n\n" + ex.Message;
+
+            var dlg = new MessageBoxWindow(header, message, "Error");
+            await dlg.ShowDialogAsync();
+        }
+
+        public async Task ShowInfoMessageBox(string header, string message)
+        {
+            var dlg = new MessageBoxWindow(header, message, "Info");
+            await dlg.ShowDialogAsync();
+        }
+
+        public async Task<bool> ShowOkCancelMessageBox(string header, string message)
+        {
+            var dlg = new MessageBoxWindow(header, message, "OkCancel");
+            await dlg.ShowDialogAsync();
+            var result = dlg.Result;
+            return result == MessageBoxResult.Ok;
+        }
+
+        public async Task<YesNoCancel> ShowYesNoCancelMessageBox(string header, string message)
+        {
+            var dlg = new MessageBoxWindow(header, message, "YesNoCancel");
+            await dlg.ShowDialogAsync();
+            var result = dlg.Result;
+
+            return result switch
+            {
+                MessageBoxResult.Yes => YesNoCancel.Yes,
+                MessageBoxResult.No => YesNoCancel.No,
+                _ => YesNoCancel.Cancel
+            };
+        }
+    }
+}

@@ -1,0 +1,194 @@
+<UserControl x:Class="TrLynxWpfUi.View.ModificationsWindowColorUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:elements="clr-namespace:TrLynxWpfUi.Elements"
+             xmlns:ap="clr-namespace:TrLynxWpfUi.AttachedProperties"
+             xmlns:cp="clr-namespace:ColorPicker;assembly=ColorPicker"
+             xmlns:enums="clr-namespace:TrLynxLib.Enums;assembly=TrLynxLib"
+             xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+             d:DataContext="{d:DesignInstance Type=viewmodel:ColorViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d"
+             xmlns:converter="clr-namespace:TrLynxWpfUi.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:ColorStructToMediaColorConverter x:Key="ColorStructToMediaColorConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+                    <StackPanel
+                        Margin="8,4,8,8">
+
+                        <!-- Saturation -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Saturation: uniform increase or decrease of color intensity (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource color_line}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource color_line_accent}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Saturation}" />
+                        </DockPanel>
+
+                        <!-- Vibrance -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Vibrance: smart saturation that boosts muted colors while protecting already-saturated ones (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource color_background}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource color_background_accent}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Vibrance}" />
+                        </DockPanel>
+
+                        <!-- Hue -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Hue: rotates all colors around the color wheel (-180 to +180 degrees)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource arrow_rotate_counterclockwise}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource arrow_rotate_clockwise}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="180"
+                                Minimum="-180"
+                                SmallChange="1"
+                                Value="{Binding Hue}" />
+                        </DockPanel>
+
+                        <!-- Temperature / Warmth -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Temperature / Warmth: negative = cooler (blue tones), positive = warmer (orange tones) (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource snowflake}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource data_sunburst}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Temperature}" />
+                        </DockPanel>
+
+                        <!-- Tint -->
+                        <DockPanel
+                            Margin="0,4,0,0"
+                            ap:MouseOverInfoAP.InfoText="Tint: negative = green, positive = magenta (-1 to +1)">
+                            <Path
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Margin="5,0,0,0"
+                                Data="{StaticResource leaf}" />
+                            <Path
+                                DockPanel.Dock="Right"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                d:Fill="White"
+                                Width="14"
+                                Height="14"
+                                Stretch="Uniform"
+                                Data="{StaticResource paint_bucket}" />
+                            <elements:MouseWheelSlider
+                                Style="{StaticResource MouseWheelSliderStyle}"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                AutoToolTipPlacement="BottomRight"
+                                Maximum="1"
+                                Minimum="-1"
+                                SmallChange="0.01"
+                                Value="{Binding Tint}" />
+                        </DockPanel>
+
+                    </StackPanel>
+                
+</UserControl>

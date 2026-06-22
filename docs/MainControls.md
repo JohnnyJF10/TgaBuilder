@@ -149,7 +149,7 @@ From left to right:
 
 ## Format Tab (Source and Destination Panel)
 
-This tab allows you to modify the pixel format of the texture panel. TgaBuilder fully supports the opening, modification and writing of both **24-bit** and **32-bit** pixel formats.
+This tab allows you to modify the pixel format of the texture panel. TrLynx fully supports the opening, modification and writing of both **24-bit** and **32-bit** pixel formats.
 
 ![Format Tab](../pics/TabFormat.png)
 

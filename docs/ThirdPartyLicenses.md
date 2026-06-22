@@ -1,8 +1,8 @@
 # Third-Party Licenses
 
-TgaBuilder uses the following third-party libraries and components. This document consolidates all license information in one place.
+TrLynx uses the following third-party libraries and components. This document consolidates all license information in one place.
 
-For WPFZoomPanel, bzPSD and ColorPicker, significant custom modifications were made, so they are included as source in this repository rather than as NuGet packages. bzPSD has been modernized to .NET Core and is fully integrated into the TgaBuilderLib assembly. WPFZoomPanel and ColorPicker have their own assemblies.
+For WPFZoomPanel, bzPSD and ColorPicker, significant custom modifications were made, so they are included as source in this repository rather than as NuGet packages. bzPSD has been modernized to .NET Core and is fully integrated into the TrLynxLib assembly. WPFZoomPanel and ColorPicker have their own assemblies.
 
 I would like to express my gratitude to the [TombEditor](https://github.com/MontyTRC89/Tomb-Editor) team and the authors of [TRosettaStone](http://xproger.info/projects/OpenLara/trs.html). Their impressive public contributions immensely helped me understand the TR level file format.
 

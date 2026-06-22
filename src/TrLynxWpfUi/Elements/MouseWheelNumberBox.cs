@@ -1,0 +1,25 @@
+﻿using System.Windows.Input;
+
+namespace TrLynxWpfUi.Elements
+{
+    public class MouseWheelNumberBox : Wpf.Ui.Controls.NumberBox
+    {
+        public MouseWheelNumberBox()
+        {
+            PreviewMouseWheel += OnPreviewMouseWheel;
+        }
+
+        private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (!IsMouseOver || !IsFocused)
+                return;
+
+            if (e.Delta > 0)
+                Value++;
+            else
+                Value--;
+
+            e.Handled = true;
+        }
+    }
+}
