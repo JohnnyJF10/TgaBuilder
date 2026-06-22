@@ -21,9 +21,6 @@
     MinHeight="300"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
-    <!-- ========================================================================= -->
-    <!-- WINDOW RESOURCES & CONVERTERS                                             -->
-    <!-- ========================================================================= -->
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -48,9 +45,6 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <!-- ========================================================================= -->
-    <!-- MAIN CONTENT LAYOUT                                                       -->
-    <!-- ========================================================================= -->
     <Grid
         RowDefinitions="Auto,*,60">
 
@@ -63,17 +57,11 @@
                 MinWidth="220" />
         </Grid.ColumnDefinitions>
 
-        <!-- ========================================================================= -->
-        <!-- TOP ROW: MODE SELECTOR + TRANSITION MODES + PIVOT                        -->
-        <!-- ========================================================================= -->
         <local:TransitionWindowControlsUserControl
             Grid.Row="0"
             Grid.Column="0"
             Margin="7,0,10,0" />
 
-        <!-- ========================================================================= -->
-        <!-- LEFT PANEL: IMAGE PREVIEWS & PROCESSING                                   -->
-        <!-- ========================================================================= -->
         <Grid
             x:Name="ImageAreaGrid"
             ColumnDefinitions="*, 35, *, 35, *, Auto, 0, Auto"
@@ -81,7 +69,6 @@
             Grid.RowSpan="2"
             RowDefinitions="*,60">
 
-            <!-- Source Image 1 -->
             <Border
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
@@ -119,7 +106,6 @@
                 </Grid>
             </Border>
 
-            <!-- Swap Controls -->
             <StackPanel
                 VerticalAlignment="Center"
                 Grid.Column="1"
@@ -138,7 +124,6 @@
                     Icon="{StaticResource arrow_swap}" />
             </StackPanel>
 
-            <!-- Source Image 2 -->
             <Border
                 Grid.Column="2"
                 Margin="10"
@@ -176,7 +161,6 @@
                 </Grid>
             </Border>
 
-            <!-- Mix Command Arrow -->
             <elements:IconButton
                 Classes="accent"
                 Foreground="White"
@@ -188,13 +172,12 @@
                 Icon="{StaticResource arrow_forward}"
                 Command="{Binding MixCommand}" />
 
-             <!-- Result Image -->
-             <Border
-                 Grid.Column="4"
-                 Margin="10"
-                 HorizontalAlignment="Stretch"
-                 VerticalAlignment="Stretch"
-                 Background="Transparent">
+            <Border
+                Grid.Column="4"
+                Margin="10"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent">
                 <Grid>
                     <Viewbox
                         Stretch="Uniform"
@@ -223,9 +206,8 @@
                         </Grid>
                     </Viewbox>
                 </Grid>
-             </Border>
+            </Border>
 
-            <!-- Label Map Panel -->
             <Border
                 Grid.Column="6"
                 Margin="10"
@@ -241,7 +223,6 @@
                     Stretch="Uniform" />
             </Border>
 
-            <!-- Load Image Buttons -->
             <elements:IconButton
                 x:Name="BtnLoad1"
                 Grid.Row="1"
@@ -267,7 +248,6 @@
                 Command="{Binding LoadImage2Command}" />
         </Grid>
 
-        <!-- UI Layout Adjuster: Splitter -->
         <GridSplitter
             Grid.Row="1"
             Grid.RowSpan="2"
@@ -278,16 +258,12 @@
             Background="Transparent"
             ResizeDirection="Columns" />
 
-        <!-- ========================================================================= -->
-        <!-- RIGHT PANEL: CONFIGURATION & PARAMETERS                                   -->
-        <!-- ========================================================================= -->
         <Grid
             Grid.RowSpan="2"
             Grid.Column="1"
             Margin="10,2,10,10"
             RowDefinitions="*,Auto">
 
-            <!-- Brick mode: scrollable expanders -->
             <ScrollViewer
                 Grid.Row="0"
                 VerticalScrollBarVisibility="Auto"
@@ -296,17 +272,15 @@
                     Spacing="8"
                     Margin="0,0,20,0">
 
-                    <!-- Smooth mode: Pivot expander wrapping Hardness / Widening / Shift -->
                     <Expander
                         Header="Pivot"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
                         IsVisible="{Binding IsSmoothMode}">
-                        <local:TransitionWindowSmoothUserControl 
+                        <local:TransitionWindowSmoothUserControl
                             DataContext="{Binding PivotVM}"/>
                     </Expander>
 
-                    <!-- Parameter Section: Image Analysis -->
                     <Expander
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
@@ -318,8 +292,7 @@
                                 <TextBlock
                                     Text="Analysis"
                                     VerticalAlignment="Center"/>
-                                
-                                <!-- Label Map Toggle (brick mode only) -->
+
                                 <elements:IconToggleButton
                                     x:Name="LabelMapToggle"
                                     DataContext="{Binding $parent[Window].DataContext}"
@@ -334,63 +307,57 @@
                                     Height="26" />
                             </StackPanel>
                         </Expander.Header>
-                        <local:TransitionWindowAnalysisUserControl 
-                        DataContext="{Binding AnalysisVM}"
-                        />
+                        <local:TransitionWindowAnalysisUserControl
+                            DataContext="{Binding AnalysisVM}"
+                            />
                     </Expander>
 
-                    <!-- Parameter Section: Pivot Boundaries -->
                     <Expander
                         Header="Pivot"
                         IsExpanded="True"
                         HorizontalAlignment="Stretch"
                         IsVisible="{Binding IsBrickMode}">
-                        <local:TransitionWindowPivotUserControl 
+                        <local:TransitionWindowPivotUserControl
                             DataContext="{Binding PivotVM}"/>
                     </Expander>
 
-                    <!-- Parameter Section: Edge Blending -->
-                     <Expander
-                        
-                         Header="Edge"
-                         IsExpanded="True"
-                         HorizontalAlignment="Stretch"
-                         IsVisible="{Binding IsBrickMode}">
-                         <local:TransitionWindowEdgeUserControl 
+                    <Expander
+
+                        Header="Edge"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        IsVisible="{Binding IsBrickMode}">
+                        <local:TransitionWindowEdgeUserControl
                             DataContext="{Binding EdgeVM}"/>
-                     </Expander>
+                    </Expander>
 
-                     <!-- Parameter Section: Shadow -->
-                     <Expander
-                        
-                         Header="Shadow"
-                         IsExpanded="True"
-                         HorizontalAlignment="Stretch"
-                         IsVisible="{Binding IsBrickMode}">
-                         <local:TransitionWindowShadowUserControl 
+                    <Expander
+
+                        Header="Shadow"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        IsVisible="{Binding IsBrickMode}">
+                        <local:TransitionWindowShadowUserControl
                             DataContext="{Binding ShadowVM}"/>
-                     </Expander>
+                    </Expander>
 
-                      <!-- Parameter Section: Underfilling -->
-                      <Expander
-                          
-                          Header="Underfilling"
-                          IsExpanded="True"
-                          HorizontalAlignment="Stretch"
-                          IsVisible="{Binding IsBrickMode}">
-                         <local:TransitionWindowUnderfillingUserControl
+                    <Expander
+
+                        Header="Underfilling"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        IsVisible="{Binding IsBrickMode}">
+                        <local:TransitionWindowUnderfillingUserControl
                             DataContext="{Binding UnderfillingVM}"/>
-                     </Expander>
+                    </Expander>
 
-                     <!-- Parameter Section: Manual -->
-                     <Expander
-                         Header="Manual"
-                         IsExpanded="True"
-                         HorizontalAlignment="Stretch"
-                         IsVisible="{Binding IsBrickMode}">
-                         <local:TransitionWindowManualUserControl />
-                     </Expander>
-                     <!-- Export (both modes) -->
+                    <Expander
+                        Header="Manual"
+                        IsExpanded="True"
+                        HorizontalAlignment="Stretch"
+                        IsVisible="{Binding IsBrickMode}">
+                        <local:TransitionWindowManualUserControl />
+                    </Expander>
                     <Expander
                         DataContext="{Binding ExportVM}"
                         Header="Export"
@@ -398,14 +365,10 @@
                         HorizontalAlignment="Stretch">
                         <local:TransitionWindowExportUserControl />
                     </Expander>
-                 </StackPanel>
-             </ScrollViewer>
-         </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
 
-        <!-- ========================================================================= -->
-        <!-- BOTTOM PANEL: WINDOW CONTROLS & STATUS FOOTER                             -->
-        <!-- ========================================================================= -->
-        <!-- Decorative Background Frame for Footer -->
         <Border
             Grid.Row="2"
             Grid.ColumnSpan="2"
@@ -417,7 +380,6 @@
             BorderThickness="0,1,0,0"
             CornerRadius="0" />
 
-        <!-- Form Submission Control Actions -->
         <StackPanel
             Grid.Row="2"
             Grid.ColumnSpan="2"

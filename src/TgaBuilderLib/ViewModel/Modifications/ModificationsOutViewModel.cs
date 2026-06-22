@@ -1,8 +1,6 @@
 using System.Runtime.InteropServices;
-using System.Windows.Input;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
-using TgaBuilderLib.Commands;
 using TgaBuilderLib.Modifications;
 
 namespace TgaBuilderLib.ViewModel;

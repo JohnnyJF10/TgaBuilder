@@ -165,12 +165,12 @@ public partial class IccProfile
     private static byte[] EncodePlatform(PrimaryPlatform primaryPlatform)
         => Encoding.ASCII.GetBytes(primaryPlatform switch
         {
-            PrimaryPlatform.None                => "",
-            PrimaryPlatform.Apple               => "APPL",
-            PrimaryPlatform.Microsoft           => "MSFT",
-            PrimaryPlatform.SiliconGraphics     => "SGI ",
-            PrimaryPlatform.Sun                 => "SUNW",
-            PrimaryPlatform.Taligent            => "TGNT",
+            PrimaryPlatform.None => "",
+            PrimaryPlatform.Apple => "APPL",
+            PrimaryPlatform.Microsoft => "MSFT",
+            PrimaryPlatform.SiliconGraphics => "SGI ",
+            PrimaryPlatform.Sun => "SUNW",
+            PrimaryPlatform.Taligent => "TGNT",
             _ => throw new ArgumentOutOfRangeException(nameof(primaryPlatform))
         });
 }

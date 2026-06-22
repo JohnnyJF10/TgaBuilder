@@ -1,11 +1,11 @@
 <UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowExportUserControl"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             x:DataType="viewmodel:ExportTransitionViewModel"
-             x:CompileBindings="False">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+    x:DataType="viewmodel:ExportTransitionViewModel"
+    x:CompileBindings="False">
     <StackPanel Spacing="8"
         Orientation="Horizontal">
         <elements:IconButton

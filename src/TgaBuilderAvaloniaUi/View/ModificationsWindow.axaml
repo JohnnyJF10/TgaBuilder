@@ -21,9 +21,6 @@
     MinHeight="300"
     Icon="avares://TgaBuilderAvaloniaUi/Resources/TgaBuilder_icon.ico">
 
-    <!-- ========================================================================= -->
-    <!-- WINDOW RESOURCES & CONVERTERS                                             -->
-    <!-- ========================================================================= -->
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -42,9 +39,6 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <!-- ========================================================================= -->
-    <!-- MAIN CONTENT LAYOUT                                                       -->
-    <!-- ========================================================================= -->
     <Grid
         RowDefinitions="*,60">
 
@@ -57,11 +51,6 @@
                 MinWidth="220" />
         </Grid.ColumnDefinitions>
 
-        <!-- ========================================================================= -->
-        <!-- LEFT PANEL: IMAGE PREVIEWS                                                -->
-        <!-- Layout grows to Input -> Secondary -> Result when Color Override is on.   -->
-        <!-- Columns 2 (secondary) and 3 (arrow) are expanded from code-behind.        -->
-        <!-- ========================================================================= -->
         <Grid
             x:Name="ImageAreaGrid"
             Grid.Row="0"
@@ -69,7 +58,6 @@
             ColumnDefinitions="*, 35, 0, 0, *"
             RowDefinitions="*,60">
 
-            <!-- Input Image -->
             <Border
                 DataContext="{Binding ModificationInVM}"
                 Grid.Column="0"
@@ -100,7 +88,6 @@
                 </Grid>
             </Border>
 
-            <!-- Arrow indicator -->
             <PathIcon
                 Grid.Column="1"
                 Data="{StaticResource arrow_forward}"
@@ -109,7 +96,6 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center" />
 
-            <!-- Secondary Input Image (Color Override source) -->
             <Border
                 DataContext="{Binding ColorOverrideVM}"
                 Grid.Column="2"
@@ -144,7 +130,6 @@
                 </Grid>
             </Border>
 
-            <!-- Second arrow indicator (Secondary -> Result) -->
             <PathIcon
                 Grid.Column="3"
                 Data="{StaticResource arrow_forward}"
@@ -154,7 +139,6 @@
                 VerticalAlignment="Center"
                 IsVisible="{Binding ColorOverrideVM.IsColorOverrideEnabled}" />
 
-            <!-- Result Image -->
             <Border
                 DataContext="{Binding ModificationOutVM}"
                 Grid.Column="4"
@@ -169,7 +153,6 @@
                     Stretch="Uniform" />
             </Border>
 
-            <!-- Copy from Selection button (bottom of input image) -->
             <elements:IconButton
                 Grid.Row="1"
                 Grid.Column="0"
@@ -180,7 +163,6 @@
                 Icon="{StaticResource image_copy}"
                 Command="{Binding LoadImageInCommand}" />
 
-            <!-- Copy from Selection button (bottom of secondary image) -->
             <elements:IconButton
                 Grid.Row="1"
                 Grid.Column="2"
@@ -194,7 +176,6 @@
 
         </Grid>
 
-        <!-- UI Layout Adjuster: Splitter -->
         <GridSplitter
             Grid.Row="0"
             Grid.Column="0"
@@ -205,9 +186,6 @@
             Background="Transparent"
             ResizeDirection="Columns" />
 
-        <!-- ========================================================================= -->
-        <!-- RIGHT PANEL: CONTROLS (scrollable expanders)                              -->
-        <!-- ========================================================================= -->
         <ScrollViewer
             Grid.Row="0"
             Grid.Column="1"
@@ -218,9 +196,6 @@
                 Spacing="8"
                 Margin="0,0,16,0">
 
-                <!-- ================================================================= -->
-                <!-- Expander: Basic                                                    -->
-                <!-- ================================================================= -->
                 <Expander
                     DataContext="{Binding BasicVM}"
                     Header="Basic"
@@ -229,9 +204,6 @@
                     <local:ModificationsWindowBasicUserControl />
                 </Expander>
 
-                <!-- ================================================================= -->
-                <!-- Expander: Color                                                    -->
-                <!-- ================================================================= -->
                 <Expander
                     DataContext="{Binding ColorVM}"
                     Header="Color"
@@ -240,9 +212,6 @@
                     <local:ModificationsWindowColorUserControl />
                 </Expander>
 
-                <!-- ================================================================= -->
-                <!-- Expander: Color Overlay                                            -->
-                <!-- ================================================================= -->
                 <Expander
                     DataContext="{Binding ColorOverlayVM}"
                     Header="Color Overlay"
@@ -251,9 +220,6 @@
                     <local:ModificationsWindowColorOverlayUserControl />
                 </Expander>
 
-                <!-- ================================================================= -->
-                <!-- Expander: Color Override                                           -->
-                <!-- ================================================================= -->
                 <Expander
                     DataContext="{Binding ColorOverrideVM}"
                     IsExpanded="True"
@@ -264,7 +230,6 @@
                             <TextBlock
                                 Text="Color Override"
                                 VerticalAlignment="Center" />
-                            <!-- Toggle: enable the override and reveal the secondary image -->
                             <elements:IconToggleButton
                                 Classes="outlined"
                                 Icon="{StaticResource paint_bucket}"
@@ -279,9 +244,6 @@
                     <local:ModificationsWindowColorOverrideUserControl />
                 </Expander>
 
-                <!-- ================================================================= -->
-                <!-- Expander: Texture Retrofier                                        -->
-                <!-- ================================================================= -->
                 <Expander
                     DataContext="{Binding RetrofierVM}"
                     Header="Texture Retrofier"
@@ -293,9 +255,6 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- ========================================================================= -->
-        <!-- BOTTOM BAR: DECORATIVE BACKGROUND                                         -->
-        <!-- ========================================================================= -->
         <Border
             Grid.Row="1"
             Grid.ColumnSpan="2"
@@ -307,7 +266,6 @@
             BorderThickness="0,1,0,0"
             CornerRadius="0" />
 
-        <!-- Form Submission Control Actions -->
         <StackPanel
             Grid.Row="1"
             Grid.ColumnSpan="2"

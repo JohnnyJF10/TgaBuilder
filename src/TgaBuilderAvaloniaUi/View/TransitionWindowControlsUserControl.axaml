@@ -1,13 +1,13 @@
 <UserControl x:Class="TgaBuilderAvaloniaUi.View.TransitionWindowControlsUserControl"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
-             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
-             x:DataType="viewmodel:TransitionViewModel"
-             x:CompileBindings="False">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+    xmlns:converters="clr-namespace:TgaBuilderAvaloniaUi.Converters"
+    x:DataType="viewmodel:TransitionViewModel"
+    x:CompileBindings="False">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,94 +16,91 @@
             <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-        <DockPanel
-            Grid.Row="0"
-            Grid.Column="0"
-            Margin="7,0,10,0">
+    <DockPanel
+        Grid.Row="0"
+        Grid.Column="0"
+        Margin="7,0,10,0">
 
-            <!-- Mode Selector: Smooth / Brick radio icon buttons -->
-            <StackPanel
-                DockPanel.Dock="Left"
-                Orientation="Horizontal"
-                Margin="0,0,6,0"
-                VerticalAlignment="Center">
-                <elements:IconRadioButton
-                    Icon="{StaticResource tab_in_private}"
-                    Classes="outlined"
-                    IsChecked="{Binding IsSmoothMode}"
-                    ap:MouseOverInfoAP.InfoText="Smooth transition mode"/>
+        <StackPanel
+            DockPanel.Dock="Left"
+            Orientation="Horizontal"
+            Margin="0,0,6,0"
+            VerticalAlignment="Center">
+            <elements:IconRadioButton
+                Icon="{StaticResource tab_in_private}"
+                Classes="outlined"
+                IsChecked="{Binding IsSmoothMode}"
+                ap:MouseOverInfoAP.InfoText="Smooth transition mode"/>
 
-                <elements:IconRadioButton
-                    IsChecked="{Binding IsBrickMode}"
-                    Classes="outlined"
-                    Margin="5,0,5,0"
-                    Icon="{StaticResource table_freeze_regular}"
-                    ap:MouseOverInfoAP.InfoText="Brick transition mode"/>
+            <elements:IconRadioButton
+                IsChecked="{Binding IsBrickMode}"
+                Classes="outlined"
+                Margin="5,0,5,0"
+                Icon="{StaticResource table_freeze_regular}"
+                ap:MouseOverInfoAP.InfoText="Brick transition mode"/>
 
-            </StackPanel>
+        </StackPanel>
 
-            <!-- Transition mode buttons panel -->
-            <local:TransitionModeUserControl 
+        <local:TransitionModeUserControl
             DataContext="{Binding PivotVM}"
             />
 
-            <!-- Pivot slider -->
-            <DockPanel
-                DataContext="{Binding PivotVM}"
-                Margin="5,2,0,0"
-                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
-                <Grid
-                    VerticalAlignment="Top"
-                    Margin="0,11,8,0"
-                    DockPanel.Dock="Left">
-                    <Path
-                        VerticalAlignment="Bottom"
-                        Stroke="{DynamicResource IconFillBrush}"
-                        StrokeThickness="1"
-                        Fill="Transparent"
-                        Width="10"
-                        Height="10"
-                        Data="{StaticResource pivot_low}" />
-                    <Path
-                        VerticalAlignment="Bottom"
-                        Stroke="{DynamicResource IconFillBrush}"
-                        StrokeDashArray="2,2"
-                        StrokeThickness="1"
-                        Fill="Transparent"
-                        Width="10"
-                        Height="10"
-                        Data="{StaticResource pivot_high}" />
-                </Grid>
-                <Grid
-                    VerticalAlignment="Top"
-                    Margin="-5,11,8,0"
-                    DockPanel.Dock="Right">
-                    <Path
-                        VerticalAlignment="Bottom"
-                        StrokeThickness="1"
-                        Stroke="{DynamicResource IconFillBrush}"
-                        Fill="Transparent"
-                        Width="10"
-                        Height="10"
-                        Data="{StaticResource pivot_high}" />
-                    <Path
-                        VerticalAlignment="Bottom"
-                        StrokeThickness="1"
-                        Stroke="{DynamicResource IconFillBrush}"
-                        StrokeDashArray="2,2"
-                        Fill="Transparent"
-                        Width="10"
-                        Height="10"
-                        Data="{StaticResource pivot_low}" />
-                </Grid>
-                <elements:MouseWheelSlider
-                    Margin="5,0"
-                    VerticalAlignment="Center"
-                    ToolTip.Tip="{Binding PivotValue}"
-                    Maximum="1"
-                    Minimum="0"
-                    SmallChange="0.01"
-                    Value="{Binding PivotValue}" />
-            </DockPanel>
+        <DockPanel
+            DataContext="{Binding PivotVM}"
+            Margin="5,2,0,0"
+            ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
+            <Grid
+                VerticalAlignment="Top"
+                Margin="0,11,8,0"
+                DockPanel.Dock="Left">
+                <Path
+                    VerticalAlignment="Bottom"
+                    Stroke="{DynamicResource IconFillBrush}"
+                    StrokeThickness="1"
+                    Fill="Transparent"
+                    Width="10"
+                    Height="10"
+                    Data="{StaticResource pivot_low}" />
+                <Path
+                    VerticalAlignment="Bottom"
+                    Stroke="{DynamicResource IconFillBrush}"
+                    StrokeDashArray="2,2"
+                    StrokeThickness="1"
+                    Fill="Transparent"
+                    Width="10"
+                    Height="10"
+                    Data="{StaticResource pivot_high}" />
+            </Grid>
+            <Grid
+                VerticalAlignment="Top"
+                Margin="-5,11,8,0"
+                DockPanel.Dock="Right">
+                <Path
+                    VerticalAlignment="Bottom"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource IconFillBrush}"
+                    Fill="Transparent"
+                    Width="10"
+                    Height="10"
+                    Data="{StaticResource pivot_high}" />
+                <Path
+                    VerticalAlignment="Bottom"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource IconFillBrush}"
+                    StrokeDashArray="2,2"
+                    Fill="Transparent"
+                    Width="10"
+                    Height="10"
+                    Data="{StaticResource pivot_low}" />
+            </Grid>
+            <elements:MouseWheelSlider
+                Margin="5,0"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding PivotValue}"
+                Maximum="1"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding PivotValue}" />
         </DockPanel>
+    </DockPanel>
 </UserControl>

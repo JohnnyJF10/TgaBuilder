@@ -1,5 +1,3 @@
-using System;
-
 namespace TgaBuilderLib.Modifications;
 
 public partial class ModificationsHelper

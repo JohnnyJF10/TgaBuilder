@@ -50,9 +50,9 @@ namespace TgaBuilderLib.Level
 
                 case TenVersion.Unknown:
                 default:
-                    throw new NotSupportedException($"Unsupported TEN version. " + 
+                    throw new NotSupportedException($"Unsupported TEN version. " +
                         $"File version: {versionMajor}.{versionMinor}.{versionBuild}.{versionRevision}");
-                }
+            }
         }
 
         private void ReadTenData_1_7(BinaryReader reader, CancellationToken? cancellationToken = null)

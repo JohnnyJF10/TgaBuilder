@@ -153,7 +153,7 @@ namespace TgaBuilderLib.ViewModel
         public AnimationViewModel Animation { get; set; }
 
 
-        public bool IsTransitionViewOpen {  get; set; }
+        public bool IsTransitionViewOpen { get; set; }
 
         public bool IsModificationsViewOpen { get; set; }
 

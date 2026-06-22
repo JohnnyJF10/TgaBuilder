@@ -1,4 +1,3 @@
-using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.Modifications;
 
@@ -97,7 +96,7 @@ public class ColorOverlayViewModel : ThrottledViewModelBase
     public bool IsColorOverlayOklabMode
         => SelectedColorOverlayMixModeIndex == (int)ColorOverlayMixMode.OklabChroma;
 
-    
+
 
     private void ConfigureTransitionHelper()
     {

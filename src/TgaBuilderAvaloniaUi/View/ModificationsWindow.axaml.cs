@@ -1,8 +1,8 @@
-using System.ComponentModel;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.ComponentModel;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.Services;
 using TgaBuilderLib.ViewModel;
@@ -36,7 +36,7 @@ namespace TgaBuilderAvaloniaUi.View
         private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel)
         {
             if (viewModel is not ModificationsViewModel vm)
-            return;
+                return;
 
             vm.ModificationOutVM.VisualInvalidator = new VisualInvalidator(ResultImage);
         }
@@ -137,7 +137,7 @@ namespace TgaBuilderAvaloniaUi.View
 
             mivm.IsEyedropperMode = false;
             this.Cursor = CursorProvider.DefaultCursor;
-            
+
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using TgaBuilderLib.Abstraction;
-
-namespace TgaBuilderLib.Krita
+﻿namespace TgaBuilderLib.Krita
 {
     public interface IKraFileService
     {

@@ -1,17 +1,16 @@
 <UserControl x:Class="TgaBuilderAvaloniaUi.View.ModificationsWindowColorOverrideUserControl"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
-             xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
-             xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
-             x:DataType="viewmodel:ColorOverrideViewModel"
-             x:CompileBindings="False">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:elements="clr-namespace:TgaBuilderAvaloniaUi.Elements"
+    xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
+    xmlns:ap="clr-namespace:TgaBuilderAvaloniaUi.AttachedProperties"
+    x:DataType="viewmodel:ColorOverrideViewModel"
+    x:CompileBindings="False">
 
     <StackPanel
         Spacing="4"
         Margin="4,4,4,6">
 
-        <!-- Amount: master strength of the whole effect -->
         <DockPanel
             ap:MouseOverInfoAP.InfoText="Amount: overall strength of the colour override (0 = original texture, 100 = fully re-coloured).">
             <Path
@@ -40,7 +39,6 @@
                 Value="{Binding AmountPercent}" />
         </DockPanel>
 
-        <!-- Decolorize: remove the original texture's own colour -->
         <DockPanel
             Margin="0,4,0,0"
             ap:MouseOverInfoAP.InfoText="Remove original colour: fades the input texture toward greyscale before the new colour is applied (100 = fully neutral base).">
@@ -70,7 +68,6 @@
                 Value="{Binding DecolorizePercent}" />
         </DockPanel>
 
-        <!-- Transfer: apply the secondary input's colour -->
         <DockPanel
             Margin="0,4,0,0"
             ap:MouseOverInfoAP.InfoText="Apply secondary colour: how strongly the colour of the secondary input is transferred onto the texture.">
@@ -100,7 +97,6 @@
                 Value="{Binding TransferPercent}" />
         </DockPanel>
 
-        <!-- Smoothing: filter (blur) the secondary colour field -->
         <DockPanel
             Margin="0,4,0,0"
             ap:MouseOverInfoAP.InfoText="Filtering: blurs the colour taken from the secondary input. Low keeps specific local colours, high transfers an overall averaged tone.">
@@ -132,7 +128,6 @@
                 Value="{Binding Smoothing}" />
         </DockPanel>
 
-        <!-- Chroma Restore: restore / boost colour in the coloured regions -->
         <DockPanel
             Margin="0,4,0,0"
             ap:MouseOverInfoAP.InfoText="Restore colour: scales the resulting colour intensity to restore or boost colour in the coloured regions (100 = unchanged, 200 = double).">

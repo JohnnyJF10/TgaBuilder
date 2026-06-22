@@ -1,6 +1,5 @@
 ﻿using Avalonia.Data.Converters;
 using System;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace TgaBuilderAvaloniaUi.Converters

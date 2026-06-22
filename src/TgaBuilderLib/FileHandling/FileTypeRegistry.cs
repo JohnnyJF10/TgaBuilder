@@ -12,19 +12,19 @@ namespace TgaBuilderLib.FileHandling
         public static IReadOnlyDictionary<FileTypes, FileTypeInfo> Lookup { get; } =
             new Dictionary<FileTypes, FileTypeInfo>
             {
-                [FileTypes.TGA]  = new("tga",  "Targa Files"),
-                [FileTypes.BMP]  = new("bmp",  "Bitmap Files"),
-                [FileTypes.PNG]  = new("png",  "PNG Files"),
-                [FileTypes.JPG]  = new("jpg",  "JPEG Files"),
+                [FileTypes.TGA] = new("tga", "Targa Files"),
+                [FileTypes.BMP] = new("bmp", "Bitmap Files"),
+                [FileTypes.PNG] = new("png", "PNG Files"),
+                [FileTypes.JPG] = new("jpg", "JPEG Files"),
                 [FileTypes.JPEG] = new("jpeg", "JPEG Files"),
-                [FileTypes.PSD]  = new("psd",  "Photoshop Files"),
-                [FileTypes.KRA]  = new("kra",  "Krita Files"),
-                [FileTypes.DDS]  = new("dds",  "DirectDraw Surface Files"),
-                [FileTypes.PHD]  = new("phd",  "PHD Files"),
-                [FileTypes.TR2]  = new("tr2",  "TR2 Files"),
-                [FileTypes.TR4]  = new("tr4",  "TR4 Files"),
-                [FileTypes.TRC]  = new("trc",  "TR5 Files"),
-                [FileTypes.TEN]  = new("ten",  "TEN Files"),
+                [FileTypes.PSD] = new("psd", "Photoshop Files"),
+                [FileTypes.KRA] = new("kra", "Krita Files"),
+                [FileTypes.DDS] = new("dds", "DirectDraw Surface Files"),
+                [FileTypes.PHD] = new("phd", "PHD Files"),
+                [FileTypes.TR2] = new("tr2", "TR2 Files"),
+                [FileTypes.TR4] = new("tr4", "TR4 Files"),
+                [FileTypes.TRC] = new("trc", "TR5 Files"),
+                [FileTypes.TEN] = new("ten", "TEN Files"),
             };
 
         // Flag groupings used only for friendly open-dialog category labels.

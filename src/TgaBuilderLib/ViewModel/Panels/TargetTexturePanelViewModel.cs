@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.UndoRedo;
@@ -229,7 +227,7 @@ namespace TgaBuilderLib.ViewModel
                 case TargetMode.Default:
                     if (Selection.IsPlacing)
                         PlaceTileAndUpdateView(PlaceContiniously, PlaceAndSwap);
-                    else if (SelectionShape.Width > 0 && SelectionShape.Height > 0) 
+                    else if (SelectionShape.Width > 0 && SelectionShape.Height > 0)
                         SetSelection();
                     return;
 
@@ -301,7 +299,7 @@ namespace TgaBuilderLib.ViewModel
             Picker.Y = YPointer;
         }
 
-        public override void SpaceDrag() 
+        public override void SpaceDrag()
         {
             if (mode != TargetMode.Default) return;
 

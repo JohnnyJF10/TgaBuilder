@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using TgaBuilderLib.Enums;
+﻿using TgaBuilderLib.Enums;
 
 
 namespace TgaBuilderLib.ViewModel

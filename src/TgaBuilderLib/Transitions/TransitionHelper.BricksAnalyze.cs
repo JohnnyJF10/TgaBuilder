@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TgaBuilderLib.Transitions
+﻿namespace TgaBuilderLib.Transitions
 {
     public enum FilterType
     {
@@ -59,13 +52,13 @@ namespace TgaBuilderLib.Transitions
                     break;
                 case (FilterType.Median, false):
                     MedianFilter3x3Color(_scratchFilteredColor, pixels);
-                    break;                
+                    break;
                 case (FilterType.Bilateral, true):
                     BilateralFilter3x3Gray(_scratchFiltered, _scratchGray, BilateralSigma);
                     break;
                 case (FilterType.Bilateral, false):
                     BilateralFilter3x3Color(_scratchFilteredColor, pixels, BilateralSigma);
-                    break;                
+                    break;
                 case (FilterType.Gaussian, true):
                     GaussianBlur3x3Gray(_scratchFiltered, _scratchGray, GaussianSigma);
                     break;
@@ -128,7 +121,7 @@ namespace TgaBuilderLib.Transitions
                             gray[i] = 255f - (px[2] * 0.299f + px[1] * 0.587f + px[0] * 0.114f);
                         }
                     }
-                } 
+                }
             }
         }
 

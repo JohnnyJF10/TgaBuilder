@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TgaBuilderLib.Transitions;
 
@@ -54,7 +50,7 @@ public partial class TransitionHelper
         float wInv = 0f, hInv = 0f;
         if (cornerTileSet != null)
         {
-            wInv = Width  > 1 ? 1f / (Width  - 1) : 1f;
+            wInv = Width > 1 ? 1f / (Width - 1) : 1f;
             hInv = Height > 1 ? 1f / (Height - 1) : 1f;
         }
 
@@ -89,7 +85,7 @@ public partial class TransitionHelper
                     shouldDraw = !DoesTileTouchRequiredEdge(tileOffsets, !checkTop, !checkBottom, !checkLeft, !checkRight);
 
                 if (!shouldDraw)
-                    shouldDraw = DoesTileTouchRequiredEdge(tileOffsets, checkTop, checkBottom, checkLeft, checkRight); 
+                    shouldDraw = DoesTileTouchRequiredEdge(tileOffsets, checkTop, checkBottom, checkLeft, checkRight);
             }
 
             if (!shouldDraw) continue;
@@ -358,7 +354,7 @@ public partial class TransitionHelper
             (int cornX, int cornY) = cornerCoords[i];
 
             bool thisHoriz = (cornY == 0 && checkTop) || (cornY == Height - 1 && checkBottom);
-            bool thisVert  = (cornX == 0 && checkLeft) || (cornX == Width  - 1 && checkRight);
+            bool thisVert = (cornX == 0 && checkLeft) || (cornX == Width - 1 && checkRight);
 
             // Only corners where exactly one axis is a drawn edge (XOR) define the transition
             // boundary and require per-pixel cutting.

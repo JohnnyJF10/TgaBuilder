@@ -1,5 +1,5 @@
-﻿using TgaBuilderLib.Psd;
-using TgaBuilderLib.Enums;
+﻿using TgaBuilderLib.Enums;
+using TgaBuilderLib.Psd;
 
 namespace TgaBuilderLib.BitmapBytesIO
 {

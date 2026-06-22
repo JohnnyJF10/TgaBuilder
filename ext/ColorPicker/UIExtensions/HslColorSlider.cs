@@ -1,6 +1,6 @@
-﻿using System.Windows;
+﻿using ColorPicker.Models;
+using System.Windows;
 using System.Windows.Media;
-using ColorPicker.Models;
 
 namespace ColorPicker.UIExtensions
 {
@@ -72,30 +72,30 @@ namespace ColorPicker.UIExtensions
             switch (SliderHslType)
             {
                 case "H":
-                {
-                    var rgbtuple = IsEnabled ? ColorSpaceHelper.HslToRgb(value, 1.0, 0.5)
-                        : ColorSpaceHelper.HslToGray(value, 1.0, 0.5);
-                    double r = rgbtuple.Item1, g = rgbtuple.Item2, b = rgbtuple.Item3;
-                    return Color.FromArgb(255, (byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
-                }
+                    {
+                        var rgbtuple = IsEnabled ? ColorSpaceHelper.HslToRgb(value, 1.0, 0.5)
+                            : ColorSpaceHelper.HslToGray(value, 1.0, 0.5);
+                        double r = rgbtuple.Item1, g = rgbtuple.Item2, b = rgbtuple.Item3;
+                        return Color.FromArgb(255, (byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
+                    }
                 case "S":
-                {
-                    var rgbtuple = IsEnabled ? ColorSpaceHelper.HslToRgb(CurrentColorState.HSL_H, value / 255.0,
-                        CurrentColorState.HSL_L)
-                        : ColorSpaceHelper.HslToGray(CurrentColorState.HSL_H, value / 255.0,
-                            CurrentColorState.HSL_L);
-                    double r = rgbtuple.Item1, g = rgbtuple.Item2, b = rgbtuple.Item3;
-                    return Color.FromArgb(255, (byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
-                }
+                    {
+                        var rgbtuple = IsEnabled ? ColorSpaceHelper.HslToRgb(CurrentColorState.HSL_H, value / 255.0,
+                            CurrentColorState.HSL_L)
+                            : ColorSpaceHelper.HslToGray(CurrentColorState.HSL_H, value / 255.0,
+                                CurrentColorState.HSL_L);
+                        double r = rgbtuple.Item1, g = rgbtuple.Item2, b = rgbtuple.Item3;
+                        return Color.FromArgb(255, (byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
+                    }
                 case "L":
-                {
-                    var rgbtuple = IsEnabled ? ColorSpaceHelper.HslToRgb(CurrentColorState.HSL_H, CurrentColorState.HSL_S,
-                        value / 255.0)
-                        : ColorSpaceHelper.HslToGray(CurrentColorState.HSL_H, CurrentColorState.HSL_S,
-                            value / 255.0);
-                    double r = rgbtuple.Item1, g = rgbtuple.Item2, b = rgbtuple.Item3;
-                    return Color.FromArgb(255, (byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
-                }
+                    {
+                        var rgbtuple = IsEnabled ? ColorSpaceHelper.HslToRgb(CurrentColorState.HSL_H, CurrentColorState.HSL_S,
+                            value / 255.0)
+                            : ColorSpaceHelper.HslToGray(CurrentColorState.HSL_H, CurrentColorState.HSL_S,
+                                value / 255.0);
+                        double r = rgbtuple.Item1, g = rgbtuple.Item2, b = rgbtuple.Item3;
+                        return Color.FromArgb(255, (byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
+                    }
                 default:
                     var rgbtupleDef = IsEnabled ? new System.Tuple<double, double, double>(CurrentColorState.RGB_R,
                         CurrentColorState.RGB_G, CurrentColorState.RGB_B)

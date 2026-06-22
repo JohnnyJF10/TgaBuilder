@@ -55,7 +55,8 @@ namespace WPFZoomPanel
             if (!_timer1500Miliseconds?.Running != true)
             {
                 _viewportZoomCache = CreateUndoRedoStackItem();
-            } (_timer1500Miliseconds ?? (_timer1500Miliseconds = new KeepAliveTimer(TimeSpan.FromMilliseconds(1500), () =>
+            }
+            (_timer1500Miliseconds ?? (_timer1500Miliseconds = new KeepAliveTimer(TimeSpan.FromMilliseconds(1500), () =>
             {
                 if (_undoStack.Any() && _viewportZoomCache.Equals(_undoStack.Peek()))
                 {
@@ -78,7 +79,8 @@ namespace WPFZoomPanel
             if (_timer750Miliseconds?.Running != true)
             {
                 _viewportZoomCache = CreateUndoRedoStackItem();
-            } (_timer750Miliseconds ?? (_timer750Miliseconds = new KeepAliveTimer(TimeSpan.FromMilliseconds(740), () =>
+            }
+            (_timer750Miliseconds ?? (_timer750Miliseconds = new KeepAliveTimer(TimeSpan.FromMilliseconds(740), () =>
             {
                 if (_undoStack.Any() && _viewportZoomCache.Equals(_undoStack.Peek()))
                 {

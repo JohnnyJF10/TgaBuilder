@@ -36,7 +36,7 @@ public class EdgeViewModel : ThrottledViewModelBase
 
     private void ConfigureTransitionHelper()
     {
-        _transitionHelper.CurrentBricksPipelineRequirements 
+        _transitionHelper.CurrentBricksPipelineRequirements
         = BricksPipelineRequirements.RequiresDrawing;
 
         _transitionHelper.BlendMode = BlendMode;

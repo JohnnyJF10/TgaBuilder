@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ColorPicker.Models;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using ColorPicker.Models;
 
 namespace ColorPicker.Converters
 {
@@ -13,8 +13,8 @@ namespace ColorPicker.Converters
         public static DependencyProperty ShowAlphaProperty =
             DependencyProperty.Register(nameof(ShowAlpha), typeof(bool), typeof(ColorToHexConverter),
                 new PropertyMetadata(true, ShowAlphaChangedCallback));
-        
-        public static readonly DependencyProperty HexRepresentationProperty = 
+
+        public static readonly DependencyProperty HexRepresentationProperty =
             DependencyProperty.Register(nameof(HexRepresentation), typeof(HexRepresentationType), typeof(ColorToHexConverter),
                 new PropertyMetadata(HexRepresentationType.RGBA, HexRepresentationChangedCallback));
 
@@ -60,7 +60,7 @@ namespace ColorPicker.Converters
         {
             ((ColorToHexConverter)d).RaiseShowAlphaChange();
         }
-        
+
         private void RaiseHexRepresentationChange()
         {
             OnShowHexRepresentationChange?.Invoke(this, EventArgs.Empty);

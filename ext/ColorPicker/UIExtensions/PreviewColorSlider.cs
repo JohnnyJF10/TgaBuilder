@@ -1,9 +1,9 @@
-﻿using System.ComponentModel;
+﻿using ColorPicker.Models;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using ColorPicker.Models;
 
 namespace ColorPicker.UIExtensions
 {

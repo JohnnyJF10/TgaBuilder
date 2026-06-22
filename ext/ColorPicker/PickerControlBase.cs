@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ColorPicker.Models;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using ColorPicker.Models;
 
 namespace ColorPicker
 {
@@ -15,7 +15,7 @@ namespace ColorPicker
         public static readonly DependencyProperty SelectedColorProperty =
             DependencyProperty.Register(nameof(SelectedColor), typeof(Color), typeof(PickerControlBase),
                 new PropertyMetadata(Colors.Black, OnSelectedColorPropertyChange));
-        
+
         public static readonly RoutedEvent ColorChangedEvent =
             EventManager.RegisterRoutedEvent(nameof(ColorChanged),
                 RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(PickerControlBase));
@@ -35,7 +35,7 @@ namespace ColorPicker
                     (byte)Math.Round(Color.RGB_R),
                     (byte)Math.Round(Color.RGB_G),
                     (byte)Math.Round(Color.RGB_B));
-                if(newColor != previousColor)
+                if (newColor != previousColor)
                 {
                     RaiseEvent(new ColorRoutedEventArgs(ColorChangedEvent, newColor));
                     previousColor = newColor;

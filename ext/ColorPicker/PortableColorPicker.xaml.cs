@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using ColorPicker.Models;
+﻿using ColorPicker.Models;
+using System.Windows;
 
 namespace ColorPicker
 {
@@ -20,8 +20,8 @@ namespace ColorPicker
         public static readonly DependencyProperty ShowFractionalPartProperty =
             DependencyProperty.Register(nameof(ShowFractionalPart), typeof(bool), typeof(PortableColorPicker),
                 new PropertyMetadata(true));
-        
-        public static readonly DependencyProperty HexRepresentationProperty = 
+
+        public static readonly DependencyProperty HexRepresentationProperty =
             DependencyProperty.Register(nameof(HexRepresentation), typeof(HexRepresentationType), typeof(PortableColorPicker),
                 new PropertyMetadata(HexRepresentationType.RGBA));
 

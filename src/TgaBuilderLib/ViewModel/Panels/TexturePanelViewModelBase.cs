@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Utils;

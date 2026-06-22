@@ -92,7 +92,7 @@ public partial class Layer
     /// </summary>
     public class UnicodeNameLayerInfo : AdjustmentLayerInfo
     {
-        public UnicodeNameLayerInfo(Layer layer, string layerName) 
+        public UnicodeNameLayerInfo(Layer layer, string layerName)
             : base("luni", layer)
         {
 

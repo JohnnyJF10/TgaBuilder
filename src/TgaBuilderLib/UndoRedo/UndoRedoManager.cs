@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Diagnostics;
 using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.UndoRedo

@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using System;
-using System.Diagnostics;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.View;
 

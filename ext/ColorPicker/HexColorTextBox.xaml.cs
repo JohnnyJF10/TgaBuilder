@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ColorPicker.Models;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using ColorPicker.Models;
 
 namespace ColorPicker
 {
@@ -11,7 +11,7 @@ namespace ColorPicker
             DependencyProperty.Register(nameof(ShowAlpha), typeof(bool), typeof(HexColorTextBox),
                 new PropertyMetadata(true));
 
-        public static readonly DependencyProperty HexRepresentationProperty = 
+        public static readonly DependencyProperty HexRepresentationProperty =
             DependencyProperty.Register(nameof(HexRepresentation), typeof(HexRepresentationType), typeof(HexColorTextBox),
                 new PropertyMetadata(HexRepresentationType.RGBA));
 
@@ -21,7 +21,7 @@ namespace ColorPicker
             set => SetValue(HexRepresentationProperty, value);
         }
 
-        
+
         public HexColorTextBox()
         {
             InitializeComponent();

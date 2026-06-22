@@ -262,8 +262,8 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         byte[] mapData = _transitionHelper.GetLabelMap();
 
         var labelBmp = LabelMapImage;
-        if (labelBmp is null 
-            || labelBmp.PixelWidth != ResultImage.PixelWidth 
+        if (labelBmp is null
+            || labelBmp.PixelWidth != ResultImage.PixelWidth
             || labelBmp.PixelHeight != ResultImage.PixelHeight)
         {
             labelBmp = _mediaFactory.CreateEmptyBitmap(ResultImage.PixelWidth, ResultImage.PixelHeight, true);
@@ -297,8 +297,8 @@ public class TransitionOutViewModel : ThrottledViewModelBase
             return;
 
         var indicatorBmp = IndicatorMapImage;
-        if (indicatorBmp is null 
-            || indicatorBmp.PixelWidth != ResultImage.PixelWidth 
+        if (indicatorBmp is null
+            || indicatorBmp.PixelWidth != ResultImage.PixelWidth
             || indicatorBmp.PixelHeight != ResultImage.PixelHeight)
         {
             indicatorBmp = _mediaFactory.CreateEmptyBitmap(ResultImage.PixelWidth, ResultImage.PixelHeight, true);
@@ -507,7 +507,7 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         if (ResultInvalidator is not null)
             ResultInvalidator = null;
 
-        if (LabelInvalidator is not null) 
+        if (LabelInvalidator is not null)
             LabelInvalidator = null;
     }
 
@@ -528,9 +528,9 @@ public class TransitionOutViewModel : ThrottledViewModelBase
         using var ResLockedFrameBuffer = ResultImage.GetLocker(requiresRefresh: true);
 
         Marshal.Copy(
-            source: _transitionHelper.PixelsResult, 
-            startIndex: 0, 
-            destination: ResLockedFrameBuffer.BackBuffer, 
+            source: _transitionHelper.PixelsResult,
+            startIndex: 0,
+            destination: ResLockedFrameBuffer.BackBuffer,
             length: _transitionHelper.PixelsResult.Length);
 
         ResultInvalidator?.InvalidateVisual();

@@ -1,6 +1,4 @@
-﻿using System.Windows.Input;
-
-using TgaBuilderLib.Abstraction;
+﻿using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.BitmapOperations;
 using TgaBuilderLib.Commands;
 using TgaBuilderLib.Messaging;

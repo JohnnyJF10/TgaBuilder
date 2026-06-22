@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using TgaBuilderLib.Abstraction;

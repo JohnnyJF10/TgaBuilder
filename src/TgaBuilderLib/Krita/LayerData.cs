@@ -75,9 +75,9 @@ internal class LayerData
 
                         // Write into planar BBB...GGG...RRR...AAA... destination
                         tile[/* 0 *    channelSize + */ pixelIndex] = b;
-                        tile[/* 1 *  */channelSize +    pixelIndex] = g;
-                        tile[   2 *    channelSize +    pixelIndex] = r;
-                        tile[   3 *    channelSize +    pixelIndex] = a;
+                        tile[/* 1 *  */channelSize + pixelIndex] = g;
+                        tile[2 * channelSize + pixelIndex] = r;
+                        tile[3 * channelSize + pixelIndex] = a;
 
                         if (!anyContent && (r != 0 || g != 0 || b != 0 || a != 0))
                         {

@@ -31,7 +31,7 @@ public class ColorViewModel : ThrottledViewModelBase
     private float _temperature = 0f;
     private float _tint = 0f;
 
-        public float Saturation
+    public float Saturation
     {
         get => _saturation;
         set => SetPropertyTriggerRecalculation(ref _saturation, value);

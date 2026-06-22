@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 using TgaBuilderLib.Abstraction;
 
 namespace TgaBuilderLib.Transitions;
+
 public partial class TransitionHelper : ITransitionHelper
 {
     private const int TRANSITIONS_BPP = 4; // Always BGRA32

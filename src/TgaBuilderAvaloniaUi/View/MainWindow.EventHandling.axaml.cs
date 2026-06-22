@@ -1,11 +1,8 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Transactions;
 using System.Windows.Input;
 using TgaBuilderAvaloniaUi.AttachedProperties;
 using TgaBuilderAvaloniaUi.Elements;
@@ -65,7 +62,7 @@ namespace TgaBuilderAvaloniaUi.View
             }
 
 
-                var pos = e.GetPosition(CurrentImage);
+            var pos = e.GetPosition(CurrentImage);
             int x = (int)pos.X;
             int y = (int)pos.Y;
 
@@ -116,14 +113,14 @@ namespace TgaBuilderAvaloniaUi.View
                     : MouseModifier.None;
             }
 
-            if (CurrentPanel != null && 
+            if (CurrentPanel != null &&
             e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control))
             {
                 var posNewPanel = e.GetPosition(CurrentPanel);
                 var deltaPos = posNewPanel - _lastPanPosition;
                 CurrentPanel.EnablePan = false;
                 CurrentPanel.PanDelta(
-                    dx: deltaPos.X, 
+                    dx: deltaPos.X,
                     dy: deltaPos.Y,
                     skipTransitions: true);
 
@@ -131,7 +128,7 @@ namespace TgaBuilderAvaloniaUi.View
                 return;
             }
 
-            if (CurrentPanel != null && 
+            if (CurrentPanel != null &&
                 !(e.Properties.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control)) &&
                 PanelMouseAP.GetScrollCommand(CurrentPanel) is ICommand scrollCommand &&
                 PanelMouseAP.GetEndScrollCommand(CurrentPanel) is ICommand endScrollCommand)
@@ -200,6 +197,6 @@ namespace TgaBuilderAvaloniaUi.View
             }
         }
 
-        
+
     }
 }

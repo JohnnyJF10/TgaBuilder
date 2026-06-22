@@ -3,10 +3,8 @@ using Avalonia.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
-using System.Windows.Input;
 using TgaBuilderAvaloniaUi.Elements;
 using TgaBuilderAvaloniaUi.Services;
-using TgaBuilderLib.Abstraction;
 using TgaBuilderLib.ViewModel;
 
 namespace TgaBuilderAvaloniaUi.View
@@ -38,7 +36,7 @@ namespace TgaBuilderAvaloniaUi.View
         private void InitializeVisualInvalidator(INotifyPropertyChanged viewModel)
         {
             if (viewModel is not TransitionViewModel vm)
-            return;
+                return;
 
             vm.TransitionOutVM.ResultInvalidator = new VisualInvalidator(ResultImage);
 

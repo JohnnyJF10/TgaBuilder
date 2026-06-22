@@ -174,8 +174,8 @@ public class TransitionInViewModel : ThrottledViewModelBase
         Image2 = tempImage;
 
         var tempPixels = _transitionHelper.Pixels1;
-         _transitionHelper.Pixels1 = _transitionHelper.Pixels2;
-         _transitionHelper.Pixels2 = tempPixels;
+        _transitionHelper.Pixels1 = _transitionHelper.Pixels2;
+        _transitionHelper.Pixels2 = tempPixels;
 
         _transitionHelper.CurrentBricksPipelineRequirements = BricksPipelineRequirements.RequiresAnalysis;
 
@@ -257,10 +257,10 @@ public class TransitionInViewModel : ThrottledViewModelBase
             referenceImage.PixelHeight,
             true);
     }
-    
+
     private bool AreDimensionsDifferent(IWriteableBitmap img1, IWriteableBitmap img2)
-    {        
-        return img1.PixelWidth != img2.PixelWidth || 
+    {
+        return img1.PixelWidth != img2.PixelWidth ||
                img1.PixelHeight != img2.PixelHeight;
     }
 

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ColorPicker.Models;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
-using ColorPicker.Models;
 
 namespace ColorPicker.Converters
 {

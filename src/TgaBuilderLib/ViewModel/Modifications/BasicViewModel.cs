@@ -77,7 +77,7 @@ public class BasicViewModel : ThrottledViewModelBase
         get => _blacks;
         set => SetPropertyTriggerRecalculation(ref _blacks, value);
     }
-    
+
 
     private void ConfigureTransitionHelper()
     {

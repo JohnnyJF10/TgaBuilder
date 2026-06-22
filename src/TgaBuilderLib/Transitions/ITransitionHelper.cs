@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using TgaBuilderLib.Abstraction;
-using TgaBuilderLib.ViewModel;
+﻿using TgaBuilderLib.Abstraction;
 using static TgaBuilderLib.Transitions.TransitionHelper;
 
 namespace TgaBuilderLib.Transitions
@@ -15,7 +13,7 @@ namespace TgaBuilderLib.Transitions
 
         byte[] Pixels1 { get; set; }
         byte[] Pixels2 { get; set; }
-        
+
         byte[] PixelsResult { get; set; }
 
         TransitionType TypeOfTransition { get; set; }
