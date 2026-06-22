@@ -53,6 +53,7 @@
                     Width="64"
                     Height="64"
                     Margin="5,5,10,5"
+                    RenderOptions.BitmapScalingMode="Fant"
                     />
                 <StackPanel>
                     <TextBlock
