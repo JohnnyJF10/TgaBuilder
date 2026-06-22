@@ -1,5 +1,5 @@
 /**
- * TgaBuilder Homepage — Main Script
+ * TrLynx Homepage — Main Script
  * Handles theme toggling, smooth scroll, and video carousel.
  */
 

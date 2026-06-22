@@ -1,0 +1,40 @@
+<UserControl x:Class="TrLynxAvaloniaUi.View.MainWindowViewUserControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:elements="clr-namespace:TrLynxAvaloniaUi.Elements"
+    xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+    xmlns:ap="clr-namespace:TrLynxAvaloniaUi.AttachedProperties"
+    x:DataType="viewmodel:ReadOnlyViewTabViewModel"
+    x:CompileBindings="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel Margin="5,0,5,0" >
+        <elements:IconButton
+            Classes="outlined"
+            Icon="{StaticResource arrow_autofit_width}"
+            ap:MouseOverInfoAP.InfoText="Fit to Panel Width"
+            Command="{Binding FitCommand}"
+            DockPanel.Dock="Left" />
+        <elements:IconButton
+            Classes="outlined"
+            Icon="{StaticResource arrow_autofit_height}"
+            Margin="5,0"
+            ap:MouseOverInfoAP.InfoText="Fit to Panel Height"
+            Command="{Binding FillCommand}"
+            DockPanel.Dock="Left" />
+        <elements:IconButton
+            Classes="outlined"
+            Icon="{StaticResource scale_fit}"
+            ap:MouseOverInfoAP.InfoText="Zoom to exact pixel sized (100% zoom)"
+            Command="{Binding Zoom100Command}"
+            DockPanel.Dock="Left" />
+
+    </DockPanel>
+
+</UserControl>

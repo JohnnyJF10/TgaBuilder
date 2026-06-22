@@ -1,0 +1,97 @@
+﻿using System.Runtime.CompilerServices;
+
+namespace TrLynxLib.BitmapOperations
+{
+    public partial class BitmapOperations
+    {
+        private enum PixelAction
+        {
+            Copy,           // Direct copy
+            Transparent,    // Make transparent
+            Blend,          // Alpha blend
+            None            // Retain original
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private byte DoAlphaBlend(byte src, byte tgt, byte alpha)
+            => (byte)(((tgt * (255 - alpha)) + (src * alpha)) / 255);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private PixelAction DecidePixelAction(
+            int alpha,
+            bool srcHasAlpha,
+            bool tgtHasAlpha,
+            bool isTransparencyColor,
+            bool overlayTransparent)
+        {
+            // -------------------------------------------
+            // Copy
+            // -------------------------------------------
+            if (tgtHasAlpha)
+            {
+                if (!overlayTransparent)
+                {
+                    if (srcHasAlpha || !isTransparencyColor)
+                    {
+                        return PixelAction.Copy;
+                    }
+                }
+            }
+            else // tgtHasAlpha == false
+            {
+                if (alpha == 255)
+                {
+                    if (!overlayTransparent || !isTransparencyColor)
+                    {
+                        return PixelAction.Copy;
+                    }
+                }
+            }
+
+            // -------------------------------------------
+            // Transparent
+            // -------------------------------------------
+            if (!overlayTransparent)
+            {
+                if (srcHasAlpha)
+                {
+                    if (alpha == 0)
+                    {
+                        return PixelAction.Transparent;
+                    }
+                }
+                else // srcHasAlpha == false
+                {
+                    if (isTransparencyColor)
+                    {
+                        return PixelAction.Transparent;
+                    }
+                }
+            }
+
+            // -------------------------------------------
+            // Blend
+            // -------------------------------------------
+            if (srcHasAlpha || !isTransparencyColor)
+            {
+                if (tgtHasAlpha)
+                {
+                    return PixelAction.Blend;
+                }
+                else // tgtHasAlpha == false
+                {
+                    if (alpha < 255)
+                    {
+                        return PixelAction.Blend;
+                    }
+                }
+            }
+
+            // -------------------------------------------
+            // None
+            // -------------------------------------------
+            return PixelAction.None;
+        }
+
+    }
+}

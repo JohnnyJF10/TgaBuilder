@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <AssemblyVersion>2.2.6.0</AssemblyVersion>
+    <FileVersion>2.2.6.0</FileVersion>
+    <AssemblyTitle>TrLynx</AssemblyTitle>
+    <Description>Texture Sets Building Tool for TRLE</Description>
+    <Product>TrLynx</Product>
+    <Copyright>Copyright © 2025 Jonas Nebel</Copyright>
+    <Authors>Jonas Nebel</Authors>
+	<ApplicationIcon>Resources\TrLynx_icon.ico</ApplicationIcon>
+	<Platforms>AnyCPU;x64</Platforms>
+	<PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Labs.CommandManager" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.2" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.14">
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
+    <PackageReference Include="PanAndZoom" Version="12.0.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TrLynxLib\TrLynxLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="View\MainWindowAnimationUserControl.axaml.cs">
+      <DependentUpon>MainWindowAnimationUserControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="View\MainWindowSelectionUserControl.axaml.cs">
+      <DependentUpon>MainWindowSelectionUserControl.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

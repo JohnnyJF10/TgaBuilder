@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>net6.0-windows;net8.0-windows</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>TrLynx</AssemblyName>
+    <ApplicationIcon>Resources\TrLynx_icon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyVersion>2.2.6.0</AssemblyVersion>
+    <FileVersion>2.2.6.0</FileVersion>
+    <AssemblyTitle>TrLynx</AssemblyTitle>
+    <Description>Texture Sets Building Tool for TRLE</Description>
+    <Product>TrLynx</Product>
+    <Copyright>Copyright © 2025 Jonas Nebel</Copyright>
+    <Authors>Jonas Nebel</Authors>
+    <Platforms>x64</Platforms>
+    </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\eyedropper.cur" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\TrLynx_icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+    <PackageReference Include="WPF-UI" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ext\ColorPicker\ColorPicker.csproj" />
+    <ProjectReference Include="..\TrLynxLib\TrLynxLib.csproj" />
+    <ProjectReference Include="..\..\ext\ZoomPanel\ZoomPanel.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="View\MainWindow.EventHandling.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+	<Compile Update="View\MainWindow.Methods.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+	<Compile Update="App.DI.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="Resources\eyedropper.cur">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Resources\TrLynx_picture.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\TrLynx_picture.png" />
+  </ItemGroup>
+
+
+</Project>

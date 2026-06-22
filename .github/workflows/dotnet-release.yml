@@ -31,7 +31,7 @@ jobs:
         id: meta
         shell: pwsh
         run: |
-          [xml]$csproj = Get-Content ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj
+          [xml]$csproj = Get-Content ./TrLynxWpfUi/TrLynxWpfUi.csproj
           $title = $csproj.Project.PropertyGroup.AssemblyTitle
           $version = $csproj.Project.PropertyGroup.AssemblyVersion
           $shortVersion = ($version -split '\.')[0..2] -join '.'
@@ -52,7 +52,7 @@ jobs:
       # Build for .NET 8
       - name: Publish .NET 8
         run: |
-          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
+          dotnet publish ./TrLynxWpfUi/TrLynxWpfUi.csproj `
             -c Release `
             -f net8.0-windows `
             -r win-x64 `
@@ -81,7 +81,7 @@ jobs:
       # Build for .NET 6
       - name: Publish .NET 6
         run: |
-          dotnet publish ./TgaBuilderWpfUi/TgaBuilderWpfUi.csproj `
+          dotnet publish ./TrLynxWpfUi/TrLynxWpfUi.csproj `
             -c Release `
             -f net6.0-windows `
             -r win-x64 `

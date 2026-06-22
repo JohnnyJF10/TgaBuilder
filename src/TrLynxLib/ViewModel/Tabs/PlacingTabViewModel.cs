@@ -1,0 +1,97 @@
+﻿using TrLynxLib.Enums;
+
+
+namespace TrLynxLib.ViewModel
+{
+    public class PlacingTabViewModel : ViewModelBase
+    {
+        private readonly TargetTexturePanelViewModel _destination;
+
+        public PlacingTabViewModel(TargetTexturePanelViewModel destination)
+        {
+            _destination = destination;
+        }
+
+        public bool OverlayTransparentModeSelected
+        {
+            get => _destination.placingMode.HasFlag(PlacingMode.OverlayTransparent);
+            set => SetPlacingModeFlag(PlacingMode.OverlayTransparent, value, nameof(OverlayTransparentModeSelected));
+        }
+
+        public bool PlaceContinuouslyModeSelected
+        {
+            get => _destination.placingMode.HasFlag(PlacingMode.PlaceContinuously);
+            set => SetPlaceContinuously(value);
+        }
+
+        public bool SwapAndPlaceModeSelected
+        {
+            get => _destination.placingMode.HasFlag(PlacingMode.PlaceAndSwap);
+            set => SetPlaceAndSwap(value);
+        }
+
+        public bool ResizeToPickerModeSelected
+        {
+            get => _destination.placingMode.HasFlag(PlacingMode.ResizeToPicker);
+            set => SetPlacingModeFlag(PlacingMode.ResizeToPicker, value, nameof(ResizeToPickerModeSelected));
+        }
+
+        public int PickerSize
+        {
+            get => _destination.Picker.Size;
+            set => SetPickerSize(value);
+        }
+
+        public double Opacity
+        {
+            get => _destination.Opacity;
+            set => SetOpacity(value);
+        }
+
+        private void SetOpacity(double value)
+        {
+            if (Opacity == value)
+                return;
+
+
+            _destination.Opacity = Math.Clamp(value, 0, 1);
+
+            OnPropertyChanged(nameof(Opacity));
+        }
+
+        private void SetPlaceContinuously(bool value)
+        {
+            if (value && SwapAndPlaceModeSelected)
+                SetPlacingModeFlag(PlacingMode.PlaceAndSwap, false, nameof(SwapAndPlaceModeSelected));
+
+            SetPlacingModeFlag(PlacingMode.PlaceContinuously, value, nameof(PlaceContinuouslyModeSelected));
+        }
+
+        private void SetPlaceAndSwap(bool value)
+        {
+            if (value && PlaceContinuouslyModeSelected)
+                SetPlacingModeFlag(PlacingMode.PlaceContinuously, false, nameof(PlaceContinuouslyModeSelected));
+
+            SetPlacingModeFlag(PlacingMode.PlaceAndSwap, value, nameof(SwapAndPlaceModeSelected));
+        }
+
+        private void SetPlacingModeFlag(PlacingMode modeFlag, bool enabled, string propertyName)
+        {
+            if (enabled)
+                _destination.placingMode |= modeFlag;
+            else
+                _destination.placingMode &= ~modeFlag;
+
+            OnPropertyChanged(propertyName);
+        }
+
+        private void SetPickerSize(int value)
+        {
+            if (_destination.Picker.Size == value)
+                return;
+
+            _destination.Picker.Size = value;
+            OnPropertyChanged(nameof(PickerSize));
+        }
+    }
+}

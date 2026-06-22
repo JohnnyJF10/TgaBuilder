@@ -1,0 +1,24 @@
+<UserControl x:Class="TrLynxAvaloniaUi.View.TransitionWindowExportUserControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:elements="clr-namespace:TrLynxAvaloniaUi.Elements"
+    xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+    xmlns:ap="clr-namespace:TrLynxAvaloniaUi.AttachedProperties"
+    x:DataType="viewmodel:ExportTransitionViewModel"
+    x:CompileBindings="False">
+    <StackPanel Spacing="8"
+        Orientation="Horizontal">
+        <elements:IconButton
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            Icon="{StaticResource krita_icon}"
+            ap:MouseOverInfoAP.InfoText="Export the transition layers to a Krita (.kra) or Photoshop (.psd) file"
+            Command="{Binding ExportToKritaCommand}" />
+        <elements:IconButton
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            Icon="{StaticResource ps_icon}"
+            ap:MouseOverInfoAP.InfoText="Export the transition layers to a Photoshop (.psd) or Krita (.kra) file"
+            Command="{Binding ExportToPsdCommand}" />
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,71 @@
+<UserControl x:Class="TrLynxAvaloniaUi.View.MainWindowModeUserControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:elements="clr-namespace:TrLynxAvaloniaUi.Elements"
+    xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+    xmlns:ap="clr-namespace:TrLynxAvaloniaUi.AttachedProperties"
+    xmlns:enums="clr-namespace:TrLynxLib.Enums;assembly=TrLynxLib"
+    x:DataType="viewmodel:MainViewModel"
+    x:CompileBindings="False"
+    xmlns:converter="clr-namespace:TrLynxAvaloniaUi.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconRadioButtonStyle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel
+        Margin="5,0,5,0"
+        DataContext="{Binding EditsTab}"
+        Orientation="Horizontal">
+        <elements:IconRadioButton
+            Classes="outlined"
+            GroupName="EditMode"
+            Icon="{StaticResource arrow_down_right_circle}"
+            ap:MouseOverInfoAP.InfoText="Regular Mode"
+            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.Default}}" />
+        <Rectangle Width="10" Height="10" />
+        <elements:IconRadioButton
+            Classes="outlined"
+            GroupName="EditMode"
+            Icon="{StaticResource arrow_rotate_counterclockwise}"
+            Margin="0,0,5,0"
+            ap:MouseOverInfoAP.InfoText="Rotate Clockwise Mode"
+            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.ClockwiseRotating}}" />
+
+        <elements:IconRadioButton
+            Classes="outlined"
+            GroupName="EditMode"
+            Icon="{StaticResource flip_horizontal}"
+            Margin="0,0,5,0"
+            ap:MouseOverInfoAP.InfoText="Mirror Horizontal Mode"
+            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorHorizontal}}" />
+        <elements:IconRadioButton
+            Classes="outlined"
+            GroupName="EditMode"
+            Icon="{StaticResource flip_vertical}"
+            ap:MouseOverInfoAP.InfoText="Mirror Vertical Mode"
+            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.MirrorVertical}}" />
+        <Rectangle Width="10" Height="10" />
+        <elements:IconRadioButton
+            Classes="outlined"
+            GroupName="EditMode"
+            Icon="{StaticResource pair}"
+            Margin="0,0,5,0"
+            ap:MouseOverInfoAP.InfoText="Tile Rally Mode"
+            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.TileSwapping}}" />
+
+        <elements:IconRadioButton
+            Classes="outlined"
+            GroupName="EditMode"
+            Icon="{StaticResource link_square}"
+            Margin="0,0,5,0"
+            ap:MouseOverInfoAP.InfoText="Tile Swap Mode"
+            IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static enums:TargetMode.TileMoving}}" />
+
+    </StackPanel>
+
+</UserControl>

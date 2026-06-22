@@ -1,0 +1,45 @@
+using Avalonia.Media;
+using System;
+using TrLynxAvaloniaUi.Elements;
+using TrLynxLib.Messaging;
+
+namespace TrLynxAvaloniaUi.Services
+{
+    internal partial class MessageService : IMessageService
+    {
+        private readonly NotificationManager _manager;
+        private readonly bool _wetherSendSuccessMessages;
+
+        public MessageService(NotificationManager manager, bool wetherSendSuccessMessages = false)
+        {
+            _manager = manager;
+            _wetherSendSuccessMessages = wetherSendSuccessMessages;
+        }
+
+        public void SendMessage(MessageType message, string additionalInfo = "", Exception? ex = null)
+        {
+            if (!_messageDict.TryGetValue(message, out var uiMessage))
+            {
+                return;
+            }
+
+            if (!_wetherSendSuccessMessages && string.Equals(uiMessage.Title, "Information"))
+                return;
+
+            var text = string.IsNullOrEmpty(additionalInfo) ? uiMessage.Message : additionalInfo;
+
+            if (ex is not null)
+                text += $" Error: {ex.Message} - Please find more information in the log file.";
+
+            var accent = new SolidColorBrush(Color.Parse(uiMessage.Accent));
+
+            _manager.QueueNotification(new NotificationEntry
+            {
+                Title = uiMessage.Title,
+                Message = text,
+                AccentBrush = accent,
+                TimeoutSeconds = uiMessage.timeout,
+            });
+        }
+    }
+}
