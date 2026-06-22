@@ -142,7 +142,7 @@ namespace TgaBuilderLib.FileHandling
                 _bitmapIO.WriteTga(fileName, cancellationToken);
 
             else if (IsUsual(extension))
-                _bitmapIO.WriteUsual(fileName, cancellationToken);
+                _bitmapIO.WriteUsual(fileName);
 
             else if (IsKrita(extension))
                 _bitmapIO.WriteKrita(fileName, cancellationToken);

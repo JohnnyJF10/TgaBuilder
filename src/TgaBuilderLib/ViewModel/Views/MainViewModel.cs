@@ -118,7 +118,7 @@ namespace TgaBuilderLib.ViewModel
         private RelayCommand? _openDestinationCommand;
         private RelayCommand<List<string>>? _fileDropDestinationCommand;
         private RelayCommand? _saveCommand;
-        private RelayCommand? _saveAsCommand;
+        private RelayCommand<FileTypes?>? _saveAsCommand;
         private RelayCommand? _cancelSourceIOCommand;
         private RelayCommand? _cancelDestinationIOCommand;
         private RelayCommand? _undoCommand;
@@ -257,7 +257,7 @@ namespace TgaBuilderLib.ViewModel
             ??= new(TargetIO.SaveCurrent);
 
         public ICommand SaveAsCommand => _saveAsCommand
-            ??= new(() => TargetIO.SetupSaveTask());
+            ??= new(ft => TargetIO.SetupSaveTask(fileType: ft));
 
         public ICommand OpenDestinationCommand
             => _openDestinationCommand

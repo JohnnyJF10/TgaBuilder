@@ -269,16 +269,18 @@
                             Background="Transparent"
                             ap:MouseOverInfoAP.InfoText="Save File (Ctrl + S)"
                             ap:WindowDraggerAP.CanDragWindow="True"/>
-                        <ui:Button
+                        <elements:ContextMenuButton
                             Icon="{ui:SymbolIcon SaveArrowRight24}"
-                            BorderThickness="0"
                             Width="36"
                             Height="36"
+                            BorderThickness="0"
                             Appearance="Transparent"
-                            Command="{Binding SaveAsCommand}"
-                            Background="Transparent"
+                            ItemsSource="{Binding TargetIO.WriteableImageFormatsEnumerable}"
+                            DisplayStringsSource="{Binding TargetIO.WriteableImageFormatsStrings}"
+                            ItemCommand="{Binding SaveAsCommand}"
+                            ap:WindowDraggerAP.CanDragWindow="True"
                             ap:MouseOverInfoAP.InfoText="Save As (Ctrl + Shift + S)"
-                            ap:WindowDraggerAP.CanDragWindow="True"/>
+                            />
 
                     </StackPanel>
                 </ui:TitleBar.Header>
@@ -943,7 +945,7 @@
                 />
             <TextBlock
                 x:Name="MouseOverInfoTextBlock"
-                Text="Welcome to TgaBuilder! Made with ❤ by Jonson."
+                Text="Welcome to TgaBuilder! Made with ❤ for the TRLE community."
                 TextWrapping="NoWrap"
                 TextTrimming="CharacterEllipsis"
                 Margin="5"/>

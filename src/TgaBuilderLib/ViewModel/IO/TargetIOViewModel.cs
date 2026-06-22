@@ -28,16 +28,12 @@ namespace TgaBuilderLib.ViewModel
             _mediaFactory = mediaFactory;
             _messageBoxService = messageBoxService;
             _undoRedoManager = undoRedoManager;
-            _writeableImageFormats = writeableImageFormats;
+            WriteableImageFormats = writeableImageFormats;
         }
 
         private const FileTypes DEF_FILE_TYPES =
             FileTypes.TGA | FileTypes.BMP | FileTypes.PNG | FileTypes.JPG
             | FileTypes.JPEG | FileTypes.PSD | FileTypes.KRA | FileTypes.DDS;
-
-        // Output formats are injected so each frontend can advertise only what it can encode
-        // (e.g. Avalonia has no JPEG encoder, WPF does).
-        private readonly FileTypes _writeableImageFormats;
 
         private static bool IsHandleableSaveFileException(Exception e)
             => e is FileNotFoundException
@@ -55,8 +51,18 @@ namespace TgaBuilderLib.ViewModel
 
         public IEnumerable<string> RecentDestinationFileNames => _usageData.RecentOutputFiles;
 
+        /// <summary>
+        /// Output formats are injected so each frontend can advertise only what it can encode
+        /// </summary>
+        /// <remarks>
+        /// e.g. Avalonia has no JPEG encoder, WPF does
+        /// </remarks>
+        public FileTypes WriteableImageFormats { get; }
 
-
+        public IEnumerable<FileTypes> WriteableImageFormatsEnumerable
+            => FileTypeRegistry.Enumerate(WriteableImageFormats);
+        public List<string> WriteableImageFormatsStrings
+            => WriteableImageFormatsEnumerable.Select(ft => FileTypeRegistry.Lookup[ft].DisplayName).ToList();
 
         public void SetupOpenTask(string? fileName = null, List<FileTypes>? fileTypes = null)
         {
@@ -70,7 +76,7 @@ namespace TgaBuilderLib.ViewModel
             _ioTask = Open(fileName);
         }
 
-        public void SetupSaveTask(string? fileName = null)
+        public void SetupSaveTask(string? fileName = null, FileTypes? fileType = null)
         {
             if (_ioTask != null && !_ioTask.IsCompleted)
             {
@@ -78,7 +84,7 @@ namespace TgaBuilderLib.ViewModel
                 _cancellationTokenSource?.Dispose();
                 _ioTask.Wait();
             }
-            _ioTask = Save(fileName);
+            _ioTask = Save(fileName, fileType);
         }
 
         public void SaveCurrent() => SetupSaveTask(_lastFilePath);
@@ -216,11 +222,13 @@ namespace TgaBuilderLib.ViewModel
             _dispatcherService.Invoke(() => _messageService.SendMessage(resMessage));
         }
 
-        private async Task<bool> Save(string? fileName = null)
+        private async Task<bool> Save(string? fileName = null, FileTypes? fileType = null)
         {
             if (String.IsNullOrEmpty(fileName) || !IsFileWriteable(fileName))
             {
-                var dialogResult = await _fileService.SaveFileDialog(_writeableImageFormats);
+                var dialogResult = await (fileType is null
+                    ? _fileService.SaveFileDialog(WriteableImageFormats)
+                    : _fileService.SaveFileDialog(WriteableImageFormats, defaultType: fileType.Value));
 
                 if (dialogResult == true)
                     fileName = _fileService.SelectedPath;
@@ -274,7 +282,7 @@ namespace TgaBuilderLib.ViewModel
             string extension = Path.GetExtension(filePath)?.TrimStart('.').ToLower() ?? "";
 
             return FileTypeRegistry
-                .Enumerate(_writeableImageFormats)
+                .Enumerate(WriteableImageFormats)
                 .Any(type => FileTypeRegistry.GetExtension(type) == extension);
         }
     }
