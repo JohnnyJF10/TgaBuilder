@@ -95,14 +95,5 @@ namespace TgaBuilderAvaloniaUi.View
             await Task.Delay(42);
             OpenSourceSplitButton.Flyout?.Hide();
         }
-
-        public FileTypes[] SavAsFileTypes =>
-        [
-            FileTypes.TGA,
-            FileTypes.BMP,
-            FileTypes.PNG,
-            FileTypes.KRA,
-            FileTypes.PSD
-        ];
     }
 }

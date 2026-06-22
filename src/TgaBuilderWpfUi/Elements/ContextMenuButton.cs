@@ -73,11 +73,12 @@ namespace TgaBuilderWpfUi.Elements
         {
             if (ItemCommand == null) return;
             if (ItemsSource is not IEnumerable ItemsList) return;
-            if (!ItemsList.Cast<object>().Any()) return;
-
-            var contextMenu = new ContextMenu();
 
             var itemList = ItemsList.Cast<object>().ToList();
+
+            if (itemList.Count == 0) return;
+
+            var contextMenu = new ContextMenu();
 
             foreach (var item in itemList)
             {

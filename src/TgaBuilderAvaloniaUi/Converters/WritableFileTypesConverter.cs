@@ -1,7 +1,6 @@
 ﻿using Avalonia.Data.Converters;
 using System;
 using System.Globalization;
-using System.IO;
 using TgaBuilderLib.Enums;
 using TgaBuilderLib.FileHandling;
 
