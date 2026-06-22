@@ -9,7 +9,6 @@
     xmlns:local="clr-namespace:TgaBuilderAvaloniaUi.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:paz="using:Avalonia.Controls.PanAndZoom"
-    xmlns:transitions="using:TgaBuilderLib.Transitions"
     xmlns:viewmodel="clr-namespace:TgaBuilderLib.ViewModel;assembly=TgaBuilderLib"
     xmlns:enums="clr-namespace:TgaBuilderLib.Enums;assembly=TgaBuilderLib"
     x:Name="MainWin"
@@ -67,6 +66,7 @@
             <converter:PathToFriendlyPathConverter x:Key="PathToFriendlyPathConverter" />
             <converter:PanelHelpConverter x:Key="PanelHelpConverter" />
             <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+            <converter:WritableFileTypesConverter x:Key="WritableFileTypesConverter" />
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -283,47 +283,23 @@
                         </SplitButton.Content>
                         <SplitButton.Flyout>
                             <Flyout>
-								<Grid
-                                RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-						            <Button
-                                         x:Name="TgaSaveAsButton"
-                                         Content="TGA (Targa Image)"
-                                         MaxWidth="420"
-                                         Command="{Binding SaveAsCommand}"
-                                         CommandParameter="{x:Static enums:FileTypes.TGA}"
-                                         Background="Transparent"/>
-                                    <Button
-                                         x:Name="BmpSaveAsButton"
-                                         Grid.Row="1"
-                                         Content="BMP (Bitmap Image)"
-                                         MaxWidth="420"
-                                         Command="{Binding SaveAsCommand}"
-                                         CommandParameter="{x:Static enums:FileTypes.BMP}"
-                                         Background="Transparent"/>
-                                    <Button
-                                         x:Name="PngSaveAsButton"
-                                         Grid.Row="2"
-                                         Content="PNG (Portable Network Graphics)"
-                                         MaxWidth="420"
-                                         Command="{Binding SaveAsCommand}"
-                                         CommandParameter="{x:Static enums:FileTypes.PNG}"
-                                         Background="Transparent"/>
-                                    <Button
-                                         x:Name="KraSaveAsButton"
-                                         Grid.Row="3"
-                                         Content="KRA (Krita Image)"
-                                         MaxWidth="420"
-                                         Command="{Binding SaveAsCommand}"
-                                         CommandParameter="{x:Static enums:FileTypes.KRA}"
-                                         Background="Transparent"/>
-                                    <Button
-                                         x:Name="PsdSaveAsButton"
-                                         Grid.Row="4"
-                                         Content="PSD (Photoshop Image)"
-                                         MaxWidth="420"
-                                         Command="{Binding SaveAsCommand}"
-                                         CommandParameter="{x:Static enums:FileTypes.PSD}"
-                                         Background="Transparent"/>
+								<Grid>
+									<ItemsControl ItemsSource="{Binding TargetIO.WriteableImageFormatsEnumerable}">
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<Button
+                                                    x:Name="RecentTargetButton"
+                                                    Tag="Destination"
+                                                    Click="RecentTargetButton_Click"
+                                                    MaxWidth="420"
+                                                    Command="{Binding #MainWin.DataContext.SaveAsCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    Background="Transparent"
+                                                    Content="{Binding ., Converter={StaticResource WritableFileTypesConverter}}"
+                                                    />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                                 </Grid>
                             </Flyout>
                         </SplitButton.Flyout>

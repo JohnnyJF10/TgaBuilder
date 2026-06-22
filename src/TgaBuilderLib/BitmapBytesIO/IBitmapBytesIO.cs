@@ -45,7 +45,7 @@ namespace TgaBuilderLib.BitmapBytesIO
 
         void ToUsual(IReadableBitmap bitmap, string extension);
 
-        Task WriteUsual(string filePath, CancellationToken? cancellationToken = null);
+        void WriteUsual(string filePath);
 
         void ToTga(IReadableBitmap bitmap);
 

@@ -77,9 +77,11 @@ namespace TgaBuilderWpfUi.Elements
 
             var contextMenu = new ContextMenu();
 
-            foreach (var item in ItemsList)
+            var itemList = ItemsList.Cast<object>().ToList();
+
+            foreach (var item in itemList)
             {
-                int idx = ItemsList.Cast<object>().ToList().IndexOf(item);
+                int idx = itemList.IndexOf(item);
 
                 string? header = idx >= 0 && DisplayStringsSource != null && idx < DisplayStringsSource.Count
                     ? DisplayStringsSource[idx]
