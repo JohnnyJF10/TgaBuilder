@@ -37,7 +37,7 @@
         <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
         <KeyBinding Gesture="Ctrl+Y" Command="{Binding RedoCommand}" />
         <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
-        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" CommandParameter="{x:Static enums:FileTypes.TGA}" />
         <KeyBinding Gesture="Ctrl+E" Command="{Binding OpenSourceCommand}" />
         <KeyBinding Gesture="Ctrl+D" Command="{Binding OpenDestinationCommand}" />
         <KeyBinding Gesture="Ctrl+Q" Command="{Binding OpenSourceTrCommand}" />

@@ -40,7 +40,7 @@
         <KeyBinding Key="Z" Modifiers="Control"         Command="{Binding UndoCommand}" />
         <KeyBinding Key="Y" Modifiers="Control"         Command="{Binding RedoCommand}" />
         <KeyBinding Key="S" Modifiers="Control"         Command="{Binding SaveCommand}" />
-        <KeyBinding Key="S" Modifiers="Control+Shift"   Command="{Binding SaveAsCommand}" />
+        <KeyBinding Key="S" Modifiers="Control+Shift"   Command="{Binding SaveAsCommand}" CommandParameter="{x:Static enums:FileTypes.TGA}"/>
         <KeyBinding Key="E" Modifiers="Control"         Command="{Binding OpenSourceCommand}" />
         <KeyBinding Key="D" Modifiers="Control"         Command="{Binding OpenDestinationCommand}" />
         <KeyBinding Key="Q" Modifiers="Control"         Command="{Binding OpenSourceTrCommand}" />
