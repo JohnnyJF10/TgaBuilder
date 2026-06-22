@@ -15,6 +15,8 @@
 
 TrLynx is a Texture Panel Building tool for TRLE, which facilitates the process of texture panel creation. The tool is inspired by TBuilder by IceBerg but programmed from scratch in .NET, C# WPF for Windows and Avalonia UI (cross-platform, preview).
 
+Formerly known as TgaBuilder.
+
 ![Overview](pics/Overview_gif.gif)
 
 If you have already worked with TBuilder in the past, you should get familiar with TrLynx very quickly. It covers most of the features TBuilder has and introduces several more, most prominently:
