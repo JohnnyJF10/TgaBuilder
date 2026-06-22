@@ -1,0 +1,40 @@
+﻿using TrLynxLib.Abstraction;
+using TrLynxLib.Enums;
+
+namespace TrLynxLib.FileHandling
+{
+    public enum ResultStatus
+    {
+        Success,
+        ResizingRequired,
+        BitmapAreaNotSufficient,
+    }
+
+    public interface IImageFileManager
+    {
+        public ResultStatus ResultInfo { get; }
+
+        public bool TrImportRepackingSelected { get; set; }
+        public int TrImportHorPageNum { get; set; }
+
+        void LoadImageFile(
+            string fileName,
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
+
+        IWriteableBitmap GetLoadedBitmap();
+
+        IWriteableBitmap GetDestinationConfirmBitmap(
+            IWriteableBitmap inputBitmap);
+
+        void SaveImageFile(
+            string fileName,
+            IReadableBitmap bitmap);
+
+        void WriteImageFile(
+            string fileName,
+            CancellationToken? cancellationToken = null);
+
+        void ClearLoadedData();
+    }
+}

@@ -1,0 +1,40 @@
+﻿using TrLynxLib.Abstraction;
+using TrLynxLib.Enums;
+
+namespace TrLynxLib.BitmapBytesIO
+{
+    public partial class BitmapBytesIO
+    {
+
+        public void ToUsual(IReadableBitmap bitmap, string extension)
+        {
+            // ToDo: Implement cancellation logic if needed.
+            EncoderType encoderType = extension.ToLower() switch
+            {
+                "png" => EncoderType.Png,
+                "jpg" or "jpeg" => EncoderType.Jpeg,
+                "bmp" => EncoderType.Bmp,
+                _ => throw new NotSupportedException($"Unsupported file format: {extension}")
+            };
+
+            using var memoryStream = bitmap.ToMemoryStream(encoderType);
+
+            ActualDataLength = (int)memoryStream.Length;
+
+            LoadedBytes = _bytesPool.Rent(ActualDataLength);
+
+            memoryStream.Position = 0;
+
+            memoryStream.Read(LoadedBytes, 0, ActualDataLength);
+        }
+
+        public void WriteUsual(string fileName)
+        {
+            if (LoadedBytes is null)
+                throw new InvalidOperationException("No data loaded to save.");
+
+            using var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true);
+            fileStream.Write(LoadedBytes, 0, ActualDataLength);
+        }
+    }
+}

@@ -1,0 +1,84 @@
+<UserControl x:Class="TrLynxAvaloniaUi.View.MainWindowAnimationUserControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:elements="clr-namespace:TrLynxAvaloniaUi.Elements"
+    xmlns:ap="clr-namespace:TrLynxAvaloniaUi.AttachedProperties"
+    xmlns:converter="clr-namespace:TrLynxAvaloniaUi.Converters"
+    xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+    x:DataType="viewmodel:AnimationViewModel"
+    x:CompileBindings="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/IconButtonStyle.axaml" />
+                <ResourceInclude Source="/Styles/CheckerBrush.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:BitmapSourceConverter x:Key="BitmapSourceConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <StackPanel DataContext="{Binding Animation}" IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged}">
+        <Border
+            Margin="0,20,0,0"
+            Width="100"
+            Height="100"
+            ap:MouseOverInfoAP.InfoText="Animation View"
+            BorderThickness="0">
+            <Canvas x:Name="AnimCanvas" ClipToBounds="True">
+                <elements:CheckerRectangle
+                    Width="100"
+                    Height="100"
+                    TileDensity="1.25" />
+                <Image
+                    Name="AnimImage"
+                    RenderOptions.BitmapInterpolationMode="None"
+                    Canvas.Top="{Binding OffsetTop, UpdateSourceTrigger=PropertyChanged}"
+                    Width="100"
+                    ClipToBounds="True"
+                    Source="{Binding Presenter, Converter={StaticResource BitmapSourceConverter}}"
+                    Stretch="UniformToFill" />
+            </Canvas>
+        </Border>
+
+        <Slider
+            Margin="5"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Center"
+            ap:MouseOverInfoAP.InfoText="Set Animation Speed"
+            IsSnapToTickEnabled="True"
+            LargeChange="10"
+            Maximum="100"
+            Minimum="1"
+            SmallChange="10"
+            TickFrequency="10"
+            TickPlacement="TopLeft"
+            Value="{Binding Speed, UpdateSourceTrigger=PropertyChanged}" />
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+            <Grid>
+                <elements:IconButton
+                    Icon="{StaticResource play}"
+                    Margin="5"
+                    HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Play Animation"
+                    Command="{Binding StartCommand}"
+
+                    IsVisible="{Binding IsPlayVisible, UpdateSourceTrigger=PropertyChanged}" />
+                <elements:IconButton
+                    Icon="{StaticResource pause}"
+                    Margin="5"
+                    HorizontalAlignment="Right"
+                    ap:MouseOverInfoAP.InfoText="Pause Animation"
+                    Command="{Binding StopCommand}"
+
+                    IsVisible="{Binding IsPauseVisible, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
+            <elements:IconButton
+                Icon="{StaticResource dismiss}"
+                Margin="5"
+                HorizontalAlignment="Right"
+                ap:MouseOverInfoAP.InfoText="End Animation"
+                Command="{Binding CloseCommand}"
+                />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

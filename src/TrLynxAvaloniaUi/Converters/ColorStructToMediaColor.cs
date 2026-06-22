@@ -1,0 +1,27 @@
+﻿using Avalonia.Data.Converters;
+using System;
+using System.Globalization;
+
+namespace TrLynxAvaloniaUi.Converters;
+
+internal class ColorStructToMediaColor : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not TrLynxLib.Abstraction.Color color)
+            return null;
+        var mediaColor = Avalonia.Media.Color.FromArgb(
+            color.A ?? 255,
+            color.R,
+            color.G,
+            color.B);
+        return mediaColor;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not Avalonia.Media.Color mediaColor)
+            return null;
+        return new TrLynxLib.Abstraction.Color(mediaColor.R, mediaColor.G, mediaColor.B, mediaColor.A);
+    }
+}

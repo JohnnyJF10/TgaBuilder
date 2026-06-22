@@ -1,0 +1,118 @@
+<UserControl x:Class="TrLynxWpfUi.View.TransitionWindowControlsUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:local="clr-namespace:TrLynxWpfUi.View"
+             xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+             xmlns:elements="clr-namespace:TrLynxWpfUi.Elements"
+             xmlns:ap="clr-namespace:TrLynxWpfUi.AttachedProperties"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TransitionViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/IconRadioButtonStyle.xaml" />
+                <ResourceDictionary Source="/Styles/MouseWheelSliderStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+        <!-- Row 1: Mode selector + transition mode + pivot -->
+        <DockPanel
+            Grid.Row="1">
+
+            <!-- Mode Selector: Smooth / Brick radio icon buttons -->
+            <StackPanel
+                DockPanel.Dock="Left"
+                Orientation="Horizontal"
+                Margin="7,0,6,0"
+                VerticalAlignment="Center">
+                <elements:IconRadioButton
+                    GroupName="TransitionTypeSelector"
+                    IsChecked="{Binding IsSmoothMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    ap:MouseOverInfoAP.InfoText="Smooth transition mode"
+                    Width="36"
+                    Height="36"
+                    Icon="{ui:SymbolIcon TabInPrivate24}"
+                    />
+                <elements:IconRadioButton
+                    Margin="5,0"
+                    GroupName="TransitionTypeSelector"
+                    IsChecked="{Binding IsBrickMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    ap:MouseOverInfoAP.InfoText="Brick transition mode"
+                    Width="36"
+                    Height="36"
+                    Icon="{ui:SymbolIcon TableFreezeColumnAndRow24}"
+                    />
+            </StackPanel>
+
+            <!-- Transition mode buttons panel -->
+            <local:TransitionModeUserControl
+                DataContext="{Binding PivotVM}"
+                Margin="0,0,0,0" />
+
+            <!-- Pivot slider -->
+            <DockPanel
+                DataContext="{Binding PivotVM}"
+                Margin="10,0,10,0"
+                ap:MouseOverInfoAP.InfoText="Pivot: sets the position of the transition border (0 = left, 1 = right)">
+                <Grid
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left">
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_low}" />
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
+                        StrokeDashArray="2.2"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_high}" />
+                </Grid>
+                <Grid
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right">
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_high}" />
+                    <Path
+                        VerticalAlignment="Bottom"
+                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                        d:Stroke="White"
+                        StrokeDashArray="2.2"
+                        Fill="Transparent"
+                        Width="14"
+                        Height="14"
+                        Stretch="Uniform"
+                        Data="{StaticResource pivot_low}" />
+                </Grid>
+                <elements:MouseWheelSlider
+                    Style="{StaticResource MouseWheelSliderStyle}"
+                    Margin="5,0"
+                    VerticalAlignment="Center"
+                    AutoToolTipPlacement="BottomRight"
+                    AutoToolTipPrecision="2"
+                    Maximum="1"
+                    Minimum="0"
+                    SmallChange="0.01"
+                    Value="{Binding PivotValue}" />
+            </DockPanel>
+        </DockPanel>
+</UserControl>

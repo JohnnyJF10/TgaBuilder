@@ -1,0 +1,160 @@
+<UserControl x:Class="TrLynxAvaloniaUi.View.ModificationsWindowColorOverrideUserControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:elements="clr-namespace:TrLynxAvaloniaUi.Elements"
+    xmlns:viewmodel="clr-namespace:TrLynxLib.ViewModel;assembly=TrLynxLib"
+    xmlns:ap="clr-namespace:TrLynxAvaloniaUi.AttachedProperties"
+    x:DataType="viewmodel:ColorOverrideViewModel"
+    x:CompileBindings="False">
+
+    <StackPanel
+        Spacing="4"
+        Margin="4,4,4,6">
+
+        <DockPanel
+            ap:MouseOverInfoAP.InfoText="Amount: overall strength of the colour override (0 = original texture, 100 = fully re-coloured).">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource color_background}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource color_background_accent}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding AmountPercent}"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding AmountPercent}" />
+        </DockPanel>
+
+        <DockPanel
+            Margin="0,4,0,0"
+            ap:MouseOverInfoAP.InfoText="Remove original colour: fades the input texture toward greyscale before the new colour is applied (100 = fully neutral base).">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource color_fill}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource color_fill_accent}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding DecolorizePercent}"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding DecolorizePercent}" />
+        </DockPanel>
+
+        <DockPanel
+            Margin="0,4,0,0"
+            ap:MouseOverInfoAP.InfoText="Apply secondary colour: how strongly the colour of the secondary input is transferred onto the texture.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource color_line}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource color_line_accent}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding TransferPercent}"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding TransferPercent}" />
+        </DockPanel>
+
+        <DockPanel
+            Margin="0,4,0,0"
+            ap:MouseOverInfoAP.InfoText="Filtering: blurs the colour taken from the secondary input. Low keeps specific local colours, high transfers an overall averaged tone.">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="6"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource circle_small}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource circle}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding Smoothing}"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Maximum="32"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding Smoothing}" />
+        </DockPanel>
+
+        <DockPanel
+            Margin="0,4,0,0"
+            ap:MouseOverInfoAP.InfoText="Restore colour: scales the resulting colour intensity to restore or boost colour in the coloured regions (100 = unchanged, 200 = double).">
+            <Path
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Margin="5,0,0,0"
+                Data="{StaticResource dark_theme}" />
+            <Path
+                DockPanel.Dock="Right"
+                VerticalAlignment="Center"
+                Fill="{DynamicResource IconFillBrush}"
+                Width="14"
+                Height="14"
+                Stretch="Uniform"
+                Data="{StaticResource data_sunburst}" />
+            <elements:MouseWheelSlider
+                Margin="4,-10"
+                VerticalAlignment="Center"
+                ToolTip.Tip="{Binding ChromaRestorePercent}"
+                Maximum="200"
+                Minimum="0"
+                SmallChange="1"
+                Value="{Binding ChromaRestorePercent}" />
+        </DockPanel>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,61 @@
+﻿using TrLynxLib.Abstraction;
+using TrLynxLib.Enums;
+using TrLynxLib.FileHandling;
+
+namespace TrLynxLib.BitmapBytesIO
+{
+    public interface IBitmapBytesIO
+    {
+        ResultStatus ResultInfo { get; }
+
+        byte[]? LoadedBytes { get; }
+
+        int LoadedWidth { get; }
+        int LoadedHeight { get; }
+
+        int LoadedStride { get; }
+        bool LoadedHasAlpha { get; }
+
+        int ActualDataLength { get; }
+
+        IWriteableBitmap FromOtherBitmap(
+            IWriteableBitmap source);
+
+        void FromUsual(
+            string filePath,
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
+
+        void FromPfim(
+            string filePath,
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
+
+        void FromPsd(
+            string filePath,
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
+
+        void FromKrita(
+            string kraFilePath,
+            ResizeMode mode = ResizeMode.SourceResize,
+            CancellationToken? cancellationToken = null);
+
+        IWriteableBitmap GetLoadedBitmap();
+
+        void ToUsual(IReadableBitmap bitmap, string extension);
+
+        void WriteUsual(string filePath);
+
+        void ToTga(IReadableBitmap bitmap);
+
+        void ToKrita(IReadableBitmap bitmap);
+        void ToPsd(IReadableBitmap bitmap);
+
+        void WriteKrita(string filePath, CancellationToken? cancellationToken = null);
+        void WriteTga(string filePath, CancellationToken? cancellationToken = null);
+        void WritePsd(string filePath, CancellationToken? cancellationToken = null);
+
+        void ClearLoadedData();
+    }
+}
