@@ -3,7 +3,32 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.2.6] - Latest
+## [2.2.7] - Latest
+
+### Added
+
+* **Project Export Formats:** Added write support for **KRITA (`.kra`)** and **PSD (`.psd`)** output files.
+* **Transition Export:** Transition results can now be exported as layered **KRITA** and **PSD** project files for further editing outside the app.
+* **Save As Format Picker:** Added a new **Save As** dropdown flow with improved output format selection per frontend.
+* **Color Override Helper:** New controls can remove colour from the current texture and transfer colour/tone from a second texture.
+* **Texture Retrofier:** Added retro colour-space limiting controls with optional palette reduction and dithering modes such as **Checkerboard**, **Bayer 4×4**, and **Bayer 8×8**.
+* **Manual Brick Editing:** The manual transition mode can now move and freely rotate a single tile.
+
+### Changed
+
+* **Project Rename:** Application and repository renamed from **TgaBuilder** to **TrLynx**.
+* **Transition Workflow:** Layered transition export makes it easier to continue work in tools such as **KRITA** and **PSD** when TrLynx reaches its built-in editing limits.
+
+### Performance
+
+* Significant performance improvements for transition calculations on large textures due to algorithm and buffer-management optimizations.
+
+### Fixed
+
+* Fixed oversized **PNG** and **BMP** save output on Linux.
+* Fixed a Linux bug affecting file-type directory reading.
+
+## [2.2.6] - 2026-05-27
 
 ### Added
 
