@@ -23,6 +23,26 @@ namespace TrLynxWpfUi.View
             new Uri("Resources/eyedropper.cur", UriKind.Relative))
             .Stream);
 
+        public Cursor PenCursor = new(Application
+            .GetResourceStream(
+            new Uri("Resources/pen.cur", UriKind.Relative))
+            .Stream);
+
+        public Cursor EraserCursor = new(Application
+            .GetResourceStream(
+            new Uri("Resources/eraser.cur", UriKind.Relative))
+            .Stream);
+
+        public Cursor HandCursor = new(Application
+            .GetResourceStream(
+            new Uri("Resources/hand.cur", UriKind.Relative))
+            .Stream);
+
+        public Cursor RotateCursor = new(Application
+            .GetResourceStream(
+            new Uri("Resources/rotate.cur", UriKind.Relative))
+            .Stream);
+
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
@@ -166,6 +186,15 @@ namespace TrLynxWpfUi.View
                 return;
 
             tpvm.IsIndicatorMapVisible = true;
+
+            if (tpvm.IsExplicitTileVisibilityDrawMode)
+                Mouse.OverrideCursor = PenCursor;
+            else if (tpvm.IsExplicitTileVisibilityEraseMode)
+                Mouse.OverrideCursor = EraserCursor;
+            else if (tpvm.IsTileMoveRotateMode)
+                Mouse.OverrideCursor = HandCursor;
+            else if (tpvm.IsTileRotateMode)
+                Mouse.OverrideCursor = RotateCursor;
         }
 
         private void ResultImage_MouseLeave(object sender, MouseEventArgs e)
@@ -187,6 +216,8 @@ namespace TrLynxWpfUi.View
 
                 tpvm.EndManipulationCommand.Execute(null);
             }
+
+            Mouse.OverrideCursor = null;
         }
 
         private void ResultImage_MouseDown(object sender, MouseButtonEventArgs e)

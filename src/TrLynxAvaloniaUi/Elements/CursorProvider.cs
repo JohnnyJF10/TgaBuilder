@@ -15,12 +15,19 @@ public static class CursorProvider
         DefaultCursor = new Cursor(StandardCursorType.Arrow);
         CrossArrowCursor = new Cursor(StandardCursorType.SizeAll);
         EyedropperCursor = LoadCursorFromCurFile(new Uri("avares://TrLynxAvaloniaUi/Resources/eyedropper.cur"));
+        PenCursor = LoadCursorFromCurFile(new Uri("avares://TrLynxAvaloniaUi/Resources/pen.cur"));
+        EraserCursor = LoadCursorFromCurFile(new Uri("avares://TrLynxAvaloniaUi/Resources/eraser.cur"));
+        HandCursor = LoadCursorFromCurFile(new Uri("avares://TrLynxAvaloniaUi/Resources/hand.cur"));
+        RotateCursor = LoadCursorFromCurFile(new Uri("avares://TrLynxAvaloniaUi/Resources/rotate.cur"));
     }
 
     public static readonly Cursor DefaultCursor;
     public static readonly Cursor CrossArrowCursor;
     public static readonly Cursor EyedropperCursor;
-
+    public static readonly Cursor PenCursor;
+    public static readonly Cursor EraserCursor;
+    public static readonly Cursor HandCursor;
+    public static readonly Cursor RotateCursor;
     private static Cursor LoadCursorFromCurFile(Uri resourceUri)
     {
         try

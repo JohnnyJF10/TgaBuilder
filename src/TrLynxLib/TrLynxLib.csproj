@@ -5,8 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-	  <AssemblyVersion>2.2.6.0</AssemblyVersion>
-	  <FileVersion>2.2.6.0</FileVersion>
+	  <AssemblyVersion>2.2.7.0</AssemblyVersion>
+	  <FileVersion>2.2.7.0</FileVersion>
     <AssemblyTitle>TrLynxLib</AssemblyTitle>
     <Description>Library for TrLynx</Description>
     <Copyright>Copyright © 2025 Jonas Nebel</Copyright>

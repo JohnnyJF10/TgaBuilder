@@ -168,6 +168,22 @@ jobs:
           name: ${{ needs.build.outputs.artifact-name-avalonia-linux }}
           path: ./artifact
 
+      # New: Fix permissions and make linux binary executable
+      - name: Fix Linux executable permissions
+        run: |
+          LINUX_ZIP="./artifact/${{ needs.build.outputs.artifact-name-avalonia-linux }}.zip"
+          LINUX_TAR="./artifact/${{ needs.build.outputs.artifact-name-avalonia-linux }}.tar.gz"
+          
+          unzip -q "$LINUX_ZIP" -d ./temp-linux
+          
+          chmod +x ./temp-linux/TrLynxAvaloniaUi
+          
+          cd temp-linux
+          tar -czf "../$LINUX_TAR" *
+          cd ..
+          
+          rm "$LINUX_ZIP"
+
       - name: Create GitHub Release and upload assets
         uses: softprops/action-gh-release@v1
         with:
@@ -177,6 +193,6 @@ jobs:
           files: |
             ./artifact/${{ needs.build.outputs.artifact-name-standard }}.zip
             ./artifact/${{ needs.build.outputs.artifact-name-avalonia-windows }}.zip
-            ./artifact/${{ needs.build.outputs.artifact-name-avalonia-linux }}.zip
+            ./artifact/${{ needs.build.outputs.artifact-name-avalonia-linux }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
