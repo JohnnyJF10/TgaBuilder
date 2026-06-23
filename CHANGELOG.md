@@ -1,80 +1,257 @@
-Version 2.2.5 with major transition performance improvements, new controls to manage transition topology, and advanced brick-edge sizing and tinting options.
+# Changelog
 
-- Significant performance improvements for transition window calculations. Slider updates now trigger much faster redraws, with little to no visible latency on performant systems.
-- New controls to fine-tune transition topology and the brick edge breakup line:
-    - **Widening** (`0` to `1`, default `0`): Broadens the transition front from a point into a plateau. This replaces the old offset setting, because the previous offset use case is now covered by widening. At `1`, the side slopes collapse into the texture edges, resulting in a single-line transition. With **Hardness** at `1`, this reproduces the former offset case.
-    ![WideningToEdge](pics/WideningToEdge_gif.gif)
-    - **Shift** (`-1` to `1`, default `0`): Moves the transition pivot/plateau left or right to create asymmetric transitions. At extreme values, one side slope can collapse into the texture edge.
-    ![WideningShift](pics/WideningShift_gif.gif)
-- **Edge protection toggle** improvement: Edge protection can now be explicitly turned off (`false`), allowing workflows where strict border preservation is not desired.
-![EdgeProtection](pics/EdgeProtection_gif.gif)
-- New **brick edge tinting and sizing** controls:
-    - **Edge Width** (`0` to `12`): Controls how wide the edge blending band is, from no edge smoothing to a broader softened edge.
-    - **Edge Tint Color**: Lets you choose the tint color applied to edge regions.
-    - **Blend/application modes** for edge tinting:
-        - **Multiply**: Darkens by multiplying tile and tint colors.
-        - **Screen**: Lightens by inverse multiplication.
-        - **Additive**: Adds color values for stronger brightening/glow.
-        - **Overlay**: Increases contrast by combining multiply and screen behavior.
-        - **HardLight**: Strong contrast effect driven by tint values.
-        - **SoftLight**: Smoother, more subtle contrast shaping.
-        - **ColorDodge**: Strong highlight/brightening effect.
-        - **ColorBurn**: Strong shadow/darkening effect.
-    ![EdgeTinting](pics/EdgeTinting_gif.gif)
-- Fixed an issue where info texts could disappear unexpectedly.
-- Various code refactorings for transitions module
+All notable changes to this project will be documented in this file.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
----
+## [2.2.6] - Latest
 
-2. Version 2.2.6 with a new unified Transition window, a fully featured Modifications window, four new brick segmentation methods, new brick transition sections (Shadow, Underfilling, Manual), and quality-of-life additions to the main window.
+### Added
 
-- **Modifications window** redesigned as a dedicated split-layout dialog (image previews left, scrollable controls right) with three collapsible expanders.
-- **Modifications / Basic** expander: **Exposure** (`-5` to `+5`) adjusts overall brightness in photographic stops.
-- **Modifications / Basic** expander: **Brightness** (`-1` to `+1`) shifts overall luminosity linearly.
-- **Modifications / Basic** expander: **Contrast** (`-1` to `+1`) increases or reduces tonal range.
-- **Modifications / Basic** expander: **Highlights** (`-1` to `+1`) recovers or boosts bright tonal regions.
-- **Modifications / Basic** expander: **Shadows** (`-1` to `+1`) lifts or crushes dark tonal regions.
-- **Modifications / Basic** expander: **Whites** (`-1` to `+1`) clips or expands the brightest point of the image.
-- **Modifications / Basic** expander: **Blacks** (`-1` to `+1`) clips or expands the darkest point of the image.
-- **Modifications / Color** expander: **Saturation** (`-1` to `+1`) uniformly increases or decreases color intensity.
-- **Modifications / Color** expander: **Vibrance** (`-1` to `+1`) boosts muted colors while protecting already-saturated ones.
-- **Modifications / Color** expander: **Hue** (`-180` to `+180`) rotates all colors around the color wheel.
-- **Modifications / Color** expander: **Temperature** (`-1` to `+1`) shifts the image toward cooler (blue) or warmer (orange) tones.
-- **Modifications / Color** expander: **Tint** (`-1` to `+1`) shifts the image toward green (negative) or magenta (positive).
-- **Modifications / Color Overlay** expander: eyedropper toggle to sample the overlay color from the input image.
-- **Modifications / Color Overlay** expander: color picker to select a single color to blend with the texture.
-- **Modifications / Color Overlay** expander: **Overlay Amount** (`0` – `100`) blends the selected color with the texture.
-- **Modifications / Color Overlay** expander: **Mix Mode** selector — Linear, Soft Light, or OKLab Chroma.
-- **Modifications / Color Overlay** expander: **Luma Preservation** (`0` – `1`) keeps original luminance while transferring overlay chroma (OKLab Chroma mode only).
-- **Modifications / Color Overlay** expander: **Chroma Boost** (`0` – `2`) increases or reduces overlay chroma intensity in perceptual color space (OKLab Chroma mode only).
-- **Modifications window**: new **Apply** button previews changes without closing the dialog.
-- **Smooth and Brick transition windows merged** into a single unified **Transition Helper** window; mode is toggled via radio buttons at the top left.
-- **Transition window**: new **Apply** button previews the transition result without closing the dialog.
-- **Brick / Analysis**: four new color-based segmentation methods added to the method drop-down — **Felzenszwalb**, **SLIC**, **Quickshift**, and **Grid Fit** — alongside the existing Watershed and Brick Fit.
-- **Brick / Analysis / Felzenszwalb**: **Min Size** (`1` – `500`) sets the minimum component size before region merging.
-- **Brick / Analysis / Felzenszwalb**: **Scale** (`1` – `500`) sets the merge tolerance scale factor (higher = larger, fewer segments).
-- **Brick / Analysis / SLIC**: **Segment Count** (`1` – `2000`) sets the target number of superpixels.
-- **Brick / Analysis / SLIC**: **Compactness** (`0.1` – `50`) trades off color similarity against spatial regularity.
-- **Brick / Analysis / Quickshift**: **Max Distance** (`1` – `50`) sets the maximum local growth distance from the seed pixel.
-- **Brick / Analysis / Quickshift**: **Ratio** (`0.1` – `5`) scales the color similarity threshold.
-- **Brick / Analysis / Grid Fit**: **Marker Radius** (`1` – `20`) sets the size of the seed markers.
-- **Brick / Analysis / Grid Fit**: **Angle** (`-90` – `+90`) rotates the grid fitting.
-- **Brick / Analysis / Watershed**: new **Marker Count** (`#`, `1` – `256`) slider sets the number of seed markers for watershed segmentation.
-- **Brick / Analysis / Brick Fit**: new **Angle** (`-90` – `+90`) slider rotates the fitting grid.
-- **Brick / Analysis**: new **Gaussian** pre-processing filter option added to the filter drop-down.
-- **Brick / Analysis / Gaussian filter**: **σ** slider (`0.1` – `20`) controls the blur radius.
-- **Brick / Shadow** expander (new): eyedropper toggle to sample the shadow color from the result image.
-- **Brick / Shadow** expander: color picker to select the shadow color drawn over the background behind tile borders.
-- **Brick / Shadow** expander: **Shadow Size** (`0` – `32`) sets the maximum shadow extent in pixels from the tile border.
-- **Brick / Shadow** expander: **Shadow Hardness** (`0` – `100`) controls how quickly the shadow fades away from tile borders.
-- **Brick / Underfilling** expander (new): reverse toggle turns underfilling into overfilling by substituting bright pixels (useful for sandy textures and bright backgrounds).
-- **Brick / Underfilling** expander: **Threshold** (`0` – `255`) sets the underfilling intensity (`0` = none, `255` = maximum).
-- **Brick / Underfilling** expander: **Pivot** (`0` – `1`) sets the positional bias of the underfilling area.
-- **Brick / Manual** expander (new): **Tile Visibility Pen** toggle — draw on the result image to mark tiles as visible. The mouse wheel rotates the last tile that was set visible.
-- **Brick / Manual** expander: **Tile Visibility Eraser** toggle — draw on the result image to mark tiles as hidden. Erasing a moved/rotated tile returns it to its original position and orientation.
-- **Brick / Manual** expander: **Tile Move & Rotate** toggle — drag a single tile on the result image to reposition it, and use the mouse wheel to freely rotate the grabbed tile around its centroid. Moved/rotated tiles are drawn on top of other tiles (with full shadow and edge tinting), become visible automatically if they were hidden, and leave a hole (reflected by the hover indicator) at their original position. Edge tiles are not movable while edge protection is on.
-- **Brick / Manual** expander: **Tile Rotate** toggle — click a tile and drag to spin it (rotation follows the horizontal drag distance); the mouse wheel fine-tunes the last rotated tile.
-- **Brick / Manual** expander: **Reset** button clears all manual adjustments — visibility overrides, moves and rotations — and reverts to the computed result.
-- **Main window / Target panel**: hold **Space** while clicking or dragging to make a free (grid-independent) selection; release Space to return to normal grid-snapped behavior.
-- **Main window (Avalonia UI)**: **Copy / Paste** (`Ctrl+C` / `Ctrl+V`) support added.
-- **Release build lineup changed**: the combined release now ships three packages — `TrLynx-Standard-Vx.x.x.zip` (WPF .NET 6, requires .NET 6 runtime), `TrLynx-PreviewAvalonia-Windows-Vx.x.x.zip` (Avalonia UI, Windows, self-contained), and `TrLynx-PreviewAvalonia-Linux-Vx.x.x.zip` (Avalonia UI, Linux, self-contained). The former separate WPF .NET 8 and non-self-contained Avalonia builds are no longer included.
+* **New Modifications Window:** Includes basic and color adjustments (Exposure, Contrast, Saturation, etc.) and a Color Overlay feature with advanced mix modes (incl. OKLab Chroma).
+* **Transition Helper Improvements:** Unified workspace for Smooth and Brick transitions, and an "Apply" button for instant previews.
+* **Brick Analysis & Segmentation:** Added new methods (Felzenszwalb, SLIC, Quickshift, Grid Fit) with dedicated tuning sliders. Added a Gaussian Filter for pre-processing blur.
+* **New Brick Workflow Tools:** Added Shadow Expander, Underfilling Expander, and a Manual Editing Pen (Pen, Eraser, Reset).
+* **Main Window Enhancements:** Hold `Space` for free selection (grid-independent).
+* **Avalonia UI:** Added Copy/Paste (`Ctrl+C` / `Ctrl+V`) support.
+* New, redesigned homepage and comprehensive documentation set.
+
+### Changed
+
+* **Release Build Lineup:** Combined release now ships three packages: Standard WPF (.NET 6), Preview Avalonia Windows (self-contained), and Preview Avalonia Linux (self-contained).
+* Updated existing segmentation methods: Added Marker Count slider to Watershed and Angle adjustment to Brick Fit.
+
+### Removed
+
+* Dropped separate WPF .NET 8 and non-self-contained Avalonia builds.
+
+## [2.2.5] - 2026-05-12
+
+### Added
+
+* New controls to fine-tune transition topology: *Widening* (broadens transition front) and *Shift* (moves transition pivot left/right).
+* New brick edge tinting and sizing controls: Edge Width, Edge Tint Color, and various blend/application modes (Multiply, Screen, Additive, Overlay, etc.).
+
+### Changed
+
+* Edge protection can now be explicitly turned off for workflows where strict border preservation isn't needed.
+* Various code refactoring for the transitions module.
+
+### Performance
+
+* Significant performance improvements for transition window calculations (slider updates trigger faster redraws with minimal latency).
+
+### Fixed
+
+* Resolved an issue where info texts disappeared unexpectedly.
+
+## [2.2.4] - 2026-05-05
+
+### Added
+
+* Color pickers added for various tasks (demolition border color, transparency replacement, selection fill).
+* Added a third slider to the smooth transition window to adjust the offset property.
+
+### Changed
+
+* Fully integrated `bzPSD` into the `TgaBuilderLib` assembly instead of using NuGet to avoid legacy framework dependency issues.
+* Integrated WPF ColorPicker as a separate assembly for customisations.
+* Moved Avalonia UI ColorPicker installation to a NuGet package.
+
+## [2.2.3] - 2026-04-26
+
+### Added
+
+* Selectable pre-algorithm input filters for the brick transition helper (Box Blur, Bilateral, Median, or None).
+* Selectable segmentation algorithms for the brick transition helper (Watershed or XY Projection).
+
+### Changed
+
+* Multiple improvements to the Avalonia UI version.
+
+### Performance
+
+* Performance enhancements and refactoring on the brick transition pipeline (faster on weaker devices, especially with "Slice Corners" toggled).
+
+### Fixed
+
+* Minor bug fixes and corrections.
+
+## [2.2.2] - 2026-04-21
+
+### Fixed
+
+* Fixed a crash issue in the brick transition helper window.
+
+## [2.2.1] - 2026-04-20
+
+### Changed
+
+* Massive enhancements to the Avalonia UI version.
+
+### Fixed
+
+* Fixed issues on transition windows across all versions.
+
+## [2.2.0] - 2026-04-17
+
+### Added
+
+* **New Transition Helper Windows:** Generate blend-ready transition tiles directly from selections. Includes a Smooth Transition Helper and a Brick Transition Helper.
+
+## [2.1.4] - 2025-10-18
+
+### Added
+
+* **AvaloniaUi Pre-release:** Introduced an experimental cross-platform version based on Avalonia UI (tested on Linux Mint and Windows).
+
+### Changed
+
+* Improvements to `TgaBuilderLib` to enhance performance and UI layer independence.
+
+### Fixed
+
+* Corrected an incorrect library version number.
+* Minor bug fixes.
+
+## [2.1.3] - 2025-09-06
+
+### Changed
+
+* Various code refactorings.
+
+### Fixed
+
+* Fixed a bug occurring when clicking on a color picked by the eyedropper in the Format tab.
+
+## [2.1.2]
+
+### Added
+
+* New shortcuts: `Middle Mouse Click` (move to Placing Mode), `Shift + LMB` (continuous placing), `Alt + LMB` (Placing and Swapping).
+* Added a new button on the Placing Tab to enable Continuously Placing mode.
+
+### Changed
+
+* **Architectural Changes:** Removed all WPF parts from the `TgaBuilderLib` assembly to ensure cross-platform capabilities.
+* Renamed "Offset" tab to "Grid" tab.
+
+## [2.1.1] - 2025-08-11
+
+### Added
+
+* Checker box background for transparent areas in the Batch Loader Window.
+* Added a theme switch button to the bottom right corner of the main window.
+
+## [2.1.0] - 2025-08-08
+
+### Added
+
+* New shortcuts for Picker size modifications (`Shift + Mouse wheel`).
+* Permanent visibility for picker size boxes and zoom sliders below panels.
+* New Opacity slider on the Placing tab.
+* Introduced version splits (.NET 6 and .NET 8 available for compatibility).
+
+### Changed
+
+* Format tab is now available on the source panel and merged with the alpha tab.
+* Alpha settings available on the target panel and merged with format tab controls.
+* Offset and Grid tabs have been merged.
+* Various code refactorings.
+
+### Fixed
+
+* Fixed a crash issue during panel resizing.
+* Fixed issues related to panel resizing and redo operations.
+
+## [2.0.2] - 2025-08-03
+
+### Added
+
+* Checkerboard background representing transparent areas in 32-bpp panels.
+* Zoom slider added to the View tabs.
+
+### Fixed
+
+* UI Titlebar fixes.
+* Fixed an issue when importing DXTRE3D build levels.
+* Improved tooltips and applied other minor fixes.
+
+## [2.0.1] - 2025-07-29
+
+### Added
+
+* Reload button on the 'Source Open' panel to easily reload current files.
+* Previous/Next buttons on the 'Source Open' panel for folder file walking.
+* New releases are now based on verified commits.
+
+## [2.0.0] - 2025-07-28
+
+### Added
+
+* **32-bit Support:** Loading, modification, and writing of 32-bit texture panels.
+* New 'Format' tab added to destination tabs to switch between 24-bit and 32-bit.
+* **Asynchronous Processing:** Asynchronous file reading/writing to prevent UI freezes. Includes a cancel operation.
+* Workflow introduction for GitHub verification for new releases.
+
+### Changed
+
+* Various UI improvements.
+
+## [1.0.6] - 2025-07-19
+
+### Added
+
+* Import support for Ten v1.6 and v1.5 (previously only v1.7+).
+* Added controls to adjust the width of the Batch File Loader Panel (512, 1024, 2048, or 4096 px).
+* Added Scroll viewers to Source, Destination, and Batch File Loader panels.
+* Undo/Redo memory usage is now freely adjustable.
+
+### Changed
+
+* Memory management improvements for level imports via array pooling.
+
+### Fixed
+
+* Hotfix 1.0.601: Fixed missing object disposal during Ten Level reading.
+
+## [1.0.5] - 2025-06-29
+
+### Fixed
+
+* Animation Preview fixes to avoid disruptions in edge cases.
+
+## [1.0.3] - 2025-06-27
+
+### Fixed
+
+* Alpha channel fixes for imported classic TR levels.
+
+## [1.0.2] - 2025-06-26
+
+### Added
+
+* Added File Drop Support for loading.
+
+### Changed
+
+* **Project Renamed:** Tool and repository renamed to *TgaBuilder*.
+* Improvements to Undo/Redo logic.
+* General code refactoring.
+
+## [1.0.1]
+
+### Changed
+
+* Code clean-up.
+* Corrections to the Batch File Loader (removed redundant 'Last Texture Index').
+* Updated messages and documentation.
+
+### Fixed
+
+* Bugfixes for the Undo/Redo Manager.
+
+## [1.0.0] - 2025-06-24
+
+### Added
+
+* Initial Release (as *THelper*).
