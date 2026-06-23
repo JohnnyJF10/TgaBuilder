@@ -198,6 +198,15 @@ namespace TrLynxAvaloniaUi.View
                 return;
 
             tpvm.IsIndicatorMapVisible = true;
+
+            if (tpvm.IsExplicitTileVisibilityDrawMode)
+                this.Cursor = CursorProvider.PenCursor;
+            else if (tpvm.IsExplicitTileVisibilityEraseMode)
+                this.Cursor = CursorProvider.EraserCursor;
+            else if (tpvm.IsTileMoveRotateMode)
+                this.Cursor = CursorProvider.HandCursor;
+            else if (tpvm.IsTileRotateMode)
+                this.Cursor = CursorProvider.RotateCursor;
         }
 
         private void ResultImage_PointerExited(object? sender, PointerEventArgs e)
@@ -219,6 +228,8 @@ namespace TrLynxAvaloniaUi.View
 
                 tpvm.EndManipulationCommand.Execute(null);
             }
+
+            this.Cursor = CursorProvider.DefaultCursor;
         }
 
         private void ResultImage_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -238,7 +249,10 @@ namespace TrLynxAvaloniaUi.View
             tpvm.ManualPointerDownCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
 
             if (tpvm.IsTileRotateMode)
+            {
                 e.Pointer.Capture(ResultImage);
+                this.Cursor = CursorProvider.RotateCursor;
+            }
         }
 
         private void ResultImage_PointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -249,7 +263,10 @@ namespace TrLynxAvaloniaUi.View
             var tpvm = vm.TransitionOutVM;
 
             if (tpvm.IsTileRotateMode && e.Pointer.Captured == ResultImage)
+            {
                 e.Pointer.Capture(null);
+                this.Cursor = CursorProvider.DefaultCursor;
+            }
         }
 
         private void ResultImage_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
