@@ -12,6 +12,7 @@ namespace TrLynxAvaloniaUi.View
     public partial class TransitionWindow : AsyncWindow
     {
         private ColumnDefinition? _labelMapColumn;
+        private bool _isResultImageCaptured;
 
         public TransitionWindow(INotifyPropertyChanged viewModel)
         {
@@ -183,8 +184,11 @@ namespace TrLynxAvaloniaUi.View
 
             if (e.GetCurrentPoint(ResultImage).Properties.IsLeftButtonPressed)
                 tpvm.ManualPointerDragCommand.Execute((X: x, Y: y));
-            else if (tpvm.IsTileRotateMode && e.Pointer.Captured == ResultImage)
+            else if (tpvm.IsTileRotateMode && _isResultImageCaptured)
+            {
                 e.Pointer.Capture(null);
+                _isResultImageCaptured = false;
+            }
         }
 
         private void ResultImage_PointerEntered(object? sender, PointerEventArgs e)
@@ -198,6 +202,15 @@ namespace TrLynxAvaloniaUi.View
                 return;
 
             tpvm.IsIndicatorMapVisible = true;
+
+            if (tpvm.IsExplicitTileVisibilityDrawMode)
+                this.Cursor = CursorProvider.PenCursor;
+            else if (tpvm.IsExplicitTileVisibilityEraseMode)
+                this.Cursor = CursorProvider.EraserCursor;
+            else if (tpvm.IsTileMoveRotateMode)
+                this.Cursor = CursorProvider.HandCursor;
+            else if (tpvm.IsTileRotateMode)
+                this.Cursor = CursorProvider.RotateCursor;
         }
 
         private void ResultImage_PointerExited(object? sender, PointerEventArgs e)
@@ -214,11 +227,13 @@ namespace TrLynxAvaloniaUi.View
 
             if (tpvm.IsTileMoveRotateMode || tpvm.IsTileRotateMode)
             {
-                if (tpvm.IsTileRotateMode && e.Pointer.Captured == ResultImage)
+                if (tpvm.IsTileRotateMode && _isResultImageCaptured)
                     return;
 
                 tpvm.EndManipulationCommand.Execute(null);
             }
+
+            this.Cursor = CursorProvider.DefaultCursor;
         }
 
         private void ResultImage_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -238,7 +253,11 @@ namespace TrLynxAvaloniaUi.View
             tpvm.ManualPointerDownCommand.Execute((X: (int)currentPosition.X, Y: (int)currentPosition.Y));
 
             if (tpvm.IsTileRotateMode)
+            {
                 e.Pointer.Capture(ResultImage);
+                _isResultImageCaptured = true;
+                this.Cursor = CursorProvider.RotateCursor;
+            }
         }
 
         private void ResultImage_PointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -248,8 +267,12 @@ namespace TrLynxAvaloniaUi.View
 
             var tpvm = vm.TransitionOutVM;
 
-            if (tpvm.IsTileRotateMode && e.Pointer.Captured == ResultImage)
+            if (tpvm.IsTileRotateMode && _isResultImageCaptured)
+            {
                 e.Pointer.Capture(null);
+                _isResultImageCaptured = false;
+                this.Cursor = CursorProvider.DefaultCursor;
+            }
         }
 
         private void ResultImage_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
