@@ -24,3 +24,5 @@ Version 2.2.7 continues the TrLynx push with new export formats, better save-for
 ## 5. Linux Fixes
 * **PNG/BMP saving:** Fixed Linux issues that could produce overly large saved **PNG** and **BMP** files.
 * **Directory file-type handling:** Fixed a Linux bug affecting file-type directory reading.
+
+> If you have Windows 10/11 and either Tomb Editor version 1.9 or later or the .NET 6 runtime installed, use the standard version. Otherwise, use one of the Avalonia preview versions.
