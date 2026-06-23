@@ -21,6 +21,10 @@
 
   <ItemGroup>
     <None Remove="Resources\eyedropper.cur" />
+    <None Remove="Resources\pen.cur" />
+    <None Remove="Resources\eraser.cur" />
+    <None Remove="Resources\hand.cur" />
+    <None Remove="Resources\rotate.cur" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +56,18 @@
   
   <ItemGroup>
     <Resource Include="Resources\eyedropper.cur">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\pen.cur">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\eraser.cur">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\hand.cur">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\rotate.cur">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
