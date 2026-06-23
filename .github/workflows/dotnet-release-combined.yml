@@ -32,7 +32,7 @@ jobs:
         id: meta
         shell: pwsh
         run: |
-          [xml]$csproj = Get-Content ./TrLynxWpfUi/TrLynxWpfUi.csproj
+          [xml]$csproj = Get-Content ./src/TrLynxWpfUi/TrLynxWpfUi.csproj
           $title = $csproj.Project.PropertyGroup.AssemblyTitle
           $version = $csproj.Project.PropertyGroup.AssemblyVersion
           $shortVersion = ($version -split '\.')[0..2] -join '.'
@@ -55,7 +55,7 @@ jobs:
       # Standard: WPF .NET 6
       - name: Publish WPF .NET 6 (Standard)
         run: |
-          dotnet publish ./TrLynxWpfUi/TrLynxWpfUi.csproj `
+          dotnet publish ./src/TrLynxWpfUi/TrLynxWpfUi.csproj `
             -c Release `
             -f net6.0-windows `
             -r win-x64 `
@@ -84,7 +84,7 @@ jobs:
       # Preview Avalonia: Windows, self-contained
       - name: Publish Avalonia Windows (self-contained)
         run: |
-          dotnet publish ./TrLynxAvaloniaUi/TrLynxAvaloniaUi.csproj `
+          dotnet publish ./src/TrLynxAvaloniaUi/TrLynxAvaloniaUi.csproj `
             -c Release `
             -f net8.0 `
             -r win-x64 `
@@ -113,7 +113,7 @@ jobs:
       # Preview Avalonia: Linux, self-contained (cross-compiled)
       - name: Publish Avalonia Linux (self-contained)
         run: |
-          dotnet publish ./TrLynxAvaloniaUi/TrLynxAvaloniaUi.csproj `
+          dotnet publish ./src/TrLynxAvaloniaUi/TrLynxAvaloniaUi.csproj `
             -c Release `
             -f net8.0 `
             -r linux-x64 `
