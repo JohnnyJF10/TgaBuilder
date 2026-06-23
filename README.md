@@ -44,10 +44,10 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 
 | Guide | Description |
 |-------|-------------|
-| [Installation](Manuals/Installation.md) | Download links, system requirements, platform setup |
-| [Main Controls](Manuals/MainControls.md) | All panels, tabs, mouse/keyboard controls, and shortcuts |
-| [Modifications & Transitions](Manuals/ModificationsAndTransition.md) | Modifications window, Smooth transitions, Brick transitions with all segmentation algorithms and filters |
-| [Third-Party Licenses](Manuals/ThirdPartyLicenses.md) | All third-party library licenses and attributions |
+| [Installation](docs/Installation.md) | Download links, system requirements, platform setup |
+| [Main Controls](docs/MainControls.md) | All panels, tabs, mouse/keyboard controls, and shortcuts |
+| [Modifications & Transitions](docs/ModificationsAndTransition.md) | Modifications window, Smooth transitions, Brick transitions with all segmentation algorithms and filters |
+| [Third-Party Licenses](docs/ThirdPartyLicenses.md) | All third-party library licenses and attributions |
 
 ---
 
@@ -61,7 +61,7 @@ If you have already worked with TBuilder in the past, you should get familiar wi
 4. Pick tiles from source and place them on the destination
 5. Save your texture panel (`Ctrl + S`)
 
-For detailed instructions, see the [Installation Guide](Manuals/Installation.md).
+For detailed instructions, see the [Installation Guide](docs/Installation.md).
 
 ---
 
@@ -69,7 +69,7 @@ For detailed instructions, see the [Installation Guide](Manuals/Installation.md)
 
 This project is licensed under the MIT License. See [LICENSE.txt](LICENSE.txt).
 
-For third-party library licenses and attributions, see [Third-Party Licenses](Manuals/ThirdPartyLicenses.md).
+For third-party library licenses and attributions, see [Third-Party Licenses](docs/ThirdPartyLicenses.md).
 
 ## Contributing
 

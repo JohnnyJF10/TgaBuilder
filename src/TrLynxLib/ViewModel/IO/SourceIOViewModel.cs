@@ -261,22 +261,15 @@ namespace TrLynxLib.ViewModel
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException("The specified directory does not exist: " + directory);
 
-            var extensions = Enum.GetValues(typeof(FileTypes))
+            var allowedExtensions = Enum.GetValues(typeof(FileTypes))
                 .Cast<FileTypes>()
-                .Where(ft => ft != FileTypes.None)
-                .ToDictionary(ft => ft, ft => $"*.{ft.ToString().ToLower()}");
+                .Where(ft => ft != FileTypes.None && fileTypes.HasFlag(ft))
+                .Select(ft => $".{ft.ToString()}")
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            List<string> files = new List<string>();
-
-            foreach (var entry in extensions)
-            {
-                if (fileTypes.HasFlag(entry.Key))
-                {
-                    files.AddRange(Directory.GetFiles(directory, entry.Value, SearchOption.TopDirectoryOnly));
-                }
-            }
-
-            return files;
+            return Directory.GetFiles(directory, "*", SearchOption.TopDirectoryOnly)
+                .Where(file => allowedExtensions.Contains(Path.GetExtension(file)))
+                .ToList();
         }
 
         public void CopyEntire(IWriteableBitmap bitmap)
